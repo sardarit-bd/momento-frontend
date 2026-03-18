@@ -84,7 +84,7 @@ const Three = () => {
                 mouths: layerMouth,
                 dresses: layerDress,
                 crowns: layerCrown,
-                base_cards: layerBaseCard,
+                custom_sets: layerBaseCard,
                 beards: layerBeard,
                 trading_fronts: tredingFrontBase,
                 trading_backs: tredingBackBase
@@ -99,7 +99,8 @@ const Three = () => {
             console.log(productType === "Simple" ? productStateSimple : productStateCustomizable);
 
 
-            const response = await MakePost(`api/products`, productType === "Simple" ? productStateSimple : productStateCustomizable, token);
+            // api/products
+            const response = await MakePost(`api/cardproduct`, productType === "Simple" ? productStateSimple : productStateCustomizable, token);
 
 
 
@@ -130,6 +131,8 @@ const Three = () => {
 
 
 
+
+    console.log(layerBaseCard);
 
 
 
@@ -220,15 +223,19 @@ const Three = () => {
                                 <h3 className="font-bold mt-4 mb-2">Base Cards</h3>
                                 {layerBaseCard?.length > 0 ? (
                                     <div className="flex flex-wrap gap-2">
-                                        {layerBaseCard.map((img, idx) => (
-                                            <Image
-                                                key={idx}
-                                                src={img}
-                                                alt={`Gallery ${idx}`}
-                                                width={80}
-                                                height={80}
-                                                className="rounded-md border h-[60px] w-[80px]"
-                                            />
+                                        {layerBaseCard.map((img) => (
+                                            img?.images?.map((im, idx) => {
+                                                return (
+                                                    <Image
+                                                        key={idx}
+                                                        src={im}
+                                                        alt={`Gallery ${idx}`}
+                                                        width={80}
+                                                        height={80}
+                                                        className="rounded-md border h-[60px] w-[80px]"
+                                                    />
+                                                )
+                                            })
                                         ))}
                                     </div>
                                 ) : (

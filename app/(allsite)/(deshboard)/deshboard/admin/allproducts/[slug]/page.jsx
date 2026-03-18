@@ -34,7 +34,7 @@ const SingleProduct = () => {
 
     const fetching = useCallback(async (slug, token) => {
         try {
-            const response = await MakeGet(`api/products/${slug}`, token);
+            const response = await MakeGet(`api/cardproduct/${slug}`, token);
 
             setdata(response?.data);
 
@@ -83,9 +83,6 @@ const SingleProduct = () => {
 
 
 
-
-
-
     /*************** handle delete  **************/
     const handleDelect = async (e, id) => {
 
@@ -124,8 +121,8 @@ const SingleProduct = () => {
                 id: id,
                 status: status ? 0 : 1
             }, token);
+            console.log(response);
             if (response?.success) {
-
                 toast.success(response?.message);
                 fetching(slug, token);
             } else {
@@ -138,6 +135,7 @@ const SingleProduct = () => {
             setfetchloading(false);
         }
     }
+
 
 
     if (fetchloading) return <SingleProductSkeleton />
@@ -172,7 +170,7 @@ const SingleProduct = () => {
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
                 <div className="space-y-4 col-span-3">
                     <p><strong>Name:</strong> {data?.name}</p>
-                    <p><strong>Type:</strong> {data?.type}</p>
+                    <p className="capitalize"><strong>Type:</strong> {data?.type}</p>
                     <p><strong>Price:</strong> ${data?.price}</p>
                     <p><strong>Offer Price:</strong> ${data?.offer_price}</p>
                     <p><strong>Status:</strong> {data?.status ? "Published" : "Draft"}</p>
@@ -209,9 +207,9 @@ const SingleProduct = () => {
 
                                 <div className="w-full col-span-4">
                                     <h3 className="font-bold mt-4 mb-2">Base Cards</h3>
-                                    {data?.customizations?.base_cards?.length > 0 ? (
+                                    {data?.customizations?.custom_sets?.length > 0 ? (
                                         <div className="flex flex-wrap gap-2">
-                                            {data?.customizations?.base_cards.map((img, idx) => (
+                                            {data?.customizations?.custom_sets.map((img, idx) => (
                                                 <Image
                                                     key={idx}
                                                     src={img?.image}

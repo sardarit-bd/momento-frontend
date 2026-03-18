@@ -34,6 +34,7 @@ const About = () => {
 
 
 
+
     const filteredProducts = products?.data?.filter((p) => {
         if (type === "all") return true;
         return p.type === type;

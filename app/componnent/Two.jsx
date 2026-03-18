@@ -4,6 +4,7 @@ import useProductUploadStore from "@/store/useProductUploadStore";
 import getCookie from "@/utilis/helper/cookie/gettooken";
 import handleFileChange from "@/utilis/helper/handlefilechange";
 import handleFileChangeMultipul from "@/utilis/helper/handlefilechangemultipul";
+import handlemultipulfilechangeForcustomaizationbaseUrl from "@/utilis/helper/handlemultipulfilechangeForcustomaizationbaseUrl";
 import MakeGet from "@/utilis/requestrespose/get";
 import Image from "next/image";
 import { useCallback, useEffect, useState } from "react";
@@ -76,6 +77,31 @@ const Two = () => {
 
 
 
+
+
+    /************* Handle Preview Image gallery Removed *****************/
+    const handleRemoveForcustomaizationBaseURl = (index, images, seterImages, Type) => {
+
+
+        const updatedImagesWithType = images?.map((item, i) => {
+            if (item.card_type === Type) {
+                return {
+                    ...item,
+                    images: item?.images?.filter((_, i) => i !== index)
+                }
+            }
+
+            return item;
+        });
+
+        // Create a new array without the clicked item
+        seterImages(updatedImagesWithType);
+    };
+
+
+
+
+
     /********** handle next function **********/
     const handleNext = () => {
 
@@ -122,6 +148,16 @@ const Two = () => {
         }
 
     }
+
+
+
+
+
+
+    console.log(layerBaseCard);
+
+
+
 
 
 
@@ -254,31 +290,46 @@ const Two = () => {
                                 <>
                                     <div className="mt-6">
                                         <label className="block text-gray-700 mb-1">Base Card:
-                                            <span className="px-1 py-0.5 text-sm rounded-md bg-sky-300 text-white">{layerBaseCard?.length}</span> <span className="text-red-500 text-xl">*</span>
+                                            <span className="px-1 py-0.5 text-sm rounded-md bg-sky-300 text-white">{layerBaseCard?.length}</span> <span className="text-red-500 text-xl">* </span>
+                                            <span className="text-xs">Must Follow The serial (Heart,Dimonds,Club,Spade)</span>
                                         </label>
 
-                                        <div className="w-full min-h-[170px] max-h-[200px] bg-gray-100 rounded-md p-2 overflow-y-scroll no-scrollbar">
+                                        <div className="w-full min-h-[170px] h-fit bg-gray-100 rounded-md p-2 overflow-y-scroll no-scrollbar flex flex-col gap-3">
 
+
+
+                                            {/* Ace Card */}
 
                                             <div className="flex flex-wrap gap-2">
                                                 {/* Image Previews */}
-                                                {layerBaseCard?.map((src, idx) => (
-                                                    <div key={idx} className="relative w-[54px] h-[54px] border-gray-200 rounded-md">
-                                                        <Image
-                                                            src={src}
-                                                            alt={`Preview ${idx}`}
-                                                            fill
-                                                            className="object-cover rounded-md border-gray-200"
-                                                        />
-                                                        <div onClick={() => { handleRemove(idx, layerBaseCard, setlayerBaseCard) }} className="bg-sky-800 text-white w-4 h-4 rounded-full flex items-center justify-center absolute top-0 right-0 cursor-pointer">
-                                                            <RxCross2 className="text-whtie text-xs" />
-                                                        </div>
-                                                    </div>
-                                                ))}
+
+                                                {
+                                                    layerBaseCard?.filter(t => t?.card_type === 'Ace_Card')?.map((t, idx) =>
+                                                        t?.images?.map((src, i) => (
+                                                            <div key={i} className="relative w-[54px] h-[54px] border-gray-200 rounded-md">
+                                                                <Image
+                                                                    src={src}
+                                                                    alt={`Preview ${i}`}
+                                                                    fill
+                                                                    className="object-cover rounded-md border-gray-200"
+                                                                />
+                                                                <div
+                                                                    onClick={() => handleRemoveForcustomaizationBaseURl(i, layerBaseCard, setlayerBaseCard, t?.card_type)}
+                                                                    className="bg-sky-800 text-white w-4 h-4 rounded-full flex items-center justify-center absolute top-0 right-0 cursor-pointer"
+                                                                >
+                                                                    <RxCross2 className="text-white text-xs" />
+                                                                </div>
+                                                            </div>
+                                                        ))
+                                                    )
+                                                }
+
+
 
 
                                                 {/* Upload Button */}
-                                                <label htmlFor="image_taker_base_card">
+                                                <label htmlFor="image_taker_base_card1">
+                                                    <h2 className="text-gray-500 text-xs">Ace Card </h2>
                                                     <div
                                                         className="w-[54px] h-[54px] border border-gray-200 rounded-md flex items-center justify-center cursor-pointer bg-gray-50 hover:bg-gray-200 transition"
                                                     >
@@ -286,8 +337,8 @@ const Two = () => {
                                                     </div>
                                                 </label>
                                                 <input
-                                                    onChange={(e) => { handleFileChangeMultipul(e, setlayerBaseCard, layerBaseCard) }}
-                                                    id="image_taker_base_card"
+                                                    onChange={(e) => { handlemultipulfilechangeForcustomaizationbaseUrl(e, setlayerBaseCard, layerBaseCard, "Ace_Card") }}
+                                                    id="image_taker_base_card1"
                                                     type="file"
                                                     className="hidden"
                                                     multiple
@@ -295,6 +346,208 @@ const Two = () => {
 
                                                 />
                                             </div>
+
+
+
+
+
+
+
+
+                                            {/* JeckCard */}
+                                            <div className="flex flex-wrap gap-2">
+                                                {/* Image Previews */}
+                                                {
+                                                    layerBaseCard?.filter(t => t?.card_type === 'Jeck_Card')?.map((t, idx) =>
+                                                        t?.images?.map((src, i) => (
+                                                            <div key={i} className="relative w-[54px] h-[54px] border-gray-200 rounded-md">
+                                                                <Image
+                                                                    src={src}
+                                                                    alt={`Preview ${i}`}
+                                                                    fill
+                                                                    className="object-cover rounded-md border-gray-200"
+                                                                />
+                                                                <div
+                                                                    onClick={() => handleRemoveForcustomaizationBaseURl(i, layerBaseCard, setlayerBaseCard, t?.card_type)}
+                                                                    className="bg-sky-800 text-white w-4 h-4 rounded-full flex items-center justify-center absolute top-0 right-0 cursor-pointer"
+                                                                >
+                                                                    <RxCross2 className="text-white text-xs" />
+                                                                </div>
+                                                            </div>
+                                                        ))
+                                                    )
+                                                }
+
+
+                                                {/* Upload Button */}
+                                                <label htmlFor="image_taker_base_card2">
+                                                    <h2 className="text-gray-500 text-xs">Jeck Card</h2>
+                                                    <div
+                                                        className="w-[54px] h-[54px] border border-gray-200 rounded-md flex items-center justify-center cursor-pointer bg-gray-50 hover:bg-gray-200 transition"
+                                                    >
+                                                        <FaPlus className="text-xl text-gray-500" />
+                                                    </div>
+                                                </label>
+                                                <input
+                                                    onChange={(e) => { handlemultipulfilechangeForcustomaizationbaseUrl(e, setlayerBaseCard, layerBaseCard, 'Jeck_Card') }}
+                                                    id="image_taker_base_card2"
+                                                    type="file"
+                                                    className="hidden"
+                                                    multiple
+                                                    accept=" image/png, image/jpeg, image/jpg"
+
+                                                />
+                                            </div>
+
+
+
+
+
+
+
+                                            {/* King Card */}
+                                            <div className="flex flex-wrap gap-2">
+                                                {/* Image Previews */}
+                                                {
+                                                    layerBaseCard?.filter(t => t?.card_type === 'Queen_Card')?.map((t, idx) =>
+                                                        t?.images?.map((src, i) => (
+                                                            <div key={i} className="relative w-[54px] h-[54px] border-gray-200 rounded-md">
+                                                                <Image
+                                                                    src={src}
+                                                                    alt={`Preview ${i}`}
+                                                                    fill
+                                                                    className="object-cover rounded-md border-gray-200"
+                                                                />
+                                                                <div
+                                                                    onClick={() => handleRemoveForcustomaizationBaseURl(i, layerBaseCard, setlayerBaseCard, t?.card_type)}
+                                                                    className="bg-sky-800 text-white w-4 h-4 rounded-full flex items-center justify-center absolute top-0 right-0 cursor-pointer"
+                                                                >
+                                                                    <RxCross2 className="text-white text-xs" />
+                                                                </div>
+                                                            </div>
+                                                        ))
+                                                    )
+                                                }
+
+
+                                                {/* Upload Button */}
+                                                <label htmlFor="image_taker_base_card3">
+                                                    <h2 className="text-gray-500 text-xs">Queen Card </h2>
+                                                    <div
+                                                        className="w-[54px] h-[54px] border border-gray-200 rounded-md flex items-center justify-center cursor-pointer bg-gray-50 hover:bg-gray-200 transition"
+                                                    >
+                                                        <FaPlus className="text-xl text-gray-500" />
+                                                    </div>
+                                                </label>
+                                                <input
+                                                    onChange={(e) => { handlemultipulfilechangeForcustomaizationbaseUrl(e, setlayerBaseCard, layerBaseCard, "Queen_Card") }}
+                                                    id="image_taker_base_card3"
+                                                    type="file"
+                                                    className="hidden"
+                                                    multiple
+                                                    accept=" image/png, image/jpeg, image/jpg"
+
+                                                />
+                                            </div>
+
+
+
+
+
+                                            {/* King Card */}
+                                            <div className="flex flex-wrap gap-2">
+                                                {/* Image Previews */}
+                                                {
+                                                    layerBaseCard?.filter(t => t?.card_type === 'king_Card')?.map((t, idx) =>
+                                                        t?.images?.map((src, i) => (
+                                                            <div key={i} className="relative w-[54px] h-[54px] border-gray-200 rounded-md">
+                                                                <Image
+                                                                    src={src}
+                                                                    alt={`Preview ${i}`}
+                                                                    fill
+                                                                    className="object-cover rounded-md border-gray-200"
+                                                                />
+                                                                <div
+                                                                    onClick={() => handleRemoveForcustomaizationBaseURl(i, layerBaseCard, setlayerBaseCard, t?.card_type)}
+                                                                    className="bg-sky-800 text-white w-4 h-4 rounded-full flex items-center justify-center absolute top-0 right-0 cursor-pointer"
+                                                                >
+                                                                    <RxCross2 className="text-white text-xs" />
+                                                                </div>
+                                                            </div>
+                                                        ))
+                                                    )
+                                                }
+
+
+                                                {/* Upload Button */}
+                                                <label htmlFor="image_taker_base_card4">
+                                                    <h2 className="text-gray-500 text-xs">King Card </h2>
+                                                    <div
+                                                        className="w-[54px] h-[54px] border border-gray-200 rounded-md flex items-center justify-center cursor-pointer bg-gray-50 hover:bg-gray-200 transition"
+                                                    >
+                                                        <FaPlus className="text-xl text-gray-500" />
+                                                    </div>
+                                                </label>
+                                                <input
+                                                    onChange={(e) => { handlemultipulfilechangeForcustomaizationbaseUrl(e, setlayerBaseCard, layerBaseCard, "king_Card") }}
+                                                    id="image_taker_base_card4"
+                                                    type="file"
+                                                    className="hidden"
+                                                    multiple
+                                                    accept=" image/png, image/jpeg, image/jpg"
+
+                                                />
+                                            </div>
+
+
+
+                                            {/* Joker Card */}
+                                            <div className="flex flex-wrap gap-2">
+                                                {/* Image Previews */}
+                                                {
+                                                    layerBaseCard?.filter(t => t?.card_type === 'Joker_Card')?.map((t, idx) =>
+                                                        t?.images?.map((src, i) => (
+                                                            <div key={i} className="relative w-[54px] h-[54px] border-gray-200 rounded-md">
+                                                                <Image
+                                                                    src={src}
+                                                                    alt={`Preview ${i}`}
+                                                                    fill
+                                                                    className="object-cover rounded-md border-gray-200"
+                                                                />
+                                                                <div
+                                                                    onClick={() => handleRemoveForcustomaizationBaseURl(i, layerBaseCard, setlayerBaseCard, t?.card_type)}
+                                                                    className="bg-sky-800 text-white w-4 h-4 rounded-full flex items-center justify-center absolute top-0 right-0 cursor-pointer"
+                                                                >
+                                                                    <RxCross2 className="text-white text-xs" />
+                                                                </div>
+                                                            </div>
+                                                        ))
+                                                    )
+                                                }
+
+
+                                                {/* Upload Button */}
+                                                <label htmlFor="image_taker_base_card5">
+                                                    <h2 className="text-gray-500 text-xs">Joker Card </h2>
+                                                    <div
+                                                        className="w-[54px] h-[54px] border border-gray-200 rounded-md flex items-center justify-center cursor-pointer bg-gray-50 hover:bg-gray-200 transition"
+                                                    >
+                                                        <FaPlus className="text-xl text-gray-500" />
+                                                    </div>
+                                                </label>
+                                                <input
+                                                    onChange={(e) => { handlemultipulfilechangeForcustomaizationbaseUrl(e, setlayerBaseCard, layerBaseCard, "Joker_Card") }}
+                                                    id="image_taker_base_card5"
+                                                    type="file"
+                                                    className="hidden"
+                                                    multiple
+                                                    accept=" image/png, image/jpeg, image/jpg"
+
+                                                />
+                                            </div>
+
+
+
                                         </div>
                                     </div>
 

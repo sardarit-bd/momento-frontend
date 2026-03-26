@@ -246,7 +246,7 @@ export default function MomentoLanding() {
                     <div className="scroll-reveal" style={{ textAlign: "center", marginBottom: "4rem" }}>
                         <div className="section-divider" style={{ marginBottom: "2rem" }} />
                         <h2 style={{ fontFamily: "'Playfair Display',serif", fontSize: "clamp(2rem,4vw,3rem)", fontWeight: 900, marginBottom: "1rem", color: "#1A1209" }}>Two Ways to Create<br />Your Cards</h2>
-                        <p style={{ color: "#8B6B3D", fontSize: "1.125rem", fontWeight: 300 }}>Whether you want to play or preserve a moment — there's a format for you.</p>
+                        <p style={{ color: "#8B6B3D", fontSize: "1.125rem", fontWeight: 300 }}>Whether you want to play or preserve a moment — there&apos;s a format for you.</p>
                     </div>
                     <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(300px,1fr))", gap: "2rem" }}>
                         {/* Portrait Deck */}
@@ -416,7 +416,7 @@ export default function MomentoLanding() {
                     <div className="scroll-reveal" style={{ textAlign: "center", marginBottom: "5rem" }}>
                         <div className="section-divider" style={{ marginBottom: "2rem" }} />
                         <h2 style={{ fontFamily: "'Playfair Display',serif", fontSize: "clamp(2.5rem,5vw,3.75rem)", fontWeight: 900, marginBottom: "1.5rem", color: "#1A1209" }}>
-                            This Isn't<br /><em className="gold-shimmer" style={{ fontStyle: "normal" }}>Just Cards</em>
+                            This Isn&apos;t<br /><em className="gold-shimmer" style={{ fontStyle: "normal" }}>Just Cards</em>
                         </h2>
                         <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: "2rem", marginTop: "2rem" }}>
                             {["Fully personalized", "Made to be shared", "Built for real moments"].map(t => (
@@ -435,7 +435,7 @@ export default function MomentoLanding() {
                             <div>
                                 <div style={{ fontSize: "0.7rem", fontWeight: 600, letterSpacing: "0.12em", textTransform: "uppercase", color: "#C9A84C", marginBottom: "1rem" }}>Quality</div>
                                 <h3 style={{ fontFamily: "'Playfair Display',serif", fontSize: "clamp(1.75rem,3vw,2.5rem)", fontWeight: 900, color: "#F5EFE0", marginBottom: "1.5rem" }}>Made to Be Played,<br />Kept, and Gifted</h3>
-                                <p style={{ color: "rgba(245,239,224,0.5)", lineHeight: 1.7, marginBottom: "2rem" }}>Every deck and card is printed on premium stock built to last — whether it's being shuffled on a game night or kept as a keepsake forever.</p>
+                                <p style={{ color: "rgba(245,239,224,0.5)", lineHeight: 1.7, marginBottom: "2rem" }}>Every deck and card is printed on premium stock built to last — whether it&apos;s being shuffled on a game night or kept as a keepsake forever.</p>
                                 <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
                                     {[["Premium card stock", "Thick, satisfying, built to last"], ["Durable finish", "Scratch and smudge resistant coating"], ["High-quality print", "Vibrant, true-to-life colors every time"]].map(([title, sub]) => (
                                         <div key={title} style={{ display: "flex", alignItems: "center", gap: "1rem", padding: "1rem", borderRadius: 12, background: "rgba(201,168,76,0.05)", border: "1px solid rgba(201,168,76,0.1)" }}>
@@ -492,7 +492,7 @@ export default function MomentoLanding() {
                 <div className="scroll-reveal" style={{ position: "relative", maxWidth: "56rem", margin: "0 auto", textAlign: "center" }}>
                     <div className="section-divider" style={{ marginBottom: "2.5rem" }} />
                     <h2 style={{ fontFamily: "'Playfair Display',serif", fontSize: "clamp(2.5rem,6vw,4.5rem)", fontWeight: 900, marginBottom: "1.5rem", lineHeight: 1.1, color: "#1A1209" }}>
-                        Create Something<br />They'll Actually<br />
+                        Create Something<br />They&apos;ll Actually<br />
                         <span className="gold-shimmer">Remember</span>
                     </h2>
                     <p style={{ color: "#8B6B3D", fontSize: "1.25rem", fontWeight: 300, marginBottom: "3rem", maxWidth: "28rem", margin: "0 auto 3rem" }}>Real people. Real moments. Real reactions.</p>

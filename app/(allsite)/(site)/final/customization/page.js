@@ -61,7 +61,7 @@ const FinalCardsPage = () => {
                     deckcart[0]?.FinalProduct?.map((card, idx) => (
 
 
-                        <div className="flex items-center justify-center relative w-[200px] h-auto md:w-[220px] md:h-[330px] lg:w-[300px] lg:h-[400px] rounded-4xl border-2 border-transparent">
+                        <div key={idx} className="flex items-center justify-center relative w-[200px] h-auto md:w-[220px] md:h-[330px] lg:w-[300px] lg:h-[400px] rounded-4xl border-2 border-transparent">
                             {card?.baseImage && (
                                 <Image
                                     width={1000} height={1000} src={card.baseImage} alt="Base Card" className=" w-full h-full object-contain"

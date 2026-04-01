@@ -8,7 +8,6 @@ import usefinalCardsStore from "@/store/usefinalCardsStore";
 import CaptureScreenshort from "@/utilis/helper/CaptureScreenshort";
 import getCookie from "@/utilis/helper/cookie/gettooken";
 import generateUserId from "@/utilis/helper/generateUserId";
-import { pdfGanarator } from "@/utilis/helper/pdfGanarator";
 import MakeGet from "@/utilis/requestrespose/get";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
@@ -129,8 +128,6 @@ const ProductCustomizer = () => {
     };
 
 
-
-
     /******* Add New Card Function ********/
     const addNewCard = () => {
 
@@ -165,8 +162,14 @@ const ProductCustomizer = () => {
     const goToFinalView = async () => {
 
 
-        if (finalCards.length < 1) {
-            toast.warn('Click ‘Add Card’ to continue.');
+        const requiredCards = ['Ace_Card', 'Queen_Card', 'king_Card', 'Jeck_Card'];
+
+        const hasAllCards = requiredCards.every(req =>
+            cards.some(item => item.editedCard === req)
+        );
+
+        if (!hasAllCards) {
+            toast.warn('Must Be Design at Least Ace Card, Queen Card, King Card, Jeck Card Cards');
             return;
         }
 
@@ -177,7 +180,6 @@ const ProductCustomizer = () => {
             setboxPreviewOpen(true);
             return;
         }
-
 
 
         clearCart();
@@ -194,8 +196,7 @@ const ProductCustomizer = () => {
             productImage: product?.image,
             productGalary: product?.images,
             productDescription: product?.description,
-            FinalProduct: finalCards,
-            FinalPDf: await pdfGanarator(finalCards.concat(boxs))
+            FinalProduct: cards,
         };
 
         addToCart(producted);

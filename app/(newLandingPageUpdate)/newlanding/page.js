@@ -160,10 +160,10 @@ export default function MomentoLanding() {
                             <button className="btn-primary" style={{ padding: "1rem 2rem", borderRadius: "9999px", fontSize: "1rem", border: "none" }}>Create Your Deck</button>
                             <button className="btn-outline" style={{ padding: "1rem 2rem", borderRadius: "9999px", fontSize: "1rem" }}>Create a Momento</button>
                         </div>
-                        <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", fontSize: "0.75rem", color: "rgba(139,107,61,0.6)", marginBottom: "2rem", fontWeight: 500, letterSpacing: "0.05em" }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", fontSize: "0.85rem", color: "rgba(139,107,61,0.6)", marginBottom: "2rem", fontWeight: 500, letterSpacing: "0.05em" }}>
                             <span>✦ No design skills needed</span>
                             <span style={{ width: 4, height: 4, borderRadius: "50%", background: "rgba(139,107,61,0.3)", display: "inline-block" }} />
-                            <span>✦ Preview before you order</span>
+                            <span>✦ Takes less than 2 minutes</span>
                         </div>
                         <div style={{ display: "flex", flexWrap: "wrap", gap: "1.5rem", paddingTop: "1.5rem", borderTop: "1px solid rgba(201,168,76,0.2)" }}>
                             {["Easy to create", "Premium quality", "Made to be shared"].map((t) => (
@@ -246,6 +246,7 @@ export default function MomentoLanding() {
                     <div className="scroll-reveal" style={{ textAlign: "center", marginBottom: "4rem" }}>
                         <div className="section-divider" style={{ marginBottom: "2rem" }} />
                         <h2 style={{ fontFamily: "'Playfair Display',serif", fontSize: "clamp(2rem,4vw,3rem)", fontWeight: 900, marginBottom: "1rem", color: "#1A1209" }}>Two Ways to Create<br />Your Cards</h2>
+                        <h4 style={{ color: "#8B6B3D", fontSize: "1.6rem", fontWeight: 300, marginBottom: "1rem" }}>Play with your people or capture a moment</h4>
                         <p style={{ color: "#8B6B3D", fontSize: "1.125rem", fontWeight: 300 }}>Whether you want to play or preserve a moment — there&apos;s a format for you.</p>
                     </div>
                     <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(300px,1fr))", gap: "2rem" }}>

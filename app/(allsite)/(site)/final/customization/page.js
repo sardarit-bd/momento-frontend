@@ -55,14 +55,40 @@ const FinalCardsPage = () => {
                     </button>
                 </div>
             </div>
-            <div style={{ display: "flex", gap: "10px", flexWrap: "wrap", padding: "2rem", margin: "45px 0px" }}>
+            <div className="" style={{ display: "flex", gap: "10px", flexWrap: "wrap", padding: "2rem 0rem", margin: "45px 0px" }}>
 
                 {
                     deckcart[0]?.FinalProduct?.map((card, idx) => (
 
-                        <div key={idx} className="w-[170px] h-[280px] lg:w-[216px] lg:h-[312px] flex items-center justify-center ">
-                            <Image className="object-contain z-10" src={card} width={1000} height={1000} key={idx} alt="final-cards" />
+
+                        <div className="flex items-center justify-center relative w-[200px] h-auto md:w-[220px] md:h-[330px] lg:w-[300px] lg:h-[400px] rounded-4xl border-2 border-transparent">
+                            {card?.baseImage && (
+                                <Image
+                                    width={1000} height={1000} src={card.baseImage} alt="Base Card" className=" w-full h-full object-contain"
+                                />
+                            )}
+                            {layers.map(layer =>
+                                card?.selectedLayers[layer] && (
+                                    <div key={layer}>
+                                        <Image
+                                            width={1000}
+                                            height={1000}
+                                            src={card.selectedLayers[layer]}
+                                            alt={layer}
+                                            className="absolute top-[30px] md:top-[35px] lg:top-[80px] left-1/2 -translate-x-1/2 w-[65%] h-[40%] md:w-[60%] md:h-[40%] lg:w-[55%] lg:h-[30%] object-contain"
+                                        />
+                                        <Image
+                                            width={1000}
+                                            height={1000}
+                                            src={card.selectedLayers[layer]}
+                                            alt={`${layer}-mirrored`}
+                                            className="absolute bottom-[30px] md:bottom-[35px] lg:bottom-[80px] left-1/2 -translate-x-1/2 scale-y-[-1] w-[65%] h-[40%] md:w-[60%] md:h-[40%] lg:w-[55%] lg:h-[30%] object-contain"
+                                        />
+                                    </div>
+                                )
+                            )}
                         </div>
+
 
                     ))
                 }

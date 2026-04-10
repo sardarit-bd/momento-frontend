@@ -3,11 +3,13 @@ import SpinLoader from "@/app/componnent/SpingLoader";
 import useboxcartstore from "@/store/useboxcartstore";
 import useCartStore from "@/store/useCartStore";
 import useDeckFinalPreview from "@/store/useDeckFinalPreview";
+import boxPreviewDefault from "@/public/boxprevew.png";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { BiLeftArrowAlt } from "react-icons/bi";
 import { IoCartOutline } from "react-icons/io5";
+import { MdOutlineShoppingBag } from "react-icons/md";
 
 const layers = [
     "dresses", "skin_tones", "hairs", "crowns",
@@ -18,24 +20,45 @@ const layers = [
 
 const FinalCardsPage = () => {
 
-    const [cards, setCards] = useState([]);
-    const { addToCart } = useCartStore();
-    const { deckcart, removeFromCart } = useDeckFinalPreview();
+    const { addToCart, cart } = useCartStore();
+    const { deckcart } = useDeckFinalPreview();
     const { boxs } = useboxcartstore();
     const [loading, setloading] = useState(false);
+    const [checkoutLoading, setCheckoutLoading] = useState(false);
     const router = useRouter();
 
 
 
+    const ensureDeckInCart = () => {
+        const deckItem = deckcart?.[0];
+        if (!deckItem) return false;
+
+        const alreadyInCart = cart.some((item) => item?.id === deckItem?.id);
+        if (!alreadyInCart) addToCart(deckItem);
+        return true;
+    };
+
     const adddeckcart = (e) => {
         e.preventDefault();
+        if (!ensureDeckInCart()) return;
+
         setloading(true);
         setTimeout(() => {
-            addToCart(deckcart[0]);
             setloading(false);
         }, 900);
 
-    }
+    };
+
+    const handleCheckout = (e) => {
+        e.preventDefault();
+        if (!ensureDeckInCart()) return;
+
+        setCheckoutLoading(true);
+        setTimeout(() => {
+            setCheckoutLoading(false);
+            router.push("/my-cart/checkout");
+        }, 500);
+    };
 
 
 
@@ -48,20 +71,24 @@ const FinalCardsPage = () => {
                     </button>
                     <h1 className="text-xl text-gray-600 hidden md:block">Your Customized Cards</h1>
                 </div>
-                <div>
-                    <button onClick={(e) => { adddeckcart(e) }} className="border border-gray-200 bg-sky-400 hover:bg-sky-500 text-white p-2 rounded-md shadow-md cursor-pointer transition duration-100 flex items-center gap-2">
+                <div className="flex items-center gap-2">
+                    <button onClick={(e) => { adddeckcart(e) }} className="border border-gray-200 bg-sky-400 hover:bg-sky-500 text-white p-2 rounded-md shadow-md cursor-pointer transition duration-100 flex items-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed" disabled={loading || checkoutLoading || !deckcart?.[0]}>
                         {loading ? <SpinLoader /> : <IoCartOutline className="text-xl" />}
                         Add to Cart
                     </button>
+                    <button onClick={(e) => { handleCheckout(e) }} className="border border-gray-200 bg-emerald-500 hover:bg-emerald-600 text-white p-2 rounded-md shadow-md cursor-pointer transition duration-100 flex items-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed" disabled={loading || checkoutLoading || !deckcart?.[0]}>
+                        {checkoutLoading ? <SpinLoader /> : <MdOutlineShoppingBag className="text-xl" />}
+                        Checkout
+                    </button>
                 </div>
             </div>
-            <div className="" style={{ display: "flex", gap: "10px", flexWrap: "wrap", padding: "2rem 0rem", margin: "45px 0px" }}>
+            <div className="grid grid-cols-2 gap-3 py-6 my-6 sm:grid-cols-3 md:grid-cols-5 md:gap-4">
 
                 {
                     deckcart[0]?.FinalProduct?.map((card, idx) => (
 
 
-                        <div key={idx} className="flex items-center justify-center relative w-[200px] h-auto md:w-[220px] md:h-[330px] lg:w-[300px] lg:h-[400px] rounded-4xl border-2 border-transparent">
+                        <div key={idx} className="flex items-center justify-center relative w-full h-[210px] sm:h-[230px] md:h-[250px] lg:h-[280px] rounded-3xl border border-gray-100 bg-white/60">
                             {card?.baseImage && (
                                 <Image
                                     width={1000} height={1000} src={card.baseImage} alt="Base Card" className=" w-full h-full object-contain"
@@ -75,14 +102,14 @@ const FinalCardsPage = () => {
                                             height={1000}
                                             src={card.selectedLayers[layer]}
                                             alt={layer}
-                                            className="absolute top-[30px] md:top-[35px] lg:top-[80px] left-1/2 -translate-x-1/2 w-[65%] h-[40%] md:w-[60%] md:h-[40%] lg:w-[55%] lg:h-[30%] object-contain"
+                                            className="absolute top-[24px] sm:top-[28px] md:top-[34px] lg:top-[42px] left-1/2 -translate-x-1/2 w-[62%] h-[40%] object-contain"
                                         />
                                         <Image
                                             width={1000}
                                             height={1000}
                                             src={card.selectedLayers[layer]}
                                             alt={`${layer}-mirrored`}
-                                            className="absolute bottom-[30px] md:bottom-[35px] lg:bottom-[80px] left-1/2 -translate-x-1/2 scale-y-[-1] w-[65%] h-[40%] md:w-[60%] md:h-[40%] lg:w-[55%] lg:h-[30%] object-contain"
+                                            className="absolute bottom-[24px] sm:bottom-[28px] md:bottom-[34px] lg:bottom-[42px] left-1/2 -translate-x-1/2 scale-y-[-1] w-[62%] h-[40%] object-contain"
                                         />
                                     </div>
                                 )
@@ -96,19 +123,16 @@ const FinalCardsPage = () => {
 
             </div>
 
-            <div>
+            <div className="pb-8">
                 <h2 className="py-4 font-semibold text-gray-600">Box Preview</h2>
 
-                {
-                    boxs?.map((item, index) => {
-                        return (
-                            <div key={index} className="w-[170px] h-auto lg:w-[400px] lg:h-auto flex items-center justify-center ">
-                                <Image className="object-contain z-10" src={item} width={1000} height={1000} alt="final-cards" />
-                            </div>
-                        )
-                    })
-                }
-
+                <div className="flex flex-wrap gap-4">
+                    {(boxs?.length > 0 ? boxs : [boxPreviewDefault]).map((item, index) => (
+                        <div key={index} className="w-[220px] h-auto lg:w-[420px] lg:h-auto flex items-center justify-center rounded-xl border border-gray-200 bg-white p-2 shadow-sm">
+                            <Image className="object-contain z-10" src={item} width={1000} height={1000} alt="box-preview" />
+                        </div>
+                    ))}
+                </div>
             </div>
         </div>
     );

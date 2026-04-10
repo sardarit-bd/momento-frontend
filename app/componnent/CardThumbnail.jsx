@@ -9,7 +9,7 @@ const CardThumbnail = ({ finalCard }) => {
 
   return (
     <div
-      className="w-[50px] h-full md:h-auto lg:w-full lg:h-[180px] xl:h-[200px] relative rounded-lg cursor-pointer">
+      className="w-[50px] h-full md:h-auto lg:w-full lg:h-[180px] xl:h-[200px] relative cursor-pointer">
       <Image
         width={1000} height={1000} src={finalCard?.baseImage} alt="Base Card" className=" w-full h-full object-contain"
       />

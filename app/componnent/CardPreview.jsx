@@ -26,14 +26,14 @@ const CardPreview = ({ activeCard, previewCardNodeRef }) => {
                             height={1000}
                             src={activeCard.selectedLayers[layer]}
                             alt={layer}
-                            className="absolute top-[10px] md:top-[32px] lg:top-[92px] left-1/2 -translate-x-1/2 w-[70%] h-[47%] md:w-[65%] md:h-[42%] lg:w-[55%] lg:h-[35%] object-contain pt-[30px]"
+                            className="absolute top-[10px] md:top-[32px] lg:top-[89px] left-1/2 -translate-x-1/2 w-[70%] h-[47%] md:w-[65%] md:h-[42%] lg:w-[55%] lg:h-[35%] object-contain pt-[30px]"
                         />
                         <Image
                             width={1000}
                             height={1000}
                             src={activeCard.selectedLayers[layer]}
                             alt={`${layer}-mirrored`}
-                            className="absolute bottom-[10px] md:bottom-[32px] lg:bottom-[92px] left-1/2 -translate-x-1/2 scale-y-[-1] w-[70%] h-[47%] md:w-[65%] md:h-[42%] lg:w-[55%] lg:h-[35%] object-contain pt-[30px]"
+                            className="absolute bottom-[10px] md:bottom-[32px] lg:bottom-[89px] left-1/2 -translate-x-1/2 scale-y-[-1] w-[70%] h-[47%] md:w-[65%] md:h-[42%] lg:w-[55%] lg:h-[35%] object-contain pt-[30px]"
                         />
                     </div>
                 )

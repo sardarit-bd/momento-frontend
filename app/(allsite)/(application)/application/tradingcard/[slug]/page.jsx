@@ -22,7 +22,6 @@ import BoxPreview from "@/app/componnent/BoxPreview/BoxPreview";
 import CharactersCountComponent from "@/app/componnent/CharactersCountComponent";
 import useboxcartstore from "@/store/useboxcartstore";
 import useCardforTrading from "@/store/useCardforTrading";
-import captureNodeScreenshotForTranding from "@/utilis/helper/captureNodeScreenshotForTranding";
 import ImageResize from "@/utilis/helper/ImageResize";
 const fonts = ["Arial", "Poppins", "Times New Roman", "Courier New", "Comic Sans MS"];
 
@@ -277,13 +276,6 @@ export default function ProductCustomizer() {
             return;
         }
 
-        if (boxs.length < 1) {
-            toast.warn('Box Design should be Captured');
-            setboxPreviewOpen(true);
-            return;
-        }
-
-
         clearCart();
         setspinloading(true);
         const product = {
@@ -318,8 +310,17 @@ export default function ProductCustomizer() {
 
     const Done = async () => {
         setdoneloading(true);
+        const currentPreview = workingcard === "front" ? baseFront : baseBack;
+        const fallbackPreview = baseFront || baseBack;
+        const nextCardPreview = currentPreview || fallbackPreview;
 
-        await captureNodeScreenshotForTranding(previewCardNodeRef.current, cards, setCards);
+        if (!nextCardPreview) {
+            toast.warn("Please select a base card first.");
+            setdoneloading(false);
+            return;
+        }
+
+        setCards([...cards, nextCardPreview]);
         setTimeout(() => {
             setdoneloading(false);
         }, [600])

@@ -1,36 +1,28 @@
 'use client';
 import useboxcartstore from "@/store/useboxcartstore";
-import captureNodeScreenshotForTranding from "@/utilis/helper/captureNodeScreenshotForTranding";
 import Image from "next/image";
-import { useState } from "react";
 import { IoIosArrowDown } from "react-icons/io";
 import { toast } from "react-toastify";
 import CharactersCountComponent from "../CharactersCountComponent";
-import SpinLoader from "../SpingLoader";
 
 
 const BoxPreview = ({ bfor, boxref, boxTitle, setboxTitle, created, setcreated, BoxPreviewOpen, setboxPreviewOpen, children }) => {
-
-
-
-    const [isloading, setisloading] = useState(false);
     const { boxs, setboxs } = useboxcartstore();
 
 
 
     //handle boxcapturehandle capture
-    const boxcapturehandle = async (e) => {
+    const boxcapturehandle = (e) => {
         e.preventDefault();
 
         if (boxs.length > 0) {
-            toast.warn("Packaging Design Already Captured");
+            toast.warn("Packaging preview already added");
             return;
         }
 
-        setisloading(true);
-        await captureNodeScreenshotForTranding(boxref.current, boxs, setboxs);
-        setisloading(false);
-        // setboxPreviewOpen(false);
+        // Screenshot capture is disabled globally. Keep UX by adding a default preview.
+        setboxs(["/boxprevew.png"]);
+        toast.success("Packaging preview added");
 
     }
 
@@ -102,7 +94,6 @@ const BoxPreview = ({ bfor, boxref, boxTitle, setboxTitle, created, setcreated, 
 
 
                             <button onClick={(e) => { boxcapturehandle(e) }} className="bg-sky-400 text-white rounded-md px-2 py-1 shadow-lg flex items-center gap-2 cursor-pointer">
-                                {isloading && <SpinLoader />}
                                 Done
                             </button>
                         </div>

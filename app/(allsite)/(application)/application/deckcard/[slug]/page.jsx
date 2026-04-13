@@ -2,8 +2,6 @@
 import ApplicationSkeleton from "@/app/componnent/ApplicationSkeleton";
 import useDeckFinalPreview from "@/store/useDeckFinalPreview";
 import usefinalCardsStore from "@/store/usefinalCardsStore";
-import CaptureScreenshort from "@/utilis/helper/CaptureScreenshort";
-import getEmail from "@/utilis/helper/cookie/getemail";
 import generateUserId from "@/utilis/helper/generateUserId";
 import MakeGet from "@/utilis/requestrespose/get";
 import { useParams, useRouter } from "next/navigation";
@@ -11,7 +9,6 @@ import { useEffect, useRef, useState, Fragment } from "react"; // Added Fragment
 import { GiCardAceClubs, GiCardJackClubs, GiCardJoker, GiCardKingClubs, GiCardQueenClubs } from "react-icons/gi";
 import { IoIosArrowDown, IoMdCheckmark } from "react-icons/io";
 import { toast, ToastContainer } from "react-toastify";
-import CardCapturePreview from "../../../../../componnent/CardCapturePreview";
 import CardPreview from "../../../../../componnent/CardPreview";
 import CardSidebar from "../../../../../componnent/CardSidebar";
 import SideController from "../../../../../componnent/SideController";
@@ -33,7 +30,6 @@ const ProductCustomizer = () => {
     const customCardsStorageKey = `customCards:${slug}`;
     const customCardsActiveIndexStorageKey = `customCardsActiveIndex:${slug}`;
     const previewCardNodeRef = useRef(null);
-    const captureCardNodeRefs = useRef([]);
 
     const [product, setProduct] = useState(null);
     const [cards, setCards] = useState([]);
@@ -47,25 +43,6 @@ const ProductCustomizer = () => {
     const [activebaseEditCard, setactivebaseEditCard] = useState([]);
     const [showJokerUpsell, setshowJokerUpsell] = useState(false);
     const { setfinalCards } = usefinalCardsStore();
-
-    const waitForNextPaint = () => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
-
-    const waitForHiddenCaptureNodesReady = async (count, timeout = 5000) => {
-        const start = Date.now();
-        while (Date.now() - start < timeout) {
-            await waitForNextPaint();
-            const nodes = Array.from({ length: count }, (_, i) => captureCardNodeRefs.current[i]).filter(Boolean);
-            if (nodes.length < count) continue;
-
-            const allImagesReady = nodes.every((node) => {
-                const imgs = Array.from(node.querySelectorAll("img"));
-                return imgs.length > 0 && imgs.every((img) => img.complete && img.naturalWidth > 0);
-            });
-
-            if (allImagesReady) return true;
-        }
-        return false;
-    };
 
     useEffect(() => {
         const fetchProduct = async () => {
@@ -221,66 +198,9 @@ const ProductCustomizer = () => {
 
         setspinloading(true);
 
-        const cardsToCapture = [...cards];
-        const capturedCardImages = [];
-        const usernameFromCookie = decodeURIComponent(getEmail() || "guest");
-        const safeUsername =
-            String(usernameFromCookie || "guest")
-                .trim()
-                .replace(/[^a-zA-Z0-9_-]/g, "_")
-                .replace(/_+/g, "_")
-                .replace(/^_+|_+$/g, "") || "guest";
-        const captureFolder = `${safeUsername}-${Date.now()}`;
+        const finalCardImages = cards.map((item) => item?.baseImage).filter(Boolean);
 
-        const hiddenReady = await waitForHiddenCaptureNodesReady(cardsToCapture.length);
-        if (!hiddenReady) {
-            setspinloading(false);
-            toast.error("Capture preview is not ready. Please try again.");
-            return;
-        }
-
-        for (let i = 0; i < cardsToCapture.length; i++) {
-            const item = cardsToCapture[i];
-            const captureNode = captureCardNodeRefs.current[i];
-            if (!captureNode) continue;
-
-            const safeCardType = (item?.editedCard || "card").replace(/[^a-zA-Z0-9_-]/g, "_");
-            const captured = await CaptureScreenshort({ current: captureNode }, null, null, {
-                fileName: `${safeCardType}-${Date.now()}-${i + 1}.png`,
-                shouldDownload: false,
-                outputWidth: 1308,
-                outputHeight: 1782,
-                borderInset: 8,
-            });
-
-            if (!captured?.dataUrl) continue;
-
-            try {
-                const saveRes = await fetch("/api/captured-cards", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        dataUrl: captured.dataUrl,
-                        fileName: `${safeCardType}-${i + 1}.png`,
-                        folderName: captureFolder,
-                    }),
-                });
-
-                const saveJson = await saveRes.json();
-                if (saveRes.ok && saveJson?.success && saveJson?.url) capturedCardImages.push(saveJson.url);
-                else capturedCardImages.push(captured.dataUrl);
-            } catch {
-                capturedCardImages.push(captured.dataUrl);
-            }
-        }
-
-        if (capturedCardImages.length === 0) {
-            setspinloading(false);
-            toast.error("Card image capture failed. Please try again.");
-            return;
-        }
-
-        setfinalCards(capturedCardImages);
+        setfinalCards(finalCardImages);
         clearCart();
 
         const hasJokerCard = cards.some((card) => card?.editedCard === "Joker_Card");
@@ -297,7 +217,7 @@ const ProductCustomizer = () => {
             productGalary: product?.images,
             productDescription: product?.description,
             FinalProduct: cards,
-            FinalProductImages: capturedCardImages,
+            FinalProductImages: finalCardImages,
             jokerAdded: hasJokerCard,
         };
 
@@ -652,17 +572,6 @@ const ProductCustomizer = () => {
                 <ToastContainer position="bottom-center" />
             </div>
 
-            <div className="fixed left-[-10000px] top-0 pointer-events-none">
-                {cards?.map((item, idx) => (
-                    <CardCapturePreview
-                        key={`capture-${idx}-${item?.editedCard || "card"}`}
-                        card={item}
-                        nodeRef={(node) => {
-                            captureCardNodeRefs.current[idx] = node;
-                        }}
-                    />
-                ))}
-            </div>
         </>
     );
 };

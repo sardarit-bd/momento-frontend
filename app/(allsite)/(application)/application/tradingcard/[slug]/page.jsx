@@ -162,8 +162,11 @@ export default function ProductCustomizer() {
 
     useEffect(() => {
         getBaseTrading(slug);
+    }, [slug]);
+
+    useEffect(() => {
         hanldeInputUpdater();
-    }, [slug, workingcard]);
+    }, [workingcard]);
 
 
 
@@ -350,6 +353,7 @@ export default function ProductCustomizer() {
                 <div className="grid grid-cols-10 grid-rows-10 h-full w-full mt-2 lg:mt-0 relative">
                     {/* Canvas column (middle) */}
                     <div className="col-span-10 row-span-9 lg:row-span-10 lg:col-span-6 flex items-center justify-center -translate-y-[35px] lg:-translate-y-[50px] w-screen lg:w-full z-40">
+                        <div className="flex flex-col items-center gap-3">
                         <div ref={previewCardNodeRef} className="border border-gray-200 rounded-md bg-white w-[255px] h-[370px] lg:w-[390px] lg:h-[570px] relative overflow-hidden">
                             {/* Uploaded images (zIndex:1) - draggable & resizable */}
                             {uploads.map((img) => (
@@ -461,6 +465,14 @@ export default function ProductCustomizer() {
                                 <div className="absolute inset-0 flex items-center justify-center text-gray-300">Preview area</div>
                             )}
                         </div>
+                        <button
+                            onClick={() => setworkingcard((prev) => (prev === "front" ? "back" : "front"))}
+                            className="relative z-[60] text-base lg:text-lg text-semibold text-white flex items-center gap-2 px-4 py-2 rounded-md justify-center cursor-pointer bg-sky-400 w-[255px] lg:w-[390px]"
+                        >
+                            <BsCreditCard2Back className="text-xl" />
+                            <span>{workingcard === "front" ? "Flip to Back" : "Flip to Front"}</span>
+                        </button>
+                        </div>
 
 
 
@@ -490,20 +502,6 @@ export default function ProductCustomizer() {
 
 
                         <div className="h-full lg:h-[83vh] overflow-y-scroll mt-2 space-y-4 pb-32 lg:pb-0">
-
-                            <div className="flex items-center justify-center gap-4 bg-gray-100 rounded-md p-4 mt-4 mb-4">
-                                <button onClick={() => { setworkingcard('front'); hanldeInputUpdater() }} className={`text-lg text-semibold text-white flex items-center gap-2 px-2 py-2 rounded-md w-full justify-center cursor-pointer ${workingcard === "front" ? "bg-sky-400" : "bg-gray-400"}`}>
-                                    <BsCreditCard2Back className="text-xl" />
-                                    <span>Front Side</span>
-                                </button>
-                                <button onClick={() => { setworkingcard('back'); hanldeInputUpdater() }} className={`text-lg text-semibold text-white flex items-center gap-2 px-2 py-2 rounded-md w-full justify-center cursor-pointer ${workingcard === "back" ? "bg-sky-400" : "bg-gray-400"}`}>
-                                    <BsCreditCard2Back className="text-xl" />
-                                    <span>Back Side</span>
-                                </button>
-
-                            </div>
-
-
 
                             {/* Front Base Card */}
                             {

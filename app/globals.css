@@ -221,6 +221,11 @@ input[type=number] {
   font-family: var(--font-FastSpeedDemo) !important;
 }
 
+.RamaGothicFont {
+  font-family: var(--font-RamaGothic) !important;
+  font-weight: 800 !important;
+}
+
 .text-stroke {
   -webkit-text-stroke: 0.5px #000;
 }

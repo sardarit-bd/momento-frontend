@@ -88,6 +88,17 @@ const AileronFont = localFont({
   variable: "--font-Aileron",
 });
 
+const RamaGothic = localFont({
+  src: [
+    {
+      path: "../public/font/Rama-Gothic.otf",
+      weight: "800",
+      style: "normal",
+    },
+  ],
+  variable: "--font-RamaGothic",
+});
+
 
 
 export const metadata = {
@@ -99,7 +110,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${bebas.variable} ${Brunson.variable} ${GustanBlack.variable} ${AileronFont.variable} ${FastSpeedDemo.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} ${bebas.variable} ${Brunson.variable} ${GustanBlack.variable} ${AileronFont.variable} ${FastSpeedDemo.variable} ${RamaGothic.variable} antialiased`}
       >
         {children}
       </body>

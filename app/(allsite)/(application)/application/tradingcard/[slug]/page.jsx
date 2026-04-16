@@ -429,7 +429,7 @@ export default function ProductCustomizer() {
 ...........................................................*/
 
 
-                                <div className="absolute top-0 left-0 w-full h-screen z-50 pointer-events-none">
+                                <div className="absolute top-0 left-0 w-full h-full z-50 pointer-events-none">
 
                                     {
                                         workingcard === "front" ? (

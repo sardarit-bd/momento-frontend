@@ -2,44 +2,37 @@
 import { BackOne, FrontFour, FrontOne, FrontThree, FrontTwo } from "@/app/componnent/TextOverlayer";
 import TradingCardApplicationSkelaton from "@/app/componnent/TradingCardApplicationSkelaton";
 import TradingCardSidebar from "@/app/componnent/TradingCardSidebar";
-import useTradingFinalPreview from "@/store/useTradingFinalPreview";
+import useCartStore from "@/store/useCartStore";
 import generateUserId from "@/utilis/helper/generateUserId";
 import { pdfGanarator } from "@/utilis/helper/pdfGanarator";
 import MakeGet from "@/utilis/requestrespose/get";
 import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { BsCreditCard2Back } from "react-icons/bs";
+import { BsArrowRepeat, BsCardText, BsCheckCircleFill, BsCreditCard2Back, BsCreditCard2Front, BsImage } from "react-icons/bs";
 import { CiCirclePlus } from "react-icons/ci";
 import { IoIosArrowDown } from "react-icons/io";
-import { TiTick } from "react-icons/ti";
 import { Rnd } from "react-rnd";
 import { toast, ToastContainer } from "react-toastify";
 import ViewCard from "../../../../../componnent/ViewCard";
 
-import BoxContentForTradingCard from "@/app/componnent/BoxPreview/BoxContentForTradingCard";
-import BoxPreview from "@/app/componnent/BoxPreview/BoxPreview";
 import CharactersCountComponent from "@/app/componnent/CharactersCountComponent";
-import useboxcartstore from "@/store/useboxcartstore";
 import useCardforTrading from "@/store/useCardforTrading";
+import captureNodeScreenshotForTranding from "@/utilis/helper/captureNodeScreenshotForTranding";
 import ImageResize from "@/utilis/helper/ImageResize";
 const fonts = ["Arial", "Poppins", "Times New Roman", "Courier New", "Comic Sans MS"];
 
 export default function ProductCustomizer() {
 
-    const boxref = useRef(null);
     const { slug } = useParams();
+    const customizationStorageKey = slug ? `tradingCustomization:${slug}` : null;
+    const hasHydratedFromStorage = useRef(false);
+    const canPersistCustomization = useRef(false);
 
     const previewCardNodeRef = useRef(null);
 
     const [smallconOpen, setsmallconOpen] = useState(false);
-
-
-
-    //for trading card boxs
-    const [boxTitle, setboxTitle] = useState('Pack Title');
-    const [created, setcreated] = useState("Created For");
-
+    const [sidebarTab, setSidebarTab] = useState("front");
 
 
     // replace these with real image URLs or keep as keys and map to your assets
@@ -64,8 +57,7 @@ export default function ProductCustomizer() {
     const [spinloading, setspinloading] = useState(false);
     const router = useRouter();
     const [doneloading, setdoneloading] = useState(false);
-    const { addToCart, clearCart } = useTradingFinalPreview();
-    const { boxs, setboxs } = useboxcartstore();
+    const { addToCart } = useCartStore();
 
 
 
@@ -92,9 +84,6 @@ export default function ProductCustomizer() {
     const [acarddatelimite, setacarddatelimite] = useState(10);
 
 
-    // for box preview open
-    const [BoxPreviewOpen, setboxPreviewOpen] = useState(false);
-
     // color state
     const [isblack, setisblack] = useState(false);
 
@@ -102,14 +91,54 @@ export default function ProductCustomizer() {
     const getBaseTrading = useCallback(async (slug) => {
         setfetchingDataLoading(true);
         const res = await MakeGet(`api/shop/${slug}`);
-        console.log(res);
+   
         setfrontImages(res?.data?.customizations?.trading_fronts);
         setbackImages(res?.data?.customizations?.trading_backs);
-        setBaseFront(res?.data?.customizations?.trading_fronts?.[0]?.image);
-        setBaseBack(res?.data?.customizations?.trading_backs?.[0]?.image);
         setfetchingData(res?.data);
+
+        const defaultFront = res?.data?.customizations?.trading_fronts?.[0]?.image || null;
+        const defaultBack = res?.data?.customizations?.trading_backs?.[0]?.image || null;
+
+        let restoredFromStorage = false;
+        if (customizationStorageKey) {
+            try {
+                const saved = localStorage.getItem(customizationStorageKey);
+                if (saved) {
+                    const parsed = JSON.parse(saved);
+                    setcardfinder(parsed?.cardfinder ?? 0);
+                    setBaseFront(parsed?.baseFront || defaultFront);
+                    setBaseBack(parsed?.baseBack || defaultBack);
+                    setUploads(Array.isArray(parsed?.uploads) ? parsed.uploads : []);
+                    setTexts(Array.isArray(parsed?.texts) ? parsed.texts : []);
+                    setworkingcard(parsed?.workingcard || "front");
+                    setisblack(Boolean(parsed?.isblack));
+
+                    setcardti(parsed?.content?.cardti ?? "Card Title");
+                    setcarddes(parsed?.content?.carddes ?? "Card Description");
+                    setname(parsed?.content?.name ?? "Attribute One");
+                    setname2(parsed?.content?.name2 ?? "Attribute Two");
+                    setname3(parsed?.content?.name3 ?? "Attribute Three");
+                    setlabelone(parsed?.content?.labelone ?? 69);
+                    setlabeltwo(parsed?.content?.labeltwo ?? 55);
+                    setlabelthree(parsed?.content?.labelthree ?? 78);
+                    setacarddate(parsed?.content?.acarddate ?? "CLASS OF 2026");
+
+                    if (Array.isArray(parsed?.cards)) setCards(parsed.cards);
+                    restoredFromStorage = true;
+                    hasHydratedFromStorage.current = true;
+                }
+            } catch (error) {
+                console.error("Failed to restore trading customization state:", error);
+            }
+        }
+
+        if (!restoredFromStorage) {
+            setBaseFront(defaultFront);
+            setBaseBack(defaultBack);
+        }
+        canPersistCustomization.current = true;
         setfetchingDataLoading(false);
-    })
+    }, [customizationStorageKey, setCards])
 
 
 
@@ -123,7 +152,7 @@ export default function ProductCustomizer() {
             setname('Attribute One');
             setname2('Attribute Two');
             setname3('Attribute Three');
-            setacarddate('CLASS OF 2025');
+            setacarddate('CLASS OF 2026');
 
             setcardtiltelimite(15);
             setcarddeslimite(95);
@@ -165,8 +194,81 @@ export default function ProductCustomizer() {
     }, [slug]);
 
     useEffect(() => {
-        hanldeInputUpdater();
+        hasHydratedFromStorage.current = false;
+        canPersistCustomization.current = false;
+    }, [slug]);
+
+    useEffect(() => {
+        if (!hasHydratedFromStorage.current) {
+            hanldeInputUpdater();
+            hasHydratedFromStorage.current = true;
+        }
     }, [workingcard]);
+
+    useEffect(() => {
+        if (!customizationStorageKey) return;
+        if (!canPersistCustomization.current) return;
+        try {
+            const previous = localStorage.getItem(customizationStorageKey);
+            const previousParsed = previous ? JSON.parse(previous) : null;
+            const snapshot = {
+                productId: fetchingData?.id,
+                productSlug: fetchingData?.slug || slug,
+                savedAt: Date.now(),
+                cardfinder,
+                baseFront,
+                baseBack,
+                uploads,
+                texts,
+                cards,
+                workingcard,
+                isblack,
+                content: {
+                    cardti,
+                    carddes,
+                    name,
+                    name2,
+                    name3,
+                    labelone,
+                    labeltwo,
+                    labelthree,
+                    acarddate,
+                },
+                previews: previousParsed?.previews || {},
+            };
+            localStorage.setItem(customizationStorageKey, JSON.stringify(snapshot));
+        } catch (error) {
+            console.error("Failed to persist trading customization state:", error);
+        }
+    }, [
+        customizationStorageKey,
+        slug,
+        fetchingData?.id,
+        fetchingData?.slug,
+        cardfinder,
+        baseFront,
+        baseBack,
+        uploads,
+        texts,
+        cards,
+        workingcard,
+        isblack,
+        cardti,
+        carddes,
+        name,
+        name2,
+        name3,
+        labelone,
+        labeltwo,
+        labelthree,
+        acarddate,
+    ]);
+
+    useEffect(() => {
+        if (sidebarTab === "front" || sidebarTab === "back") {
+            setSidebarTab(workingcard);
+        }
+    }, [workingcard, sidebarTab]);
 
 
 
@@ -179,7 +281,12 @@ export default function ProductCustomizer() {
         const f = e.target.files?.[0];
         const file = await ImageResize(f);
         if (!file) return;
-        const url = URL.createObjectURL(file);
+        const url = await new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onloadend = () => resolve(reader.result);
+            reader.onerror = reject;
+            reader.readAsDataURL(file);
+        });
 
 
 
@@ -272,37 +379,131 @@ export default function ProductCustomizer() {
 
     /******* Selected Layer Image Function ********/
     const goToFinalView = async () => {
+        const previewFallback = workingcard === "front" ? baseFront : baseBack;
+        const finalTradingCards = cards?.length > 0 ? cards : [previewFallback].filter(Boolean);
 
-
-        if (cards.length < 1) {
-            toast.warn('Click ‘Add Card’ to continue.');
+        if (!finalTradingCards?.length) {
+            toast.warn("Please select a base card first.");
             return;
         }
 
-        clearCart();
         setspinloading(true);
-        const product = {
-            id: generateUserId(),
-            productId: fetchingData?.id,
-            productSlug: fetchingData?.slug,
-            productName: fetchingData?.name,
-            productType: fetchingData?.type,
-            productUnitPrice: fetchingData?.offer_price > 0 ? fetchingData?.offer_price : fetchingData?.price,
-            productQuantity: 1,
-            productImage: fetchingData?.image,
-            productGalary: fetchingData?.images,
-            productDescription: fetchingData?.description,
-            FinalProduct: cards,
-            FinalPDf: await pdfGanarator(cards.concat(boxs))
-        };
+        try {
+            const waitForRender = () =>
+                new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
 
+            const toBase64DataUrl = async (src) => {
+                if (!src) return null;
+                if (typeof src === "string" && src.startsWith("data:image")) return src;
+                if (typeof src === "string" && /^(https?:)?\/\//.test(src)) {
+                    const parsed = new URL(src, window.location.origin);
+                    if (parsed.origin !== window.location.origin) return null;
+                }
 
-        addToCart(product);
+                try {
+                    const response = await fetch(src);
+                    const blob = await response.blob();
+                    return await new Promise((resolve, reject) => {
+                        const reader = new FileReader();
+                        reader.onloadend = () => resolve(reader.result);
+                        reader.onerror = reject;
+                        reader.readAsDataURL(blob);
+                    });
+                } catch {
+                    return null;
+                }
+            };
 
-        setTimeout(() => {
+            const printableSources = finalTradingCards
+                .map((item) => (typeof item === "string" ? item : item?.baseImage))
+                .filter(Boolean);
+
+            let finalPdf = null;
+            let previewFront = null;
+            let previewBack = null;
+            try {
+                const printableBase64 = (await Promise.all(printableSources.map(toBase64DataUrl))).filter(Boolean);
+                if (printableBase64.length > 0) {
+                    finalPdf = await pdfGanarator(printableBase64);
+                }
+            } catch {}
+
+            try {
+                const activeSide = workingcard;
+
+                setworkingcard("front");
+                await waitForRender();
+                previewFront = await captureNodeScreenshotForTranding(previewCardNodeRef.current, [], () => { });
+
+                setworkingcard("back");
+                await waitForRender();
+                previewBack = await captureNodeScreenshotForTranding(previewCardNodeRef.current, [], () => { });
+
+                setworkingcard(activeSide);
+                await waitForRender();
+            } catch (captureError) {
+                console.error("Preview capture failed for trading checkout item:", captureError);
+            }
+
+            const customizationSnapshot = {
+                productId: fetchingData?.id,
+                productSlug: fetchingData?.slug,
+                savedAt: Date.now(),
+                cardfinder,
+                baseFront,
+                baseBack,
+                uploads,
+                texts,
+                cards,
+                workingcard,
+                isblack,
+                content: {
+                    cardti,
+                    carddes,
+                    name,
+                    name2,
+                    name3,
+                    labelone,
+                    labeltwo,
+                    labelthree,
+                    acarddate,
+                },
+                previews: {
+                    front: previewFront,
+                    back: previewBack,
+                },
+            };
+
+            if (customizationStorageKey) {
+                localStorage.setItem(customizationStorageKey, JSON.stringify(customizationSnapshot));
+            }
+
+            const finalPreviewImages = [previewFront, previewBack].filter(Boolean);
+
+            const product = {
+                id: generateUserId(),
+                productId: fetchingData?.id,
+                productSlug: fetchingData?.slug,
+                productName: fetchingData?.name,
+                productType: fetchingData?.type,
+                productUnitPrice: fetchingData?.offer_price > 0 ? fetchingData?.offer_price : fetchingData?.price,
+                productQuantity: 1,
+                productImage: fetchingData?.image,
+                productGalary: fetchingData?.images,
+                productDescription: fetchingData?.description,
+                FinalProduct: finalTradingCards,
+                FinalProductImages: finalPreviewImages,
+                FinalPDf: finalPdf,
+                customizationStorageKey: customizationStorageKey || null,
+            };
+
+            addToCart(product);
+            router.push("/my-cart/checkout");
+        } catch (error) {
+            toast.error("Failed to prepare customized item for checkout.");
+        } finally {
             setspinloading(false);
-            router.push("/final/trading");
-        }, 900);
+        }
     };
     // end from here
 
@@ -339,7 +540,7 @@ export default function ProductCustomizer() {
     return (
         <div className="grid grid-cols-12 grid-rows-12 gap-0 lg:gap-2 h-screen w-screen fixed bg-gray-100">
             {/* Left Sidebar (kept simple as in your last snippet) */}
-            <div className="col-span-12 row-span-2 lg:row-span-12 lg:col-span-2 w-full h-full bg-white">
+            <div className="col-span-12 row-span-2 lg:row-span-12 lg:col-span-2 w-full h-full bg-white shadow-sm">
                 {/* replace this with <CardSidebar /> when available */}
                 <div className="w-full h-full">
 
@@ -354,97 +555,97 @@ export default function ProductCustomizer() {
                     {/* Canvas column (middle) */}
                     <div className="col-span-10 row-span-9 lg:row-span-10 lg:col-span-6 flex items-center justify-center -translate-y-[35px] lg:-translate-y-[50px] w-screen lg:w-full z-40">
                         <div className="flex flex-col items-center gap-3">
-                        <div ref={previewCardNodeRef} className="border border-gray-200 rounded-md bg-white w-[255px] h-[370px] lg:w-[390px] lg:h-[570px] relative overflow-hidden">
-                            {/* Uploaded images (zIndex:1) - draggable & resizable */}
-                            {uploads.map((img) => (
-                                <Rnd
+                            <div ref={previewCardNodeRef} className="border border-gray-200 rounded-xl bg-white w-[255px] h-[370px] lg:w-[390px] lg:h-[570px] relative overflow-hidden shadow-xl ring-1 ring-gray-100">
+                                {/* Uploaded images (zIndex:1) - draggable & resizable */}
+                                {uploads.map((img) => (
+                                    <Rnd
 
-                                    resizeHandleStyles={{
-                                        topLeft: { border: "3px solid #3b82f6", width: "10px", height: "10px", background: "white" },
-                                        topRight: { border: "3px solid #3b82f6", width: "10px", height: "10px", background: "white" },
-                                        bottomLeft: { border: "3px solid #3b82f6", width: "10px", height: "10px", background: "white" },
-                                        bottomRight: { border: "3px solid #3b82f6", width: "10px", height: "10px", background: "white" },
-                                    }}
-                                    style={{
-                                        border: activeText === img.id || activeImage === img?.id ? "2px dashed #3b82f6" : "none",
-                                        borderRadius: "4px",
-                                    }}
+                                        resizeHandleStyles={{
+                                            topLeft: { border: "3px solid #3b82f6", width: "10px", height: "10px", background: "white" },
+                                            topRight: { border: "3px solid #3b82f6", width: "10px", height: "10px", background: "white" },
+                                            bottomLeft: { border: "3px solid #3b82f6", width: "10px", height: "10px", background: "white" },
+                                            bottomRight: { border: "3px solid #3b82f6", width: "10px", height: "10px", background: "white" },
+                                        }}
+                                        style={{
+                                            border: activeText === img.id || activeImage === img?.id ? "2px dashed #3b82f6" : "none",
+                                            borderRadius: "4px",
+                                        }}
 
 
-                                    key={img.id}
-                                    bounds="parent"
-                                    size={{ width: "100%", height: "100%" }}
-                                    position={{ x: img.x, y: img.y }}
-                                    onDragStop={(_, d) => updateUploadPosition(img.id, d.x, d.y)}
-                                    onResizeStop={(_, __, ref, ___, pos) => {
-                                        updateUploadSize(img.id, parseInt(ref.style.width, 10), parseInt(ref.style.height, 10));
-                                        updateUploadPosition(img.id, pos.x, pos.y);
-                                    }}
-                                    onMouseDown={() => {
-                                        setActiveImage(img.id);
-                                        setActiveText(null);
-                                    }}
-                                    style={{ zIndex: 1 }}
-                                >
+                                        key={img.id}
+                                        bounds="parent"
+                                        size={{ width: "100%", height: "100%" }}
+                                        position={{ x: img.x, y: img.y }}
+                                        onDragStop={(_, d) => updateUploadPosition(img.id, d.x, d.y)}
+                                        onResizeStop={(_, __, ref, ___, pos) => {
+                                            updateUploadSize(img.id, parseInt(ref.style.width, 10), parseInt(ref.style.height, 10));
+                                            updateUploadPosition(img.id, pos.x, pos.y);
+                                        }}
+                                        onMouseDown={() => {
+                                            setActiveImage(img.id);
+                                            setActiveText(null);
+                                        }}
+                                        style={{ zIndex: 1 }}
+                                    >
+                                        <Image
+                                            width={1000}
+                                            height={1000}
+                                            src={img.url}
+                                            alt="upload"
+                                            className="w-full h-full object-cover"
+                                            draggable={false}
+                                        />
+                                    </Rnd>
+                                ))}
+
+                                {/* Front base (zIndex:2) */}
+                                {baseFront && workingcard === "front" && (
                                     <Image
+                                        src={baseFront}
                                         width={1000}
                                         height={1000}
-                                        src={img.url}
-                                        alt="upload"
-                                        className="w-full h-full object-cover"
-                                        draggable={false}
+                                        alt="front-base"
+                                        className="absolute inset-0 object-cover w-full h-full"
+                                        style={{ zIndex: 2, pointerEvents: "none" }}
                                     />
-                                </Rnd>
-                            ))}
+                                )}
 
-                            {/* Front base (zIndex:2) */}
-                            {baseFront && workingcard === "front" && (
-                                <Image
-                                    src={baseFront}
-                                    width={1000}
-                                    height={1000}
-                                    alt="front-base"
-                                    className="absolute inset-0 object-cover w-full h-full"
-                                    style={{ zIndex: 2, pointerEvents: "none" }}
-                                />
-                            )}
+                                {/* Back base (zIndex:2) */}
+                                {baseBack && workingcard === "back" && (
+                                    <Image
+                                        src={baseBack}
+                                        height={1000}
+                                        width={1000}
+                                        alt="back-base"
+                                        className="absolute inset-0 object-cover w-full h-full"
+                                        style={{ zIndex: 2, pointerEvents: "none" }}
+                                    />
+                                )}
 
-                            {/* Back base (zIndex:2) */}
-                            {baseBack && workingcard === "back" && (
-                                <Image
-                                    src={baseBack}
-                                    height={1000}
-                                    width={1000}
-                                    alt="back-base"
-                                    className="absolute inset-0 object-cover w-full h-full"
-                                    style={{ zIndex: 2, pointerEvents: "none" }}
-                                />
-                            )}
-
-                            {/* Text layers (zIndex:4) */}
+                                {/* Text layers (zIndex:4) */}
 
 
-                            {/* ......................................................
+                                {/* ......................................................
 
 ...........................................................*/
 
 
-                                <div className="absolute top-0 left-0 w-full h-full z-50 pointer-events-none">
+                                    <div className="absolute top-0 left-0 w-full h-full z-50 pointer-events-none">
 
-                                    {
-                                        workingcard === "front" ? (
-                                            <>
-                                                {cardfinder == 0 && <FrontOne cardti={cardti} carddes={carddes} name={name} name2={name2} name3={name3} acarddate={acarddate} labelone={labelone} labeltwo={labeltwo} labelthree={labelthree} />}
-                                                {cardfinder == 1 && <FrontTwo cardti={cardti} carddes={carddes} name={name} name2={name2} name3={name3} acarddate={acarddate} labelone={labelone} labeltwo={labeltwo} labelthree={labelthree} />}
-                                                {cardfinder == 2 && <FrontThree cardti={cardti} carddes={carddes} name={name} name2={name2} name3={name3} acarddate={acarddate} labelone={labelone} labeltwo={labeltwo} labelthree={labelthree} />}
-                                                {cardfinder == 3 && <FrontFour cardti={cardti} carddes={carddes} name={name} name2={name2} name3={name3} acarddate={acarddate} labelone={labelone} labeltwo={labeltwo} labelthree={labelthree} />}
-                                            </>
-                                        ) : (
-                                            <BackOne cardti={cardti} carddes={carddes} name={name} name2={name2} name3={name3} acarddate={acarddate} isblack={isblack} />
-                                        )
-                                    }
+                                        {
+                                            workingcard === "front" ? (
+                                                <>
+                                                    {cardfinder == 0 && <FrontOne cardti={cardti} carddes={carddes} name={name} name2={name2} name3={name3} acarddate={acarddate} labelone={labelone} labeltwo={labeltwo} labelthree={labelthree} />}
+                                                    {cardfinder == 1 && <FrontTwo cardti={cardti} carddes={carddes} name={name} name2={name2} name3={name3} acarddate={acarddate} labelone={labelone} labeltwo={labeltwo} labelthree={labelthree} />}
+                                                    {cardfinder == 2 && <FrontThree cardti={cardti} carddes={carddes} name={name} name2={name2} name3={name3} acarddate={acarddate} labelone={labelone} labeltwo={labeltwo} labelthree={labelthree} />}
+                                                    {cardfinder == 3 && <FrontFour cardti={cardti} carddes={carddes} name={name} name2={name2} name3={name3} acarddate={acarddate} labelone={labelone} labeltwo={labeltwo} labelthree={labelthree} />}
+                                                </>
+                                            ) : (
+                                                <BackOne cardti={cardti} carddes={carddes} name={name} name2={name2} name3={name3} acarddate={acarddate} isblack={isblack} />
+                                            )
+                                        }
 
-                                </div>
+                                    </div>
 
 
 
@@ -456,39 +657,28 @@ export default function ProductCustomizer() {
 
 
 
-                            {/* Text layers (zIndex:4) */}
+                                {/* Text layers (zIndex:4) */}
 
 
 
-                            {/* small helper overlay when nothing selected */}
-                            {!uploads.length && !baseFront && !baseBack && !texts.length && (
-                                <div className="absolute inset-0 flex items-center justify-center text-gray-300">Preview area</div>
-                            )}
+                                {/* small helper overlay when nothing selected */}
+                                {!uploads.length && !baseFront && !baseBack && !texts.length && (
+                                    <div className="absolute inset-0 flex items-center justify-center text-gray-300">Preview area</div>
+                                )}
+                            </div>
+                            <button
+                                onClick={() => setworkingcard((prev) => (prev === "front" ? "back" : "front"))}
+                                className="relative z-[60] text-base lg:text-lg text-semibold text-white flex items-center gap-2 px-4 py-2 rounded-lg justify-center cursor-pointer bg-sky-400 w-[255px] lg:w-[160px] shadow-md hover:shadow-lg transition-all duration-200"
+                            >
+                                <BsArrowRepeat className="text-xl" />
+                                <span>{workingcard === "front" ? "Flip to Back" : "Flip to Front"}</span>
+                            </button>
                         </div>
-                        <button
-                            onClick={() => setworkingcard((prev) => (prev === "front" ? "back" : "front"))}
-                            className="relative z-[60] text-base lg:text-lg text-semibold text-white flex items-center gap-2 px-4 py-2 rounded-md justify-center cursor-pointer bg-sky-400 w-[255px] lg:w-[390px]"
-                        >
-                            <BsCreditCard2Back className="text-xl" />
-                            <span>{workingcard === "front" ? "Flip to Back" : "Flip to Front"}</span>
-                        </button>
-                        </div>
-
-
-
-
-
-
-                        <BoxPreview boxref={boxref} bfor="trading" boxTitle={boxTitle} setboxTitle={setboxTitle} created={created} setcreated={setcreated} BoxPreviewOpen={BoxPreviewOpen} setboxPreviewOpen={setboxPreviewOpen}>
-                            <BoxContentForTradingCard boxref={boxref} boxTitle={boxTitle} created={created} />
-                        </BoxPreview>
-
-
 
                     </div>
 
                     {/* Right Controls column (inside the middle wrapper as your original) */}
-                    <div className={`absolute transition-all duration-300 ${smallconOpen ? "top-px" : "top-3/4 sm:top-2/3"} lg:static lg:block col-span-10 row-span-1 lg:row-span-10 lg:col-span-4 w-screen lg:w-full h-full bg-white border-t border-gray-300 lg:border-l lg:border-gray-200 px-2 md:px-6 lg:px-6 mt-2 lg:mt-0 shadow-2xl lg:shadow-sm rounded-t-4xl lg:rounded-none z-50`}>
+                    <div className={`absolute transition-all duration-300 ${smallconOpen ? "top-px" : "top-3/4 sm:top-2/3"} lg:static lg:block col-span-10 row-span-1 lg:row-span-10 lg:col-span-4 w-full max-w-full h-full bg-white border-t border-gray-300 lg:border-l lg:border-gray-200 px-2 md:px-6 lg:px-6 mt-2 lg:mt-0 shadow-2xl lg:shadow-md z-50 overflow-x-hidden`}>
 
 
                         <div className="w-full flex lg:hidden items-center justify-center">
@@ -501,196 +691,261 @@ export default function ProductCustomizer() {
 
 
 
-                        <div className="h-full lg:h-[83vh] overflow-y-scroll mt-2 space-y-4 pb-32 lg:pb-0">
-
-                            {/* Front Base Card */}
-                            {
-                                workingcard === "front" && <div>
-                                    <label className="block text-gray-700 mb-1">Front Base Card <span className="text-red-600 text-xl">*</span></label>
-                                    <div className="flex flex-wrap gap-2">
-                                        {frontImages?.map((img, idx) => (
-                                            <Image
-                                                key={idx}
-                                                src={img?.image}
-                                                width={1000}
-                                                height={1000}
-                                                alt={`front-${idx}`}
-                                                onClick={() => { setBaseFront(img?.image); setcardfinder(idx); }}
-                                                className={`w-16 h-20 cursor-pointer rounded ${baseFront === img?.image ? "border-5 p-1 border-sky-400" : "border-2 border-gray-200"}`}
-                                            />
-                                        ))}
-                                    </div>
+                        <div className="h-full lg:h-[83vh] overflow-y-scroll mt-2 pb-32 lg:pb-0">
+                            <div className="sticky top-0 z-20 bg-white border-b border-gray-200 backdrop-blur-sm">
+                                <div className="grid grid-cols-3">
+                                    <button
+                                        onClick={() => { setSidebarTab("front"); setworkingcard("front"); }}
+                                        className={`py-4 flex flex-col items-center justify-center gap-1 border-b-2 cursor-pointer transition-all duration-200 ${sidebarTab === "front" ? "border-gray-800 text-gray-900" : "border-transparent text-gray-500"}`}
+                                    >
+                                        <BsCreditCard2Front className="text-xl" />
+                                        <span className="text-sm font-semibold">Front</span>
+                                    </button>
+                                    <button
+                                        onClick={() => setSidebarTab("attributes")}
+                                        className={`py-4 flex flex-col items-center justify-center gap-1 border-b-2 cursor-pointer transition-all duration-200 ${sidebarTab === "attributes" ? "border-gray-800 text-gray-900" : "border-transparent text-gray-500"}`}
+                                    >
+                                        <BsCardText className="text-xl" />
+                                        <span className="text-sm font-semibold">Attributes</span>
+                                    </button>
+                                    <button
+                                        onClick={() => { setSidebarTab("back"); setworkingcard("back"); }}
+                                        className={`py-4 flex flex-col items-center justify-center gap-1 border-b-2 cursor-pointer transition-all duration-200 ${sidebarTab === "back" ? "border-gray-800 text-gray-900" : "border-transparent text-gray-500"}`}
+                                    >
+                                        <BsCreditCard2Back className="text-xl" />
+                                        <span className="text-sm font-semibold">Back</span>
+                                    </button>
                                 </div>
+                            </div>
 
-                            }
+                            <div className="space-y-4 pt-4">
 
-
-
-
-                            {/* Back Base Card */}
-                            {
-                                workingcard === "back" && <div>
-                                    <label className="block text-gray-700 mb-1">Back Base Card <span className="text-red-600 text-xl">*</span></label>
-                                    <div className="flex flex-wrap gap-2">
-                                        {backImages?.map((img, idx) => (
-                                            <Image
-                                                key={idx}
-                                                src={img?.image}
-                                                width={1000}
-                                                height={1000}
-                                                alt={`back-${idx}`}
-                                                onClick={() => setBaseBack(img?.image)}
-                                                className={`w-16 h-20 cursor-pointer rounded ${baseBack === img?.image ? "border-5 p-1 border-sky-400" : "border-2 border-gray-200"}`}
-                                            />
-                                        ))}
-                                    </div>
-                                </div>
-                            }
-
-                            {/* Upload Image */}
-                            <div className="my-6">
-                                <label className="block text-gray-700 mb-1">Upload Image <span className="text-red-600 text-xl">*</span> <span className="text-gray-500 bg-yellow-200 px-1.5 rounded-md text-xs">Height:334px & Width: 250px</span></label>
-                                <div className="flex gap-2 items-center">
-                                    <label className="" htmlFor="uploadImage">
-                                        <div className=" w-[80px] h-[80px] lg:w-[80px] lg:h-[80px] bg-gray-100 rounded-md flex items-center justify-center cursor-pointer">
-                                            <CiCirclePlus className="text-6xl text-gray-300" />
+                                {/* Front Base Card */}
+                                {
+                                    sidebarTab === "front" && <div className="rounded-2xl border border-slate-200 bg-gradient-to-b from-slate-50 to-white p-4 shadow-sm">
+                                        <div className="mb-3 flex items-center justify-between gap-2">
+                                            <label className="block text-gray-800 font-semibold">Front Base Card <span className="text-red-600 text-xl">*</span></label>
+                                            <span className="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-600">{frontImages?.length || 0} styles</span>
                                         </div>
 
+                                        <p className="text-xs text-slate-500 mb-3">Pick a premium frame style for the front of your trading card.</p>
+
+                                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                                            {frontImages?.map((img, idx) => {
+                                                const isSelected = baseFront === img?.image;
+                                                return (
+                                                    <button
+                                                        key={idx}
+                                                        onClick={() => { setBaseFront(img?.image); setcardfinder(idx); }}
+                                                        className={`relative overflow-hidden rounded-xl border transition-all duration-200 cursor-pointer ${isSelected
+                                                            ? "border-sky-500 ring-2 ring-sky-200 shadow-md"
+                                                            : "border-slate-200 hover:border-slate-300 hover:shadow-sm"
+                                                            }`}
+                                                        type="button"
+                                                        aria-label={`Select front base card ${idx + 1}`}
+                                                    >
+                                                        <Image
+                                                            src={img?.image}
+                                                            width={1000}
+                                                            height={1000}
+                                                            alt={`front-${idx}`}
+                                                            className="w-full aspect-[5/7] object-contain bg-slate-100"
+                                                        />
+                                                        {isSelected && (
+                                                            <div className="absolute top-1.5 right-1.5 rounded-full bg-white/95 p-1 shadow-sm">
+                                                                <BsCheckCircleFill className="text-sky-500 text-sm" />
+                                                            </div>
+                                                        )}
+                                                    </button>
+                                                );
+                                            })}
+                                        </div>
+                                    </div>
+
+                                }
+
+
+
+
+                                {/* Back Base Card */}
+                                {
+                                    sidebarTab === "back" && <div className="rounded-2xl border border-slate-200 bg-gradient-to-b from-slate-50 to-white p-4 shadow-sm">
+                                        <div className="mb-3 flex items-center justify-between gap-2">
+                                            <label className="block text-gray-800 font-semibold">Back Base Card <span className="text-red-600 text-xl">*</span></label>
+                                            <span className="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-600">{backImages?.length || 0} styles</span>
+                                        </div>
+
+                                        <p className="text-xs text-slate-500 mb-3">Choose the back design. Preview shows full card proportion.</p>
+
+                                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                                            {backImages?.map((img, idx) => {
+                                                const isSelected = baseBack === img?.image;
+                                                return (
+                                                    <button
+                                                        key={idx}
+                                                        onClick={() => setBaseBack(img?.image)}
+                                                        className={`relative overflow-hidden rounded-xl border transition-all duration-200 cursor-pointer ${isSelected
+                                                            ? "border-sky-500 ring-2 ring-sky-200 shadow-md"
+                                                            : "border-slate-200 hover:border-slate-300 hover:shadow-sm"
+                                                            }`}
+                                                        type="button"
+                                                        aria-label={`Select back base card ${idx + 1}`}
+                                                    >
+                                                        <Image
+                                                            src={img?.image}
+                                                            width={1000}
+                                                            height={1000}
+                                                            alt={`back-${idx}`}
+                                                            className="w-full aspect-[5/7] object-contain bg-slate-100"
+                                                        />
+                                                        {isSelected && (
+                                                            <div className="absolute top-1.5 right-1.5 rounded-full bg-white/95 p-1 shadow-sm">
+                                                                <BsCheckCircleFill className="text-sky-500 text-sm" />
+                                                            </div>
+                                                        )}
+                                                    </button>
+                                                );
+                                            })}
+                                        </div>
+                                    </div>
+                                }
+
+                                {/* Upload Image */}
+                                {sidebarTab === "front" && <div className="my-6 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+                                    <div className="mb-3 flex items-center justify-between">
+                                        <label className="block text-gray-800 font-semibold">Upload Image <span className="text-red-600 text-xl">*</span></label>
+                                        <span className="text-gray-600 bg-amber-100 px-2 py-1 rounded-md text-xs font-medium">Recommended: 250 x 334 px</span>
+                                    </div>
+
+                                    <label
+                                        htmlFor="uploadImage"
+                                        className="group flex cursor-pointer items-center gap-4 rounded-xl border-2 border-dashed border-slate-300 bg-slate-50/80 p-4 transition-all duration-200 hover:border-sky-400 hover:bg-sky-50"
+                                    >
+                                        <div className="flex h-16 w-16 items-center justify-center rounded-xl bg-white shadow-sm">
+                                            <CiCirclePlus className="text-5xl text-sky-400 group-hover:scale-105 transition-transform" />
+                                        </div>
+
+                                        <div className="flex-1 text-left">
+                                            <div className="text-sm font-semibold text-slate-700">Click to upload a photo</div>
+                                            <div className="text-xs text-slate-500">PNG, JPG or WEBP. After upload, drag and resize it on the card preview.</div>
+                                        </div>
+
+                                        <BsImage className="text-xl text-slate-400 hidden sm:block" />
                                     </label>
+
+                                    <div className="mt-3 rounded-lg bg-slate-100 px-3 py-2 text-sm text-slate-700">
+                                        {uploads?.length > 0
+                                            ? `Uploaded image${uploads?.length > 1 ? "s" : ""}: ${uploads?.length}. You can reposition it from the preview area.`
+                                            : "No image uploaded yet. Add one to personalize the front design."}
+                                    </div>
+
                                     {activeImage && (
-                                        <div className="space-y-2 text-gray-700">
-                                            <div className="text-sm font-medium">Image selected</div>
-                                            <div className="text-sm">You can drag / resize directly on canvas</div>
-                                        </div>
+                                        <div className="mt-2 text-xs text-emerald-700 font-medium">Image selected. You can drag and resize directly on canvas.</div>
                                     )}
+
                                     <input onChange={handleUpload} id="uploadImage" type="file" className="hidden" accept="image/*" />
-                                </div>
-                            </div>
-                            {/* text control start here */}
+                                </div>}
+                                {/* text control start here */}
 
-                            {/* Add Text */}
-                            <div>
-                                <div className="border border-gray-200 p-4 mb-4 rounded-lg">
-                                    <label className="block text-xl text-gray-700 mb-1">Text Editor </label>
+                                {/* Front Text Inputs moved to Attributes tab */}
 
-                                    {
-                                        workingcard == "back" && (
-                                            <div className="my-3">
-                                                <h3 className="text-gray-800">Text Color:</h3>
-                                                <div className="flex items-center gap-3 mt-2">
-                                                    <div onClick={() => { setisblack(false) }} className={`h-8 w-8 bg-gray-100 cursor-pointer flex items-center justify-center ${isblack ? "border border-gray-200" : "border-2 border-sky-400 "}`}>
-                                                        {!isblack && <TiTick className="text-sky-400 text-2xl" />}
+                                {/* Attribute Tab Controls */}
+                                {sidebarTab === "attributes" && <div className="space-y-4">
+                                    <div className="border border-gray-200 p-4 md:p-5 mb-4 rounded-xl bg-white shadow-sm ring-1 ring-gray-100">
+                                        <label className="block text-xl text-gray-700 mb-3 font-semibold">Text Editor </label>
+
+                                        <div className="w-full flex items-center gap-3 mb-3 rounded-lg p-1 transition-shadow duration-200 hover:shadow-sm">
+                                            <div className="w-full">
+                                                <label className="text-gray-500 mb-1 text-sm">Card Title: <span className="text-red-600 text-xl">*</span>
+                                                    <div className="relative">
+                                                        <CharactersCountComponent text={cardti} limit={cardtiltelimite} />
                                                     </div>
-                                                    <div onClick={() => { setisblack(true) }} className={`h-8 w-8 bg-black cursor-pointer flex items-center justify-center ${isblack ? "border-2 border-sky-400" : "border border-gray-200"}`}>
-                                                        {isblack && <TiTick className="text-white text-2xl" />}
-                                                    </div>
-                                                </div>
-
+                                                </label>
+                                                <input value={cardti} maxLength={cardtiltelimite} onChange={(e) => { setcardti(e.target.value) }} type="text" className="border border-gray-200 px-3 py-2 rounded-lg text-gray-600 outline-none w-full transition-all duration-200 focus:ring-2 focus:ring-gray-300 focus:border-gray-300" />
                                             </div>
-                                        )
-                                    }
-
-
-
-                                    <div className="w-full flex items-center gap-3 mb-3">
-                                        <div className="w-full">
-                                            <label className="text-gray-500 mb-1 text-sm">Card Title: <span className="text-red-600 text-xl">*</span>
-                                                <div className="relative">
-                                                    <CharactersCountComponent text={cardti} limit={cardtiltelimite} />
-                                                </div>
-                                            </label>
-                                            <input value={cardti} maxLength={cardtiltelimite} onChange={(e) => { setcardti(e.target.value) }} type="text" className="border border-gray-200 p-1 rounded-md text-gray-600 outline-none w-full" />
-
                                         </div>
-                                    </div>
-                                    <div className="w-full flex items-center gap-3 mb-3">
-                                        <div className="w-full">
-                                            <label className="text-gray-500 mb-1 text-sm">Card Descriptions: <span className="text-red-600 text-xl">*</span>
 
-                                                <div className="relative">
-                                                    <CharactersCountComponent text={carddes} limit={carddeslimite} />
-                                                </div>
-
-                                            </label>
-                                            <textarea maxLength={carddeslimite} value={carddes} onChange={(e) => { setcarddes(e.target.value) }} type="text" className="border border-gray-200 p-1 rounded-md text-gray-600 outline-none  w-full h-[90px]"></textarea>
-                                        </div>
-                                    </div>
-                                    <div className="w-full flex items-center gap-3 mb-3">
-                                        <div className="w-full">
-                                            <label className="text-gray-500 mb-1 text-sm">Attribute One Text: <span className="text-red-600 text-xl">*</span>
-                                                <div className="relative">
-                                                    <CharactersCountComponent text={name} limit={namelimite} />
-                                                </div>
-                                            </label>
-                                            <input value={name} maxLength={namelimite} onChange={(e) => { setname(e.target.value) }} type="text" className="border border-gray-300 p-1 rounded-md text-gray-600 outline-none  w-full" />
-                                        </div>
-                                    </div>
-                                    <div className="w-full flex items-center gap-3 mb-3">
-                                        <div className="w-full">
-                                            <label className="text-gray-500 mb-1 text-sm">Attribute Two: <span className="text-red-600 text-xl">*</span>
-                                                <div className="relative">
-                                                    <CharactersCountComponent text={name2} limit={name2limite} />
-                                                </div>
-                                            </label>
-                                            <input value={name2} maxLength={name2limite} onChange={(e) => { setname2(e.target.value) }} type="text" className="border border-gray-300 p-1 rounded-md text-gray-600 outline-none  w-full" />
-                                        </div>
-                                    </div>
-                                    <div className=" w-fullflex items-center gap-3 mb-3">
-                                        <div className="w-full">
-                                            <label className="text-gray-500 mb-1 text-sm">Attribute Three: <span className="text-red-600 text-xl">*</span>
-                                                <div className="relative">
-                                                    <CharactersCountComponent text={name3} limit={name3limite} />
-                                                </div>
-                                            </label>
-                                            <input value={name3} maxLength={name3limite} onChange={(e) => { setname3(e.target.value) }} type="text" className="border border-gray-300 p-1 rounded-md text-gray-600 outline-none  w-full" />
-                                        </div>
-                                    </div>
-
-                                    <div className="w-full flex items-center mb-3">
-                                        <div className="w-full flex flex-col">
-                                            <label className="text-gray-500 mb-1 text-sm">About Card Date: <span className="text-red-600 text-xl">*</span>
-                                                <div className="relative">
-                                                    <CharactersCountComponent text={acarddate} limit={acarddatelimite} />
-                                                </div>
-                                            </label>
-                                            <input value={acarddate} maxLength={acarddatelimite} onChange={(e) => { setacarddate(e.target.value) }} type="text" className="border border-gray-300 p-1 rounded-md text-gray-600 outline-none" />
-                                        </div>
-                                    </div>
-
-
-
-                                    {
-                                        workingcard === 'front' && (
-                                            <>
-
-                                                <div className="w-full flex items-center gap-3 mb-1">
-                                                    <div className="w-full">
-                                                        <label className="text-gray-500 mb-1 text-sm">Attribute One Label: <span className="text-red-600 text-xl">*</span></label>
-                                                        <input min={1} max={100} value={labelone} onChange={(e) => { setlabelone(e.target.value) }} type="range" className="border border-gray-300 rounded-md text-gray-600 outline-none  w-full cursor-pointer" />
+                                        <div className="w-full flex items-center gap-3 mb-3 rounded-lg p-1 transition-shadow duration-200 hover:shadow-sm">
+                                            <div className="w-full">
+                                                <label className="text-gray-500 mb-1 text-sm">Card Descriptions: <span className="text-red-600 text-xl">*</span>
+                                                    <div className="relative">
+                                                        <CharactersCountComponent text={carddes} limit={carddeslimite} />
                                                     </div>
-                                                </div>
-                                                <div className="w-full flex items-center gap-3 mb-1">
-                                                    <div className="w-full">
-                                                        <label className="text-gray-500 mb-1 text-sm">Attribute Two Label: <span className="text-red-600 text-xl">*</span></label>
-                                                        <input min={1} max={100} value={labeltwo} onChange={(e) => { setlabeltwo(e.target.value) }} type="range" className="border border-gray-300 rounded-md text-gray-600 outline-none  w-full cursor-pointer" />
+                                                </label>
+                                                <textarea maxLength={carddeslimite} value={carddes} onChange={(e) => { setcarddes(e.target.value) }} type="text" className="border border-gray-200 px-3 py-2 rounded-lg text-gray-600 outline-none w-full h-[90px] transition-all duration-200 focus:ring-2 focus:ring-gray-300 focus:border-gray-300"></textarea>
+                                            </div>
+                                        </div>
+
+                                        <div className="w-full flex items-center gap-3 mb-3 rounded-lg p-1 transition-shadow duration-200 hover:shadow-sm">
+                                            <div className="w-full">
+                                                <label className="text-gray-500 mb-1 text-sm">Attribute One Text: <span className="text-red-600 text-xl">*</span>
+                                                    <div className="relative">
+                                                        <CharactersCountComponent text={name} limit={namelimite} />
                                                     </div>
-                                                </div>
-                                                <div className="w-full flex items-center gap-3">
-                                                    <div className="w-full">
-                                                        <label className="text-gray-500 mb-1 text-sm">Attribute Three Label: <span className="text-red-600 text-xl">*</span></label>
-                                                        <input min={1} max={100} value={labelthree} onChange={(e) => { setlabelthree(e.target.value) }} type="range" className="border border-gray-300 rounded-md text-gray-600 outline-none  w-full cursor-pointer" />
+                                                </label>
+                                                <input value={name} maxLength={namelimite} onChange={(e) => { setname(e.target.value) }} type="text" className="border border-gray-300 px-3 py-2 rounded-lg text-gray-600 outline-none w-full transition-all duration-200 focus:ring-2 focus:ring-gray-300 focus:border-gray-300" />
+                                            </div>
+                                        </div>
+
+                                        <div className="w-full flex items-center gap-3 mb-3 rounded-lg p-1 transition-shadow duration-200 hover:shadow-sm">
+                                            <div className="w-full">
+                                                <label className="text-gray-500 mb-1 text-sm">Attribute Two: <span className="text-red-600 text-xl">*</span>
+                                                    <div className="relative">
+                                                        <CharactersCountComponent text={name2} limit={name2limite} />
                                                     </div>
-                                                </div>
-                                            </>
-                                        )
-                                    }
+                                                </label>
+                                                <input value={name2} maxLength={name2limite} onChange={(e) => { setname2(e.target.value) }} type="text" className="border border-gray-300 px-3 py-2 rounded-lg text-gray-600 outline-none w-full transition-all duration-200 focus:ring-2 focus:ring-gray-300 focus:border-gray-300" />
+                                            </div>
+                                        </div>
 
+                                        <div className="w-full flex items-center gap-3 mb-3 rounded-lg p-1 transition-shadow duration-200 hover:shadow-sm">
+                                            <div className="w-full">
+                                                <label className="text-gray-500 mb-1 text-sm">Attribute Three: <span className="text-red-600 text-xl">*</span>
+                                                    <div className="relative">
+                                                        <CharactersCountComponent text={name3} limit={name3limite} />
+                                                    </div>
+                                                </label>
+                                                <input value={name3} maxLength={name3limite} onChange={(e) => { setname3(e.target.value) }} type="text" className="border border-gray-300 px-3 py-2 rounded-lg text-gray-600 outline-none w-full transition-all duration-200 focus:ring-2 focus:ring-gray-300 focus:border-gray-300" />
+                                            </div>
+                                        </div>
 
+                                        <div className="w-full flex items-center mb-3 rounded-lg p-1 transition-shadow duration-200 hover:shadow-sm">
+                                            <div className="w-full flex flex-col">
+                                                <label className="text-gray-500 mb-1 text-sm">About Card Date: <span className="text-red-600 text-xl">*</span>
+                                                    <div className="relative">
+                                                        <CharactersCountComponent text={acarddate} limit={acarddatelimite} />
+                                                    </div>
+                                                </label>
+                                                <input value={acarddate} maxLength={acarddatelimite} onChange={(e) => { setacarddate(e.target.value) }} type="text" className="border border-gray-300 px-3 py-2 rounded-lg text-gray-600 outline-none transition-all duration-200 focus:ring-2 focus:ring-gray-300 focus:border-gray-300" />
+                                            </div>
+                                        </div>
+                                    </div>
 
+                                    <div className="border border-gray-200 p-4 md:p-5 mb-4 rounded-xl bg-white shadow-sm ring-1 ring-gray-100">
+                                        <label className="block text-xl text-gray-700 mb-3 font-semibold">Attribute Labels</label>
 
-                                </div>
+                                        <div className="w-full flex items-center gap-3 mb-2 rounded-lg p-1 transition-shadow duration-200 hover:shadow-sm">
+                                            <div className="w-full">
+                                                <label className="text-gray-500 mb-1 text-sm">Attribute One Label: <span className="text-red-600 text-xl">*</span></label>
+                                                <input min={1} max={100} value={labelone} onChange={(e) => { setlabelone(e.target.value) }} type="range" className="border border-gray-300 rounded-md text-gray-600 outline-none w-full cursor-pointer" />
+                                            </div>
+                                        </div>
+                                        <div className="w-full flex items-center gap-3 mb-2 rounded-lg p-1 transition-shadow duration-200 hover:shadow-sm">
+                                            <div className="w-full">
+                                                <label className="text-gray-500 mb-1 text-sm">Attribute Two Label: <span className="text-red-600 text-xl">*</span></label>
+                                                <input min={1} max={100} value={labeltwo} onChange={(e) => { setlabeltwo(e.target.value) }} type="range" className="border border-gray-300 rounded-md text-gray-600 outline-none w-full cursor-pointer" />
+                                            </div>
+                                        </div>
+                                        <div className="w-full flex items-center gap-3 rounded-lg p-1 transition-shadow duration-200 hover:shadow-sm">
+                                            <div className="w-full">
+                                                <label className="text-gray-500 mb-1 text-sm">Attribute Three Label: <span className="text-red-600 text-xl">*</span></label>
+                                                <input min={1} max={100} value={labelthree} onChange={(e) => { setlabelthree(e.target.value) }} type="range" className="border border-gray-300 rounded-md text-gray-600 outline-none w-full cursor-pointer" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>}
+                                {/* text control end here */}
                             </div>
-                            {/* text control end here */}
 
 
                         </div>

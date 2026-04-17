@@ -1,3 +1,5 @@
+import GradientText from "./GradientText";
+
 export const FrontOne = ({ cardti, carddes, name, name2, name3, acarddate, labelone, labeltwo, labelthree }) => {
     const currentYear = new Date().getFullYear();
     return (
@@ -33,7 +35,7 @@ export const FrontOne = ({ cardti, carddes, name, name2, name3, acarddate, label
             </div>
 
             <div className="absolute right-[40px] bottom-[60px] z-50 w-[115px] lg:w-[180px] text-right">
-                <span className="block text-white uppercase text-xs lg:text-4xl RamaGothicFont font-bold leading-tight">{cardti}</span>
+                <span className="block uppercase text-xs lg:text-4xl RamaGothicFont font-bold leading-tight TradingCardTitleMetal">{cardti}</span>
                 <span className="block text-[#5ba2d7] RamaGothicFont font-bold lg:font-extrabold text-[10px] lg:text-lg tracking-tighter leading-tight mt-1">{acarddate}</span>
             </div>
             <span className="absolute bottom-[33px] left-1/2 -translate-x-1/2 z-50 text-[8px] lg:text-[10px] text-[#1f1f1f] BrunsonFont tracking-wide text-center whitespace-nowrap">

@@ -8,7 +8,7 @@ const ViewCard = ({ isLoading, goToFinalView, smallconOpen }) => {
                 {
                     isLoading && <SpinLoader />
                 }
-                <span className="hidden lg:block font-semibold">View All Card</span>
+                <span className="hidden lg:block font-semibold">Continue</span>
                 {!isLoading && <FaArrowRight className="text-2xl lg:text-xl" />}
             </button>
         </div>

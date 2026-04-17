@@ -21,6 +21,7 @@ const CARD_STEPS = [
     { type: "Queen_Card", label: "Queen", icon: GiCardQueenClubs },
     { type: "Jeck_Card", label: "Jack", icon: GiCardJackClubs },
 ];
+const JOKER_STEP = { type: "Joker_Card", label: "Joker", icon: GiCardJoker };
 
 const CARD_FLOW = CARD_STEPS.map((step) => step.type);
 const MAX_CUSTOMIZABLE_CARDS = 5;
@@ -312,6 +313,7 @@ const ProductCustomizer = () => {
     };
 
     const hasJokerCard = cards.some((card) => card?.editedCard === "Joker_Card");
+    const visibleSteps = hasJokerCard ? [...CARD_STEPS, JOKER_STEP] : CARD_STEPS;
     const doneButtonLabel = doneloading || spinloading ? "Loading..." : hasJokerCard ? "View All Card" : "Next Card";
 
     const handleStepClick = (stepType) => {
@@ -434,7 +436,7 @@ const ProductCustomizer = () => {
                             <div className="mx-auto w-full max-w-[980px]">
                                 {/* 2. Changed inner container to a flex row that manages lines cleanly */}
                                 <div className="flex w-full items-start justify-between">
-                            {CARD_STEPS.map((step, index) => {
+                            {visibleSteps.map((step, index) => {
                                 const Icon = step.icon;
                                 const isActive = activeType === step.type;
                                 const isCompleted = cards.some((card) => card?.editedCard === step.type) && !isActive;
@@ -464,7 +466,7 @@ const ProductCustomizer = () => {
                                         </button>
 
                                         {/* Flexible Connecting Line */}
-                                        {index !== CARD_STEPS.length - 1 && (
+                                        {index !== visibleSteps.length - 1 && (
                                             <div
                                                 className={`mt-5 h-[2px] flex-1 mx-2 md:mx-3 md:mt-6 ${
                                                     isCompleted ? "bg-[#3CA9FF]" : "bg-[#B8E6FE]"

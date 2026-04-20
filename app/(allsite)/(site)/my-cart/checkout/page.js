@@ -13,6 +13,8 @@ import "react-toastify/dist/ReactToastify.css";
 const inputStyle =
   "w-full bg-[#F3F4F6] text-gray-900 placeholder-gray-500 px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-400 transition-all text-sm border border-transparent";
 
+const deckPreviewLayers = ["dresses", "skin_tones", "hairs", "crowns", "beards", "eyes", "mouths", "noses"];
+
 export default function CheckoutPage() {
   const id = getId();
   const token = getCookie();
@@ -72,6 +74,26 @@ export default function CheckoutPage() {
     }
 
     return item?.productImage ? [item.productImage] : [];
+  };
+
+  const isDeckCustomizedCard = (card) => {
+    return Boolean(
+      card &&
+      typeof card === "object" &&
+      card.baseImage &&
+      card.selectedLayers &&
+      typeof card.selectedLayers === "object"
+    );
+  };
+
+  const getItemPreviewCards = (item) => {
+    if (Array.isArray(item?.FinalProduct) && item.FinalProduct.some(isDeckCustomizedCard)) {
+      return item.FinalProduct
+        .filter(isDeckCustomizedCard)
+        .map((card) => ({ type: "deck", card }));
+    }
+
+    return getItemPreviewImages(item).map((src) => ({ type: "image", src }));
   };
 
   // Calculations
@@ -228,20 +250,50 @@ export default function CheckoutPage() {
                 <div className="text-gray-500 text-sm py-4">Your cart is empty</div>
               ) : (
                 cart.map((item, idx) => {
-                  const previewImages = getItemPreviewImages(item);
+                  const previewCards = getItemPreviewCards(item);
+                  const hasManyCards = previewCards.length > 2;
                   return (
                   <div key={idx} className="flex flex-col sm:flex-row gap-4 sm:items-center">
-                    <div className="flex gap-2">
-                      {[previewImages[0], previewImages[1]].filter(Boolean).map((img, imageIndex) => (
-                        <div key={imageIndex} className="w-[88px] h-[123px] sm:w-24 sm:h-32 md:w-28 md:h-40 bg-gray-100 rounded-lg border border-gray-200 overflow-hidden relative">
-                          <img
-                            src={img}
-                            alt={`${item?.productName || "Product"} preview ${imageIndex + 1}`}
-                            className="w-full h-full object-cover bg-white"
-                          />
+                    <div className={`${hasManyCards ? "grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5" : "flex"} gap-2`}>
+                      {previewCards.map((previewCard, imageIndex) => (
+                        <div
+                          key={imageIndex}
+                          className={`${hasManyCards ? "w-[68px] h-[96px] sm:w-[76px] sm:h-[108px] md:w-[82px] md:h-[116px]" : "w-[88px] h-[123px] sm:w-24 sm:h-32 md:w-28 md:h-40"} bg-gray-100 rounded-lg border border-gray-200 overflow-hidden relative`}
+                        >
+                          {previewCard.type === "deck" ? (
+                            <div className="relative w-full h-full bg-white">
+                              <img
+                                src={previewCard.card.baseImage}
+                                alt={`${item?.productName || "Product"} customized card ${imageIndex + 1}`}
+                                className="w-full h-full object-cover bg-white"
+                              />
+                              {deckPreviewLayers.map((layer) => (
+                                previewCard.card?.selectedLayers?.[layer] ? (
+                                  <div key={`${imageIndex}-${layer}`}>
+                                    <img
+                                      src={previewCard.card.selectedLayers[layer]}
+                                      alt={`${layer} top`}
+                                      className="absolute left-1/2 -translate-x-1/2 top-[8%] w-[64%] h-[43%] object-contain"
+                                    />
+                                    <img
+                                      src={previewCard.card.selectedLayers[layer]}
+                                      alt={`${layer} bottom`}
+                                      className="absolute left-1/2 -translate-x-1/2 bottom-[8%] w-[64%] h-[43%] object-contain scale-y-[-1]"
+                                    />
+                                  </div>
+                                ) : null
+                              ))}
+                            </div>
+                          ) : (
+                            <img
+                              src={previewCard.src}
+                              alt={`${item?.productName || "Product"} preview ${imageIndex + 1}`}
+                              className="w-full h-full object-cover bg-white"
+                            />
+                          )}
                         </div>
                       ))}
-                      {previewImages.length === 0 && (
+                      {previewCards.length === 0 && (
                         <div className="w-[88px] h-[123px] sm:w-24 sm:h-32 md:w-28 md:h-40 bg-gray-100 rounded-lg border border-gray-200 overflow-hidden relative flex items-center justify-center text-gray-300">
                           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
                         </div>
@@ -250,8 +302,8 @@ export default function CheckoutPage() {
                     <div className="flex-1">
                        <p className="text-sm font-medium">{item.productName}</p>
                        <p className="text-xs text-gray-500">Qty: {item.productQuantity}</p>
-                       {previewImages.length > 1 && (
-                        <p className="text-xs text-gray-500 mt-0.5">{previewImages.length} customized cards</p>
+                       {previewCards.length > 1 && (
+                        <p className="text-xs text-gray-500 mt-0.5">{previewCards.length} customized cards</p>
                        )}
                     </div>
                   </div>
@@ -271,67 +323,6 @@ export default function CheckoutPage() {
               <div className="flex justify-between font-bold text-lg text-gray-900 pt-2">
                 <span>Total</span>
                 <span>${total.toFixed(2)}</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Card 2: What's Included */}
-          <div className="bg-sky-50 rounded-2xl p-4 sm:p-6 shadow-[0_2px_10px_rgba(0,0,0,0.02)] border border-sky-100">
-            <h3 className="text-sky-600 font-semibold mb-4">What's Included:</h3>
-            <ul className="space-y-3 text-sm text-gray-700">
-              {[
-                "High-resolution digital files",
-                "Print-ready formats (PDF, PNG)",
-                "1 custom portrait cards",
-                "Instant download after purchase",
-                "Lifetime access to your designs"
-              ].map((text, i) => (
-                <li key={i} className="flex items-center gap-2.5">
-                  <svg className="text-sky-600" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                  {text}
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Card 3: Finalize Your Deck */}
-          <div className="bg-white rounded-2xl p-4 sm:p-6 shadow-[0_2px_10px_rgba(0,0,0,0.02)] border border-gray-100">
-            <h2 className="text-lg font-bold mb-1">Finalize Your Deck</h2>
-            <p className="text-sm text-gray-500 mb-5">Make any final adjustments before checkout</p>
-            
-            <div className="space-y-3">
-              {/* Option 1 */}
-              <div 
-                onClick={() => setDeckFinish('prism')}
-                className={`flex items-center justify-between p-4 rounded-xl border cursor-pointer transition-all ${deckFinish === 'prism' ? 'border-sky-500 bg-sky-50/40' : 'border-gray-200 hover:border-sky-300'}`}
-              >
-                <div className="flex items-center gap-3">
-                  <div className="w-5 h-5 rounded flex items-center justify-center bg-[#2D3748]">
-                     <svg className="text-white" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
-                  </div>
-                  <div>
-                    <p className="font-semibold text-sm">Prism Foil</p>
-                    <p className="text-xs text-gray-500">Reflective foil finish for a premium collectible look</p>
-                  </div>
-                </div>
-                <span className="text-sky-600 text-sm font-medium">+$0.00</span>
-              </div>
-
-              {/* Option 2 */}
-              <div 
-                onClick={() => setDeckFinish('premium')}
-                className={`flex items-center justify-between p-4 rounded-xl border cursor-pointer transition-all ${deckFinish === 'premium' ? 'border-sky-500 bg-sky-50/40' : 'border-gray-200 hover:border-sky-300'}`}
-              >
-                <div className="flex items-center gap-3">
-                  <div className="w-5 h-5 rounded flex items-center justify-center bg-[#4A5568]">
-                    <svg className="text-white" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>
-                  </div>
-                  <div>
-                    <p className="font-semibold text-sm">Premium Finish</p>
-                    <p className="text-xs text-gray-500">Enhanced quality and feel</p>
-                  </div>
-                </div>
-                <span className="text-sky-600 text-sm font-medium">+$0.00</span>
               </div>
             </div>
           </div>

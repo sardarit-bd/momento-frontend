@@ -9,7 +9,7 @@ import MakeGet from "@/utilis/requestrespose/get";
 import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { BsArrowRepeat, BsCardText, BsCheckCircleFill, BsCreditCard2Back, BsCreditCard2Front, BsImage } from "react-icons/bs";
+import { BsArrowRepeat, BsCardText, BsCheckCircleFill, BsImage, BsSuitSpade, BsSuitSpadeFill } from "react-icons/bs";
 import { CiCirclePlus } from "react-icons/ci";
 import { IoIosArrowDown } from "react-icons/io";
 import { Rnd } from "react-rnd";
@@ -22,6 +22,27 @@ import captureNodeScreenshotForTranding from "@/utilis/helper/captureNodeScreens
 import ImageResize from "@/utilis/helper/ImageResize";
 const fonts = ["Arial", "Poppins", "Times New Roman", "Courier New", "Comic Sans MS"];
 
+const cardTypeOptions = [
+    { value: "graduation", label: "Graduation", icon: "🎓" },
+    { value: "wedding", label: "Wedding", icon: "💍" },
+    { value: "birthday", label: "Birthday", icon: "🎂" },
+    { value: "achievement", label: "Achievement", icon: "🏆" },
+    { value: "memory", label: "Memory", icon: "📷" },
+    { value: "celebration", label: "Celebration", icon: "🎉" },
+];
+
+const attributeIconOptions = [
+    "⚡", "🔥", "💪", "🎯", "❤️", "⭐", "🌟", "✨",
+    "🏆", "🎓", "💼", "🎨", "🎵", "⚽", "🏀", "🎮",
+    "📚", "✍️", "🗣️", "👥", "🌍", "💡", "💎", "🎭",
+    "🍕", "☕", "🌮", "🍔", "🎸", "🎤", "📷", "🎬",
+];
+
+const defaultBackHighlights = [
+    { id: 1, icon: "⚡", text: "Always brings energy to the room" },
+    { id: 2, icon: "🎯", text: "Master of organization" },
+];
+
 export default function ProductCustomizer() {
 
     const { slug } = useParams();
@@ -33,6 +54,7 @@ export default function ProductCustomizer() {
 
     const [smallconOpen, setsmallconOpen] = useState(false);
     const [sidebarTab, setSidebarTab] = useState("front");
+    const [isCardTypeOpen, setIsCardTypeOpen] = useState(false);
 
 
     // replace these with real image URLs or keep as keys and map to your assets
@@ -71,6 +93,18 @@ export default function ProductCustomizer() {
     const [labeltwo, setlabeltwo] = useState(55);
     const [labelthree, setlabelthree] = useState(78);
     const [acarddate, setacarddate] = useState('CLASS OF 2025');
+    const [cardType, setCardType] = useState("graduation");
+    const [attrIconOne, setAttrIconOne] = useState("⚡");
+    const [attrIconTwo, setAttrIconTwo] = useState("🔥");
+    const [attrIconThree, setAttrIconThree] = useState("💪");
+    const [activeIconPicker, setActiveIconPicker] = useState(null);
+    const [backDate, setBackDate] = useState("");
+    const [backDescription, setBackDescription] = useState("");
+    const [backHighlightsTitle, setBackHighlightsTitle] = useState("Highlights");
+    const [backHighlights, setBackHighlights] = useState(defaultBackHighlights);
+    const [backLegacyTagline, setBackLegacyTagline] = useState("A moment captured forever");
+    const [backLegacyText, setBackLegacyText] = useState("This card celebrates a special person and a special time. May it remind you of all the great memories we've shared.");
+    const [activeBackHighlightPicker, setActiveBackHighlightPicker] = useState(null);
 
     const [cardfinder, setcardfinder] = useState(0);
 
@@ -122,6 +156,17 @@ export default function ProductCustomizer() {
                     setlabeltwo(parsed?.content?.labeltwo ?? 55);
                     setlabelthree(parsed?.content?.labelthree ?? 78);
                     setacarddate(parsed?.content?.acarddate ?? "CLASS OF 2026");
+                    setCardType(parsed?.content?.cardType ?? "graduation");
+                    setAttrIconOne(parsed?.content?.attrIconOne ?? "⚡");
+                    setAttrIconTwo(parsed?.content?.attrIconTwo ?? "🔥");
+                    setAttrIconThree(parsed?.content?.attrIconThree ?? "💪");
+                    setBackDate(parsed?.content?.backDate ?? "");
+                    setBackDescription(parsed?.content?.backDescription ?? "");
+                    setBackHighlightsTitle(parsed?.content?.backHighlightsTitle ?? "Highlights");
+                    setBackLegacyTagline(parsed?.content?.backLegacyTagline ?? "A moment captured forever");
+                    setBackLegacyText(parsed?.content?.backLegacyText ?? "This card celebrates a special person and a special time. May it remind you of all the great memories we've shared.");
+                    const restoredHighlights = Array.isArray(parsed?.content?.backHighlights) ? parsed.content.backHighlights.slice(0, 6) : defaultBackHighlights;
+                    setBackHighlights(restoredHighlights.length >= 2 ? restoredHighlights : defaultBackHighlights);
 
                     if (Array.isArray(parsed?.cards)) setCards(parsed.cards);
                     restoredFromStorage = true;
@@ -152,6 +197,9 @@ export default function ProductCustomizer() {
             setname('Attribute One');
             setname2('Attribute Two');
             setname3('Attribute Three');
+            setAttrIconOne("⚡");
+            setAttrIconTwo("🔥");
+            setAttrIconThree("💪");
             setacarddate('CLASS OF 2026');
 
             setcardtiltelimite(15);
@@ -170,6 +218,9 @@ export default function ProductCustomizer() {
             setname('Achievements');
             setname2('Lorem Ipsum 10, This Momento card Customization One of the best Placeform');
             setname3('Awards');
+            setAttrIconOne("🏆");
+            setAttrIconTwo("🎯");
+            setAttrIconThree("💎");
             setacarddate('Lorem Ipsum 10, This Momento card Customization One of the best Placeform');
 
 
@@ -233,6 +284,16 @@ export default function ProductCustomizer() {
                     labeltwo,
                     labelthree,
                     acarddate,
+                    cardType,
+                    attrIconOne,
+                    attrIconTwo,
+                    attrIconThree,
+                    backDate,
+                    backDescription,
+                    backHighlightsTitle,
+                    backHighlights,
+                    backLegacyTagline,
+                    backLegacyText,
                 },
                 previews: previousParsed?.previews || {},
             };
@@ -262,6 +323,16 @@ export default function ProductCustomizer() {
         labeltwo,
         labelthree,
         acarddate,
+        cardType,
+        attrIconOne,
+        attrIconTwo,
+        attrIconThree,
+        backDate,
+        backDescription,
+        backHighlightsTitle,
+        backHighlights,
+        backLegacyTagline,
+        backLegacyText,
     ]);
 
     useEffect(() => {
@@ -467,6 +538,16 @@ export default function ProductCustomizer() {
                     labeltwo,
                     labelthree,
                     acarddate,
+                    cardType,
+                    attrIconOne,
+                    attrIconTwo,
+                    attrIconThree,
+                    backDate,
+                    backDescription,
+                    backHighlightsTitle,
+                    backHighlights,
+                    backLegacyTagline,
+                    backLegacyText,
                 },
                 previews: {
                     front: previewFront,
@@ -529,6 +610,50 @@ export default function ProductCustomizer() {
             setdoneloading(false);
         }, [600])
     }
+
+    const displayAttributeOne = `${attrIconOne} ${name}`.trim();
+    const displayAttributeTwo = `${attrIconTwo} ${name2}`.trim();
+    const displayAttributeThree = `${attrIconThree} ${name3}`.trim();
+    const backHighlightsText = backHighlights
+        .map((item) => `${item.icon} ${item.text}`.trim())
+        .filter((item) => item && item !== "⚡" && item !== "🎯" && item !== "⭐");
+    const backDateDisplay = backDate
+        ? new Date(backDate).toLocaleDateString("en-US", { month: "2-digit", day: "2-digit", year: "numeric" })
+        : "Memory Card";
+    const getSliderTrackStyle = (value) => {
+        const numericValue = Number(value) || 0;
+        return {
+            background: `linear-gradient(90deg, #10b981 0%, #10b981 ${numericValue}%, #e5e7eb ${numericValue}%, #e5e7eb 100%)`,
+        };
+    };
+
+    const addBackHighlight = () => {
+        if (backHighlights.length >= 6) {
+            toast.warn("Maximum 6 highlights allowed.");
+            return;
+        }
+        setBackHighlights((prev) => [
+            ...prev,
+            { id: Date.now(), icon: "⭐", text: "" },
+        ]);
+    };
+
+    const removeBackHighlight = (id) => {
+        if (backHighlights.length <= 2) {
+            toast.warn("At least 2 highlights are required.");
+            return;
+        }
+        setBackHighlights((prev) => prev.filter((item) => item.id !== id));
+    };
+
+    const updateBackHighlightText = (id, text) => {
+        setBackHighlights((prev) => prev.map((item) => (item.id === id ? { ...item, text } : item)));
+    };
+
+    const updateBackHighlightIcon = (id, icon) => {
+        setBackHighlights((prev) => prev.map((item) => (item.id === id ? { ...item, icon } : item)));
+        setActiveBackHighlightPicker(null);
+    };
 
 
 
@@ -635,13 +760,22 @@ export default function ProductCustomizer() {
                                         {
                                             workingcard === "front" ? (
                                                 <>
-                                                    {cardfinder == 0 && <FrontOne cardti={cardti} carddes={carddes} name={name} name2={name2} name3={name3} acarddate={acarddate} labelone={labelone} labeltwo={labeltwo} labelthree={labelthree} />}
-                                                    {cardfinder == 1 && <FrontTwo cardti={cardti} carddes={carddes} name={name} name2={name2} name3={name3} acarddate={acarddate} labelone={labelone} labeltwo={labeltwo} labelthree={labelthree} />}
-                                                    {cardfinder == 2 && <FrontThree cardti={cardti} carddes={carddes} name={name} name2={name2} name3={name3} acarddate={acarddate} labelone={labelone} labeltwo={labeltwo} labelthree={labelthree} />}
-                                                    {cardfinder == 3 && <FrontFour cardti={cardti} carddes={carddes} name={name} name2={name2} name3={name3} acarddate={acarddate} labelone={labelone} labeltwo={labeltwo} labelthree={labelthree} />}
+                                                    {cardfinder == 0 && <FrontOne cardti={cardti} carddes={carddes} name={displayAttributeOne} name2={displayAttributeTwo} name3={displayAttributeThree} acarddate={acarddate} labelone={labelone} labeltwo={labeltwo} labelthree={labelthree} />}
+                                                    {cardfinder == 1 && <FrontTwo cardti={cardti} carddes={carddes} name={displayAttributeOne} name2={displayAttributeTwo} name3={displayAttributeThree} acarddate={acarddate} labelone={labelone} labeltwo={labeltwo} labelthree={labelthree} />}
+                                                    {cardfinder == 2 && <FrontThree cardti={cardti} carddes={carddes} name={displayAttributeOne} name2={displayAttributeTwo} name3={displayAttributeThree} acarddate={acarddate} labelone={labelone} labeltwo={labeltwo} labelthree={labelthree} />}
+                                                    {cardfinder == 3 && <FrontFour cardti={cardti} carddes={carddes} name={displayAttributeOne} name2={displayAttributeTwo} name3={displayAttributeThree} acarddate={acarddate} labelone={labelone} labeltwo={labeltwo} labelthree={labelthree} />}
                                                 </>
                                             ) : (
-                                                <BackOne cardti={cardti} carddes={carddes} name={name} name2={name2} name3={name3} acarddate={acarddate} isblack={isblack} />
+                                                <BackOne
+                                                    cardti={backDateDisplay}
+                                                    carddes={backDescription || "Add a brief description..."}
+                                                    name={backHighlightsTitle || "Highlights"}
+                                                    name2={backHighlightsText[0] || "⚡ Highlight one"}
+                                                    name3={backLegacyTagline || "Legacy Tagline"}
+                                                    acarddate={backLegacyText || "Legacy text"}
+                                                    isblack={isblack}
+                                                    highlights={backHighlightsText}
+                                                />
                                             )
                                         }
 
@@ -698,7 +832,7 @@ export default function ProductCustomizer() {
                                         onClick={() => { setSidebarTab("front"); setworkingcard("front"); }}
                                         className={`py-4 flex flex-col items-center justify-center gap-1 border-b-2 cursor-pointer transition-all duration-200 ${sidebarTab === "front" ? "border-gray-800 text-gray-900" : "border-transparent text-gray-500"}`}
                                     >
-                                        <BsCreditCard2Front className="text-xl" />
+                                        <BsSuitSpadeFill className="text-xl" />
                                         <span className="text-sm font-semibold">Front</span>
                                     </button>
                                     <button
@@ -712,7 +846,7 @@ export default function ProductCustomizer() {
                                         onClick={() => { setSidebarTab("back"); setworkingcard("back"); }}
                                         className={`py-4 flex flex-col items-center justify-center gap-1 border-b-2 cursor-pointer transition-all duration-200 ${sidebarTab === "back" ? "border-gray-800 text-gray-900" : "border-transparent text-gray-500"}`}
                                     >
-                                        <BsCreditCard2Back className="text-xl" />
+                                        <BsSuitSpade className="text-xl" />
                                         <span className="text-sm font-semibold">Back</span>
                                     </button>
                                 </div>
@@ -722,22 +856,22 @@ export default function ProductCustomizer() {
 
                                 {/* Front Base Card */}
                                 {
-                                    sidebarTab === "front" && <div className="rounded-2xl border border-slate-200 bg-gradient-to-b from-slate-50 to-white p-4 shadow-sm">
-                                        <div className="mb-3 flex items-center justify-between gap-2">
+                                    sidebarTab === "front" && <div className="rounded-2xl border border-slate-200 bg-gradient-to-b from-slate-50 to-white p-2.5 shadow-sm">
+                                        <div className="mb-2 flex items-center justify-between gap-2">
                                             <label className="block text-gray-800 font-semibold">Front Base Card <span className="text-red-600 text-xl">*</span></label>
                                             <span className="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-600">{frontImages?.length || 0} styles</span>
                                         </div>
 
-                                        <p className="text-xs text-slate-500 mb-3">Pick a premium frame style for the front of your trading card.</p>
+                                        <p className="text-xs text-slate-500 mb-1.5">Pick a premium frame style for the front of your trading card.</p>
 
-                                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 overflow-y-auto pr-1">
                                             {frontImages?.map((img, idx) => {
                                                 const isSelected = baseFront === img?.image;
                                                 return (
                                                     <button
                                                         key={idx}
                                                         onClick={() => { setBaseFront(img?.image); setcardfinder(idx); }}
-                                                        className={`relative overflow-hidden rounded-xl border transition-all duration-200 cursor-pointer ${isSelected
+                                                        className={`relative overflow-hidden rounded-lg border transition-all duration-200 cursor-pointer ${isSelected
                                                             ? "border-sky-500 ring-2 ring-sky-200 shadow-md"
                                                             : "border-slate-200 hover:border-slate-300 hover:shadow-sm"
                                                             }`}
@@ -749,7 +883,7 @@ export default function ProductCustomizer() {
                                                             width={1000}
                                                             height={1000}
                                                             alt={`front-${idx}`}
-                                                            className="w-full aspect-[5/7] object-contain bg-slate-100"
+                                                            className="w-full aspect-[3/4] object-contain bg-slate-100"
                                                         />
                                                         {isSelected && (
                                                             <div className="absolute top-1.5 right-1.5 rounded-full bg-white/95 p-1 shadow-sm">
@@ -810,6 +944,118 @@ export default function ProductCustomizer() {
                                     </div>
                                 }
 
+                                {sidebarTab === "back" && (
+                                    <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm space-y-5">
+                                        <div>
+                                            <label className="block text-gray-800 font-semibold mb-2">Date (Optional)</label>
+                                            <input
+                                                type="date"
+                                                value={backDate}
+                                                onChange={(e) => setBackDate(e.target.value)}
+                                                className="h-11 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 text-gray-700 outline-none transition-all duration-200 focus:ring-2 focus:ring-gray-300 focus:border-gray-300"
+                                            />
+                                        </div>
+
+                                        <div>
+                                            <label className="block text-gray-800 font-semibold mb-2">Description</label>
+                                            <textarea
+                                                value={backDescription}
+                                                onChange={(e) => setBackDescription(e.target.value)}
+                                                placeholder="Add a brief description..."
+                                                className="w-full h-24 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-gray-700 outline-none transition-all duration-200 focus:ring-2 focus:ring-gray-300 focus:border-gray-300"
+                                            />
+                                        </div>
+
+                                        <div>
+                                            <label className="block text-gray-800 font-semibold mb-2">Highlights Title</label>
+                                            <input
+                                                value={backHighlightsTitle}
+                                                onChange={(e) => setBackHighlightsTitle(e.target.value)}
+                                                className="h-11 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 text-gray-700 outline-none transition-all duration-200 focus:ring-2 focus:ring-gray-300 focus:border-gray-300 mb-4"
+                                            />
+
+                                            <div className="mb-3 flex items-center justify-between">
+                                                <label className="block text-gray-800 font-semibold">Highlights (2-6)</label>
+                                                <button
+                                                    type="button"
+                                                    onClick={addBackHighlight}
+                                                    disabled={backHighlights.length >= 6}
+                                                    className={`h-9 rounded-xl border px-3 text-sm font-semibold transition-all duration-200 ${backHighlights.length >= 6
+                                                        ? "cursor-not-allowed border-slate-200 bg-slate-100 text-slate-400"
+                                                        : "border-slate-300 bg-white text-slate-700 hover:border-slate-400"
+                                                        }`}
+                                                >
+                                                    + Add
+                                                </button>
+                                            </div>
+
+                                            <div className="space-y-3">
+                                                {backHighlights.map((item) => (
+                                                    <div key={item.id} className="relative flex items-center gap-2">
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => setActiveBackHighlightPicker((prev) => (prev === item.id ? null : item.id))}
+                                                            className="h-10 w-10 shrink-0 rounded-xl border border-slate-300 bg-white text-xl shadow-sm"
+                                                        >
+                                                            {item.icon}
+                                                        </button>
+                                                        <input
+                                                            value={item.text}
+                                                            onChange={(e) => updateBackHighlightText(item.id, e.target.value)}
+                                                            placeholder="Highlight text"
+                                                            className="h-10 w-full rounded-xl border border-slate-200 bg-slate-100 px-3 text-gray-700 outline-none transition-all duration-200 focus:ring-2 focus:ring-gray-300 focus:border-gray-300"
+                                                        />
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => removeBackHighlight(item.id)}
+                                                            className="h-8 w-8 shrink-0 rounded-full text-xl text-slate-600 hover:bg-slate-100"
+                                                        >
+                                                            ×
+                                                        </button>
+
+                                                        {activeBackHighlightPicker === item.id && (
+                                                            <div className="absolute top-11 left-0 z-30 w-[255px] rounded-xl border border-slate-200 bg-white p-3 shadow-xl">
+                                                                <div className="grid grid-cols-8 gap-2">
+                                                                    {attributeIconOptions.map((icon) => (
+                                                                        <button
+                                                                            key={`${item.id}-${icon}`}
+                                                                            type="button"
+                                                                            onClick={() => updateBackHighlightIcon(item.id, icon)}
+                                                                            className="rounded-md p-1 text-xl hover:bg-slate-100"
+                                                                        >
+                                                                            {icon}
+                                                                        </button>
+                                                                    ))}
+                                                                </div>
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+
+                                        <div className="h-px w-full bg-slate-200" />
+
+                                        <div>
+                                            <label className="block text-gray-800 font-semibold mb-2">Legacy Tagline</label>
+                                            <input
+                                                value={backLegacyTagline}
+                                                onChange={(e) => setBackLegacyTagline(e.target.value)}
+                                                className="h-11 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 text-gray-700 outline-none transition-all duration-200 focus:ring-2 focus:ring-gray-300 focus:border-gray-300"
+                                            />
+                                        </div>
+
+                                        <div>
+                                            <label className="block text-gray-800 font-semibold mb-2">Legacy Text</label>
+                                            <textarea
+                                                value={backLegacyText}
+                                                onChange={(e) => setBackLegacyText(e.target.value)}
+                                                className="w-full h-24 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-gray-700 outline-none transition-all duration-200 focus:ring-2 focus:ring-gray-300 focus:border-gray-300"
+                                            />
+                                        </div>
+                                    </div>
+                                )}
+
                                 {/* Upload Image */}
                                 {sidebarTab === "front" && <div className="my-6 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
                                     <div className="mb-3 flex items-center justify-between">
@@ -845,6 +1091,49 @@ export default function ProductCustomizer() {
 
                                     <input onChange={handleUpload} id="uploadImage" type="file" className="hidden" accept="image/*" />
                                 </div>}
+
+                                {sidebarTab === "front" && (
+                                    <div className="rounded-2xl border border-slate-200 bg-gradient-to-b from-slate-50 to-white p-4 shadow-sm">
+                                        <button
+                                            type="button"
+                                            onClick={() => setIsCardTypeOpen((prev) => !prev)}
+                                            className="w-full mb-2 flex items-center justify-between gap-2 text-left"
+                                            aria-expanded={isCardTypeOpen}
+                                        >
+                                            <span className="block text-gray-800 font-semibold">Card Type</span>
+                                            <div className="flex items-center gap-2">
+                                                <span className="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-600">
+                                                    {cardTypeOptions.length} options
+                                                </span>
+                                                <IoIosArrowDown className={`text-slate-600 transition-transform duration-200 ${isCardTypeOpen ? "rotate-180" : ""}`} />
+                                            </div>
+                                        </button>
+
+                                        {isCardTypeOpen && (
+                                            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                                                {cardTypeOptions.map((type) => {
+                                                    const isSelected = cardType === type.value;
+                                                    return (
+                                                        <button
+                                                            key={type.value}
+                                                            type="button"
+                                                            onClick={() => setCardType(type.value)}
+                                                            className={`rounded-xl border-2 px-3 py-4 text-center transition-all duration-200 ${isSelected
+                                                                ? "border-slate-700 bg-white shadow-sm"
+                                                                : "border-slate-200 bg-slate-50 hover:border-slate-300"
+                                                                }`}
+                                                        >
+                                                            <div className="text-2xl leading-none mb-2">{type.icon}</div>
+                                                            <div className="text-sm font-semibold text-slate-800">{type.label}</div>
+                                                        </button>
+                                                    );
+                                                })}
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
+
+
                                 {/* text control start here */}
 
                                 {/* Front Text Inputs moved to Attributes tab */}
@@ -852,7 +1141,7 @@ export default function ProductCustomizer() {
                                 {/* Attribute Tab Controls */}
                                 {sidebarTab === "attributes" && <div className="space-y-4">
                                     <div className="border border-gray-200 p-4 md:p-5 mb-4 rounded-xl bg-white shadow-sm ring-1 ring-gray-100">
-                                        <label className="block text-xl text-gray-700 mb-3 font-semibold">Text Editor </label>
+                                        <label className="block text-xl text-gray-700 mb-3 font-semibold">Card Content</label>
 
                                         <div className="w-full flex items-center gap-3 mb-3 rounded-lg p-1 transition-shadow duration-200 hover:shadow-sm">
                                             <div className="w-full">
@@ -875,71 +1164,177 @@ export default function ProductCustomizer() {
                                                 <textarea maxLength={carddeslimite} value={carddes} onChange={(e) => { setcarddes(e.target.value) }} type="text" className="border border-gray-200 px-3 py-2 rounded-lg text-gray-600 outline-none w-full h-[90px] transition-all duration-200 focus:ring-2 focus:ring-gray-300 focus:border-gray-300"></textarea>
                                             </div>
                                         </div>
+                                    </div>
 
-                                        <div className="w-full flex items-center gap-3 mb-3 rounded-lg p-1 transition-shadow duration-200 hover:shadow-sm">
-                                            <div className="w-full">
-                                                <label className="text-gray-500 mb-1 text-sm">Attribute One Text: <span className="text-red-600 text-xl">*</span>
-                                                    <div className="relative">
-                                                        <CharactersCountComponent text={name} limit={namelimite} />
-                                                    </div>
-                                                </label>
-                                                <input value={name} maxLength={namelimite} onChange={(e) => { setname(e.target.value) }} type="text" className="border border-gray-300 px-3 py-2 rounded-lg text-gray-600 outline-none w-full transition-all duration-200 focus:ring-2 focus:ring-gray-300 focus:border-gray-300" />
+                                    <div className="border border-gray-200 p-4 md:p-5 mb-4 rounded-xl bg-white shadow-sm ring-1 ring-gray-100">
+                                        <label className="block text-xl text-gray-700 mb-3 font-semibold">Card Attributes</label>
+
+                                        <div className="space-y-3">
+                                            <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
+                                                <div className="relative flex items-center gap-3">
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => setActiveIconPicker((prev) => (prev === "one" ? null : "one"))}
+                                                        className="h-12 w-12 shrink-0 rounded-xl border border-slate-300 bg-white text-2xl shadow-sm"
+                                                    >
+                                                        {attrIconOne}
+                                                    </button>
+                                                    <input
+                                                        value={name}
+                                                        maxLength={namelimite}
+                                                        onChange={(e) => { setname(e.target.value) }}
+                                                        type="text"
+                                                        placeholder="Attribute One"
+                                                        className="h-12 w-full rounded-xl border border-slate-200 bg-white px-3 text-gray-700 outline-none transition-all duration-200 focus:ring-2 focus:ring-emerald-200 focus:border-emerald-300"
+                                                    />
+
+                                                    {activeIconPicker === "one" && (
+                                                        <div className="absolute top-14 left-0 z-30 w-[255px] rounded-xl border border-slate-200 bg-white p-3 shadow-xl">
+                                                            <div className="grid grid-cols-8 gap-2">
+                                                                {attributeIconOptions.map((icon) => (
+                                                                    <button
+                                                                        key={`one-${icon}`}
+                                                                        type="button"
+                                                                        onClick={() => { setAttrIconOne(icon); setActiveIconPicker(null); }}
+                                                                        className="rounded-md p-1 text-xl hover:bg-slate-100"
+                                                                    >
+                                                                        {icon}
+                                                                    </button>
+                                                                ))}
+                                                            </div>
+                                                        </div>
+                                                    )}
+                                                </div>
+
+                                                <div className="mt-3 mb-1 flex items-center justify-between text-sm text-slate-600">
+                                                    <span>Value</span>
+                                                    <span className="font-medium text-slate-800">{labelone}</span>
+                                                </div>
+                                                <input
+                                                    min={1}
+                                                    max={100}
+                                                    value={labelone}
+                                                    onChange={(e) => { setlabelone(e.target.value) }}
+                                                    type="range"
+                                                    className="h-2 w-full cursor-pointer appearance-none rounded-full"
+                                                    style={getSliderTrackStyle(labelone)}
+                                                />
                                             </div>
-                                        </div>
 
-                                        <div className="w-full flex items-center gap-3 mb-3 rounded-lg p-1 transition-shadow duration-200 hover:shadow-sm">
-                                            <div className="w-full">
-                                                <label className="text-gray-500 mb-1 text-sm">Attribute Two: <span className="text-red-600 text-xl">*</span>
-                                                    <div className="relative">
-                                                        <CharactersCountComponent text={name2} limit={name2limite} />
-                                                    </div>
-                                                </label>
-                                                <input value={name2} maxLength={name2limite} onChange={(e) => { setname2(e.target.value) }} type="text" className="border border-gray-300 px-3 py-2 rounded-lg text-gray-600 outline-none w-full transition-all duration-200 focus:ring-2 focus:ring-gray-300 focus:border-gray-300" />
+                                            <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
+                                                <div className="relative flex items-center gap-3">
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => setActiveIconPicker((prev) => (prev === "two" ? null : "two"))}
+                                                        className="h-12 w-12 shrink-0 rounded-xl border border-slate-300 bg-white text-2xl shadow-sm"
+                                                    >
+                                                        {attrIconTwo}
+                                                    </button>
+                                                    <input
+                                                        value={name2}
+                                                        maxLength={name2limite}
+                                                        onChange={(e) => { setname2(e.target.value) }}
+                                                        type="text"
+                                                        placeholder="Attribute Two"
+                                                        className="h-12 w-full rounded-xl border border-slate-200 bg-white px-3 text-gray-700 outline-none transition-all duration-200 focus:ring-2 focus:ring-emerald-200 focus:border-emerald-300"
+                                                    />
+
+                                                    {activeIconPicker === "two" && (
+                                                        <div className="absolute top-14 left-0 z-30 w-[255px] rounded-xl border border-slate-200 bg-white p-3 shadow-xl">
+                                                            <div className="grid grid-cols-8 gap-2">
+                                                                {attributeIconOptions.map((icon) => (
+                                                                    <button
+                                                                        key={`two-${icon}`}
+                                                                        type="button"
+                                                                        onClick={() => { setAttrIconTwo(icon); setActiveIconPicker(null); }}
+                                                                        className="rounded-md p-1 text-xl hover:bg-slate-100"
+                                                                    >
+                                                                        {icon}
+                                                                    </button>
+                                                                ))}
+                                                            </div>
+                                                        </div>
+                                                    )}
+                                                </div>
+
+                                                <div className="mt-3 mb-1 flex items-center justify-between text-sm text-slate-600">
+                                                    <span>Value</span>
+                                                    <span className="font-medium text-slate-800">{labeltwo}</span>
+                                                </div>
+                                                <input
+                                                    min={1}
+                                                    max={100}
+                                                    value={labeltwo}
+                                                    onChange={(e) => { setlabeltwo(e.target.value) }}
+                                                    type="range"
+                                                    className="h-2 w-full cursor-pointer appearance-none rounded-full"
+                                                    style={getSliderTrackStyle(labeltwo)}
+                                                />
                                             </div>
-                                        </div>
 
-                                        <div className="w-full flex items-center gap-3 mb-3 rounded-lg p-1 transition-shadow duration-200 hover:shadow-sm">
-                                            <div className="w-full">
-                                                <label className="text-gray-500 mb-1 text-sm">Attribute Three: <span className="text-red-600 text-xl">*</span>
-                                                    <div className="relative">
-                                                        <CharactersCountComponent text={name3} limit={name3limite} />
-                                                    </div>
-                                                </label>
-                                                <input value={name3} maxLength={name3limite} onChange={(e) => { setname3(e.target.value) }} type="text" className="border border-gray-300 px-3 py-2 rounded-lg text-gray-600 outline-none w-full transition-all duration-200 focus:ring-2 focus:ring-gray-300 focus:border-gray-300" />
-                                            </div>
-                                        </div>
+                                            <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
+                                                <div className="relative flex items-center gap-3">
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => setActiveIconPicker((prev) => (prev === "three" ? null : "three"))}
+                                                        className="h-12 w-12 shrink-0 rounded-xl border border-slate-300 bg-white text-2xl shadow-sm"
+                                                    >
+                                                        {attrIconThree}
+                                                    </button>
+                                                    <input
+                                                        value={name3}
+                                                        maxLength={name3limite}
+                                                        onChange={(e) => { setname3(e.target.value) }}
+                                                        type="text"
+                                                        placeholder="Attribute Three"
+                                                        className="h-12 w-full rounded-xl border border-slate-200 bg-white px-3 text-gray-700 outline-none transition-all duration-200 focus:ring-2 focus:ring-emerald-200 focus:border-emerald-300"
+                                                    />
 
-                                        <div className="w-full flex items-center mb-3 rounded-lg p-1 transition-shadow duration-200 hover:shadow-sm">
-                                            <div className="w-full flex flex-col">
-                                                <label className="text-gray-500 mb-1 text-sm">About Card Date: <span className="text-red-600 text-xl">*</span>
-                                                    <div className="relative">
-                                                        <CharactersCountComponent text={acarddate} limit={acarddatelimite} />
-                                                    </div>
-                                                </label>
-                                                <input value={acarddate} maxLength={acarddatelimite} onChange={(e) => { setacarddate(e.target.value) }} type="text" className="border border-gray-300 px-3 py-2 rounded-lg text-gray-600 outline-none transition-all duration-200 focus:ring-2 focus:ring-gray-300 focus:border-gray-300" />
+                                                    {activeIconPicker === "three" && (
+                                                        <div className="absolute top-14 left-0 z-30 w-[255px] rounded-xl border border-slate-200 bg-white p-3 shadow-xl">
+                                                            <div className="grid grid-cols-8 gap-2">
+                                                                {attributeIconOptions.map((icon) => (
+                                                                    <button
+                                                                        key={`three-${icon}`}
+                                                                        type="button"
+                                                                        onClick={() => { setAttrIconThree(icon); setActiveIconPicker(null); }}
+                                                                        className="rounded-md p-1 text-xl hover:bg-slate-100"
+                                                                    >
+                                                                        {icon}
+                                                                    </button>
+                                                                ))}
+                                                            </div>
+                                                        </div>
+                                                    )}
+                                                </div>
+
+                                                <div className="mt-3 mb-1 flex items-center justify-between text-sm text-slate-600">
+                                                    <span>Value</span>
+                                                    <span className="font-medium text-slate-800">{labelthree}</span>
+                                                </div>
+                                                <input
+                                                    min={1}
+                                                    max={100}
+                                                    value={labelthree}
+                                                    onChange={(e) => { setlabelthree(e.target.value) }}
+                                                    type="range"
+                                                    className="h-2 w-full cursor-pointer appearance-none rounded-full"
+                                                    style={getSliderTrackStyle(labelthree)}
+                                                />
                                             </div>
                                         </div>
                                     </div>
 
                                     <div className="border border-gray-200 p-4 md:p-5 mb-4 rounded-xl bg-white shadow-sm ring-1 ring-gray-100">
-                                        <label className="block text-xl text-gray-700 mb-3 font-semibold">Attribute Labels</label>
-
-                                        <div className="w-full flex items-center gap-3 mb-2 rounded-lg p-1 transition-shadow duration-200 hover:shadow-sm">
-                                            <div className="w-full">
-                                                <label className="text-gray-500 mb-1 text-sm">Attribute One Label: <span className="text-red-600 text-xl">*</span></label>
-                                                <input min={1} max={100} value={labelone} onChange={(e) => { setlabelone(e.target.value) }} type="range" className="border border-gray-300 rounded-md text-gray-600 outline-none w-full cursor-pointer" />
-                                            </div>
-                                        </div>
-                                        <div className="w-full flex items-center gap-3 mb-2 rounded-lg p-1 transition-shadow duration-200 hover:shadow-sm">
-                                            <div className="w-full">
-                                                <label className="text-gray-500 mb-1 text-sm">Attribute Two Label: <span className="text-red-600 text-xl">*</span></label>
-                                                <input min={1} max={100} value={labeltwo} onChange={(e) => { setlabeltwo(e.target.value) }} type="range" className="border border-gray-300 rounded-md text-gray-600 outline-none w-full cursor-pointer" />
-                                            </div>
-                                        </div>
-                                        <div className="w-full flex items-center gap-3 rounded-lg p-1 transition-shadow duration-200 hover:shadow-sm">
-                                            <div className="w-full">
-                                                <label className="text-gray-500 mb-1 text-sm">Attribute Three Label: <span className="text-red-600 text-xl">*</span></label>
-                                                <input min={1} max={100} value={labelthree} onChange={(e) => { setlabelthree(e.target.value) }} type="range" className="border border-gray-300 rounded-md text-gray-600 outline-none w-full cursor-pointer" />
+                                        <label className="block text-xl text-gray-700 mb-3 font-semibold">About Card Date</label>
+                                        <div className="w-full flex items-center mb-1 rounded-lg p-1 transition-shadow duration-200 hover:shadow-sm">
+                                            <div className="w-full flex flex-col">
+                                                <label className="text-gray-500 mb-1 text-sm">Card Date/Tag: <span className="text-red-600 text-xl">*</span>
+                                                    <div className="relative">
+                                                        <CharactersCountComponent text={acarddate} limit={acarddatelimite} />
+                                                    </div>
+                                                </label>
+                                                <input value={acarddate} maxLength={acarddatelimite} onChange={(e) => { setacarddate(e.target.value) }} type="text" className="border border-gray-300 px-3 py-2 rounded-lg text-gray-600 outline-none transition-all duration-200 focus:ring-2 focus:ring-gray-300 focus:border-gray-300" />
                                             </div>
                                         </div>
                                     </div>

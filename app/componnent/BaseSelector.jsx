@@ -60,6 +60,9 @@ const BaseSelector = ({ product, cards, activeCard, selectBase, editedCard, sete
     selectBase(selectedBaseForActiveCard || filteredCards?.[0]?.image, cardType);
   };
 
+  const hasBaseForType = (cardType) =>
+    (product?.customizations?.custom_sets || []).some((card) => card?.card_type === cardType);
+
 
 
 
@@ -86,12 +89,12 @@ const BaseSelector = ({ product, cards, activeCard, selectBase, editedCard, sete
       {isOpen && (
         <>
           <div className="flex items-center gap-2 overflow-x-auto pb-2">
-            <button onClick={() => { handleCardTypeSelect("Ace_Card") }} className={`rounded-xl cursor-pointer ${editedCard === 'Ace_Card' ? 'border-2 border-sky-500 bg-sky-100' : 'border-2 border-gray-400 bg-gray-200'}`}><GiCardAceClubs className={`text-6xl ${editedCard === 'Ace_Card' ? 'text-sky-400' : 'text-gray-400'}`} /></button>
-            <button onClick={() => { handleCardTypeSelect("king_Card") }} className={`rounded-xl cursor-pointer ${editedCard === 'king_Card' ? 'border-2 border-sky-500 bg-sky-100' : 'border-2 border-gray-400 bg-gray-200'}`}><GiCardKingClubs className={`text-6xl ${editedCard === 'king_Card' ? 'text-sky-400' : 'text-gray-400'}`} /></button>
-            <button onClick={() => { handleCardTypeSelect("Queen_Card") }} className={`rounded-xl cursor-pointer ${editedCard === 'Queen_Card' ? 'border-2 border-sky-500 bg-sky-100' : 'border-2 border-gray-400 bg-gray-200'}`}><GiCardQueenClubs className={`text-6xl ${editedCard === 'Queen_Card' ? 'text-sky-400' : 'text-gray-400'}`} /></button>
-            <button onClick={() => { handleCardTypeSelect("Jeck_Card") }} className={`rounded-xl cursor-pointer ${editedCard === 'Jeck_Card' ? 'border-2 border-sky-500 bg-sky-100' : 'border-2 border-gray-400 bg-gray-200'}`}><GiCardJackClubs className={`text-6xl ${editedCard === 'Jeck_Card' ? 'text-sky-400' : 'text-gray-400'}`} /></button>
+            <button disabled={!hasBaseForType("Ace_Card")} onClick={() => { handleCardTypeSelect("Ace_Card") }} className={`rounded-xl ${hasBaseForType("Ace_Card") ? "cursor-pointer" : "cursor-not-allowed opacity-50"} ${editedCard === 'Ace_Card' ? 'border-2 border-sky-500 bg-sky-100' : 'border-2 border-gray-400 bg-gray-200'}`}><GiCardAceClubs className={`text-6xl ${editedCard === 'Ace_Card' ? 'text-sky-400' : 'text-gray-400'}`} /></button>
+            <button disabled={!hasBaseForType("king_Card")} onClick={() => { handleCardTypeSelect("king_Card") }} className={`rounded-xl ${hasBaseForType("king_Card") ? "cursor-pointer" : "cursor-not-allowed opacity-50"} ${editedCard === 'king_Card' ? 'border-2 border-sky-500 bg-sky-100' : 'border-2 border-gray-400 bg-gray-200'}`}><GiCardKingClubs className={`text-6xl ${editedCard === 'king_Card' ? 'text-sky-400' : 'text-gray-400'}`} /></button>
+            <button disabled={!hasBaseForType("Queen_Card")} onClick={() => { handleCardTypeSelect("Queen_Card") }} className={`rounded-xl ${hasBaseForType("Queen_Card") ? "cursor-pointer" : "cursor-not-allowed opacity-50"} ${editedCard === 'Queen_Card' ? 'border-2 border-sky-500 bg-sky-100' : 'border-2 border-gray-400 bg-gray-200'}`}><GiCardQueenClubs className={`text-6xl ${editedCard === 'Queen_Card' ? 'text-sky-400' : 'text-gray-400'}`} /></button>
+            <button disabled={!hasBaseForType("Jeck_Card")} onClick={() => { handleCardTypeSelect("Jeck_Card") }} className={`rounded-xl ${hasBaseForType("Jeck_Card") ? "cursor-pointer" : "cursor-not-allowed opacity-50"} ${editedCard === 'Jeck_Card' ? 'border-2 border-sky-500 bg-sky-100' : 'border-2 border-gray-400 bg-gray-200'}`}><GiCardJackClubs className={`text-6xl ${editedCard === 'Jeck_Card' ? 'text-sky-400' : 'text-gray-400'}`} /></button>
             {hasJokerInCustomization && (
-              <button onClick={() => { handleCardTypeSelect("Joker_Card") }} className={`rounded-xl cursor-pointer ${editedCard === 'Joker_Card' ? 'border-2 border-sky-500 bg-sky-100' : 'border-2 border-gray-400 bg-gray-200'}`}><GiCardJoker className={`text-6xl ${editedCard === 'Joker_Card' ? 'text-sky-400' : 'text-gray-400'}`} /></button>
+              <button disabled={!hasBaseForType("Joker_Card")} onClick={() => { handleCardTypeSelect("Joker_Card") }} className={`rounded-xl ${hasBaseForType("Joker_Card") ? "cursor-pointer" : "cursor-not-allowed opacity-50"} ${editedCard === 'Joker_Card' ? 'border-2 border-sky-500 bg-sky-100' : 'border-2 border-gray-400 bg-gray-200'}`}><GiCardJoker className={`text-6xl ${editedCard === 'Joker_Card' ? 'text-sky-400' : 'text-gray-400'}`} /></button>
             )}
           </div>
 

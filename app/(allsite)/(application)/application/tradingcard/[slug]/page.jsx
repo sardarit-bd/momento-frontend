@@ -32,15 +32,28 @@ const cardTypeOptions = [
 ];
 
 const attributeIconOptions = [
-    "⚡", "🔥", "💪", "🎯", "❤️", "⭐", "🌟", "✨",
-    "🏆", "🎓", "💼", "🎨", "🎵", "⚽", "🏀", "🎮",
-    "📚", "✍️", "🗣️", "👥", "🌍", "💡", "💎", "🎭",
-    "🍕", "☕", "🌮", "🍔", "🎸", "🎤", "📷", "🎬",
+    "/attribute-images/attribute_2.png",
+    "/attribute-images/attribute_3.png",
+    "/attribute-images/attribute_4.png",
+    "/attribute-images/attribute_5.png",
+    "/attribute-images/attribute_6.png",
+    "/attribute-images/attribute_7.png",
+    "/attribute-images/attribute_8.png",
+    "/attribute-images/attribute_9.png",
+    "/attribute-images/attribute_10.png",
+    "/attribute-images/attribute_11.png",
+    "/attribute-images/attribute_12.png",
+    "/attribute-images/attribute_13.png",
+    "/attribute-images/attribute_14.png",
+    "/attribute-images/attribute_15.png",
+    "/attribute-images/attribute_16.png",
+    "/attribute-images/attribute_17.png",
+    "/attribute-images/attribute_18.png",
 ];
 
 const defaultBackHighlights = [
-    { id: 1, icon: "⚡", text: "Always brings energy to the room" },
-    { id: 2, icon: "🎯", text: "Master of organization" },
+    { id: 1, icon: "/attribute-images/attribute_1.png", text: "Always brings energy to the room" },
+    { id: 2, icon: "/attribute-images/attribute_4.png", text: "Master of organization" },
 ];
 
 export default function ProductCustomizer() {
@@ -94,9 +107,9 @@ export default function ProductCustomizer() {
     const [labelthree, setlabelthree] = useState(78);
     const [acarddate, setacarddate] = useState('CLASS OF 2025');
     const [cardType, setCardType] = useState("graduation");
-    const [attrIconOne, setAttrIconOne] = useState("⚡");
-    const [attrIconTwo, setAttrIconTwo] = useState("🔥");
-    const [attrIconThree, setAttrIconThree] = useState("💪");
+    const [attrIconOne, setAttrIconOne] = useState("/attribute-images/attribute_1.png");
+    const [attrIconTwo, setAttrIconTwo] = useState("/attribute-images/attribute_2.png");
+    const [attrIconThree, setAttrIconThree] = useState("/attribute-images/attribute_3.png");
     const [activeIconPicker, setActiveIconPicker] = useState(null);
     const [backDate, setBackDate] = useState("");
     const [backDescription, setBackDescription] = useState("");
@@ -157,9 +170,9 @@ export default function ProductCustomizer() {
                     setlabelthree(parsed?.content?.labelthree ?? 78);
                     setacarddate(parsed?.content?.acarddate ?? "CLASS OF 2026");
                     setCardType(parsed?.content?.cardType ?? "graduation");
-                    setAttrIconOne(parsed?.content?.attrIconOne ?? "⚡");
-                    setAttrIconTwo(parsed?.content?.attrIconTwo ?? "🔥");
-                    setAttrIconThree(parsed?.content?.attrIconThree ?? "💪");
+                    setAttrIconOne(parsed?.content?.attrIconOne ?? "/attribute-images/attribute_1.png");
+                    setAttrIconTwo(parsed?.content?.attrIconTwo ?? "/attribute-images/attribute_2.png");
+                    setAttrIconThree(parsed?.content?.attrIconThree ?? "/attribute-images/attribute_3.png");
                     setBackDate(parsed?.content?.backDate ?? "");
                     setBackDescription(parsed?.content?.backDescription ?? "");
                     setBackHighlightsTitle(parsed?.content?.backHighlightsTitle ?? "Highlights");
@@ -197,9 +210,9 @@ export default function ProductCustomizer() {
             setname('Attribute One');
             setname2('Attribute Two');
             setname3('Attribute Three');
-            setAttrIconOne("⚡");
-            setAttrIconTwo("🔥");
-            setAttrIconThree("💪");
+            setAttrIconOne("/attribute-images/attribute_1.png");
+            setAttrIconTwo("/attribute-images/attribute_2.png");
+            setAttrIconThree("/attribute-images/attribute_3.png");
             setacarddate('CLASS OF 2026');
 
             setcardtiltelimite(15);
@@ -218,9 +231,9 @@ export default function ProductCustomizer() {
             setname('Achievements');
             setname2('Lorem Ipsum 10, This Momento card Customization One of the best Placeform');
             setname3('Awards');
-            setAttrIconOne("🏆");
-            setAttrIconTwo("🎯");
-            setAttrIconThree("💎");
+            setAttrIconOne("/attribute-images/attribute_10.png");
+            setAttrIconTwo("/attribute-images/attribute_4.png");
+            setAttrIconThree("/attribute-images/attribute_15.png");
             setacarddate('Lorem Ipsum 10, This Momento card Customization One of the best Placeform');
 
 
@@ -611,15 +624,25 @@ export default function ProductCustomizer() {
         }, [600])
     }
 
-    const displayAttributeOne = `${attrIconOne} ${name}`.trim();
-    const displayAttributeTwo = `${attrIconTwo} ${name2}`.trim();
-    const displayAttributeThree = `${attrIconThree} ${name3}`.trim();
-    const backHighlightsText = backHighlights
-        .map((item) => `${item.icon} ${item.text}`.trim())
-        .filter((item) => item && item !== "⚡" && item !== "🎯" && item !== "⭐");
+    const renderIconPreview = (iconValue, altText) => {
+        if (typeof iconValue === "string" && iconValue.startsWith("/attribute-images/")) {
+            return <img src={iconValue} alt={altText} className="h-7 w-7 object-contain" />;
+        }
+        return <span className="text-xl leading-none">{iconValue}</span>;
+    };
+
+    const displayAttributeOne = name;
+    const displayAttributeTwo = name2;
+    const displayAttributeThree = name3;
+    const backHighlightsPreview = backHighlights
+        .map((item) => ({
+            icon: item?.icon,
+            text: item?.text?.trim() || "",
+        }))
+        .filter((item) => item.text);
     const backDateDisplay = backDate
         ? new Date(backDate).toLocaleDateString("en-US", { month: "2-digit", day: "2-digit", year: "numeric" })
-        : "Memory Card";
+        : "";
     const getSliderTrackStyle = (value) => {
         const numericValue = Number(value) || 0;
         return {
@@ -634,7 +657,7 @@ export default function ProductCustomizer() {
         }
         setBackHighlights((prev) => [
             ...prev,
-            { id: Date.now(), icon: "⭐", text: "" },
+            { id: Date.now(), icon: "/attribute-images/attribute_1.png", text: "" },
         ]);
     };
 
@@ -723,26 +746,15 @@ export default function ProductCustomizer() {
                                     </Rnd>
                                 ))}
 
-                                {/* Front base (zIndex:2) */}
-                                {baseFront && workingcard === "front" && (
+                                {/* Active base (zIndex:2) */}
+                                {(workingcard === "front" ? baseFront : baseBack) && (
                                     <Image
-                                        src={baseFront}
-                                        width={1000}
-                                        height={1000}
-                                        alt="front-base"
-                                        className="absolute inset-0 object-cover w-full h-full"
-                                        style={{ zIndex: 2, pointerEvents: "none" }}
-                                    />
-                                )}
-
-                                {/* Back base (zIndex:2) */}
-                                {baseBack && workingcard === "back" && (
-                                    <Image
-                                        src={baseBack}
-                                        height={1000}
-                                        width={1000}
-                                        alt="back-base"
-                                        className="absolute inset-0 object-cover w-full h-full"
+                                        key={workingcard}
+                                        src={workingcard === "front" ? baseFront : baseBack}
+                                        fill
+                                        sizes="(max-width: 1024px) 255px, 390px"
+                                        alt={workingcard === "front" ? "front-base" : "back-base"}
+                                        className="absolute inset-0 object-cover"
                                         style={{ zIndex: 2, pointerEvents: "none" }}
                                     />
                                 )}
@@ -760,21 +772,20 @@ export default function ProductCustomizer() {
                                         {
                                             workingcard === "front" ? (
                                                 <>
-                                                    {cardfinder == 0 && <FrontOne cardti={cardti} carddes={carddes} name={displayAttributeOne} name2={displayAttributeTwo} name3={displayAttributeThree} acarddate={acarddate} labelone={labelone} labeltwo={labeltwo} labelthree={labelthree} />}
-                                                    {cardfinder == 1 && <FrontTwo cardti={cardti} carddes={carddes} name={displayAttributeOne} name2={displayAttributeTwo} name3={displayAttributeThree} acarddate={acarddate} labelone={labelone} labeltwo={labeltwo} labelthree={labelthree} />}
-                                                    {cardfinder == 2 && <FrontThree cardti={cardti} carddes={carddes} name={displayAttributeOne} name2={displayAttributeTwo} name3={displayAttributeThree} acarddate={acarddate} labelone={labelone} labeltwo={labeltwo} labelthree={labelthree} />}
-                                                    {cardfinder == 3 && <FrontFour cardti={cardti} carddes={carddes} name={displayAttributeOne} name2={displayAttributeTwo} name3={displayAttributeThree} acarddate={acarddate} labelone={labelone} labeltwo={labeltwo} labelthree={labelthree} />}
+                                                    {cardfinder == 0 && <FrontOne cardti={cardti} carddes={carddes} name={displayAttributeOne} name2={displayAttributeTwo} name3={displayAttributeThree} acarddate={acarddate} labelone={labelone} labeltwo={labeltwo} labelthree={labelthree} iconOne={attrIconOne} iconTwo={attrIconTwo} iconThree={attrIconThree} />}
+                                                    {cardfinder == 1 && <FrontTwo cardti={cardti} carddes={carddes} name={displayAttributeOne} name2={displayAttributeTwo} name3={displayAttributeThree} acarddate={acarddate} labelone={labelone} labeltwo={labeltwo} labelthree={labelthree} iconOne={attrIconOne} iconTwo={attrIconTwo} iconThree={attrIconThree} />}
+                                                    {cardfinder == 2 && <FrontThree cardti={cardti} carddes={carddes} name={displayAttributeOne} name2={displayAttributeTwo} name3={displayAttributeThree} acarddate={acarddate} labelone={labelone} labeltwo={labeltwo} labelthree={labelthree} iconOne={attrIconOne} iconTwo={attrIconTwo} iconThree={attrIconThree} />}
+                                                    {cardfinder == 3 && <FrontFour cardti={cardti} carddes={carddes} name={displayAttributeOne} name2={displayAttributeTwo} name3={displayAttributeThree} acarddate={acarddate} labelone={labelone} labeltwo={labeltwo} labelthree={labelthree} iconOne={attrIconOne} iconTwo={attrIconTwo} iconThree={attrIconThree} />}
                                                 </>
                                             ) : (
                                                 <BackOne
-                                                    cardti={backDateDisplay}
-                                                    carddes={backDescription || "Add a brief description..."}
-                                                    name={backHighlightsTitle || "Highlights"}
-                                                    name2={backHighlightsText[0] || "⚡ Highlight one"}
-                                                    name3={backLegacyTagline || "Legacy Tagline"}
-                                                    acarddate={backLegacyText || "Legacy text"}
+                                                    dateLabel={backDateDisplay}
+                                                    description={backDescription}
+                                                    highlightsTitle={backHighlightsTitle}
+                                                    highlights={backHighlightsPreview}
+                                                    legacyTagline={backLegacyTagline}
+                                                    legacyText={backLegacyText}
                                                     isblack={isblack}
-                                                    highlights={backHighlightsText}
                                                 />
                                             )
                                         }
@@ -995,9 +1006,9 @@ export default function ProductCustomizer() {
                                                         <button
                                                             type="button"
                                                             onClick={() => setActiveBackHighlightPicker((prev) => (prev === item.id ? null : item.id))}
-                                                            className="h-10 w-10 shrink-0 rounded-xl border border-slate-300 bg-white text-xl shadow-sm"
+                                                            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-slate-300 bg-white shadow-sm"
                                                         >
-                                                            {item.icon}
+                                                            {renderIconPreview(item.icon, "Selected highlight icon")}
                                                         </button>
                                                         <input
                                                             value={item.text}
@@ -1021,9 +1032,9 @@ export default function ProductCustomizer() {
                                                                             key={`${item.id}-${icon}`}
                                                                             type="button"
                                                                             onClick={() => updateBackHighlightIcon(item.id, icon)}
-                                                                            className="rounded-md p-1 text-xl hover:bg-slate-100"
+                                                                            className="flex h-8 w-8 items-center justify-center rounded-md p-1 hover:bg-slate-100"
                                                                         >
-                                                                            {icon}
+                                                                            {renderIconPreview(icon, "Highlight icon option")}
                                                                         </button>
                                                                     ))}
                                                                 </div>
@@ -1175,9 +1186,9 @@ export default function ProductCustomizer() {
                                                     <button
                                                         type="button"
                                                         onClick={() => setActiveIconPicker((prev) => (prev === "one" ? null : "one"))}
-                                                        className="h-12 w-12 shrink-0 rounded-xl border border-slate-300 bg-white text-2xl shadow-sm"
+                                                        className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-slate-300 bg-white shadow-sm"
                                                     >
-                                                        {attrIconOne}
+                                                        {renderIconPreview(attrIconOne, "Attribute one icon")}
                                                     </button>
                                                     <input
                                                         value={name}
@@ -1196,9 +1207,9 @@ export default function ProductCustomizer() {
                                                                         key={`one-${icon}`}
                                                                         type="button"
                                                                         onClick={() => { setAttrIconOne(icon); setActiveIconPicker(null); }}
-                                                                        className="rounded-md p-1 text-xl hover:bg-slate-100"
+                                                                        className="flex h-8 w-8 items-center justify-center rounded-md p-1 hover:bg-slate-100"
                                                                     >
-                                                                        {icon}
+                                                                        {renderIconPreview(icon, "Attribute icon option")}
                                                                     </button>
                                                                 ))}
                                                             </div>
@@ -1226,9 +1237,9 @@ export default function ProductCustomizer() {
                                                     <button
                                                         type="button"
                                                         onClick={() => setActiveIconPicker((prev) => (prev === "two" ? null : "two"))}
-                                                        className="h-12 w-12 shrink-0 rounded-xl border border-slate-300 bg-white text-2xl shadow-sm"
+                                                        className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-slate-300 bg-white shadow-sm"
                                                     >
-                                                        {attrIconTwo}
+                                                        {renderIconPreview(attrIconTwo, "Attribute two icon")}
                                                     </button>
                                                     <input
                                                         value={name2}
@@ -1247,9 +1258,9 @@ export default function ProductCustomizer() {
                                                                         key={`two-${icon}`}
                                                                         type="button"
                                                                         onClick={() => { setAttrIconTwo(icon); setActiveIconPicker(null); }}
-                                                                        className="rounded-md p-1 text-xl hover:bg-slate-100"
+                                                                        className="flex h-8 w-8 items-center justify-center rounded-md p-1 hover:bg-slate-100"
                                                                     >
-                                                                        {icon}
+                                                                        {renderIconPreview(icon, "Attribute icon option")}
                                                                     </button>
                                                                 ))}
                                                             </div>
@@ -1277,9 +1288,9 @@ export default function ProductCustomizer() {
                                                     <button
                                                         type="button"
                                                         onClick={() => setActiveIconPicker((prev) => (prev === "three" ? null : "three"))}
-                                                        className="h-12 w-12 shrink-0 rounded-xl border border-slate-300 bg-white text-2xl shadow-sm"
+                                                        className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-slate-300 bg-white shadow-sm"
                                                     >
-                                                        {attrIconThree}
+                                                        {renderIconPreview(attrIconThree, "Attribute three icon")}
                                                     </button>
                                                     <input
                                                         value={name3}
@@ -1298,9 +1309,9 @@ export default function ProductCustomizer() {
                                                                         key={`three-${icon}`}
                                                                         type="button"
                                                                         onClick={() => { setAttrIconThree(icon); setActiveIconPicker(null); }}
-                                                                        className="rounded-md p-1 text-xl hover:bg-slate-100"
+                                                                        className="flex h-8 w-8 items-center justify-center rounded-md p-1 hover:bg-slate-100"
                                                                     >
-                                                                        {icon}
+                                                                        {renderIconPreview(icon, "Attribute icon option")}
                                                                     </button>
                                                                 ))}
                                                             </div>

@@ -28,13 +28,15 @@ const LayerSelector = ({ product, activeCard, selectLayer }) => {
         const selectedImage = activeCard?.selectedLayers?.[layer];
         const layerItems = product?.customizations?.[layer] || [];
         const selectedIndex = layerItems?.findIndex((item) => item?.image === selectedImage);
+        const isEditable = Boolean(activeCard) && layerItems.length > 0;
 
         return (
           <div key={layer} className="rounded-2xl border border-gray-200 bg-white p-3">
             <button
               type="button"
-              onClick={() => setOpenLayer((prev) => (prev === layer ? "" : layer))}
-              className="flex w-full items-center justify-between gap-3 text-left"
+              onClick={() => isEditable && setOpenLayer((prev) => (prev === layer ? "" : layer))}
+              disabled={!isEditable}
+              className={`flex w-full items-center justify-between gap-3 text-left ${isEditable ? "cursor-pointer" : "cursor-not-allowed opacity-60"}`}
             >
               <div className="flex items-center gap-3">
                 <h3 className="text-xl font-semibold capitalize text-gray-800">{sectionTitle}</h3>
@@ -43,11 +45,22 @@ const LayerSelector = ({ product, activeCard, selectLayer }) => {
                     Option {selectedIndex + 1}
                   </span>
                 )}
+                {!isEditable && (
+                  <span className="rounded-full bg-gray-100 px-2 py-1 text-xs font-medium text-gray-500">
+                    Disabled
+                  </span>
+                )}
               </div>
               <IoIosArrowDown className={`text-gray-500 transition-transform ${openLayer === layer ? "rotate-180" : ""}`} />
             </button>
 
-            {openLayer === layer && (
+            {!isEditable && (
+              <p className="mt-3 rounded-lg border border-dashed border-gray-200 bg-gray-50 px-3 py-2 text-xs text-gray-500">
+                No options available for this area on the current card.
+              </p>
+            )}
+
+            {isEditable && openLayer === layer && (
               <div className="mt-3 flex flex-wrap gap-2">
                 {layerItems?.map((image, idx) => {
                   const isSelected = selectedImage === image?.image;

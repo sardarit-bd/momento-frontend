@@ -211,17 +211,25 @@ const SingleProduct = () => {
                         <p><strong>Category:</strong> {data?.category?.name}</p>
                         <p className="line-clamp-2"><strong>Short Description:</strong> {data?.short_description}</p>
 
-                        <div>
+                        <div className="space-y-2">
+                            <p className="text-sm text-gray-600">Create yours in under 2 minutes</p>
                             <button
                                 onClick={(e) => { { data?.type === "customizable" || data?.type === "trading" ? handleaddToCustomizable(e, data?.type, data?.slug) : handleaddToCart(e) } }}
                                 disabled={btnLoading}
-                                className="flex-1 inline-flex justify-center items-center gap-2 rounded-md bg-sky-500 text-white py-2 px-4 text-md font-semibold shadow-lg hover:brightness-105 transition cursor-pointer flex items-center justify-center gap-2"
+                                className="flex-1 inline-flex justify-center items-center gap-2 rounded-md bg-sky-500 text-white py-2.5 px-4 text-md font-semibold shadow-lg hover:brightness-105 transition cursor-pointer flex items-center justify-center gap-2"
                             >
                                 {
                                     btnLoading ? <SpinLoader /> : data?.type === "customizable" ? <BsStars className="text-white text-xl" /> : <FiShoppingCart className="text-xl text-white" />
                                 }
-                                {data?.type === "customizable" || data?.type === "trading" ? "Customize" : "Add to Cart"}
+                                {data?.type === "customizable" ? "Create Your Deck" : data?.type === "trading" ? "Create Your Momento" : "Add to Cart"}
                             </button>
+                            <p className="text-sm text-gray-600">
+                                {data?.type === "trading"
+                                    ? "Perfect for gifting • Fully customizable • Made to be shared"
+                                    : data?.type === "customizable"
+                                        ? "Preview before you order • Premium quality • Made on demand"
+                                        : "Simple"}
+                            </p>
                         </div>
 
                     </div>

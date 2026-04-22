@@ -25,6 +25,13 @@ const JOKER_STEP = { type: "Joker_Card", label: "Joker", icon: GiCardJoker };
 
 const CARD_FLOW = CARD_STEPS.map((step) => step.type);
 const MAX_CUSTOMIZABLE_CARDS = 5;
+const CARD_TYPE_LABELS = {
+    Ace_Card: "Ace",
+    king_Card: "King",
+    Queen_Card: "Queen",
+    Jeck_Card: "Jack",
+    Joker_Card: "Joker",
+};
 
 const ProductCustomizer = () => {
     const { slug } = useParams();
@@ -126,7 +133,6 @@ const ProductCustomizer = () => {
 
     const activeCard = cards[activeCardIndex];
     const activeType = activeCard?.editedCard;
-    const activeStepIndex = CARD_FLOW.indexOf(activeType);
     const jokerPreviewImage =
         product?.customizations?.custom_sets?.find((item) => item?.card_type === "Joker_Card")?.image ||
         product?.customizations?.custom_sets?.[0]?.image;
@@ -228,6 +234,8 @@ const ProductCustomizer = () => {
     };
 
     const Done = async () => {
+        // Keep the bottom toolbar button, but collapse the panel after tapping Next.
+        setsmallconOpen(false);
         setdoneloading(true);
 
         const hasJokerCardNow = cards.some((card) => card?.editedCard === "Joker_Card");
@@ -314,7 +322,8 @@ const ProductCustomizer = () => {
 
     const hasJokerCard = cards.some((card) => card?.editedCard === "Joker_Card");
     const visibleSteps = hasJokerCard ? [...CARD_STEPS, JOKER_STEP] : CARD_STEPS;
-    const doneButtonLabel = doneloading || spinloading ? "Loading..." : hasJokerCard ? "View All Card" : "Next Card";
+    const doneButtonLabel = doneloading || spinloading ? "Loading..." : "Next Card";
+    const activeCardLabel = CARD_TYPE_LABELS[activeType] || "Ace / King / Queen / Jack";
 
     const handleStepClick = (stepType) => {
         const targetCardIndex = cards.findIndex((card) => card?.editedCard === stepType);
@@ -568,6 +577,7 @@ const ProductCustomizer = () => {
                         </div>
                     </div>
                 </div>
+
                     </>
                 )}
 

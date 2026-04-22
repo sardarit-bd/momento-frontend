@@ -2,10 +2,11 @@
 
 import SpinLoader from "@/app/componnent/SpingLoader";
 import useCartStore from "@/store/useCartStore";
+import useboxcartstore from "@/store/useboxcartstore";
 import getId from "@/utilis/helper/cookie/getid";
 import getCookie from "@/utilis/helper/cookie/gettooken";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FiEdit3 } from "react-icons/fi";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -41,6 +42,18 @@ export default function CheckoutPage() {
   const [deckFinish, setDeckFinish] = useState("prism");
 
   const { cart } = useCartStore();
+  const { boxs, setboxs } = useboxcartstore();
+
+  useEffect(() => {
+    if (cart.length > 0 && boxs.length === 0) {
+      setboxs(["/boxprevew.png"]);
+      return;
+    }
+
+    if (cart.length === 0 && boxs.length > 0) {
+      setboxs([]);
+    }
+  }, [cart.length, boxs.length, setboxs]);
 
   const getSavedCustomization = (item) => {
     if (!item?.customizationStorageKey) return null;
@@ -310,6 +323,26 @@ export default function CheckoutPage() {
                 )})
               )}
             </div>
+
+            {cart.length > 0 && boxs.length > 0 && (
+            <div className="mb-6">
+              <h3 className="text-sm font-semibold text-gray-700 mb-3">Box Preview</h3>
+              <div className="flex flex-wrap gap-3">
+                {boxs.map((item, index) => (
+                  <div
+                    key={index}
+                    className="w-[160px] sm:w-[190px] md:w-[220px] rounded-xl border border-gray-200 bg-white p-2 shadow-sm"
+                  >
+                    <img
+                      className="h-auto w-full object-contain"
+                      src={item}
+                      alt={`box-preview-${index + 1}`}
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+            )}
 
             <div className="border-t border-gray-100 pt-4 space-y-3">
               <div className="flex justify-between text-sm text-gray-600">

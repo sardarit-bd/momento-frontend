@@ -15,6 +15,14 @@ const inputStyle =
   "w-full bg-[#F3F4F6] text-gray-900 placeholder-gray-500 px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-400 transition-all text-sm border border-transparent";
 
 const deckPreviewLayers = ["dresses", "skin_tones", "hairs", "crowns", "beards", "eyes", "mouths", "noses"];
+const DECK_RANK_MAP = {
+  Ace_Card: "ace",
+  king_Card: "king",
+  Queen_Card: "queen",
+  Jeck_Card: "jack",
+  Joker_Card: "joker",
+};
+const DECK_RANK_ORDER = ["ace", "king", "queen", "jack", "joker"];
 
 export default function CheckoutPage() {
   const id = getId();
@@ -138,6 +146,97 @@ export default function CheckoutPage() {
     router.push(`/application/deckcard/${editableItem.productSlug}`);
   };
 
+  const isDataUrlImage = (value) =>
+    typeof value === "string" && /^data:image\/[a-zA-Z0-9.+-]+;base64,/.test(value);
+
+  const blobToDataUrl = (blob) =>
+    new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onloadend = () => resolve(reader.result);
+      reader.onerror = reject;
+      reader.readAsDataURL(blob);
+    });
+
+  const ensureImageDataUrl = async (value) => {
+    if (!value || typeof value !== "string") return null;
+    if (isDataUrlImage(value)) return value;
+
+    try {
+      const response = await fetch(value);
+      if (!response.ok) return null;
+      const blob = await response.blob();
+      const dataUrl = await blobToDataUrl(blob);
+      return typeof dataUrl === "string" ? dataUrl : null;
+    } catch {
+      return null;
+    }
+  };
+
+  const normalizeTradingFinalProduct = async (item) => {
+    const sourceCards = Array.isArray(item?.FinalProduct) ? item.FinalProduct : [];
+    const normalized = [];
+
+    for (let index = 0; index < sourceCards.length; index += 1) {
+      const card = sourceCards[index];
+      const imageSource =
+        typeof card === "string"
+          ? card
+          : card?.image || card?.baseImage || card?.src || null;
+      const image = await ensureImageDataUrl(imageSource);
+      if (!image) continue;
+
+      const side =
+        card && typeof card === "object" && card?.side
+          ? card.side
+          : index === sourceCards.length - 1
+            ? "back"
+            : "front";
+
+      normalized.push({ side, image });
+    }
+
+    if (normalized.some((entry) => entry.side === "back")) return normalized;
+    const backFallback = await ensureImageDataUrl(item?.FinalProductImages?.[1] || item?.FinalProductImages?.[0]);
+    if (backFallback) normalized.push({ side: "back", image: backFallback });
+    return normalized;
+  };
+
+  const normalizeDeckFinalProduct = async (item) => {
+    const sourceCards = Array.isArray(item?.FinalProduct) ? item.FinalProduct : [];
+    const normalized = [];
+
+    for (let index = 0; index < sourceCards.length; index += 1) {
+      const card = sourceCards[index];
+      const rawType =
+        card?.editedCard || card?.card_type || card?.type || card?.rank || null;
+      const rank =
+        DECK_RANK_MAP[rawType] ||
+        (typeof rawType === "string" ? rawType.toLowerCase() : null);
+      const imageSource =
+        typeof card === "string"
+          ? card
+          : card?.image || card?.baseImage || card?.src || null;
+      const image = await ensureImageDataUrl(imageSource);
+
+      if (!image || !rank) continue;
+      normalized.push({ rank, image });
+    }
+
+    return normalized.sort(
+      (a, b) => DECK_RANK_ORDER.indexOf(a.rank) - DECK_RANK_ORDER.indexOf(b.rank)
+    );
+  };
+
+  const deriveCustomizationMode = (item) => {
+    const type = String(item?.productType || "").toLowerCase();
+    if (type === "trading") return "trading";
+    if (type === "customizable") return "deck";
+    if (Array.isArray(item?.FinalProduct) && item.FinalProduct.some((card) => card?.editedCard)) {
+      return "deck";
+    }
+    return "trading";
+  };
+
   const handleCheckout = async (e) => {
     e.preventDefault();
 
@@ -184,12 +283,19 @@ export default function CheckoutPage() {
             });
           }
 
+          const customization_mode = deriveCustomizationMode(item);
+          const FinalProduct =
+            customization_mode === "deck"
+              ? await normalizeDeckFinalProduct(item)
+              : await normalizeTradingFinalProduct(item);
+
           return {
             product_id: parseInt(item.productId),
             qty: parseInt(item.productQuantity),
             price: parseFloat(item.productUnitPrice),
             name: item.productName || 'Product',
-            FinalProduct: item.FinalProduct || [],
+            customization_mode,
+            FinalProduct,
             FinalPDF: pdfData ? { data: pdfData } : null,
           };
         })

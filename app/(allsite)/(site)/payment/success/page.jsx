@@ -1,8 +1,16 @@
 "use client";
 
+import useCartStore from "@/store/useCartStore";
 import Link from "next/link";
+import { useEffect } from "react";
 
 export default function PaymentSuccessPage() {
+    const { clearCart } = useCartStore();
+
+    useEffect(() => {
+        clearCart();
+    }, [clearCart]);
+
     return (
         <div className="bg-slate-50">
             <div className="mx-auto max-w-3xl px-4 py-12">

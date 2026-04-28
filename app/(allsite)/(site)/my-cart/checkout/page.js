@@ -26,7 +26,7 @@ export default function CheckoutPage() {
   // Form State
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
-  const [email, setemail] = useState("");
+  // const [email, setemail] = useState("");
   const [phone, setphone] = useState("");
   const [City, setCity] = useState("");
   const [zipcode, setzipcode] = useState("");
@@ -143,8 +143,8 @@ export default function CheckoutPage() {
 
     const fullName = `${firstName} ${lastName}`.trim();
 
-    if (!fullName || !email || !phone || !City || !address || !zipcode) {
-      toast.warn("All shipping and contact fields are required");
+    if (!fullName || !phone || !City || !address || !zipcode) {
+      toast.warn("All shipping fields are required");
       return;
     }
 
@@ -161,6 +161,10 @@ export default function CheckoutPage() {
       toast.error("Some items in your cart are invalid. Please refresh and try again.");
       return;
     }
+
+    // Backend checkout currently validates email as required.
+    // Keep email hidden in UI, but always send a valid fallback value.
+    const checkoutEmail = `${id || "guest"}@example.com`;
 
     setloading(true);
 
@@ -193,7 +197,7 @@ export default function CheckoutPage() {
 
       const checkoutData = {
         name: fullName,
-        email,
+        email: checkoutEmail,
         phone,
         address,
         city: City,
@@ -367,13 +371,13 @@ export default function CheckoutPage() {
           <div className="bg-white rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.04)] border border-gray-100 p-5 sm:p-6 md:p-8 lg:sticky lg:top-8">
             <h2 className="text-xl font-bold mb-6 flex items-center gap-2">
               <svg className="text-sky-600" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>
-              Payment Details
+              Shipping Information
             </h2>
 
             <form onSubmit={handleCheckout} className="space-y-6">
               
               {/* Email Section */}
-              <div>
+              {/* <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1.5">Email Address</label>
                 <input
                   type="email"
@@ -383,8 +387,8 @@ export default function CheckoutPage() {
                   className={inputStyle}
                   required
                 />
-                {/* <p className="text-xs text-gray-500 mt-1.5">We'll send your download link here</p> */}
-              </div>
+                <p className="text-xs text-gray-500 mt-1.5">We'll send your download link here</p>
+              </div> */}
 
               {/* Shipping Information */}
               <div>
@@ -394,6 +398,8 @@ export default function CheckoutPage() {
                     <input type="text" value={firstName} onChange={(e) => setFirstName(e.target.value)} placeholder="First Name" className={inputStyle} required />
                     <input type="text" value={lastName} onChange={(e) => setLastName(e.target.value)} placeholder="Last Name" className={inputStyle} required />
                   </div>
+
+                  {/* <input type="email" value={email} onChange={(e) => setemail(e.target.value)} placeholder="Email" className={inputStyle} required /> */}
                   
                   {/* Phone included to pass your validation silently */}
                   <input type="tel" value={phone} onChange={(e) => setphone(e.target.value)} placeholder="Phone Number" className={inputStyle} required />
@@ -408,7 +414,7 @@ export default function CheckoutPage() {
               </div>
 
               {/* Payment Information (Visual representation for Stripe redirect design) */}
-              <div>
+              {/* <div>
                 <label className="block text-sm font-medium text-gray-700 mb-3 mt-4">Payment Information</label>
                 <div className="space-y-3">
                   <input type="text" value={cardName} onChange={(e) => setCardName(e.target.value)} placeholder="Name on Card" className={inputStyle} />
@@ -418,29 +424,28 @@ export default function CheckoutPage() {
                     <input type="text" value={cardCvv} onChange={(e) => setCardCvv(e.target.value)} placeholder="CVV" className={inputStyle} />
                   </div>
                 </div>
-              </div>
+              </div> */}
 
               {/* Secure Checkout Alert */}
-              <div className="bg-[#F0FDF4] border border-[#BBF7D0] rounded-xl p-4 flex gap-3 items-start mt-4">
+              {/* <div className="bg-[#F0FDF4] border border-[#BBF7D0] rounded-xl p-4 flex gap-3 items-start mt-4">
                  <svg className="text-[#16A34A] mt-0.5" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
                  <div>
                     <p className="text-sm font-semibold text-[#166534]">Secure Checkout</p>
                     <p className="text-xs text-[#15803D] mt-0.5">Your payment information is encrypted and secure</p>
                  </div>
-              </div>
+              </div> */}
 
               {/* Submit Button */}
               <button
                 type="submit"
                 disabled={loading || cart.length === 0}
-                className="w-full bg-sky-500 hover:bg-sky-600 text-white font-bold py-4 rounded-xl shadow-lg shadow-sky-200 transition-all flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed mt-6"
+                className="w-full bg-sky-500 hover:bg-sky-600 text-white font-bold py-4 rounded-xl shadow-lg shadow-sky-200 transition-all flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed mt-6 cursor-pointer"
               >
-                {loading && <SpinLoader />}
-                {loading ? "Processing..." : `Complete Purchase - $${total.toFixed(2)}`}
+                Continue
               </button>
 
               {/* Trust Badges */}
-              <div className="flex items-center justify-center gap-4 text-[10px] text-gray-500 pt-2">
+              {/* <div className="flex items-center justify-center gap-4 text-[10px] text-gray-500 pt-2">
                  <span className="flex items-center gap-1">
                     <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
                     SSL Encrypted
@@ -449,7 +454,7 @@ export default function CheckoutPage() {
                  <span>Secure Payment</span>
                  <span>•</span>
                  <span>Money Back Guarantee</span>
-              </div>
+              </div> */}
 
             </form>
           </div>

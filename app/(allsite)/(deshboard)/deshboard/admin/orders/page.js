@@ -111,6 +111,7 @@ function OrderTable({ allorders, token, fetching }) {
 
     const [ismodalopen, setismodalopen] = useState(false);
     const [modalinfo, setmodalinfo] = useState(null);
+    const [modaltype, setmodaltype] = useState("pdf");
     const [dloading, setdloading] = useState(false);
     const [currentIndex, setcurrentIndex] = useState(0);
 
@@ -148,7 +149,7 @@ function OrderTable({ allorders, token, fetching }) {
 
 
 
-    console.log(allorders);
+    // console.log(allorders);
 
 
 
@@ -238,10 +239,10 @@ function OrderTable({ allorders, token, fetching }) {
                                 </td>
 
                                 <td className="px-4 py-3 text-right">
-                                    <button onClick={() => { setismodalopen(true), setmodalinfo(order) }} className="text-blue-600 hover:underline text-sm mr-3 cursor-pointer">
+                                    <button onClick={() => { setmodaltype("pdf"); setismodalopen(true); setmodalinfo(order); }} className="text-blue-600 hover:underline text-sm mr-3 cursor-pointer">
                                         View PDF
                                     </button>
-                                    <button onClick={() => { setismodalopen(true), setmodalinfo(order) }} className="text-blue-600 hover:underline text-sm mr-3 cursor-pointer">
+                                    <button onClick={() => { setmodaltype("png"); setismodalopen(true); setmodalinfo(order); }} className="text-blue-600 hover:underline text-sm mr-3 cursor-pointer">
                                         View PNG
                                     </button>
                                 </td>
@@ -250,7 +251,7 @@ function OrderTable({ allorders, token, fetching }) {
                     </tbody>
                 </table>
             </div>
-            {ismodalopen && <TableModal ismodalopen={ismodalopen} setismodalopen={setismodalopen} modalinfo={modalinfo} />}
+            {ismodalopen && <TableModal setismodalopen={setismodalopen} modalinfo={modalinfo} modaltype={modaltype} />}
             <ToastContainer position="bottom-right" />
         </div>
     );
@@ -265,7 +266,7 @@ function OrderTable({ allorders, token, fetching }) {
 
 
 //******************* Modal Component is here *********************//
-const TableModal = ({ ismodalopen, setismodalopen, modalinfo }) => {
+const TableModal = ({ setismodalopen, modalinfo, modaltype }) => {
     return (
         <div className="bg-white border border-gray-300 shadow-xl rounded-xl p-0 absolute inset-0 w-full h-full">
             <div onClick={() => { setismodalopen(false) }} className="text-white bg-sky-500 w-8 h-8 flex items-center justify-center p-4 rounded-full absolute hover:rotate-180 transition duration-300 -top-4 -right-4 cursor-pointer shadow-xl">
@@ -273,7 +274,7 @@ const TableModal = ({ ismodalopen, setismodalopen, modalinfo }) => {
             </div>
 
 
-            <ImageDownloadInfo modalinfo={modalinfo} />
+            <ImageDownloadInfo modalinfo={modalinfo} modaltype={modaltype} />
 
         </div>
     )
@@ -299,15 +300,188 @@ const TableModal = ({ ismodalopen, setismodalopen, modalinfo }) => {
 
 
 
-function ImageDownloadInfo({ modalinfo }) {
+function ImageDownloadInfo({ modalinfo, modaltype }) {
+    const parseMaybeJson = (value) => {
+        if (!value) return null;
+        if (typeof value === "object") return value;
+        if (typeof value !== "string") return null;
+        try {
+            return JSON.parse(value);
+        } catch {
+            return null;
+        }
+    };
+
+    const buildDeckPreviewFromCard = (card) => {
+        if (!card || typeof card !== "object") return null;
+        if (card.baseImage) return card.baseImage;
+        return null;
+    };
+
+    const isImageLikeUrl = (value) => {
+        if (typeof value !== "string") return false;
+        if (value.startsWith("data:image/")) return true;
+        return /\.(jpg|jpeg|png|webp|gif|bmp|svg)(\?.*)?$/i.test(value);
+    };
+
+    const collectImageUrlsDeep = (node, path = "", bag = []) => {
+        if (!node) return bag;
+
+        if (Array.isArray(node)) {
+            node.forEach((entry, index) => collectImageUrlsDeep(entry, `${path}[${index}]`, bag));
+            return bag;
+        }
+
+        if (typeof node === "string") {
+            if (isImageLikeUrl(node)) bag.push(node);
+            return bag;
+        }
+
+        if (typeof node !== "object") return bag;
+
+        Object.entries(node).forEach(([key, rawValue]) => {
+            const value = parseMaybeJson(rawValue) || rawValue;
+            const fullPath = `${path}.${key}`.toLowerCase();
+
+            // Prefer customization-related keys to avoid unrelated catalog image noise.
+            const looksCustomizationField =
+                fullPath.includes("final") ||
+                fullPath.includes("custom") ||
+                fullPath.includes("preview") ||
+                fullPath.includes("front") ||
+                fullPath.includes("back") ||
+                fullPath.includes("base") ||
+                fullPath.includes("layer");
+
+            if (typeof value === "string" && isImageLikeUrl(value) && looksCustomizationField) {
+                bag.push(value);
+                return;
+            }
+
+            if (typeof value === "string" && value.startsWith("data:image/")) {
+                bag.push(value);
+                return;
+            }
+
+            if (Array.isArray(value) || (value && typeof value === "object")) {
+                collectImageUrlsDeep(value, fullPath, bag);
+            }
+        });
+
+        return bag;
+    };
+
+    const extractCustomizedImagesFromOrder = (order) => {
+        const items = Array.isArray(order?.items)
+            ? order.items
+            : Array.isArray(order?.order_items)
+                ? order.order_items
+                : Array.isArray(order?.orderItems)
+                    ? order.orderItems
+                    : [];
+        const images = [];
+
+        items.forEach((item) => {
+            const possibleSources = [
+                item,
+                item?.product,
+                item?.pivot,
+                parseMaybeJson(item?.product_data),
+                parseMaybeJson(item?.productData),
+                parseMaybeJson(item?.meta),
+                parseMaybeJson(item?.customization_data),
+                parseMaybeJson(item?.customizationData),
+            ].filter(Boolean);
+
+            possibleSources.forEach((src) => {
+                const finalProductImages =
+                    parseMaybeJson(src?.FinalProductImages) ||
+                    parseMaybeJson(src?.final_product_images) ||
+                    src?.FinalProductImages ||
+                    src?.final_product_images;
+                if (Array.isArray(finalProductImages)) {
+                    finalProductImages.forEach((url) => {
+                        if (typeof url === "string" && url) images.push(url);
+                    });
+                }
+
+                const previews =
+                    parseMaybeJson(src?.previews) ||
+                    parseMaybeJson(src?.preview_images) ||
+                    src?.previews ||
+                    src?.preview_images;
+                if (previews && typeof previews === "object") {
+                    if (typeof previews.front === "string" && previews.front) images.push(previews.front);
+                    if (typeof previews.back === "string" && previews.back) images.push(previews.back);
+                }
+
+                const finalProduct =
+                    parseMaybeJson(src?.FinalProduct) ||
+                    parseMaybeJson(src?.final_product) ||
+                    src?.FinalProduct ||
+                    src?.final_product;
+                if (Array.isArray(finalProduct)) {
+                    finalProduct.forEach((entry) => {
+                        if (typeof entry === "string" && entry) {
+                            images.push(entry);
+                            return;
+                        }
+                        const deckBase = buildDeckPreviewFromCard(entry);
+                        if (deckBase) images.push(deckBase);
+                    });
+                }
+
+                // Generic fallback: recursively scan this source for customization image URLs.
+                collectImageUrlsDeep(src, "item", images);
+            });
+        });
+
+        // Order-level fallback in case backend stores customization outside items.
+        collectImageUrlsDeep(order, "order", images);
+
+        const deduped = [];
+        images.forEach((url) => {
+            if (!url) return;
+            if (!deduped.includes(url)) deduped.push(url);
+        });
+
+        return deduped;
+    };
+
+    const pngImages = extractCustomizedImagesFromOrder(modalinfo);
 
     return (
         <div className="w-full h-full rounded-xl bg-white">
             <div className="w-full h-full flex items-center gap-4 flex-wrap">
-
-                {/* PDF view seciton is here */}
-
-                <PDFViewers fulldata={modalinfo} url={modalinfo?.customized_file_url} />
+                {modaltype === "pdf" ? (
+                    <PDFViewers fulldata={modalinfo} url={modalinfo?.customized_file_url} />
+                ) : (
+                    <div className="w-full h-full overflow-y-auto p-6 bg-slate-50">
+                        <h3 className="text-lg font-semibold text-slate-900 mb-4">Customized Card Images</h3>
+                        {pngImages.length === 0 ? (
+                            <div className="text-sm text-slate-600">No customized PNG images found for this order.</div>
+                        ) : (
+                            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                                {pngImages.map((url, index) => (
+                                    <a
+                                        key={`${url}-${index}`}
+                                        href={url}
+                                        target="_blank"
+                                        rel="noreferrer"
+                                        className="block bg-white rounded-xl border border-slate-200 p-2 shadow-sm hover:shadow-md transition"
+                                    >
+                                        <img
+                                            src={url}
+                                            alt={`customized-card-${index + 1}`}
+                                            className="w-full h-auto rounded-lg object-cover"
+                                        />
+                                        <p className="text-xs text-slate-500 mt-2 text-center">Image {index + 1}</p>
+                                    </a>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+                )}
 
 
             </div>

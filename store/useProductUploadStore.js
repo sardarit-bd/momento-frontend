@@ -4,7 +4,7 @@ const useProductUploadStore = create((set) => ({
 
     rander: 1,
     setrander: (rander) => set({ rander }),
-    productType: "Simple",
+    productType: "simple",
     setproductType: (product) => set({ productType: product }),
     productName: "",
     setproductName: (product) => set({ productName: product }),

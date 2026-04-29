@@ -6,21 +6,17 @@ const One = () => {
 
     const { rander, setrander, productType, setproductType } = useProductUploadStore();
 
-
-    console.log(productType);
-
-
     return (
         <div>
             <div className="flex items-center gap-3 justify-center pt-10 pb-6">
-                <div onClick={() => setproductType("Simple")} className={`border border-gray-300 px-6 py-6 rounded-md text-white text-2xl w-[260px] text-center h-[110px] flex items-center justify-center cursor-pointer ${productType === "Simple" ? "bg-sky-400" : "bg-gray-400"}`}>
+                <div onClick={() => setproductType("simple")} className={`border border-gray-300 px-6 py-6 rounded-md text-white text-2xl w-[260px] text-center h-[110px] flex items-center justify-center cursor-pointer ${productType === "simple" ? "bg-sky-400" : "bg-gray-400"}`}>
                     Simple Product
                 </div>
-                <div onClick={() => setproductType("Customizable")} className={`border border-gray-300 px-6 py-6 rounded-md text-white text-2xl w-[260px] text-center h-[110px] flex items-center justify-center cursor-pointer ${productType === "Customizable" ? "bg-sky-400" : "bg-gray-400"}`}>
+                <div onClick={() => setproductType("customizable")} className={`border border-gray-300 px-6 py-6 rounded-md text-white text-2xl w-[260px] text-center h-[110px] flex items-center justify-center cursor-pointer ${productType === "customizable" ? "bg-sky-400" : "bg-gray-400"}`}>
                     Customizable Deck Product
                 </div>
 
-                <div onClick={() => setproductType("Trading")} className={`border border-gray-300 px-6 py-6 rounded-md text-white text-2xl w-[260px] text-center h-[110px] flex items-center justify-center cursor-pointer ${productType === "Trading" ? "bg-sky-400" : "bg-gray-400"}`}>
+                <div onClick={() => setproductType("trading")} className={`border border-gray-300 px-6 py-6 rounded-md text-white text-2xl w-[260px] text-center h-[110px] flex items-center justify-center cursor-pointer ${productType === "trading" ? "bg-sky-400" : "bg-gray-400"}`}>
                     Customizable Treding Product
                 </div>
 

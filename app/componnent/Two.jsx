@@ -11,7 +11,7 @@ import { useCallback, useEffect, useState } from "react";
 import { CiCirclePlus } from "react-icons/ci";
 import { FaPlus } from "react-icons/fa6";
 import { RxCross2 } from "react-icons/rx";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import SpinLoader from "./SpingLoader";
 
 const Two = () => {
@@ -52,7 +52,6 @@ const Two = () => {
     const fetching = useCallback(async (token) => {
         try {
             const response = await MakeGet(`api/categories`, token);
-            console.log(response);
             setdata(response?.data?.categories);
         } catch (error) {
             console.error("Error fetching profile:", error);
@@ -105,7 +104,7 @@ const Two = () => {
     /********** handle next function **********/
     const handleNext = () => {
 
-        if (productType === "Customizable") {
+        if (productType === "customizable") {
 
             if (productName && productPrice > 0 && productShortDescription && productCategory && productThumbnail && productImages?.length > 0 && layerBaseCard?.length > 0 && layerSkinTone?.length > 0) {
                 setLoading(true);
@@ -118,7 +117,7 @@ const Two = () => {
             }
 
 
-        } else if (productType === "Treding") {
+        } else if (productType === "trading") {
 
 
             if (productName && productPrice > 0 && productShortDescription && productCategory && productThumbnail && productImages?.length > 0 && tredingFrontBase?.length > 0 && tredingBackBase?.length > 0) {
@@ -150,17 +149,6 @@ const Two = () => {
     }
 
 
-
-
-
-
-    console.log(layerBaseCard);
-
-
-
-
-
-
     return (
         <div className="flex justify-center px-2">
             <div className="w-full bg-white rounded-2xl">
@@ -187,7 +175,7 @@ const Two = () => {
                                 disabled
                                 type="text"
                                 name="type"
-                                value={productType}
+                                value={productType === "simple" ? "Simple" : productType === "trading" ? "Trading" : "Customizable"}
                                 onChange={(e) => { e.target.value }}
                                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
                             />
@@ -286,7 +274,7 @@ const Two = () => {
                         {/* for customizable product */}
 
                         {
-                            productType === 'Customizable' && (
+                            productType === 'customizable' && (
                                 <>
                                     <div className="mt-6">
                                         <label className="block text-gray-700 mb-1">Base Card:
@@ -951,7 +939,7 @@ const Two = () => {
 
 
                         {
-                            productType === 'Trading' && (
+                            productType === 'trading' && (
                                 <>
 
                                     <div className="mt-6">
@@ -1168,7 +1156,6 @@ const Two = () => {
                     </div>
                 </div>
             </div>
-            <ToastContainer />
         </div >
     );
 

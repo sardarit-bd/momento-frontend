@@ -63,6 +63,8 @@ const SingleProduct = () => {
         fetching(slug);
     }, []);
 
+    console.log(data);
+
 
 
     // handle add to cart

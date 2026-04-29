@@ -12,17 +12,35 @@ const MakePost = async (endpoint, data, token) => {
             body: JSON.stringify(data),
         });
 
-
-        if (!response.ok) {
-            console.error(`Request failed with status: ${response.status}`);
-            return false;
+        let payload = null;
+        try {
+            payload = await response.json();
+        } catch (parseError) {
+            payload = null;
         }
 
-        const res = await response.json();
-        return res; // Actual response data
+        if (!response.ok) {
+            const errorDetails = {
+                success: false,
+                status: response.status,
+                statusText: response.statusText,
+                endpoint,
+                error: payload
+            };
+
+            return errorDetails;
+        }
+
+        return payload; // Actual response data
 
     } catch (error) {
-        return false;
+        return {
+            success: false,
+            status: 0,
+            statusText: "NETWORK_ERROR",
+            endpoint,
+            error: error?.message || error
+        };
     }
 };
 

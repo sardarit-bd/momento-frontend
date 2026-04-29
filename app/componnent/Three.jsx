@@ -6,7 +6,7 @@ import MakePost from "@/utilis/requestrespose/post";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import SpinLoader from "./SpingLoader";
 
 const Three = () => {
@@ -49,15 +49,28 @@ const Three = () => {
         e.preventDefault();
         setLoading(true);
         try {
+            let parsedCategory = {};
+            try {
+                parsedCategory = typeof productCategory === "string"
+                    ? JSON.parse(productCategory)
+                    : (productCategory || {});
+            } catch (parseError) {
+                parsedCategory = {};
+            }
+
+            const categoryId = Number(parsedCategory?.id);
+            const price = Number(productPrice);
+            const offerPrice = Number(productofferPrice);
+            const status = String(productStatus) === "true";
 
             const productStateSimple = {
                 name: productName,
                 slug: null,
                 type: productType,
-                price: Number(productPrice),
-                status: Boolean(productStatus),
-                offer_price: Number(productofferPrice),
-                category_id: Number(JSON.parse(productCategory)?.id),
+                price,
+                status,
+                offer_price: offerPrice,
+                category_id: categoryId,
                 short_description: productShortDescription,
                 description: productDescription,
                 image: productThumbnail,
@@ -69,10 +82,10 @@ const Three = () => {
                 name: productName,
                 slug: null,
                 type: productType,
-                price: Number(productPrice),
-                status: Boolean(productStatus),
-                offer_price: Number(productofferPrice),
-                category_id: Number(JSON.parse(productCategory)?.id),
+                price,
+                status,
+                offer_price: offerPrice,
+                category_id: categoryId,
                 short_description: productShortDescription,
                 description: productDescription,
                 image: productThumbnail,
@@ -90,17 +103,27 @@ const Three = () => {
                 trading_backs: tredingBackBase
             };
 
+            const payload = productType === "simple" ? productStateSimple : productStateCustomizable;
+            const payloadSizeInKB = (new Blob([JSON.stringify(payload)]).size / 1024).toFixed(2);
+            const clientValidation = {
+                name: Boolean(payload?.name),
+                type: Boolean(payload?.type),
+                price_is_number: Number.isFinite(payload?.price),
+                offer_price_is_number: Number.isFinite(payload?.offer_price),
+                category_id_is_number: Number.isFinite(payload?.category_id),
+                image_exists: Boolean(payload?.image),
+                images_is_non_empty_array: Array.isArray(payload?.images) && payload?.images.length > 0
+            };
 
-
-
-
-
-
-            console.log(productType === "Simple" ? productStateSimple : productStateCustomizable);
+            if (Object.values(clientValidation).includes(false)) {
+                console.error("[Card Product Debug] Payload validation failed before API call", clientValidation);
+                toast.error("Validation failed. Check browser console for exact invalid fields.");
+                return;
+            }
 
 
             // api/products
-            const response = await MakePost(`api/cardproduct`, productType === "Simple" ? productStateSimple : productStateCustomizable, token);
+            const response = await MakePost(`api/cardproduct`, payload, token);
 
 
 
@@ -113,7 +136,9 @@ const Three = () => {
 
 
             } else {
-                toast.error("Something Went Wrong");
+                console.error("[Card Product Debug] API error response", response);
+                console.error("[Card Product Debug] API error JSON", JSON.stringify(response?.error || {}, null, 2));
+                toast.error("Something went wrong");
             }
         } catch (error) {
             console.error("Error fetching profile:", error);
@@ -215,7 +240,7 @@ const Three = () => {
 
 
                 {
-                    productType === "Customizable" && (
+                    productType === "customizable" && (
                         <>
 
 
@@ -435,7 +460,7 @@ const Three = () => {
 
 
                 {
-                    productType === "Trading" && (
+                    productType === "trading" && (
                         <>
 
                             <div className="w-full col-span-4">
@@ -484,7 +509,6 @@ const Three = () => {
 
 
             </div>
-            <ToastContainer />
         </div>
     )
 }

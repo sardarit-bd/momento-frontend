@@ -30,10 +30,10 @@ const Signin = () => {
             const response = await logingandsignupmakepost("api/login", { email, password });
 
             if (response) {
-                setCookie("token", response?.data?.token, 1);
-                setCookie("id", response?.data?.user?.id, 1)
-                setCookie("name", response?.data?.user?.name, 1);
-                setCookie("role", response?.data?.user?.role, 1);
+                setCookie("token", response?.data?.token, 30);
+                setCookie("id", response?.data?.user?.id, 30)
+                setCookie("name", response?.data?.user?.name, 30);
+                setCookie("role", response?.data?.user?.role, 30);
                 setLoginUser({
                     name: response?.data?.user?.name,
                     token: response?.data?.token,

@@ -60,7 +60,7 @@ const Three = () => {
 
             const categoryId = Number(parsedCategory?.id);
             const price = Number(productPrice);
-            const offerPrice = Number(productofferPrice);
+            const offerPrice = productofferPrice ? Number(productofferPrice) : null;
             const status = String(productStatus) === "true";
 
             const productStateSimple = {
@@ -77,6 +77,13 @@ const Three = () => {
                 images: productImages,
             };
 
+            const flattenedBaseCards = layerBaseCard?.flatMap(group =>
+                group?.images?.map(img => ({
+                    image: img,
+                    card_type: group?.card_type
+                }))
+            ) ?? [];
+
 
             const productStateCustomizable = {
                 name: productName,
@@ -90,6 +97,7 @@ const Three = () => {
                 description: productDescription,
                 image: productThumbnail,
                 images: productImages,
+                base_cards: flattenedBaseCards,
                 skin_tones: layerSkinTone,
                 hairs: layerHair,
                 noses: layerNose,
@@ -109,7 +117,7 @@ const Three = () => {
                 name: Boolean(payload?.name),
                 type: Boolean(payload?.type),
                 price_is_number: Number.isFinite(payload?.price),
-                offer_price_is_number: Number.isFinite(payload?.offer_price),
+                offer_price_is_number: payload?.offer_price === null || Number.isFinite(payload?.offer_price), // ← fixed
                 category_id_is_number: Number.isFinite(payload?.category_id),
                 image_exists: Boolean(payload?.image),
                 images_is_non_empty_array: Array.isArray(payload?.images) && payload?.images.length > 0

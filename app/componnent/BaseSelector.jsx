@@ -41,7 +41,9 @@ const BaseSelector = ({ product, cards, activeCard, selectBase, editedCard, sete
     const safeEditedCard = allowedCardTypes.includes(editedCard)
       ? editedCard
       : (allowedCardTypes.find((type) => allcard.some((card) => card?.card_type === type)) || allowedCardTypes[0]);
-    const filteredCards = allcard?.filter((card) => card?.card_type === safeEditedCard);
+    const filteredCards = allcard?.filter((card) => 
+        card?.card_type === editedCard || card?.name === editedCard
+    );
 
     if (safeEditedCard !== editedCard) seteditedCard(safeEditedCard);
     setactivebaseEditCard(filteredCards || []);

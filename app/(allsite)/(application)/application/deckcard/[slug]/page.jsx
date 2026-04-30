@@ -33,6 +33,17 @@ const CARD_TYPE_LABELS = {
     Joker_Card: "Joker",
 };
 
+const normalizeCardType = (value = "") => String(value).toLowerCase();
+const getCanonicalCardType = (value = "") => {
+    const normalized = normalizeCardType(value);
+    if (normalized.includes("ace")) return "Ace_Card";
+    if (normalized.includes("king")) return "king_Card";
+    if (normalized.includes("queen")) return "Queen_Card";
+    if (normalized.includes("jeck") || normalized.includes("jack")) return "Jeck_Card";
+    if (normalized.includes("joker")) return "Joker_Card";
+    return null;
+};
+
 const ProductCustomizer = () => {
     const { slug } = useParams();
     const customCardsStorageKey = `customCards:${slug}`;
@@ -47,7 +58,7 @@ const ProductCustomizer = () => {
     const [doneloading, setdoneloading] = useState(false);
     const { addToCart, clearCart } = useDeckFinalPreview();
     const [smallconOpen, setsmallconOpen] = useState(false);
-    const [editedCard, seteditedCard] = useState("king_Card");
+    const [editedCard, seteditedCard] = useState("Ace_Card");
     const [activebaseEditCard, setactivebaseEditCard] = useState([]);
     const [showJokerUpsell, setshowJokerUpsell] = useState(false);
     const { setfinalCards } = usefinalCardsStore();
@@ -76,19 +87,46 @@ const ProductCustomizer = () => {
                     parsedCards = [];
                 }
 
-                if (parsedCards.length > 0) {
+                const baseCards = res?.data?.customizations?.custom_sets || [];
+                const firstBaseImageByType = baseCards.reduce((acc, item) => {
+                    const canonicalType = getCanonicalCardType(item?.card_type);
+                    if (!canonicalType || acc[canonicalType]) return acc;
+                    acc[canonicalType] = item?.image;
+                    return acc;
+                }, {});
+                const validBaseByType = baseCards.reduce((acc, item) => {
+                    const canonicalType = getCanonicalCardType(item?.card_type);
+                    if (!canonicalType || !item?.image) return acc;
+                    if (!acc[canonicalType]) acc[canonicalType] = new Set();
+                    acc[canonicalType].add(item.image);
+                    return acc;
+                }, {});
+
+                const sanitizedCards = parsedCards.map((card) => {
+                    const canonicalType = getCanonicalCardType(card?.editedCard);
+                    if (!canonicalType) return card;
+                    const hasValidBase = validBaseByType[canonicalType]?.has(card?.baseImage);
+                    if (hasValidBase) return { ...card, editedCard: canonicalType };
+                    return {
+                        ...card,
+                        editedCard: canonicalType,
+                        baseImage: firstBaseImageByType[canonicalType] || card?.baseImage,
+                    };
+                });
+
+                if (sanitizedCards.length > 0) {
                     // Migrate legacy storage key to product-scoped key.
-                    localStorage.setItem(customCardsStorageKey, JSON.stringify(parsedCards));
+                    localStorage.setItem(customCardsStorageKey, JSON.stringify(sanitizedCards));
                 }
 
-                const initialType = CARD_FLOW.find((type) => parsedCards?.some((card) => card?.editedCard === type)) || parsedCards?.[0]?.editedCard;
+                const initialType = CARD_FLOW.find((type) => sanitizedCards?.some((card) => card?.editedCard === type)) || sanitizedCards?.[0]?.editedCard;
                 const storedActiveIndex = Number(localStorage.getItem(customCardsActiveIndexStorageKey));
-                const initialIndex = Number.isInteger(storedActiveIndex) && storedActiveIndex >= 0 && storedActiveIndex < parsedCards.length
+                const initialIndex = Number.isInteger(storedActiveIndex) && storedActiveIndex >= 0 && storedActiveIndex < sanitizedCards.length
                     ? storedActiveIndex
-                    : parsedCards?.findIndex((card) => card?.editedCard === initialType);
+                    : sanitizedCards?.findIndex((card) => card?.editedCard === initialType);
 
-                if (parsedCards.length > 0) {
-                    setCards(parsedCards);
+                if (sanitizedCards.length > 0) {
+                    setCards(sanitizedCards);
                     setActiveCardIndex(initialIndex >= 0 ? initialIndex : 0);
                     if (initialType) seteditedCard(initialType);
                     return;
@@ -133,9 +171,22 @@ const ProductCustomizer = () => {
 
     const activeCard = cards[activeCardIndex];
     const activeType = activeCard?.editedCard;
+
+    const getBaseImageForType = (cardType) => {
+        const allBaseCards = product?.customizations?.custom_sets || [];
+        const canonicalType = getCanonicalCardType(cardType);
+        const directMatch = allBaseCards.find((item) => getCanonicalCardType(item?.card_type) === canonicalType)?.image;
+        if (directMatch) return directMatch;
+
+        const normalizedType = normalizeCardType(cardType);
+        const normalizedMatch = allBaseCards.find((item) => normalizeCardType(item?.card_type) === normalizedType)?.image;
+        return normalizedMatch || allBaseCards?.[0]?.image;
+    };
+
     const jokerPreviewImage =
-        product?.customizations?.custom_sets?.find((item) => item?.card_type === "Joker_Card")?.image ||
-        product?.customizations?.custom_sets?.[0]?.image;
+        product?.customizations?.custom_sets?.find(
+            (item) => item?.card_type === "Joker_Card" || item?.name === "Joker_Card"
+        )?.image || null;
 
     const selectLayerImage = (layer, url) => {
         setCards((prev) =>
@@ -159,8 +210,9 @@ const ProductCustomizer = () => {
             return;
         }
 
-        const baseForType = product?.customizations?.custom_sets?.find((item) => item?.card_type === cardType)?.image;
-        const fallbackBase = product?.customizations?.custom_sets?.[0]?.image;
+        const baseForType = product?.customizations?.custom_sets?.find(
+            (item) => item?.card_type === cardType || item?.name === cardType
+        )?.image
         const initialLayersTwo = {};
 
         layers.forEach((layer) => {
@@ -170,7 +222,7 @@ const ProductCustomizer = () => {
         });
 
         setCards((prev) => {
-            const nextCards = [...prev, { editedCard: cardType, baseImage: baseForType || fallbackBase, selectedLayers: initialLayersTwo }];
+            const nextCards = [...prev, { editedCard: cardType, baseImage: baseForType, selectedLayers: initialLayersTwo }];
             if (shouldSetActive) {
                 setActiveCardIndex(nextCards.length - 1);
             }
@@ -270,7 +322,8 @@ const ProductCustomizer = () => {
             seteditedCard(nextCardType);
         } else {
             seteditedCard(nextCardType);
-            addNewCard(nextCardType);
+            addNewCard(nextCardType, false);
+            setActiveCardIndex(cards.length);
         }
 
         setTimeout(() => setdoneloading(false), 500);
@@ -283,8 +336,9 @@ const ProductCustomizer = () => {
 
     const handleAddJokerCard = () => {
         const jokerBase =
-            product?.customizations?.custom_sets?.find((item) => item?.card_type === "Joker_Card")?.image ||
-            product?.customizations?.custom_sets?.[0]?.image;
+        product?.customizations?.custom_sets?.find(
+            (item) => item?.card_type === "Joker_Card" || item?.name === "Joker_Card"
+        )?.image || null;
 
         const initialLayers = {};
         layers.forEach((layer) => {

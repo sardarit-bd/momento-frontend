@@ -36,6 +36,8 @@ const SingleProduct = () => {
         try {
             const response = await MakeGet(`api/cardproduct/${slug}`, token);
 
+            console.log(response)
+
             setdata(response?.data);
 
             setfetchloading(false);

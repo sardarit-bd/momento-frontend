@@ -55,8 +55,8 @@ const HeaderAuth = ({ isOpen, setisOpen }) => {
           <div className="font-semibold text-md">{loginUser?.name}</div>
           <div className="group">
             <MdOutlineAccountCircle className="text-4xl" />
-            <div className="flex flex-col hidden absolute top-[30px] right-6 lg:-right-5 shadow-xl  min-w-[220px] min-h-[120px] group-hover:block">
-              <div className="bg-transparent h-[15px]"> </div>
+            <div className="flex flex-col  absolute top-7.5 right-6 lg:-right-5 shadow-xl  min-w-55 min-h-30 group-hover:block">
+              <div className="bg-transparent h-3.75"> </div>
               <div className="p-4 bg-white border border-gray-200 rounded-lg tooltipscostom">
                 <div className="flex flex-col gap-2">
                   <div>

@@ -340,7 +340,7 @@ const ProductCustomizer = () => {
                 const x = (750 - 750 * 0.64) / 2;
                 const w = 750 * 0.64;
                 const h = 1050 * 0.43;
-                const yTop = 1050 * 0.08;
+                const yTop = 1050 * 0.07;
                 const yBot = 1050 - yTop - h;
 
                 ctx.drawImage(img, x, yTop, w, h);

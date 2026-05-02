@@ -59,6 +59,7 @@ const About = () => {
           <option value={"simple"}>Simple Cards</option>
         </select>
       </div>
+      {console.log("filteredProducts", filteredProducts)}
       {filteredProducts?.length != 0 ? (
         <div className="py-14 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 px-8 max-w-7xl mx-auto ">
           {filteredProducts?.map((product) => (

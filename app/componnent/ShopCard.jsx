@@ -3,111 +3,84 @@
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { BsStars } from "react-icons/bs";
 import SpinLoader from "./SpingLoader";
 
 export default function ShopCard({ product }) {
+  const [btnLoading, setBtnLoading] = useState(false);
+  const router = useRouter();
 
+  const gotoLink = (e, link) => {
+    e.preventDefault();
+    setBtnLoading(true);
+    setTimeout(() => {
+      setBtnLoading(false);
+      router.push(link);
+    }, 1000);
+  };
 
+  const isCustomizable =
+    product?.type === "customizable" || product?.type === "trading";
 
-    const [btnLoading, setBtnLoading] = useState(false);
-    const router = useRouter();
+  return (
+    <article className="w-full max-w-xs sm:max-w-sm mx-auto bg-white rounded-2xl overflow-hidden border border-sky-100 shadow-md hover:shadow-lg hover:shadow-sky-200 hover:-translate-y-1 transition-all duration-300 group">
+      <div className="relative w-full aspect-4/3 bg-linear-to-br from-sky-100 to-sky-200 overflow-hidden">
+        <Image
+          width={1000}
+          height={1000}
+          draggable={false}
+          title={product?.name}
+          src={product?.image}
+          alt={product?.name}
+          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-in-out"
+        />
 
+        {product?.category?.name && (
+          <div className="absolute top-3 right-3">
+            <span className="bg-sky-500 text-white text-xs font-semibold px-2.5 py-1 rounded-full shadow-sm">
+              {product.category.name}
+            </span>
+          </div>
+        )}
+      </div>
 
+      <div className="h-0.75 w-full bg-linear-to-r from-sky-400 via-sky-500 to-sky-100" />
 
+      <div className="p-4 sm:p-5 flex flex-col gap-4">
+        <div className="flex flex-col gap-1">
+          <h3 className="text-base sm:text-lg font-bold text-slate-800 truncate leading-snug">
+            {product?.name}
+          </h3>
 
-    /************ add to card function is here *************/
-    const gotoLink = (e, link) => {
+          {product?.short_description && (
+            <p className="text-xs sm:text-sm text-slate-400 line-clamp-2 leading-relaxed">
+              {product.short_description}
+            </p>
+          )}
 
-        e.preventDefault();
-        setBtnLoading(true);
+          <div className="flex items-center gap-2 mt-2">
+            <span className="text-xl font-extrabold text-sky-500 tracking-tight">
+              $
+              {parseFloat(product?.price || product?.final_price || 0).toFixed(
+                2,
+              )}
+            </span>
+            {parseFloat(product?.offer_price) > 0 && (
+              <span className="text-sm text-slate-400 line-through font-medium">
+                ${parseFloat(product?.offer_price).toFixed(2)}
+              </span>
+            )}
+          </div>
+        </div>
 
-        setTimeout(() => {
-            setBtnLoading(false);
-            router.push(link);
-        }, 1000);
-
-    }
-
-
-
-
-
-
-    return (
-        <article className="w-full bg-white rounded-2xl shadow-lg overflow-hidden transform transition">
-            {/* Product Image */}
-            <div className="relative h-65 w-full overflow-hidden group">
-                <div className="bg-[#c9e7fd]">
-                    <Image
-                        width={1000}
-                        height={1000}
-                        draggable={false}
-                        title={product.name}
-                        src={product?.image}
-                        alt={product.name}
-                        className="h-full w-full rounded-xl object-contain transform transition-transform duration-500 ease-in-out group-hover:scale-110"
-                    />
-                </div>
-
-                {/* Other badges */}
-                <div className="absolute top-3 left-3 flex gap-2">
-                    {(() => {
-                        const displayBadge = product?.type === "customizable" || product?.type === "trading" ? "Customizable" : "Simple";
-                        return (
-                            <span
-                                className="text-xs font-semibold px-3 py-1 rounded-full bg-white/90 text-gray-800 shadow-md flex items-center gap-1"
-                            >
-                                {product?.type === "customizable" || product?.type === "trading" ? <BsStars className="text-sky-400 text-lg" /> : null}
-                                {displayBadge}
-                            </span>
-                        );
-                    })()}
-                </div>
-
-            </div>
-
-            {/* Product Info */}
-            <div className="p-4 flex flex-col gap-3">
-                <div>
-                    <div>
-                        <h3 className="text-lg font-bold text-gray-800 line-clamp-1">
-                            {product?.name}
-                        </h3>
-                    </div>
-                    <div className="mt-2 flex items-center gap-3">
-                        <div className="flex items-center gap-1">
-                            <span className="text-sm font-bold text-gray-900">
-                                ${parseFloat(product?.price || product?.final_price || 0).toFixed(2)}
-                            </span>
-                            {parseFloat(product.offer_price) > 0 && (
-                                <span className="text-xs line-through text-gray-400">
-                                    ${parseFloat(product?.offer_price).toFixed(2)}
-                                </span>
-                            )}
-                        </div>
-                    </div>
-                </div>
-
-                {/* Action Buttons */}
-                <div className="flex items-center justify-between">
-                    <button
-                        onClick={(e) => { gotoLink(e, `/shop/${product?.slug}`) }}
-                        className="flex-1 inline-flex justify-center items-center gap-2 rounded-md bg-sky-500 text-white py-2 px-4 text-md font-semibold shadow-lg hover:brightness-105 transition cursor-pointer flex items-center justify-center gap-2"
-                    >
-                        {btnLoading && <SpinLoader />}
-                        Explore Card
-                    </button>
-
-                </div>
-            </div>
-        </article>
-    );
+        <button
+          onClick={(e) => gotoLink(e, `/shop/${product?.slug}`)}
+          disabled={btnLoading}
+          className="w-full flex items-center justify-center gap-2 bg-linear-to-r from-sky-400 to-sky-500 hover:from-sky-500 hover:to-sky-600 text-white text-sm sm:text-base font-bold py-3 px-4 rounded-xl shadow-md hover:shadow-sky-300 active:scale-95 transition-all duration-200 disabled:opacity-70 disabled:cursor-not-allowed cursor-pointer"
+        >
+          {btnLoading && <SpinLoader />}
+          Explore Card
+        </button>
+      </div>
+    </article>
+  );
 }
-
-
-
-
-
-
-

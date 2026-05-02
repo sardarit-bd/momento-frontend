@@ -67,7 +67,7 @@ const Signin = () => {
     <div className="w-full min-h-1/2 lg:min-h-screen flex flex-col justify-center items-center bg-linear-to-b from-blue-50 to-white px-4 sm:px-6 lg:px-8 py-10">
       <div className="text-center mb-8">
         <h1 className="text-5xl font-bold text-gray-700">
-          WE'VE GOT YOU <span className="text-sky-400">COVERED!</span>
+          Good to See You <span className="text-sky-400">Again!</span>
         </h1>
       </div>
       <div

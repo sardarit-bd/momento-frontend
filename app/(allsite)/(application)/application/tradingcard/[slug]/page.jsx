@@ -138,7 +138,7 @@ export default function ProductCustomizer() {
     const getBaseTrading = useCallback(async (slug) => {
         setfetchingDataLoading(true);
         const res = await MakeGet(`api/shop/${slug}`);
-   
+
         setfrontImages(res?.data?.customizations?.trading_fronts);
         setbackImages(res?.data?.customizations?.trading_backs);
         setfetchingData(res?.data);
@@ -406,6 +406,30 @@ export default function ProductCustomizer() {
 
 
 
+    const captureCardSide = async (side) => {
+        setworkingcard(side);
+        await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+
+        // Hide Rnd drag handles before capture
+        const rndHandles = previewCardNodeRef.current?.querySelectorAll('[class*="react-resizable-handle"]');
+        rndHandles?.forEach(el => el.style.display = 'none');
+
+        // Remove dashed border from Rnd wrappers
+        const rndWrappers = previewCardNodeRef.current?.querySelectorAll('[style*="border"]');
+        const originalStyles = [];
+        rndWrappers?.forEach(el => {
+            originalStyles.push(el.style.border);
+            el.style.border = 'none';
+        });
+
+        const dataUrl = await captureNodeScreenshotForTranding(previewCardNodeRef.current);
+
+        // Restore styles
+        rndWrappers?.forEach((el, i) => el.style.border = originalStyles[i]);
+        rndHandles?.forEach(el => el.style.display = '');
+
+        return dataUrl;
+    };
 
 
     // start from here
@@ -463,70 +487,42 @@ export default function ProductCustomizer() {
 
     /******* Selected Layer Image Function ********/
     const goToFinalView = async () => {
-        const previewFallback = workingcard === "front" ? baseFront : baseBack;
-        const finalTradingCards = cards?.length > 0 ? cards : [previewFallback].filter(Boolean);
-
-        if (!finalTradingCards?.length) {
+        if (!baseFront && !baseBack) {
             toast.warn("Please select a base card first.");
             return;
         }
 
         setspinloading(true);
+
         try {
             const waitForRender = () =>
                 new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
 
-            const toBase64DataUrl = async (src) => {
-                if (!src) return null;
-                if (typeof src === "string" && src.startsWith("data:image")) return src;
-                if (typeof src === "string" && /^(https?:)?\/\//.test(src)) {
-                    const parsed = new URL(src, window.location.origin);
-                    if (parsed.origin !== window.location.origin) return null;
-                }
+            // Deselect active elements to remove Rnd borders
+            setActiveImage(null);
+            setActiveText(null);
 
-                try {
-                    const response = await fetch(src);
-                    const blob = await response.blob();
-                    return await new Promise((resolve, reject) => {
-                        const reader = new FileReader();
-                        reader.onloadend = () => resolve(reader.result);
-                        reader.onerror = reject;
-                        reader.readAsDataURL(blob);
-                    });
-                } catch {
-                    return null;
-                }
-            };
-
-            const printableSources = finalTradingCards
-                .map((item) => (typeof item === "string" ? item : item?.baseImage))
-                .filter(Boolean);
-
-            let finalPdf = null;
+            const activeSide = workingcard;
             let previewFront = null;
             let previewBack = null;
-            try {
-                const printableBase64 = (await Promise.all(printableSources.map(toBase64DataUrl))).filter(Boolean);
-                if (printableBase64.length > 0) {
-                    finalPdf = await pdfGanarator(printableBase64);
-                }
-            } catch {}
 
-            try {
-                const activeSide = workingcard;
+            setworkingcard("front");
+            await waitForRender();
+            previewFront = await captureNodeScreenshotForTranding(previewCardNodeRef.current);
+            console.log('previewFront:', previewFront?.substring(0, 100));
 
-                setworkingcard("front");
-                await waitForRender();
-                previewFront = await captureNodeScreenshotForTranding(previewCardNodeRef.current, [], () => { });
+            setworkingcard("back");
+            await waitForRender();
+            previewBack = await captureNodeScreenshotForTranding(previewCardNodeRef.current);
+            console.log('previewBack:', previewBack?.substring(0, 100));
 
-                setworkingcard("back");
-                await waitForRender();
-                previewBack = await captureNodeScreenshotForTranding(previewCardNodeRef.current, [], () => { });
+            setworkingcard(activeSide);
+            await waitForRender();
 
-                setworkingcard(activeSide);
-                await waitForRender();
-            } catch (captureError) {
-                console.error("Preview capture failed for trading checkout item:", captureError);
+            const finalPreviewImages = [previewFront, previewBack].filter(Boolean);
+            if (finalPreviewImages.length === 0) {
+                toast.error("Could not capture card preview. Please try again.");
+                return;
             }
 
             const customizationSnapshot = {
@@ -542,37 +538,18 @@ export default function ProductCustomizer() {
                 workingcard,
                 isblack,
                 content: {
-                    cardti,
-                    carddes,
-                    name,
-                    name2,
-                    name3,
-                    labelone,
-                    labeltwo,
-                    labelthree,
-                    acarddate,
-                    cardType,
-                    attrIconOne,
-                    attrIconTwo,
-                    attrIconThree,
-                    backDate,
-                    backDescription,
-                    backHighlightsTitle,
-                    backHighlights,
-                    backLegacyTagline,
-                    backLegacyText,
+                    cardti, carddes, name, name2, name3,
+                    labelone, labeltwo, labelthree, acarddate,
+                    cardType, attrIconOne, attrIconTwo, attrIconThree,
+                    backDate, backDescription, backHighlightsTitle,
+                    backHighlights, backLegacyTagline, backLegacyText,
                 },
-                previews: {
-                    front: previewFront,
-                    back: previewBack,
-                },
+                previews: { front: previewFront, back: previewBack },
             };
 
             if (customizationStorageKey) {
                 localStorage.setItem(customizationStorageKey, JSON.stringify(customizationSnapshot));
             }
-
-            const finalPreviewImages = [previewFront, previewBack].filter(Boolean);
 
             const product = {
                 id: generateUserId(),
@@ -585,18 +562,22 @@ export default function ProductCustomizer() {
                 productImage: fetchingData?.image,
                 productGalary: fetchingData?.images,
                 productDescription: fetchingData?.description,
+                // Keep cart payload light to avoid localStorage quota overflow.
+                // Checkout rebuilds images from customizationStorageKey snapshot.
                 FinalProduct: [
-                    { side: 'front', image: previewFront },
-                    { side: 'back', image: previewBack },
-                ].filter(item => item.image),
-                FinalProductImages: finalPreviewImages,
-                FinalPDf: finalPdf,
+                    { side: 'front' },
+                    { side: 'back' },
+                ],
+                FinalProductImages: [],
+                FinalPDf: null,
                 customizationStorageKey: customizationStorageKey || null,
             };
 
             addToCart(product);
             router.push("/my-cart/checkout");
+
         } catch (error) {
+            console.error(error);
             toast.error("Failed to prepare customized item for checkout.");
         } finally {
             setspinloading(false);

@@ -167,6 +167,17 @@ export default function CheckoutPage() {
   };
 
   const normalizeTradingFinalProduct = async (item) => {
+    const snapshot = getSavedCustomization(item);
+    const snapshotPreviews = [snapshot?.previews?.front, snapshot?.previews?.back].filter(Boolean);
+    if (snapshotPreviews.length > 0) {
+      const front = await ensureImageDataUrl(snapshotPreviews[0]);
+      const back = await ensureImageDataUrl(snapshotPreviews[1] || snapshotPreviews[0]);
+      return [
+        front ? { side: "front", image: front } : null,
+        back ? { side: "back", image: back } : null,
+      ].filter(Boolean);
+    }
+
     const sourceCards = Array.isArray(item?.FinalProduct) ? item.FinalProduct : [];
     const normalized = [];
 

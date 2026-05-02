@@ -53,9 +53,9 @@ const Navigation = ({ isOpen, setisOpen }) => {
 
   return (
     <nav
-      className={`${isOpen ? "flex items-start" : "hidden"} lg:flex lg:items-center h-screen w-screen lg:w-fit lg:h-full absolute top-[75px] left-0 lg:static h-screen bg-white border border-r border-gray-300 lg:border-0`}
+      className={`${isOpen ? "flex items-start" : "hidden"} lg:flex lg:items-center h-screen w-screen lg:w-fit lg:h-full absolute top-18.75 left-0 lg:static  bg-white border border-r border-gray-300 lg:border-0`}
     >
-      <div className="flex flex-col lg:flex-row items-start lg:items-center gap-4 lg:gap-7 text-gray-500 mt-10 lg:mt-0 px-4 pr-6 lg:pr-0 lg:pl-0 w-full">
+      <div className="flex flex-col lg:flex-row items-start lg:items-center gap-4 lg:gap-7 text-black mt-10 lg:mt-0 px-4 pr-6 lg:pr-0 lg:pl-0 w-full">
         {navItems?.map((item, index) => {
           return (
             <Link
@@ -63,7 +63,7 @@ const Navigation = ({ isOpen, setisOpen }) => {
               onClick={() => {
                 setisOpen(false);
               }}
-              className={`font-semibold text-md text-nowrap py-3 px-2 rounded-md lg:px-2 lg:py-1 hover:bg-sky-100 w-full ${pathname == item?.link && "bg-sky-100"}`}
+              className={`font-semibold text-md text-nowrap py-3 px-2 rounded-md lg:px-4 lg:py-2 hover:bg-sky-500 hover:text-white  w-full ${pathname == item?.link && "bg-sky-500 text-white!"}`}
               href={item?.link}
             >
               {item?.name}

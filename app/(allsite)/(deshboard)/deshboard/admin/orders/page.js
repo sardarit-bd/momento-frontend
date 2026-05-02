@@ -287,7 +287,7 @@ function ImageDownloadInfo({ modalinfo, modaltype }) {
                                     <a
                                         key={`${url}-${index}`}
                                         href={url}
-                                        target="_blank"
+                                        download={`card-${index + 1}.png`}
                                         rel="noreferrer"
                                         className="block bg-white rounded-xl border border-slate-200 p-2 shadow-sm hover:shadow-md transition"
                                     >
@@ -296,7 +296,6 @@ function ImageDownloadInfo({ modalinfo, modaltype }) {
                                             alt={`customized-card-${index + 1}`}
                                             className="w-full h-auto rounded-lg object-cover"
                                         />
-                                        <p className="text-xs text-slate-500 mt-2 text-center">Image {index + 1}</p>
                                     </a>
                                 ))}
                             </div>

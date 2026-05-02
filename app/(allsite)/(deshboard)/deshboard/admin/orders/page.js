@@ -1,16 +1,13 @@
 'use client'
 
 import PDFViewers from "@/app/componnent/PDFViewers.jsx";
-import SpinLoader from "@/app/componnent/SpingLoader.jsx";
 import getCookie from "@/utilis/helper/cookie/gettooken";
 import formatDateTime from "@/utilis/helper/formatDateTime.js";
 //import pdfToPngDownload from "@/utilis/helper/pdfToPngDownload.js";
 import MakeGet from "@/utilis/requestrespose/get";
 import { useCallback, useEffect, useState } from "react";
-import { toast, ToastContainer } from "react-toastify";
+import { ToastContainer } from "react-toastify";
 import RecentOrdersSkeleton from "../../../../../componnent/skelaton/RecentOrdersSkeleton.jsx";
-
-
 
 
 //******************* Beage stles is here *********************//
@@ -24,11 +21,6 @@ const statusStyles = {
 };
 
 
-
-
-
-
-
 //******************* Order Table Component is here *********************//
 const AdminOrders = () => {
 
@@ -38,11 +30,9 @@ const AdminOrders = () => {
     const [allorders, setallorders] = useState([]);
 
 
-
-
     const fetching = useCallback(async (token) => {
         try {
-            const response = await MakeGet(`api/orders`, token);
+            const response = await MakeGet(`api/admin/orders`, token);
 
             setallorders(response?.data);
 
@@ -74,7 +64,7 @@ const AdminOrders = () => {
         <div>
 
             {allorders?.length > 0 ? (
-                <OrderTable allorders={allorders} token={token} fetching={fetching} />
+                <OrderTable allorders={allorders} />
             ) : (
                 <div className="text-center py-10">
                     <p className="text-gray-600">No orders found.</p>
@@ -86,75 +76,14 @@ const AdminOrders = () => {
 }
 
 
-
 export default AdminOrders;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 //******************* Order Table Component is here *********************//
-function OrderTable({ allorders, token, fetching }) {
+function OrderTable({ allorders }) {
 
     const [ismodalopen, setismodalopen] = useState(false);
     const [modalinfo, setmodalinfo] = useState(null);
     const [modaltype, setmodaltype] = useState("pdf");
-    const [dloading, setdloading] = useState(false);
-    const [currentIndex, setcurrentIndex] = useState(0);
-
-
-    /***************************** hanlde dalivary function is here ********************************/
-    const handleDalivary = async (e, order, index) => {
-        e.preventDefault();
-
-        const orderID = order?.id;
-        setcurrentIndex(index);
-        setdloading(true);
-
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/orderupdate/${orderID}`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${token}`,
-                "Accept": "application/json"
-            },
-            body: JSON.stringify({ status: "completed" }),
-        });
-
-
-        const updatedres = await res.json();
-
-        setdloading(false);
-        if (updatedres) {
-            toast.success(updatedres?.message);
-            fetching(token);
-        } else {
-            toast.error("Something went wrong");
-        }
-    }
-
-
-
-
-    // console.log(allorders);
-
-
-
-
-
     return (
         <div className="w-full bg-white min-h-[83vh]">
             <div className="border-b border-gray-200">
@@ -170,17 +99,15 @@ function OrderTable({ allorders, token, fetching }) {
                             <th className="px-4 py-3">Order ID</th>
                             <th className="px-4 py-3">Customer</th>
                             <th className="px-4 py-3">Date</th>
-                            <th className="px-4 py-3">Total</th>
+                            <th className="px-4 py-3">Price</th>
                             <th className="px-4 py-3">Is Customized</th>
                             <th className="px-4 py-3">Payment Status</th>
-                            <th className="px-4 py-3">Delivery Status</th>
-                            <th className="px-4 py-3">Update Delivery Status</th>
-                            <th className="px-4 py-3 text-right">Action</th>
+                            <th className="px-4 py-3 text-center">Action</th>
                         </tr>
                     </thead>
 
                     <tbody className="divide-y divide-gray-200 border-t border-gray-200">
-                        {allorders?.map((order, index) => (
+                        {allorders?.map((order) => (
                             <tr
                                 key={order.id}
                                 className="hover:bg-gray-50 transition"
@@ -218,27 +145,7 @@ function OrderTable({ allorders, token, fetching }) {
                                     </span>
                                 </td>
 
-                                <td className="px-4 py-3">
-                                    <span
-                                        className={`px-3 py-1 rounded-full text-xs font-medium ${statusStyles[order.status]}`}
-                                    >
-                                        {order.status == 'completed' ? "Delivered" : order.status}
-                                    </span>
-                                </td>
-
                                 <td className="px-4 py-3 text-center">
-                                    <button disabled={order.status == 'completed'} onClick={(e,) => { handleDalivary(e, order, index) }} className={`bg-sky-300 text-white px-2 py-1 cursor-pointer rounded-md ${order.status == 'completed' ? "opacity-50" : "opacity-100"}`}>
-                                        {dloading ? (
-
-                                            currentIndex === index ? <SpinLoader /> : "Delivary"
-
-                                        ) : (
-                                            "Delivary"
-                                        )}
-                                    </button>
-                                </td>
-
-                                <td className="px-4 py-3 text-right">
                                     <button onClick={() => { setmodaltype("pdf"); setismodalopen(true); setmodalinfo(order); }} className="text-blue-600 hover:underline text-sm mr-3 cursor-pointer">
                                         View PDF
                                     </button>
@@ -257,14 +164,6 @@ function OrderTable({ allorders, token, fetching }) {
     );
 }
 
-
-
-
-
-
-
-
-
 //******************* Modal Component is here *********************//
 const TableModal = ({ setismodalopen, modalinfo, modaltype }) => {
     return (
@@ -279,25 +178,6 @@ const TableModal = ({ setismodalopen, modalinfo, modaltype }) => {
         </div>
     )
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 function ImageDownloadInfo({ modalinfo, modaltype }) {
@@ -372,80 +252,21 @@ function ImageDownloadInfo({ modalinfo, modaltype }) {
     };
 
     const extractCustomizedImagesFromOrder = (order) => {
-        const items = Array.isArray(order?.items)
-            ? order.items
-            : Array.isArray(order?.order_items)
-                ? order.order_items
-                : Array.isArray(order?.orderItems)
-                    ? order.orderItems
-                    : [];
         const images = [];
 
+        const items = order?.order_items ?? [];
+
         items.forEach((item) => {
-            const possibleSources = [
-                item,
-                item?.product,
-                item?.pivot,
-                parseMaybeJson(item?.product_data),
-                parseMaybeJson(item?.productData),
-                parseMaybeJson(item?.meta),
-                parseMaybeJson(item?.customization_data),
-                parseMaybeJson(item?.customizationData),
-            ].filter(Boolean);
-
-            possibleSources.forEach((src) => {
-                const finalProductImages =
-                    parseMaybeJson(src?.FinalProductImages) ||
-                    parseMaybeJson(src?.final_product_images) ||
-                    src?.FinalProductImages ||
-                    src?.final_product_images;
-                if (Array.isArray(finalProductImages)) {
-                    finalProductImages.forEach((url) => {
-                        if (typeof url === "string" && url) images.push(url);
-                    });
-                }
-
-                const previews =
-                    parseMaybeJson(src?.previews) ||
-                    parseMaybeJson(src?.preview_images) ||
-                    src?.previews ||
-                    src?.preview_images;
-                if (previews && typeof previews === "object") {
-                    if (typeof previews.front === "string" && previews.front) images.push(previews.front);
-                    if (typeof previews.back === "string" && previews.back) images.push(previews.back);
-                }
-
-                const finalProduct =
-                    parseMaybeJson(src?.FinalProduct) ||
-                    parseMaybeJson(src?.final_product) ||
-                    src?.FinalProduct ||
-                    src?.final_product;
-                if (Array.isArray(finalProduct)) {
-                    finalProduct.forEach((entry) => {
-                        if (typeof entry === "string" && entry) {
-                            images.push(entry);
-                            return;
-                        }
-                        const deckBase = buildDeckPreviewFromCard(entry);
-                        if (deckBase) images.push(deckBase);
-                    });
-                }
-
-                // Generic fallback: recursively scan this source for customization image URLs.
-                collectImageUrlsDeep(src, "item", images);
-            });
+            if (Array.isArray(item?.cards)) {
+                item.cards.forEach((card) => {
+                    if (card?.image) {
+                        images.push(card.image);
+                    }
+                });
+            }
         });
 
-        // Order-level fallback in case backend stores customization outside items.
-        collectImageUrlsDeep(order, "order", images);
-
-        const deduped = [];
-        images.forEach((url) => {
-            if (!url) return;
-            if (!deduped.includes(url)) deduped.push(url);
-        });
-
-        return deduped;
+        return images;
     };
 
     const pngImages = extractCustomizedImagesFromOrder(modalinfo);

@@ -585,7 +585,10 @@ export default function ProductCustomizer() {
                 productImage: fetchingData?.image,
                 productGalary: fetchingData?.images,
                 productDescription: fetchingData?.description,
-                FinalProduct: finalTradingCards,
+                FinalProduct: [
+                    { side: 'front', image: previewFront },
+                    { side: 'back', image: previewBack },
+                ].filter(item => item.image),
                 FinalProductImages: finalPreviewImages,
                 FinalPDf: finalPdf,
                 customizationStorageKey: customizationStorageKey || null,

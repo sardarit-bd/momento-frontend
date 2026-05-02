@@ -40,12 +40,6 @@ export default function CheckoutPage() {
   const [zipcode, setzipcode] = useState("");
   const [address, setaddress] = useState("");
   
-  // Dummy state for visual payment fields (since actual payment is via Stripe redirect)
-  const [cardName, setCardName] = useState("");
-  const [cardNumber, setCardNumber] = useState("");
-  const [cardExp, setCardExp] = useState("");
-  const [cardCvv, setCardCvv] = useState("");
-  
   // Deck Customization State
   const [deckFinish, setDeckFinish] = useState("prism");
 
@@ -242,7 +236,7 @@ export default function CheckoutPage() {
 
     const fullName = `${firstName} ${lastName}`.trim();
 
-    if (!fullName || !phone || !City || !address || !zipcode) {
+    if (!firstName || !lastName || !phone || !City || !address || !zipcode) {
       toast.warn("All shipping fields are required");
       return;
     }
@@ -260,10 +254,6 @@ export default function CheckoutPage() {
       toast.error("Some items in your cart are invalid. Please refresh and try again.");
       return;
     }
-
-    // Backend checkout currently validates email as required.
-    // Keep email hidden in UI, but always send a valid fallback value.
-    const checkoutEmail = `${id || "guest"}@example.com`;
 
     setloading(true);
 
@@ -301,26 +291,36 @@ export default function CheckoutPage() {
         })
       );
 
+      // Backend checkout currently validates email as required.
+      // Keep email hidden in UI, but always send a valid fallback value.
+      const checkoutEmail = `${id || "guest"}@example.com`;
+
       const checkoutData = {
-        name: fullName,
+        first_name: firstName,
+        last_name: lastName,
         email: checkoutEmail,
         phone,
         address,
         city: City,
         zipcode,
-        gateway: 'stripe',
+        gateway: "stripe",
         items: cartItems,
-        userID: id
+        userID: id,
       };
 
+      const checkoutEndpoint =
+        process.env.NEXT_PUBLIC_CHECKOUT_SESSION_ENDPOINT || "/api/create-checkout-session";
+
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/checkout`,
+        checkoutEndpoint.startsWith("http")
+          ? checkoutEndpoint
+          : `${process.env.NEXT_PUBLIC_API_BASE_URL}${checkoutEndpoint}`,
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            "Accept": "application/json",
-            ...(token && { "Authorization": `Bearer ${token}` }),
+            Accept: "application/json",
+            ...(token && { Authorization: `Bearer ${token}` }),
           },
           body: JSON.stringify(checkoutData),
         }
@@ -481,20 +481,6 @@ export default function CheckoutPage() {
             </h2>
 
             <form onSubmit={handleCheckout} className="space-y-6">
-              
-              {/* Email Section */}
-              {/* <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">Email Address</label>
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setemail(e.target.value)}
-                  placeholder="your@email.com"
-                  className={inputStyle}
-                  required
-                />
-                <p className="text-xs text-gray-500 mt-1.5">We'll send your download link here</p>
-              </div> */}
 
               {/* Shipping Information */}
               <div>
@@ -504,8 +490,6 @@ export default function CheckoutPage() {
                     <input type="text" value={firstName} onChange={(e) => setFirstName(e.target.value)} placeholder="First Name" className={inputStyle} required />
                     <input type="text" value={lastName} onChange={(e) => setLastName(e.target.value)} placeholder="Last Name" className={inputStyle} required />
                   </div>
-
-                  {/* <input type="email" value={email} onChange={(e) => setemail(e.target.value)} placeholder="Email" className={inputStyle} required /> */}
                   
                   {/* Phone included to pass your validation silently */}
                   <input type="tel" value={phone} onChange={(e) => setphone(e.target.value)} placeholder="Phone Number" className={inputStyle} required />
@@ -519,27 +503,6 @@ export default function CheckoutPage() {
                 </div>
               </div>
 
-              {/* Payment Information (Visual representation for Stripe redirect design) */}
-              {/* <div>
-                <label className="block text-sm font-medium text-gray-700 mb-3 mt-4">Payment Information</label>
-                <div className="space-y-3">
-                  <input type="text" value={cardName} onChange={(e) => setCardName(e.target.value)} placeholder="Name on Card" className={inputStyle} />
-                  <input type="text" value={cardNumber} onChange={(e) => setCardNumber(e.target.value)} placeholder="1234 5678 9012 3456" className={inputStyle} />
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <input type="text" value={cardExp} onChange={(e) => setCardExp(e.target.value)} placeholder="MM/YY" className={inputStyle} />
-                    <input type="text" value={cardCvv} onChange={(e) => setCardCvv(e.target.value)} placeholder="CVV" className={inputStyle} />
-                  </div>
-                </div>
-              </div> */}
-
-              {/* Secure Checkout Alert */}
-              {/* <div className="bg-[#F0FDF4] border border-[#BBF7D0] rounded-xl p-4 flex gap-3 items-start mt-4">
-                 <svg className="text-[#16A34A] mt-0.5" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-                 <div>
-                    <p className="text-sm font-semibold text-[#166534]">Secure Checkout</p>
-                    <p className="text-xs text-[#15803D] mt-0.5">Your payment information is encrypted and secure</p>
-                 </div>
-              </div> */}
 
               {/* Submit Button */}
               <button

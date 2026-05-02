@@ -45,11 +45,10 @@ const HeaderAuth = ({ isOpen, setisOpen }) => {
 
         if (response.success) {
 
-            setCookie("token", '', 1);
-            setCookie("id", '', 1)
-            setCookie("name", '', 1);
-            setCookie("role", '', 1);
-            // ✅ Immediately clear loginUser state so UI updates
+            setCookie("token", '', 0);
+            setCookie("id",    '', 0);
+            setCookie("name",  '', 0);
+            setCookie("role",  '', 0);
             setLoginUser({ name: null, token: null, role: null });
             router.push('/signin');
             toast.success(response.message);
@@ -85,7 +84,7 @@ const HeaderAuth = ({ isOpen, setisOpen }) => {
 
                                         <Link href={`${loginUser?.role === "Admin" ? "/deshboard/admin" : "/deshboard/customer/orders"}`} className="text-gray-600 text-md font-semibold hover:bg-gray-200 rounded-md p-2 flex items-center gap-2">
                                             <MdDashboard className="text-xl" />
-                                            <span>Deshboard</span>
+                                            <span>Dashboard</span>
                                         </Link>
 
                                         <Link href={`${loginUser === "Admin" ? "/deshboard/profile" : "/deshboard/profile"}`} className="text-gray-600 text-md font-semibold hover:bg-gray-200 rounded-md p-2 flex items-center gap-2">

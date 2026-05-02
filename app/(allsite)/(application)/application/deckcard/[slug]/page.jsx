@@ -257,13 +257,34 @@ const ProductCustomizer = () => {
 
         setspinloading(true);
 
-        const finalCardImages = cards.map((item) => item?.baseImage).filter(Boolean);
+        let compositeImages = []; // ← declare outside try block
 
-        setfinalCards(finalCardImages);
+        try {
+            compositeImages = await Promise.all(
+                cards.map(card => compositeCardToBase64(card))
+            );
+            console.log('Composite done:', compositeImages.length);
+        } catch (err) {
+            console.error('Composite failed:', err);
+            setspinloading(false);
+            return;
+        }
+
+        const DECK_RANK_MAP = {
+            Ace_Card: 'ace', king_Card: 'king',
+            Queen_Card: 'queen', Jeck_Card: 'jack', Joker_Card: 'joker'
+        };
+
+        const FinalProduct = cards.map((card, i) => ({
+            rank: DECK_RANK_MAP[card.editedCard] || null,
+            image: compositeImages[i],
+        }));
+
         clearCart();
 
-        const hasJokerCard = cards.some((card) => card?.editedCard === "Joker_Card");
+        const hasJokerCard = cards.some(c => c.editedCard === 'Joker_Card');
         const unitBasePrice = Number(product?.offer_price > 0 ? product?.offer_price : product?.price) || 0;
+
         const producted = {
             id: generateUserId(),
             productId: product?.id,
@@ -273,16 +294,66 @@ const ProductCustomizer = () => {
             productUnitPrice: hasJokerCard ? unitBasePrice + 7 : unitBasePrice,
             productQuantity: 1,
             productImage: product?.image,
-            productGalary: product?.images,
-            productDescription: product?.description,
-            FinalProduct: cards,
-            FinalProductImages: finalCardImages,
+            FinalProduct,                         
+            FinalProductImages: compositeImages,   
             jokerAdded: hasJokerCard,
+            customization_mode: 'deck',           
         };
 
         addToCart(producted);
         setspinloading(false);
-        router.push(redirectToCheckout ? "/my-cart/checkout" : "/final/customization");
+        router.push(redirectToCheckout ? '/my-cart/checkout' : '/final/customization');
+    };
+
+    const compositeCardToBase64 = async (card) => {
+        console.log('Compositing card:', card.editedCard);
+        console.log('baseImage:', card.baseImage);
+        console.log('layers:', card.selectedLayers);
+
+        const canvas = document.createElement('canvas');
+        canvas.width = 750;
+        canvas.height = 1050;
+        const ctx = canvas.getContext('2d');
+
+        const loadImage = (src) => new Promise((resolve, reject) => {
+            const img = new Image();
+            img.crossOrigin = 'anonymous';
+            img.onload = () => resolve(img);
+            img.onerror = reject;
+            img.src = src;
+        });
+
+        // Draw base image
+        if (card.baseImage) {
+            const base = await loadImage(card.baseImage);
+            ctx.drawImage(base, 0, 0, 750, 1050);
+        }
+
+        // Draw each layer on top
+        const layerOrder = ["dresses", "skin_tones", "hairs", "crowns", "beards", "eyes", "mouths", "noses"];
+        for (const layer of layerOrder) {
+            const src = card.selectedLayers?.[layer];
+            if (!src) continue;
+            try {
+                const img = await loadImage(src);
+                // Top position (same as your CSS: top-[8%], w-[64%], h-[43%])
+                const x = (750 - 750 * 0.64) / 2;
+                const w = 750 * 0.64;
+                const h = 1050 * 0.43;
+                const yTop = 1050 * 0.08;
+                const yBot = 1050 - yTop - h;
+
+                ctx.drawImage(img, x, yTop, w, h);
+                // Mirrored bottom
+                ctx.save();
+                ctx.translate(x + w / 2, yBot + h / 2);
+                ctx.scale(1, -1);
+                ctx.drawImage(img, -w / 2, -h / 2, w, h);
+                ctx.restore();
+            } catch {}
+        }
+
+        return canvas.toDataURL('image/png');
     };
 
     const Done = async () => {

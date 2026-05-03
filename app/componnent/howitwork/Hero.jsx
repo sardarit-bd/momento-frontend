@@ -47,12 +47,11 @@ export default function Hero() {
 
   return (
     <>
-      {/* Hero Section */}
       <section className="relative max-w-7xl mx-auto  py-20 lg:py-32">
-        <div className="grid lg:grid-cols-2 gap-16 items-center">
+        <div className="flex flex-col items-center gap-8!">
           {/* Left Text Section */}
           <div
-            className="space-y-8 text-center lg:text-left"
+            className="flex flex-col items-center gap-8! w-full  text-center lg:text-left"
             style={{ animation: "fadeInUp 0.8s ease-out" }}
           >
             <div className="inline-block px-4 py-2 bg-amber-100 rounded-full border-2 border-amber-300">
@@ -69,7 +68,7 @@ export default function Hero() {
               </span>
             </h1>
 
-            <p className="text-xl text-slate-700 leading-relaxed max-w-xl">
+            <p className="text-xl text-slate-700 leading-relaxed max-w-xl ">
               Momento turns real people into playable cards. Not just photos on
               a card — fully customizable characters designed for unforgettable
               game nights, gifts, and keepsakes.

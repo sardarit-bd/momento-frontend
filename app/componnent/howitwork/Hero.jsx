@@ -64,7 +64,7 @@ export default function Hero() {
             <h1 className="text-6xl lg:text-7xl font-black leading-none tracking-tight">
               <span className="block text-slate-900">Your Deck.</span>
               <span className="block text-slate-900">Your Characters.</span>
-              <span className="block bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 bg-clip-text text-transparent">
+              <span className="block bg-linear-to-r from-amber-500 via-orange-500 to-rose-500 bg-clip-text text-transparent">
                 Your Memories.
               </span>
             </h1>
@@ -78,14 +78,14 @@ export default function Hero() {
             <div className="flex flex-wrap gap-4 p-4">
               <Link
                 href={"/shop"}
-                className="w-full lg:w-fit text-center flex items-center justify-center px-8 py-4 bg-gradient-to-r from-amber-500 to-orange-500 text-white font-bold rounded-xl hover:from-amber-600 hover:to-orange-600 transition-all shadow-xl hover:shadow-2xl hover:scale-105 transform flex items-center gap-2 text-lg"
+                className="w-full lg:w-fit text-center flex items-center justify-center px-8 py-4 bg-linear-to-r from-amber-500 to-orange-500 text-white font-bold rounded-xl hover:from-amber-600 hover:to-orange-600 transition-all shadow-xl hover:shadow-2xl hover:scale-105 transform   gap-2 text-lg"
               >
                 Create Your Cards
                 <ArrowRight className="w-5 h-5" />
               </Link>
               <Link
                 href={"/howitwork#video"}
-                className="w-full lg:w-fit text-center flex items-center justify-center px-8 py-4 bg-white text-slate-900 font-bold rounded-xl border-2 border-slate-200 hover:border-amber-400 transition-all shadow-lg hover:shadow-xl flex items-center gap-2 text-lg"
+                className="w-full lg:w-fit text-center justify-center px-8 py-4 bg-white text-slate-900 font-bold rounded-xl border-2 border-slate-200 hover:border-amber-400 transition-all shadow-lg hover:shadow-xl flex items-center gap-2 text-lg"
               >
                 <Play className="w-5 h-5" />
                 Watch Demo
@@ -95,7 +95,7 @@ export default function Hero() {
 
           {/* Animated Card Stack */}
           <div
-            className="hidden lg:flex relative h-[600px] items-center justify-center"
+            className="hidden lg:flex relative h-150 items-center justify-center"
             style={{ animation: "fadeInUp 0.8s ease-out 0.2s backwards" }}
           >
             {cardExamples.map((card, index) => (

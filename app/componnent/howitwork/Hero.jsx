@@ -47,14 +47,14 @@ export default function Hero() {
 
   return (
     <>
-      <section className="relative max-w-7xl mx-auto  py-20 lg:py-32">
-        <div className="flex flex-col items-center gap-8!">
+      <section className="relative max-w-7xl mx-auto  w-full py-20 lg:py-20">
+        <div className="flex flex-col lg:flex-row items-center gap-8!">
           {/* Left Text Section */}
           <div
-            className="flex flex-col items-center gap-8! w-full  text-center lg:text-left"
+            className="flex flex-col  gap-8! w-full  text-center lg:text-left  lg:w-1/2"
             style={{ animation: "fadeInUp 0.8s ease-out" }}
           >
-            <div className="inline-block px-4 py-2 bg-amber-100 rounded-full border-2 border-amber-300">
+            <div className="inline-block px-4 py-2 bg-amber-100 rounded-full border-2 border-amber-300 w-fit ">
               <span className="text-amber-800 font-bold text-sm tracking-wide uppercase">
                 ✨ Turn Memories Into Cards
               </span>
@@ -74,7 +74,7 @@ export default function Hero() {
               game nights, gifts, and keepsakes.
             </p>
 
-            <div className="flex flex-wrap gap-4 p-4">
+            <div className="flex flex-wrap  gap-4 p-4 w-full pl-0">
               <Link
                 href={"/shop"}
                 className="w-full lg:w-fit text-center flex items-center justify-center px-8 py-4 bg-linear-to-r from-amber-500 to-orange-500 text-white font-bold rounded-xl hover:from-amber-600 hover:to-orange-600 transition-all shadow-xl hover:shadow-2xl hover:scale-105 transform   gap-2 text-lg"
@@ -94,7 +94,7 @@ export default function Hero() {
 
           {/* Animated Card Stack */}
           <div
-            className="hidden lg:flex relative h-150 items-center justify-center"
+            className="hidden lg:flex relative h-150 items-center justify-center lg:w-1/2"
             style={{ animation: "fadeInUp 0.8s ease-out 0.2s backwards" }}
           >
             {cardExamples.map((card, index) => (

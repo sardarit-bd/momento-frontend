@@ -194,7 +194,7 @@ const SingleProduct = () => {
                 </h1>
 
                 {data?.short_description && (
-                  <p className="text-sm text-gray-500 line-clamp-2 leading-relaxed">
+                  <p className="text-sm text-gray-500  leading-relaxed">
                     {data.short_description}
                   </p>
                 )}

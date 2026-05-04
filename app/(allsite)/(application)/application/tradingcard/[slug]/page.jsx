@@ -20,6 +20,7 @@ import CharactersCountComponent from "@/app/componnent/CharactersCountComponent"
 import useCardforTrading from "@/store/useCardforTrading";
 import captureNodeScreenshotForTranding from "@/utilis/helper/captureNodeScreenshotForTranding";
 import ImageResize from "@/utilis/helper/ImageResize";
+import captureNodeClean from "@/utilis/helper/captureNodeClean";
 const fonts = ["Arial", "Poppins", "Times New Roman", "Courier New", "Comic Sans MS"];
 
 const cardTypeOptions = [
@@ -406,33 +407,39 @@ export default function ProductCustomizer() {
 
 
 
-    const captureCardSide = async (side) => {
-        setworkingcard(side);
-        await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+    // const captureCardSide = async (side) => {
+    //     setworkingcard(side);
+    //     await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
 
-        // Hide Rnd drag handles before capture
-        const rndHandles = previewCardNodeRef.current?.querySelectorAll('[class*="react-resizable-handle"]');
-        rndHandles?.forEach(el => el.style.display = 'none');
+    //     // Hide Rnd drag handles before capture
+    //     const rndHandles = previewCardNodeRef.current?.querySelectorAll('[class*="react-resizable-handle"]');
+    //     rndHandles?.forEach(el => el.style.display = 'none');
 
-        // Remove dashed border from Rnd wrappers
-        const rndWrappers = previewCardNodeRef.current?.querySelectorAll('[style*="border"]');
-        const originalStyles = [];
-        rndWrappers?.forEach(el => {
-            originalStyles.push(el.style.border);
-            el.style.border = 'none';
-        });
+    //     // Remove dashed border from Rnd wrappers
+    //     const rndWrappers = previewCardNodeRef.current?.querySelectorAll('[style*="border"]');
+    //     const originalStyles = [];
+    //     rndWrappers?.forEach(el => {
+    //         originalStyles.push(el.style.border);
+    //         el.style.border = 'none';
+    //     });
 
-        const dataUrl = await captureNodeScreenshotForTranding(previewCardNodeRef.current);
+    //     const dataUrl = await captureNodeScreenshotForTranding(previewCardNodeRef.current);
 
-        // Restore styles
-        rndWrappers?.forEach((el, i) => el.style.border = originalStyles[i]);
-        rndHandles?.forEach(el => el.style.display = '');
+    //     // Restore styles
+    //     rndWrappers?.forEach((el, i) => el.style.border = originalStyles[i]);
+    //     rndHandles?.forEach(el => el.style.display = '');
 
-        return dataUrl;
-    };
+    //     return dataUrl;
+    // };
 
 
     // start from here
+
+    const captureCardSide = async (side) => {
+        setworkingcard(side);
+        await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+        return captureNodeClean(previewCardNodeRef.current, captureNodeScreenshotForTranding);
+    };
 
     const activeCard = cards[activeCardIndex];
 
@@ -498,23 +505,23 @@ export default function ProductCustomizer() {
             const waitForRender = () =>
                 new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
 
-            // Deselect active elements to remove Rnd borders
-            setActiveImage(null);
-            setActiveText(null);
-
             const activeSide = workingcard;
             let previewFront = null;
             let previewBack = null;
 
-            setworkingcard("front");
-            await waitForRender();
-            previewFront = await captureNodeScreenshotForTranding(previewCardNodeRef.current);
-            console.log('previewFront:', previewFront?.substring(0, 100));
+            setActiveImage(null);
+            setActiveText(null);
 
+            // Wait longer for React to re-render and clear borders
+            await new Promise((resolve) => setTimeout(resolve, 300));
+
+            setworkingcard("front");
+            await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+            previewFront = await captureNodeClean(previewCardNodeRef.current, captureNodeScreenshotForTranding);
+            
             setworkingcard("back");
-            await waitForRender();
-            previewBack = await captureNodeScreenshotForTranding(previewCardNodeRef.current);
-            console.log('previewBack:', previewBack?.substring(0, 100));
+            await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+            previewBack = await captureNodeClean(previewCardNodeRef.current, captureNodeScreenshotForTranding);
 
             setworkingcard(activeSide);
             await waitForRender();
@@ -700,7 +707,8 @@ export default function ProductCustomizer() {
                                         }}
                                         style={{
                                             border: activeText === img.id || activeImage === img?.id ? "2px dashed #3b82f6" : "none",
-                                            borderRadius: "4px",
+                                            
+                                            backgroundColor: "transparent",
                                         }}
 
 
@@ -726,6 +734,7 @@ export default function ProductCustomizer() {
                                             alt="upload"
                                             className="w-full h-full object-cover"
                                             draggable={false}
+                                            style={{ display: 'block', backgroundColor: 'transparent' }}
                                         />
                                     </Rnd>
                                 ))}

@@ -27,20 +27,40 @@ const AdminOrders = () => {
 
     const token = getCookie();
     const [fetchloading, setfetchloading] = useState(true);
+    const [isPageLoading, setIsPageLoading] = useState(false);
     const [allorders, setallorders] = useState([]);
+    const [pagination, setPagination] = useState({
+        current_page: 1,
+        last_page: 1,
+        per_page: 10,
+        total: 0,
+    });
 
 
-    const fetching = useCallback(async (token) => {
+    const fetching = useCallback(async (page = 1) => {
         try {
-            const response = await MakeGet(`api/admin/orders`, token);
+            if (page === 1 && allorders?.length === 0) {
+                setfetchloading(true);
+            } else {
+                setIsPageLoading(true);
+            }
+            const response = await MakeGet(`api/admin/orders?page=${page}`, token);
 
-            setallorders(response?.data);
-
+            const payload = response?.data || {};
+            setallorders(payload?.orders || []);
+            setPagination(payload?.pagination || {
+                current_page: 1,
+                last_page: 1,
+                per_page: 10,
+                total: 0,
+            });
 
             setfetchloading(false);
+            setIsPageLoading(false);
         } catch (error) {
             console.error("Error fetching profile:", error);
             setfetchloading(false);
+            setIsPageLoading(false);
         }
     }, [token]);
 
@@ -49,9 +69,9 @@ const AdminOrders = () => {
     // Simulate fetching user data
     useEffect(() => {
 
-        fetching(token);
+        fetching(1);
 
-    }, [fetching, token]);
+    }, [fetching]);
 
 
 
@@ -64,7 +84,13 @@ const AdminOrders = () => {
         <div>
 
             {allorders?.length > 0 ? (
-                <OrderTable allorders={allorders} />
+                <OrderTable
+                    allorders={allorders}
+                    pagination={pagination}
+                    onPageChange={fetching}
+                    token={token}
+                    isPageLoading={isPageLoading}
+                />
             ) : (
                 <div className="text-center py-10">
                     <p className="text-gray-600">No orders found.</p>
@@ -79,13 +105,57 @@ const AdminOrders = () => {
 export default AdminOrders;
 
 //******************* Order Table Component is here *********************//
-function OrderTable({ allorders }) {
+function OrderTable({ allorders, pagination, onPageChange, token, isPageLoading }) {
 
     const [ismodalopen, setismodalopen] = useState(false);
     const [modalinfo, setmodalinfo] = useState(null);
     const [modaltype, setmodaltype] = useState("pdf");
+    const [modalLoading, setModalLoading] = useState(false);
+
+    const hasPdfData = (order) => {
+        return Boolean(
+            order?.customized_file_url ||
+            order?.customized_pdf_url ||
+            order?.pdf_url ||
+            order?.customized_file?.url ||
+            order?.customizedFileUrl
+        );
+    };
+
+    const hasPngData = (order) => {
+        return Boolean(
+            (Array.isArray(order?.order_items) && order.order_items.length > 0) ||
+            (Array.isArray(order?.items) && order.items.length > 0)
+        );
+    };
+
+    const openOrderModal = async (order, type) => {
+        setmodaltype(type);
+        setismodalopen(true);
+        setmodalinfo(order);
+
+        const needsDetailFetch = type === "pdf" ? !hasPdfData(order) : !hasPngData(order);
+        if (!needsDetailFetch) {
+            setModalLoading(false);
+            return;
+        }
+
+        setModalLoading(true);
+        try {
+            const detailRes = await MakeGet(`api/admin/orders/${order.id}`, token);
+            const detailData = detailRes?.data?.order || detailRes?.data;
+            if (detailData) {
+                setmodalinfo(detailData);
+            }
+        } catch (error) {
+            console.error("Failed to load order details:", error);
+        } finally {
+            setModalLoading(false);
+        }
+    };
+
     return (
-        <div className="w-full bg-white min-h-[83vh]">
+        <div className="w-full bg-white">
             <div className="border-b border-gray-200">
                 <h2 className="text-lg pb-6 font-semibold text-gray-800">
                     Recent Orders
@@ -146,10 +216,10 @@ function OrderTable({ allorders }) {
                                 </td>
 
                                 <td className="px-4 py-3 text-center">
-                                    <button onClick={() => { setmodaltype("pdf"); setismodalopen(true); setmodalinfo(order); }} className="text-blue-600 hover:underline text-sm mr-3 cursor-pointer">
+                                    <button onClick={() => { openOrderModal(order, "pdf"); }} className="text-blue-600 hover:underline text-sm mr-3 cursor-pointer">
                                         View PDF
                                     </button>
-                                    <button onClick={() => { setmodaltype("png"); setismodalopen(true); setmodalinfo(order); }} className="text-blue-600 hover:underline text-sm mr-3 cursor-pointer">
+                                    <button onClick={() => { openOrderModal(order, "png"); }} className="text-blue-600 hover:underline text-sm mr-3 cursor-pointer">
                                         View PNG
                                     </button>
                                 </td>
@@ -158,14 +228,38 @@ function OrderTable({ allorders }) {
                     </tbody>
                 </table>
             </div>
-            {ismodalopen && <TableModal setismodalopen={setismodalopen} modalinfo={modalinfo} modaltype={modaltype} />}
+            {isPageLoading && (
+                <div className="mt-3 text-sm text-gray-500">Loading page...</div>
+            )}
+            <div className="flex items-center justify-between mt-4 text-sm text-gray-700">
+                <p>
+                    Showing page {pagination?.current_page || 1} of {pagination?.last_page || 1}
+                </p>
+                <div className="flex items-center gap-2">
+                    <button
+                        onClick={() => onPageChange((pagination?.current_page || 1) - 1)}
+                        disabled={!pagination?.current_page || pagination.current_page <= 1}
+                        className="px-3 py-1 border border-gray-300 rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                        Previous
+                    </button>
+                    <button
+                        onClick={() => onPageChange((pagination?.current_page || 1) + 1)}
+                        disabled={!pagination?.last_page || pagination.current_page >= pagination.last_page}
+                        className="px-3 py-1 border border-gray-300 rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                        Next
+                    </button>
+                </div>
+            </div>
+            {ismodalopen && <TableModal setismodalopen={setismodalopen} modalinfo={modalinfo} modaltype={modaltype} modalLoading={modalLoading} />}
             <ToastContainer position="bottom-right" />
         </div>
     );
 }
 
 //******************* Modal Component is here *********************//
-const TableModal = ({ setismodalopen, modalinfo, modaltype }) => {
+const TableModal = ({ setismodalopen, modalinfo, modaltype, modalLoading }) => {
     return (
         <div className="bg-white border border-gray-300 shadow-xl rounded-xl p-0 absolute inset-0 w-full h-full">
             <div onClick={() => { setismodalopen(false) }} className="text-white bg-sky-500 w-8 h-8 flex items-center justify-center p-4 rounded-full absolute hover:rotate-180 transition duration-300 -top-4 -right-4 cursor-pointer shadow-xl">
@@ -173,7 +267,13 @@ const TableModal = ({ setismodalopen, modalinfo, modaltype }) => {
             </div>
 
 
-            <ImageDownloadInfo modalinfo={modalinfo} modaltype={modaltype} />
+            {modalLoading ? (
+                <div className="w-full h-full flex items-center justify-center text-gray-600 text-sm">
+                    Loading order details...
+                </div>
+            ) : (
+                <ImageDownloadInfo modalinfo={modalinfo} modaltype={modaltype} />
+            )}
 
         </div>
     )
@@ -253,48 +353,66 @@ function ImageDownloadInfo({ modalinfo, modaltype }) {
 
     const extractCustomizedImagesFromOrder = (order) => {
         const images = [];
-
-        const items = order?.order_items ?? [];
+        const items = order?.order_items ?? order?.items ?? [];
 
         items.forEach((item) => {
-            if (Array.isArray(item?.cards)) {
-                item.cards.forEach((card) => {
-                    if (card?.image) {
-                        images.push(card.image);
+            const cards = item?.cards ?? item?.customized_cards ?? [];
+            if (Array.isArray(cards)) {
+                cards.forEach((card) => {
+                    const picked =
+                        card?.image ||
+                        card?.url ||
+                        card?.final_image ||
+                        card?.customized_image ||
+                        buildDeckPreviewFromCard(card);
+                    if (picked) {
+                        images.push(picked);
                     }
                 });
             }
+
+            const parsedItem = parseMaybeJson(item);
+            if (parsedItem && typeof parsedItem === "object") {
+                collectImageUrlsDeep(parsedItem, "item", images);
+            }
         });
 
-        return images;
+        collectImageUrlsDeep(order, "order", images);
+        return [...new Set(images.filter(Boolean))];
     };
 
     const pngImages = extractCustomizedImagesFromOrder(modalinfo);
+    const pdfUrl =
+        modalinfo?.customized_file_url ||
+        modalinfo?.customized_pdf_url ||
+        modalinfo?.pdf_url ||
+        modalinfo?.customized_file?.url ||
+        modalinfo?.customizedFileUrl;
 
     return (
         <div className="w-full h-full rounded-xl bg-white">
             <div className="w-full h-full flex items-center gap-4 flex-wrap">
                 {modaltype === "pdf" ? (
-                    <PDFViewers fulldata={modalinfo} url={modalinfo?.customized_file_url} />
+                    <PDFViewers fulldata={modalinfo} url={pdfUrl} />
                 ) : (
                     <div className="w-full h-full overflow-y-auto p-6 bg-slate-50">
                         <h3 className="text-lg font-semibold text-slate-900 mb-4">Customized Card Images</h3>
                         {pngImages.length === 0 ? (
                             <div className="text-sm text-slate-600">No customized PNG images found for this order.</div>
                         ) : (
-                            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-3 md:gap-4">
                                 {pngImages.map((url, index) => (
                                     <a
                                         key={`${url}-${index}`}
                                         href={url}
                                         download={`card-${index + 1}.png`}
                                         rel="noreferrer"
-                                        className="block bg-white rounded-xl border border-slate-200 p-2 shadow-sm hover:shadow-md transition"
+                                        className="block bg-white rounded-xl border border-slate-200 p-1.5 md:p-2 shadow-sm hover:shadow-md transition"
                                     >
                                         <img
                                             src={url}
                                             alt={`customized-card-${index + 1}`}
-                                            className="w-full h-auto rounded-lg object-cover"
+                                            className="w-full h-auto rounded-lg object-contain"
                                         />
                                     </a>
                                 ))}

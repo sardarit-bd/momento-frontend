@@ -154,14 +154,13 @@ const ProductCustomizer = () => {
             const customSets = res?.data?.customizations?.custom_sets || [];
             const baseCards = res?.data?.customizations?.base_cards || [];
 
-            // ✅ FIX: Look for the Ace base image in BOTH custom_sets and base_cards
             const baseForFirstStep = customSets.find(
                 (item) => getCanonicalCardType(item?.card_type) === CARD_FLOW[0]
             )?.image || baseCards.find(
                 (item) => getCanonicalCardType(item?.card_type) === CARD_FLOW[0]
             )?.image;
 
-            // ✅ FIX: Also update the fallback to check both arrays
+        
             const fallbackBase = customSets[0]?.image || baseCards[0]?.image;
             
             const initialLayers = {};
@@ -296,7 +295,8 @@ const ProductCustomizer = () => {
 
         setspinloading(true);
 
-        let compositeImages = []; 
+        let compositeImages = [];
+        let characterOnlyImages = [];
 
         try {
             compositeImages = await Promise.all(
@@ -307,6 +307,14 @@ const ProductCustomizer = () => {
             console.error('Composite failed:', err);
             setspinloading(false);
             return;
+        }
+
+        try {
+            characterOnlyImages = await Promise.all(
+                cards.map(card => compositeCharacterOnly(card))
+            );
+        } catch (err) {
+            console.error('Character composite failed:', err);
         }
 
         const DECK_RANK_MAP = {
@@ -335,7 +343,8 @@ const ProductCustomizer = () => {
             productQuantity: 1,
             productImage: product?.image,
             FinalProduct,                         
-            FinalProductImages: compositeImages,   
+            FinalProductImages: compositeImages,
+            CharacterImages: characterOnlyImages, 
             jokerAdded: hasJokerCard,
             customization_mode: 'deck',           
         };
@@ -387,6 +396,38 @@ const ProductCustomizer = () => {
                 ctx.scale(1, -1);
                 ctx.drawImage(img, -w / 2, -h / 2, w, h);
                 ctx.restore();
+            } catch {}
+        }
+
+        return canvas.toDataURL('image/png');
+    };
+
+    const compositeCharacterOnly = async (card) => {
+        const canvas = document.createElement('canvas');
+        canvas.width = 750;
+        canvas.height = 1050;
+        const ctx = canvas.getContext('2d');
+
+        const loadImage = (src) => new Promise((resolve, reject) => {
+            const img = new Image();
+            img.crossOrigin = 'anonymous';
+            img.onload = () => resolve(img);
+            img.onerror = reject;
+            img.src = src;
+        });
+
+        const layerOrder = ["dresses", "skin_tones", "hairs", "crowns", "beards", "eyes", "mouths", "noses"];
+        for (const layer of layerOrder) {
+            const src = card.selectedLayers?.[layer];
+            if (!src) continue;
+            try {
+                const img = await loadImage(src);
+                const x = (750 - 750 * 0.64) / 2;
+                const w = 750 * 0.64;
+                const h = 1050 * 0.43;
+                const yTop = 1050 * 0.07;
+
+                ctx.drawImage(img, x, yTop, w, h); // ← top only, mirror block removed
             } catch {}
         }
 

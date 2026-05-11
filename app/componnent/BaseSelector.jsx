@@ -26,7 +26,7 @@ const BaseSelector = ({ product, cards, activeCard, selectBase, editedCard, sete
     }
 
     if (!allowedCardTypes.includes(editedCard)) {
-      const allcard = product?.customizations?.custom_sets || [];
+      const allcard = product?.customizations?.base_cards || [];
       const fallbackType = allowedCardTypes.find((type) =>
         allcard.some((card) => card?.card_type === type)
       ) || allowedCardTypes[0];
@@ -37,7 +37,7 @@ const BaseSelector = ({ product, cards, activeCard, selectBase, editedCard, sete
   useEffect(() => {
     if (!product) return;
 
-    const allcard = product?.customizations?.custom_sets || [];
+    const allcard = product?.customizations?.base_cards || [];
     const safeEditedCard = allowedCardTypes.includes(editedCard)
       ? editedCard
       : (allowedCardTypes.find((type) => allcard.some((card) => card?.card_type === type)) || allowedCardTypes[0]);
@@ -52,21 +52,18 @@ const BaseSelector = ({ product, cards, activeCard, selectBase, editedCard, sete
   const handleCardTypeSelect = (cardType) => {
     if (!allowedCardTypes.includes(cardType)) return;
 
-    const allcard = product?.customizations?.custom_sets;
+    const allcard = product?.customizations?.base_cards;
     const filteredCards = allcard?.filter((card) => card?.card_type === cardType);
-    const selectedBaseForActiveCard = filteredCards?.find(
-      (card) => card?.image === activeCard?.baseImage
-    )?.image;
+    const matchedCard = filteredCards?.find(
+        (card) => card?.image === activeCard?.baseImage
+    ) || filteredCards?.[0];
 
     seteditedCard(cardType);
-    selectBase(selectedBaseForActiveCard || filteredCards?.[0]?.image, cardType);
-  };
+    selectBase(matchedCard?.image, cardType, matchedCard?.name);
+};
 
   const hasBaseForType = (cardType) =>
-    (product?.customizations?.custom_sets || []).some((card) => card?.card_type === cardType);
-
-
-
+    (product?.customizations?.base_cards || []).some((card) => card?.card_type === cardType);
 
 
 
@@ -112,7 +109,7 @@ const BaseSelector = ({ product, cards, activeCard, selectBase, editedCard, sete
                   src={image?.image}
                   alt={`Base ${idx + 1}`}
                   className={`h-[80px] w-[60px] cursor-pointer rounded-lg object-cover p-1 ${activeCard?.baseImage === image?.image ? "border-2 border-sky-500 bg-sky-200" : "border-2 border-gray-300"}`}
-                  onClick={() => selectBase(image?.image, editedCard)}
+                  onClick={() => selectBase(image?.image, editedCard, image?.name)}
                 />
               );
             })}

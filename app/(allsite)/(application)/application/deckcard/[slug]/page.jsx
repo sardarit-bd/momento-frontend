@@ -5,7 +5,7 @@ import usefinalCardsStore from "@/store/usefinalCardsStore";
 import generateUserId from "@/utilis/helper/generateUserId";
 import MakeGet from "@/utilis/requestrespose/get";
 import { useParams, useRouter } from "next/navigation";
-import { useEffect, useRef, useState, Fragment } from "react"; // Added Fragment here
+import { useEffect, useRef, useState, Fragment } from "react";
 import { GiCardAceClubs, GiCardJackClubs, GiCardJoker, GiCardKingClubs, GiCardQueenClubs } from "react-icons/gi";
 import { IoIosArrowDown, IoMdCheckmark } from "react-icons/io";
 import { toast, ToastContainer } from "react-toastify";
@@ -63,8 +63,10 @@ const ProductCustomizer = () => {
     const [showJokerUpsell, setshowJokerUpsell] = useState(false);
     const { setfinalCards } = usefinalCardsStore();
 
-    useEffect(() => {
+        useEffect(() => {
         const fetchProduct = async () => {
+            console.log('savedCards raw:', localStorage.getItem(customCardsStorageKey));
+            console.log('legacy savedCards:', localStorage.getItem("customCards"));
             const res = await MakeGet(`api/shop/${slug}`);
 
             if (!res.success) {
@@ -73,6 +75,22 @@ const ProductCustomizer = () => {
             }
 
             setProduct(res?.data);
+            
+            console.table(
+                res?.data?.customizations?.base_cards?.map(b => ({
+                    card_type: b.card_type,
+                    canonical: getCanonicalCardType(b.card_type),
+                    has_image: !!b.image
+                }))
+            );
+            console.table(
+                res?.data?.customizations?.custom_sets?.map(b => ({
+                    card_type: b.card_type,
+                    name: b.name,
+                    canonical: getCanonicalCardType(b.card_type),
+                    has_image: !!b.image
+                }))
+            );
 
             const savedCards = localStorage.getItem(customCardsStorageKey) || localStorage.getItem("customCards");
             if (savedCards) {
@@ -87,7 +105,7 @@ const ProductCustomizer = () => {
                     parsedCards = [];
                 }
 
-                const baseCards = res?.data?.customizations?.custom_sets || [];
+                const baseCards = res?.data?.customizations?.base_cards || [];
                 const firstBaseImageByType = baseCards.reduce((acc, item) => {
                     const canonicalType = getCanonicalCardType(item?.card_type);
                     if (!canonicalType || acc[canonicalType]) return acc;
@@ -133,8 +151,19 @@ const ProductCustomizer = () => {
                 }
             }
 
-            const baseForFirstStep = res?.data?.customizations?.custom_sets?.find((item) => item?.card_type === CARD_FLOW[0])?.image;
-            const fallbackBase = res?.data?.customizations?.custom_sets?.[0]?.image;
+            const customSets = res?.data?.customizations?.custom_sets || [];
+            const baseCards = res?.data?.customizations?.base_cards || [];
+
+            // ✅ FIX: Look for the Ace base image in BOTH custom_sets and base_cards
+            const baseForFirstStep = customSets.find(
+                (item) => getCanonicalCardType(item?.card_type) === CARD_FLOW[0]
+            )?.image || baseCards.find(
+                (item) => getCanonicalCardType(item?.card_type) === CARD_FLOW[0]
+            )?.image;
+
+            // ✅ FIX: Also update the fallback to check both arrays
+            const fallbackBase = customSets[0]?.image || baseCards[0]?.image;
+            
             const initialLayers = {};
 
             layers.forEach((layer) => {
@@ -142,6 +171,10 @@ const ProductCustomizer = () => {
                 const items = res?.data?.customizations?.[layer];
                 if (items?.length > 0) initialLayers[layer] = items[0]?.image;
             });
+
+            console.log('baseForFirstStep:', baseForFirstStep);
+            console.log('fallbackBase:', fallbackBase);
+            console.log('base_cards:', res?.data?.customizations?.base_cards);
 
             setCards([{ editedCard: CARD_FLOW[0], baseImage: baseForFirstStep || fallbackBase, selectedLayers: initialLayers }]);
             setActiveCardIndex(0);
@@ -155,7 +188,7 @@ const ProductCustomizer = () => {
         if (!slug || !cards?.length) return;
 
         localStorage.setItem(customCardsStorageKey, JSON.stringify(cards));
-        localStorage.setItem("customCards", JSON.stringify(cards)); // keep legacy key in sync
+        localStorage.setItem("customCards", JSON.stringify(cards)); 
         localStorage.setItem(customCardsActiveIndexStorageKey, String(activeCardIndex));
     }, [cards, activeCardIndex, slug, customCardsStorageKey, customCardsActiveIndexStorageKey]);
 
@@ -200,8 +233,13 @@ const ProductCustomizer = () => {
         );
     };
 
-    const selectBaseImage = (url, type) => {
-        setCards((prev) => prev.map((card, i) => (i === activeCardIndex ? { ...card, editedCard: type, baseImage: url } : card)));
+    const selectBaseImage = (url, type, slotName = null) => {
+        const indexAtClick = activeCardIndex;
+        setCards((prev) => prev.map((card, i) =>
+            i === indexAtClick
+                ? { ...card, editedCard: type, baseImage: url, slotName }
+                : card
+        ));
     };
 
     const addNewCard = (cardType = editedCard, shouldSetActive = true) => {
@@ -211,23 +249,24 @@ const ProductCustomizer = () => {
         }
 
         const baseForType = product?.customizations?.custom_sets?.find(
-            (item) => item?.card_type === cardType || item?.name === cardType
-        )?.image
-        const initialLayersTwo = {};
+            (item) => getCanonicalCardType(item?.card_type) === cardType
+        )?.image;
 
+        const initialLayersTwo = {};
         layers.forEach((layer) => {
             if (layer === "beards") return;
             const items = product?.customizations?.[layer];
             if (items?.length > 0) initialLayersTwo[layer] = items[0]?.image;
         });
 
-        setCards((prev) => {
-            const nextCards = [...prev, { editedCard: cardType, baseImage: baseForType, selectedLayers: initialLayersTwo }];
-            if (shouldSetActive) {
-                setActiveCardIndex(nextCards.length - 1);
-            }
-            return nextCards;
-        });
+        setCards((prev) => [
+            ...prev,
+            { editedCard: cardType, baseImage: baseForType, selectedLayers: initialLayersTwo },
+        ]);
+
+        if (shouldSetActive) {
+            setActiveCardIndex((prev) => prev + 1);
+        }
     };
 
     const removeCard = (index) => {
@@ -257,7 +296,7 @@ const ProductCustomizer = () => {
 
         setspinloading(true);
 
-        let compositeImages = []; // ← declare outside try block
+        let compositeImages = []; 
 
         try {
             compositeImages = await Promise.all(
@@ -278,6 +317,7 @@ const ProductCustomizer = () => {
         const FinalProduct = cards.map((card, i) => ({
             rank: DECK_RANK_MAP[card.editedCard] || null,
             image: compositeImages[i],
+            name: card.slotName ?? null,
         }));
 
         clearCart();
@@ -300,6 +340,7 @@ const ProductCustomizer = () => {
             customization_mode: 'deck',           
         };
 
+        console.log('FinalProduct names:', FinalProduct.map(c => ({ rank: c.rank, name: c.name })));
         addToCart(producted);
         setspinloading(false);
         router.push(redirectToCheckout ? '/my-cart/checkout' : '/final/customization');
@@ -323,20 +364,17 @@ const ProductCustomizer = () => {
             img.src = src;
         });
 
-        // Draw base image
         if (card.baseImage) {
             const base = await loadImage(card.baseImage);
             ctx.drawImage(base, 0, 0, 750, 1050);
         }
 
-        // Draw each layer on top
         const layerOrder = ["dresses", "skin_tones", "hairs", "crowns", "beards", "eyes", "mouths", "noses"];
         for (const layer of layerOrder) {
             const src = card.selectedLayers?.[layer];
             if (!src) continue;
             try {
                 const img = await loadImage(src);
-                // Top position (same as your CSS: top-[8%], w-[64%], h-[43%])
                 const x = (750 - 750 * 0.64) / 2;
                 const w = 750 * 0.64;
                 const h = 1050 * 0.43;
@@ -344,7 +382,6 @@ const ProductCustomizer = () => {
                 const yBot = 1050 - yTop - h;
 
                 ctx.drawImage(img, x, yTop, w, h);
-                // Mirrored bottom
                 ctx.save();
                 ctx.translate(x + w / 2, yBot + h / 2);
                 ctx.scale(1, -1);
@@ -357,7 +394,6 @@ const ProductCustomizer = () => {
     };
 
     const Done = async () => {
-        // Keep the bottom toolbar button, but collapse the panel after tapping Next.
         setsmallconOpen(false);
         setdoneloading(true);
 
@@ -394,11 +430,13 @@ const ProductCustomizer = () => {
         } else {
             seteditedCard(nextCardType);
             addNewCard(nextCardType, false);
-            setActiveCardIndex(cards.length);
-        }
+            setActiveCardIndex((_prev) => {
+                return cards.length;
+            });
+        } 
 
         setTimeout(() => setdoneloading(false), 500);
-    };
+    }; 
 
     const handleSkipJokerUpsell = async () => {
         setshowJokerUpsell(false);
@@ -562,13 +600,11 @@ const ProductCustomizer = () => {
                     </main>
                 ) : (
                     <>
-                {/* 1. Header changed to sticky to naturally flow without a gap */}
                 <header className="sticky top-[68px] z-50 w-full border-b border-gray-200 bg-white/95 backdrop-blur md:top-[76px]">
                     <div className="grid w-full grid-cols-1 xl:grid-cols-[260px_minmax(0,1fr)_350px]">
                         <div className="hidden xl:block" />
                         <div className="w-full px-3 py-2 md:px-6 md:py-2.5">
                             <div className="mx-auto w-full max-w-[980px]">
-                                {/* 2. Changed inner container to a flex row that manages lines cleanly */}
                                 <div className="flex w-full items-start justify-between">
                             {visibleSteps.map((step, index) => {
                                 const Icon = step.icon;
@@ -578,7 +614,6 @@ const ProductCustomizer = () => {
 
                                 return (
                                     <Fragment key={step.type}>
-                                        {/* Step Circle & Text */}
                                         <button
                                             type="button"
                                             onClick={() => handleStepClick(step.type)}
@@ -599,7 +634,6 @@ const ProductCustomizer = () => {
                                             <p className={`text-xs font-semibold md:text-sm ${isActive ? "text-[#3CA9FF]" : "text-gray-500"}`}>{step.label}</p>
                                         </button>
 
-                                        {/* Flexible Connecting Line */}
                                         {index !== visibleSteps.length - 1 && (
                                             <div
                                                 className={`mt-5 h-[2px] flex-1 mx-2 md:mx-3 md:mt-6 ${
@@ -617,7 +651,6 @@ const ProductCustomizer = () => {
                     </div>
                 </header>
 
-                {/* 3. Removed pt-[128px] and md:pt-[142px] from <main> so it perfectly hugs the sticky header */}
                 <main className="grid w-full grid-cols-1 items-start xl:grid-cols-[260px_minmax(0,1fr)_350px] xl:h-[calc(100dvh-148px)]">
                     <aside className="hidden border-r border-gray-200 bg-white xl:sticky xl:top-[148px] xl:block xl:h-[calc(100dvh-148px)] xl:overflow-hidden">
                         <CardSidebar
@@ -708,7 +741,6 @@ const ProductCustomizer = () => {
 
                 <ToastContainer position="bottom-center" />
             </div>
-
         </>
     );
 };

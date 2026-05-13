@@ -285,17 +285,7 @@ function ImageDownloadInfo({ modalinfo, modaltype }) {
         if (!value) return null;
         if (typeof value === "object") return value;
         if (typeof value !== "string") return null;
-        try {
-            return JSON.parse(value);
-        } catch {
-            return null;
-        }
-    };
-
-    const buildDeckPreviewFromCard = (card) => {
-        if (!card || typeof card !== "object") return null;
-        if (card.baseImage) return card.baseImage;
-        return null;
+        try { return JSON.parse(value); } catch { return null; }
     };
 
     const isImageLikeUrl = (value) => {
@@ -304,106 +294,93 @@ function ImageDownloadInfo({ modalinfo, modaltype }) {
         return /\.(jpg|jpeg|png|webp|gif|bmp|svg)(\?.*)?$/i.test(value);
     };
 
-    const collectImageUrlsDeep = (node, path = "", bag = []) => {
-        if (!node) return bag;
-
-        if (Array.isArray(node)) {
-            node.forEach((entry, index) => collectImageUrlsDeep(entry, `${path}[${index}]`, bag));
-            return bag;
-        }
-
-        if (typeof node === "string") {
-            if (isImageLikeUrl(node)) bag.push(node);
-            return bag;
-        }
-
-        if (typeof node !== "object") return bag;
-
-        Object.entries(node).forEach(([key, rawValue]) => {
-            const value = parseMaybeJson(rawValue) || rawValue;
-            const fullPath = `${path}.${key}`.toLowerCase();
-
-            // Prefer customization-related keys to avoid unrelated catalog image noise.
-            const looksCustomizationField =
-                fullPath.includes("final") ||
-                fullPath.includes("custom") ||
-                fullPath.includes("preview") ||
-                fullPath.includes("front") ||
-                fullPath.includes("back") ||
-                fullPath.includes("base") ||
-                fullPath.includes("layer");
-
-            if (typeof value === "string" && isImageLikeUrl(value) && looksCustomizationField) {
-                bag.push(value);
-                return;
-            }
-
-            if (typeof value === "string" && value.startsWith("data:image/")) {
-                bag.push(value);
-                return;
-            }
-
-            if (Array.isArray(value) || (value && typeof value === "object")) {
-                collectImageUrlsDeep(value, fullPath, bag);
-            }
-        });
-
-        return bag;
-    };
-
-    const extractCustomizedImagesFromOrder = (order) => {
+    // Extract card images from order_items → cards[]
+    const extractCardImages = (order) => {
         const images = [];
         const items = order?.order_items ?? order?.items ?? [];
-
         items.forEach((item) => {
-            const cards = item?.cards ?? item?.customized_cards ?? [];
+            const cards = item?.cards ?? [];
             if (Array.isArray(cards)) {
                 cards.forEach((card) => {
-                    const picked =
-                        card?.image ||
-                        card?.url ||
-                        card?.final_image ||
-                        card?.customized_image ||
-                        buildDeckPreviewFromCard(card);
-                    if (picked) {
-                        images.push(picked);
-                    }
+                    if (card?.image) images.push(card.image);
                 });
             }
-
-            const parsedItem = parseMaybeJson(item);
-            if (parsedItem && typeof parsedItem === "object") {
-                collectImageUrlsDeep(parsedItem, "item", images);
-            }
         });
-
-        collectImageUrlsDeep(order, "order", images);
         return [...new Set(images.filter(Boolean))];
     };
 
-    const pngImages = extractCustomizedImagesFromOrder(modalinfo);
+    // Extract tuckbox images from order_items → tuckbox_image
+    const extractTuckboxImages = (order) => {
+        const images = [];
+        const items = order?.order_items ?? order?.items ?? [];
+        items.forEach((item) => {
+            if (item?.tuckbox_image && isImageLikeUrl(item.tuckbox_image)) {
+                images.push(item.tuckbox_image);
+            }
+        });
+        return [...new Set(images.filter(Boolean))];
+    };
+
+    const cardImages   = extractCardImages(modalinfo);
+    const tuckboxImages = extractTuckboxImages(modalinfo);
+
     const pdfUrl =
         modalinfo?.customized_file_url ||
-        modalinfo?.customized_pdf_url ||
-        modalinfo?.pdf_url ||
+        modalinfo?.customized_pdf_url  ||
+        modalinfo?.pdf_url             ||
         modalinfo?.customized_file?.url ||
         modalinfo?.customizedFileUrl;
 
     return (
         <div className="w-full h-full rounded-xl bg-white">
-            <div className="w-full h-full flex items-center gap-4 flex-wrap">
-                {modaltype === "pdf" ? (
-                    <PDFViewers fulldata={modalinfo} url={pdfUrl} />
-                ) : (
-                    <div className="w-full h-full overflow-y-auto p-6 bg-slate-50">
-                        <h3 className="text-lg font-semibold text-slate-900 mb-4">Customized Card Images</h3>
-                        {pngImages.length === 0 ? (
-                            <div className="text-sm text-slate-600">No customized PNG images found for this order.</div>
+            {modaltype === "pdf" ? (
+                <PDFViewers fulldata={modalinfo} url={pdfUrl} />
+            ) : (
+                <div className="w-full h-full overflow-y-auto p-6 bg-slate-50 space-y-8">
+
+                    {/* Tuckbox Preview */}
+                    {tuckboxImages.length > 0 && (
+                        <div>
+                            <h3 className="text-lg font-semibold text-slate-900 mb-4">
+                                Box Preview
+                            </h3>
+                            <div className="flex flex-wrap gap-4">
+                                {tuckboxImages.map((url, index) => (
+                                    
+                                        key={`tuckbox-${index}`}
+                                        href={url}
+                                        download={`tuckbox-${index + 1}.png`}
+                                        rel="noreferrer"
+                                        className="block bg-white rounded-xl border border-slate-200 p-2 shadow-sm hover:shadow-md transition w-[200px]"
+                                    >
+                                        <img
+                                            src={url}
+                                            alt={`tuckbox-${index + 1}`}
+                                            className="w-full h-auto rounded-lg object-contain"
+                                        />
+                                        <p className="text-xs text-center text-slate-500 mt-1">
+                                            Box {index + 1}
+                                        </p>
+                                    </a>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Card Images */}
+                    <div>
+                        <h3 className="text-lg font-semibold text-slate-900 mb-4">
+                            Customized Card Images
+                        </h3>
+                        {cardImages.length === 0 ? (
+                            <div className="text-sm text-slate-600">
+                                No customized card images found for this order.
+                            </div>
                         ) : (
                             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-3 md:gap-4">
-                                {pngImages.map((url, index) => (
-                                    <a
-                                        key={`${url}-${index}`}
+                                {cardImages.map((url, index) => (
+                                    
+                                        key={`card-${index}`}
                                         href={url}
                                         download={`card-${index + 1}.png`}
                                         rel="noreferrer"
@@ -419,10 +396,9 @@ function ImageDownloadInfo({ modalinfo, modaltype }) {
                             </div>
                         )}
                     </div>
-                )}
 
-
-            </div>
+                </div>
+            )}
         </div>
     );
 }

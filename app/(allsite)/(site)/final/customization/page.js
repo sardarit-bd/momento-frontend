@@ -160,19 +160,19 @@ const FinalCardsPage = () => {
                                             }
                                             if (total === 4) {
                                                 return [
-                                                    { i: 0, x: -22, y: -40, scale: 0.65, z: 1, size: '75%' },
-                                                    { i: 3, x:  22, y: -40, scale: 0.65, z: 1, size: '75%' },
-                                                    { i: 1, x: -25, y: -30, scale: 0.78, z: 2, size: '50%' },
-                                                    { i: 2, x:  25, y: -30, scale: 0.78, z: 2, size: '50%' },
-                                                    { i: 0, x: 0,   y: 60,   scale: 1,    z: 3, size: '95%' },
+                                                    { i: 0, x: -22, y: -15, scale: 0.65, z: 1, size: '95%', clip: '0% 25% 10% 23%' },
+                                                    { i: 3, x:  22, y: -15, scale: 0.65, z: 1, size: '95%', clip: '0% 23% 10% 25%' },
+                                                    { i: 1, x: -26, y: 10, scale: 0.78, z: 2, size: '80%', clip: '0% 27% 55% 28%' },
+                                                    { i: 2, x:  26, y: 10, scale: 0.78, z: 2, size: '80%', clip: '0% 27% 55% 25%' },
+                                                    { i: 0, x: 0,   y: 32,   scale: 1,    z: 3, size: '99%', clip: '0% 25% 49.3% 25%' },
                                                 ];
                                             }
                                             return [
-                                                { i: 3, x: -24, y: -15, scale: 0.65, z: 1, size: '95%' },
-                                                { i: 4, x:  24, y: -15, scale: 0.65, z: 1, size: '95%' },
+                                                { i: 3, x: -21, y: -15, scale: 0.65, z: 1, size: '95%' },
+                                                { i: 4, x:  21, y: -15, scale: 0.65, z: 1, size: '95%' },
                                                 { i: 1, x: -26, y: 10, scale: 0.78, z: 2, size: '80%', clip: '0% 27% 55% 28%' },
                                                 { i: 2, x:  26, y: 10, scale: 0.78, z: 2, size: '80%', clip: '0% 27% 55% 25%' },
-                                                { i: 0, x: 0,   y: 30,   scale: 1,    z: 3, size: '99%', clip: '0% 25% 49% 25%' },
+                                                { i: 0, x: 0,   y: 32,   scale: 1,    z: 3, size: '99%', clip: '0% 25% 49.3% 25%' },
                                             ];
                                         };
 
@@ -202,25 +202,56 @@ const FinalCardsPage = () => {
                                         ));
                                     })()}
                                 </div>
-
+                                
                                 {/* Zone 3 — Right side strip: stacked head thumbnails */}
                                 <div
                                     className="absolute z-10 flex flex-col items-center justify-start"
                                     style={{ top: '28%', left: '51%', width: '8%', height: '45%' }}
                                 >
                                     {(() => {
-                                        const stripSlots = [
-                                            ...characterImages.slice(1).map((_, idx) => ({
-                                                i: idx + 1,
-                                                isLeader: false,
-                                                x: -90,
-                                                y: -40,
-                                                rotate: -90,
-                                            })),
-                                            { i: 0, isLeader: true, x: -80, y: 0, rotate: -90 },
-                                        ];
+                                        const total = characterImages.length;
 
-                                        return stripSlots.map((slot, key) => (
+                                        const getStripLayout = () => {
+                                            if (total === 1) {
+                                                return [
+                                                    { i: 0, isLeader: true },
+                                                ];
+                                            }
+                                            if (total === 2) {
+                                                return [
+                                                    { i: 1, isLeader: false },
+                                                    { i: 0, isLeader: false },
+                                                    { i: 0, isLeader: true },  // leader duplicated
+                                                ];
+                                            }
+                                            if (total === 3) {
+                                                return [
+                                                    { i: 2, isLeader: false },
+                                                    { i: 1, isLeader: false },
+                                                    { i: 0, isLeader: false },
+                                                    { i: 0, isLeader: true },  // leader duplicated
+                                                ];
+                                            }
+                                            if (total === 4) {
+                                                return [
+                                                    { i: 3, isLeader: false },
+                                                    { i: 2, isLeader: false },
+                                                    { i: 1, isLeader: false },
+                                                    { i: 0, isLeader: false },
+                                                    { i: 0, isLeader: true },  // leader duplicated → total 5
+                                                ];
+                                            }
+                                            // 5+ characters
+                                            return [
+                                                { i: 4, isLeader: false },
+                                                { i: 3, isLeader: false },
+                                                { i: 2, isLeader: false },
+                                                { i: 1, isLeader: false },
+                                                { i: 0, isLeader: true },
+                                            ];
+                                        };
+
+                                        return getStripLayout().map((slot, key) => (
                                             <div
                                                 key={key}
                                                 className="relative flex-shrink-0 overflow-hidden"
@@ -229,7 +260,7 @@ const FinalCardsPage = () => {
                                                     aspectRatio: '1 / 1',
                                                     borderRadius: slot.isLeader ? '0%' : '40%',
                                                     marginTop: key === 0 ? '0' : '-12%',
-                                                    transform: `translateX(${slot.x}%) translateY(${slot.y}%) rotate(${slot.rotate}deg)`,
+                                                    transform: `translateX(${slot.isLeader ? -80 : -90}%) translateY(${slot.isLeader ? 0 : -40}%) rotate(-90deg)`,
                                                 }}
                                             >
                                                 <img

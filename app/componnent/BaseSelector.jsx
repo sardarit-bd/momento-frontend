@@ -3,6 +3,18 @@ import { useEffect, useMemo, useState } from "react";
 import { GiCardAceClubs, GiCardJackClubs, GiCardJoker, GiCardKingClubs, GiCardQueenClubs } from "react-icons/gi";
 import { IoIosArrowDown } from "react-icons/io";
 
+const normalizeMatch = (dbValue = "", canonicalType = "") => {
+    const v = String(dbValue).toLowerCase();
+    switch (canonicalType) {
+        case "Ace_Card":   return v.includes("ace");
+        case "king_Card":  return v.includes("king");
+        case "Queen_Card": return v.includes("queen");
+        case "Jeck_Card":  return v.includes("jeck") || v.includes("jack");
+        case "Joker_Card": return v.includes("joker");
+        default:           return false;
+    }
+};
+
 const DECK_BASE_CARD_TYPES = ["Ace_Card", "king_Card", "Queen_Card", "Jeck_Card"];
 
 const BaseSelector = ({ product, cards, activeCard, selectBase, editedCard, seteditedCard, activebaseEditCard, setactivebaseEditCard }) => {
@@ -34,26 +46,62 @@ const BaseSelector = ({ product, cards, activeCard, selectBase, editedCard, sete
     }
   }, [activeCard?.editedCard, editedCard, product, seteditedCard, allowedCardTypes]);
 
+  // useEffect(() => {
+  //   if (!product) return;
+
+  //   const allcard = product?.customizations?.base_cards || [];
+  //   const safeEditedCard = allowedCardTypes.includes(editedCard)
+  //     ? editedCard
+  //     : (allowedCardTypes.find((type) => allcard.some((card) => card?.card_type === type)) || allowedCardTypes[0]);
+  //   const filteredCards = allcard?.filter((card) => 
+  //       card?.card_type === editedCard || card?.name === editedCard
+  //   );
+
+  //   if (safeEditedCard !== editedCard) seteditedCard(safeEditedCard);
+  //   setactivebaseEditCard(filteredCards || []);
+  // }, [editedCard, product, setactivebaseEditCard, seteditedCard, allowedCardTypes]);
+
   useEffect(() => {
     if (!product) return;
 
     const allcard = product?.customizations?.base_cards || [];
+
+     console.log("=== BaseSelector Debug ===");
+     console.log("1. Raw base_cards from API:", allcard);
+     console.log("2. Current editedCard:", editedCard);
+     console.log("3. allowedCardTypes:", allowedCardTypes);
+
     const safeEditedCard = allowedCardTypes.includes(editedCard)
-      ? editedCard
-      : (allowedCardTypes.find((type) => allcard.some((card) => card?.card_type === type)) || allowedCardTypes[0]);
-    const filteredCards = allcard?.filter((card) => 
-        card?.card_type === editedCard || card?.name === editedCard
+        ? editedCard
+        : (allowedCardTypes.find((type) =>
+            allcard.some((card) => normalizeMatch(card?.card_type, type))
+          ) || allowedCardTypes[0]);
+
+    const filteredCards = allcard.filter((card) =>
+        normalizeMatch(card?.card_type, safeEditedCard)   // ← was using editedCard, not safeEditedCard
     );
 
     if (safeEditedCard !== editedCard) seteditedCard(safeEditedCard);
     setactivebaseEditCard(filteredCards || []);
-  }, [editedCard, product, setactivebaseEditCard, seteditedCard, allowedCardTypes]);
 
-  const handleCardTypeSelect = (cardType) => {
+}, [editedCard, product, setactivebaseEditCard, seteditedCard, allowedCardTypes]);
+//   const handleCardTypeSelect = (cardType) => {
+//     if (!allowedCardTypes.includes(cardType)) return;
+
+//     const allcard = product?.customizations?.base_cards;
+//     const filteredCards = allcard?.filter((card) => card?.card_type === cardType);
+//     const matchedCard = filteredCards?.find(
+//         (card) => card?.image === activeCard?.baseImage
+//     ) || filteredCards?.[0];
+
+//     seteditedCard(cardType);
+//     selectBase(matchedCard?.image, cardType, matchedCard?.name);
+// };
+const handleCardTypeSelect = (cardType) => {
     if (!allowedCardTypes.includes(cardType)) return;
 
-    const allcard = product?.customizations?.base_cards;
-    const filteredCards = allcard?.filter((card) => card?.card_type === cardType);
+    const allcard = product?.customizations?.base_cards || [];
+    const filteredCards = allcard.filter((card) => normalizeMatch(card?.card_type, cardType)); // ← normalized
     const matchedCard = filteredCards?.find(
         (card) => card?.image === activeCard?.baseImage
     ) || filteredCards?.[0];
@@ -63,7 +111,7 @@ const BaseSelector = ({ product, cards, activeCard, selectBase, editedCard, sete
 };
 
   const hasBaseForType = (cardType) =>
-    (product?.customizations?.base_cards || []).some((card) => card?.card_type === cardType);
+    (product?.customizations?.base_cards || []).some((card) => normalizeMatch(card?.card_type, cardType));
 
 
 

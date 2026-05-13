@@ -34,11 +34,14 @@ export default function CheckoutPage() {
   // Form State
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
-  // const [email, setemail] = useState("");
   const [phone, setphone] = useState("");
   const [City, setCity] = useState("");
+  const [state, setState] = useState("");
+  const [country, setCountry] = useState("");     
   const [zipcode, setzipcode] = useState("");
   const [address, setaddress] = useState("");
+  const [address2, setAddress2] = useState("");
+  const [company, setCompany] = useState("");
   
   // Deck Customization State
   const [deckFinish, setDeckFinish] = useState("prism");
@@ -247,7 +250,16 @@ export default function CheckoutPage() {
 
     const fullName = `${firstName} ${lastName}`.trim();
 
-    if (!firstName || !lastName || !phone || !City || !address || !zipcode) {
+    if (
+      !firstName ||
+      !lastName ||
+      !phone ||
+      !City ||
+      !state ||
+      !country ||
+      !address ||
+      !zipcode
+    ) {
       toast.warn("All shipping fields are required");
       return;
     }
@@ -303,20 +315,22 @@ export default function CheckoutPage() {
       );
 
       // Backend checkout currently validates email as required.
-      // Keep email hidden in UI, but always send a valid fallback value.
       const checkoutEmail = `${id || "guest"}@example.com`;
 
       const checkoutData = {
-        first_name: firstName,
-        last_name: lastName,
-        email: checkoutEmail,
-        phone,
-        address,
-        city: City,
-        zipcode,
-        gateway: "stripe",
-        items: cartItems,
-        userID: id,
+          first_name: firstName,
+          last_name: lastName,
+          email: checkoutEmail,
+          phone,
+          address1: address,
+          address2,
+          city: City,
+          state,
+          country,
+          zipcode,
+          gateway: "stripe",
+          items: cartItems,
+          userID: id,
       };
 
       const checkoutEndpoint =
@@ -351,6 +365,13 @@ export default function CheckoutPage() {
       setloading(false);
     }
   };
+
+  const FieldLabel = ({ label, required = false }) => (
+    <label className="block text-sm font-medium text-gray-700 mb-1">
+      {label}
+      {required && <span className="text-red-500 ml-1">*</span>}
+    </label>
+  );
 
   return (
     <section className="min-h-screen bg-[#fafafa] py-12 px-4 sm:px-6 lg:px-8 font-sans text-gray-900">
@@ -495,24 +516,144 @@ export default function CheckoutPage() {
 
               {/* Shipping Information */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-3 mt-4">Shipping Information</label>
-                <div className="space-y-3">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <input type="text" value={firstName} onChange={(e) => setFirstName(e.target.value)} placeholder="First Name" className={inputStyle} required />
-                    <input type="text" value={lastName} onChange={(e) => setLastName(e.target.value)} placeholder="Last Name" className={inputStyle} required />
-                  </div>
-                  
-                  {/* Phone included to pass your validation silently */}
-                  <input type="tel" value={phone} onChange={(e) => setphone(e.target.value)} placeholder="Phone Number" className={inputStyle} required />
+              <label className="block text-sm font-medium text-gray-700 mb-3 mt-4">
+                Shipping Information
+              </label>
 
-                  <input type="text" value={address} onChange={(e) => setaddress(e.target.value)} placeholder="Street Address" className={inputStyle} required />
-                  
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <input type="text" value={City} onChange={(e) => setCity(e.target.value)} placeholder="City" className={inputStyle} required />
-                    <input type="text" value={zipcode} onChange={(e) => setzipcode(e.target.value)} placeholder="Zip Code" className={inputStyle} required />
+              <div className="space-y-4">
+
+                {/* Full Name */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <FieldLabel label="First Name" required />
+                    <input
+                      type="text"
+                      value={firstName}
+                      onChange={(e) => setFirstName(e.target.value)}
+                      placeholder="First Name"
+                      className={inputStyle}
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <FieldLabel label="Last Name" required />
+                    <input
+                      type="text"
+                      value={lastName}
+                      onChange={(e) => setLastName(e.target.value)}
+                      placeholder="Last Name"
+                      className={inputStyle}
+                      required
+                    />
+                  </div>
+                </div>
+
+                {/* Company */}
+                <div>
+                  <FieldLabel label="Company" />
+                  <input
+                    type="text"
+                    value={company}
+                    onChange={(e) => setCompany(e.target.value)}
+                    placeholder="Company (optional)"
+                    className={inputStyle}
+                  />
+                </div>
+
+                {/* Phone */}
+                <div>
+                  <FieldLabel label="Phone Number" required />
+                  <input
+                    type="tel"
+                    value={phone}
+                    onChange={(e) => setphone(e.target.value)}
+                    placeholder="Phone Number"
+                    className={inputStyle}
+                    required
+                  />
+                </div>
+
+                {/* Address 1 */}
+                <div>
+                  <FieldLabel label="Address 1" required />
+                  <input
+                    type="text"
+                    value={address}
+                    onChange={(e) => setaddress(e.target.value)}
+                    placeholder="Address 1"
+                    className={inputStyle}
+                    required
+                  />
+                </div>
+
+                {/* Address 2 */}
+                <div>
+                  <FieldLabel label="Address 2" />
+                  <input
+                    type="text"
+                    value={address2}
+                    onChange={(e) => setAddress2(e.target.value)}
+                    placeholder="Apartment, suite, unit, etc. (optional)"
+                    className={inputStyle}
+                  />
+                </div>
+
+                {/* City + State */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <FieldLabel label="City" required />
+                    <input
+                      type="text"
+                      value={City}
+                      onChange={(e) => setCity(e.target.value)}
+                      placeholder="City"
+                      className={inputStyle}
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <FieldLabel label="State / Province" required />
+                    <input
+                      type="text"
+                      value={state}
+                      onChange={(e) => setState(e.target.value)}
+                      placeholder="State / Province"
+                      className={inputStyle}
+                      required
+                    />
+                  </div>
+                </div>
+
+                {/* Postal Code + Country */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <FieldLabel label="Zip / Postal Code" required />
+                    <input
+                      type="text"
+                      value={zipcode}
+                      onChange={(e) => setzipcode(e.target.value)}
+                      placeholder="Zip / Postal Code"
+                      className={inputStyle}
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <FieldLabel label="Country" required />
+                    <input
+                      type="text"
+                      value={country}
+                      onChange={(e) => setCountry(e.target.value)}
+                      placeholder="Country"
+                      className={inputStyle}
+                      required
+                    />
                   </div>
                 </div>
               </div>
+            </div>
 
 
               {/* Submit Button */}
@@ -523,19 +664,6 @@ export default function CheckoutPage() {
               >
                 Continue
               </button>
-
-              {/* Trust Badges */}
-              {/* <div className="flex items-center justify-center gap-4 text-[10px] text-gray-500 pt-2">
-                 <span className="flex items-center gap-1">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-                    SSL Encrypted
-                 </span>
-                 <span>•</span>
-                 <span>Secure Payment</span>
-                 <span>•</span>
-                 <span>Money Back Guarantee</span>
-              </div> */}
-
             </form>
           </div>
         </div>

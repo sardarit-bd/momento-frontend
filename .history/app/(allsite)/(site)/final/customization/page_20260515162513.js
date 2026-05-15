@@ -1,16 +1,13 @@
 "use client";
 import SpinLoader from "@/app/componnent/SpingLoader";
-import boxPreviewDefault from "@/public/boxpreview.png";
 import useboxcartstore from "@/store/useboxcartstore";
 import useCartStore from "@/store/useCartStore";
 import useDeckFinalPreview from "@/store/useDeckFinalPreview";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
 import { BiLeftArrowAlt } from "react-icons/bi";
 import { IoCartOutline } from "react-icons/io5";
 import { MdOutlineShoppingBag } from "react-icons/md";
-import domtoimage from 'dom-to-image-more';
 
 const LAYER_ORDER = ["dresses", "skin_tones", "hairs", "crowns", "beards", "eyes", "mouths", "noses"];
 
@@ -19,7 +16,7 @@ const FinalCardsPage = () => {
     const { boxs } = useboxcartstore();
     const [loading, setloading] = useState(false);
     const [checkoutLoading, setCheckoutLoading] = useState(false);
-    const [characterImages, setCharacterImages] = useState([]);
+    const [characterImages, setCharacterImages] = useState([]); 
     const router = useRouter();
 
     const ensureDeckInCart = () => {
@@ -30,58 +27,23 @@ const FinalCardsPage = () => {
         return true;
     };
 
-    const handleCheckout = async (e) => {
-    e.preventDefault();
-    if (!ensureDeckInCart()) return;
-    setCheckoutLoading(true);
+    const adddeckcart = (e) => {
+        e.preventDefault();
+        if (!ensureDeckInCart()) return;
+        setloading(true);
+        setTimeout(() => setloading(false), 900);
+    };
 
-    const boxImage = await captureAndResizeBox();
-    if (boxImage && deckcart?.[0]) {
-        updateCart({ ...deckcart[0], BoxImage: boxImage });
-    }
+    const handleCheckout = (e) => {
+        e.preventDefault();
+        if (!ensureDeckInCart()) return;
+        setCheckoutLoading(true);
+        setTimeout(() => {
+            setCheckoutLoading(false);
+            router.push("/my-cart/checkout");
+        }, 500);
+    };
 
-    router.push("/my-cart/checkout");
-    setCheckoutLoading(false);
-};
-
-const adddeckcart = async (e) => {
-    e.preventDefault();
-    if (!ensureDeckInCart()) return;
-    setloading(true);
-
-    const boxImage = await captureAndResizeBox();
-    if (boxImage && deckcart?.[0]) {
-        updateCart({ ...deckcart[0], BoxImage: boxImage });
-    }
-
-    setTimeout(() => setloading(false), 900);
-};
-
-    const boxPreviewRef = useRef(null);
-const { deckcart, updateCart } = useDeckFinalPreview();
-
-const captureAndResizeBox = async () => {
-    if (!boxPreviewRef.current) return null;
-    try {
-        const dataUrl = await domtoimage.toPng(boxPreviewRef.current, {
-            width: boxPreviewRef.current.offsetWidth,
-            height: boxPreviewRef.current.offsetHeight,
-            style: { transform: 'scale(1)' },
-        });
-        console.log('Captured successfully, length:', dataUrl.length);
-        const img = new window.Image();
-        await new Promise((resolve) => { img.onload = resolve; img.src = dataUrl; });
-        const resized = document.createElement('canvas');
-        resized.width = 2325;
-        resized.height = 1950;
-        const ctx = resized.getContext('2d');
-        ctx.drawImage(img, 0, 0, 2325, 1950);
-        return resized.toDataURL('image/png');
-    } catch (err) {
-        console.error('Box capture failed:', err);
-        return null;
-    }
-};
     useEffect(() => {
         const chars = deckcart[0]?.CharacterImages || [];
         setCharacterImages(chars);
@@ -109,7 +71,7 @@ const captureAndResizeBox = async () => {
                     </button>
                 </div>
             </div>
-
+            
             {/* Individual Full Card Previews */}
             <div className="grid grid-cols-2 justify-items-center gap-3 py-6 my-6 sm:grid-cols-3 md:grid-cols-5 md:gap-4">
                 {finalProductCards.map((card, idx) => (
@@ -128,15 +90,16 @@ const captureAndResizeBox = async () => {
                 <h2 className="py-4 font-semibold text-gray-600">Box Preview</h2>
 
                 <div className="flex flex-wrap gap-6">
-                    <div ref={boxPreviewRef} className="relative w-[280px] sm:w-[340px] md:w-[420px] rounded-xl border border-gray-200 bg-white shadow-lg overflow-hidden">
+                    <div className="relative w-[280px] sm:w-[340px] md:w-[420px] rounded-xl border border-gray-200 bg-white shadow-lg overflow-hidden">
 
                         {/* Box Template Background */}
-                        <img
-                            src="/boxpreview.png"
+                        <Image
+                            src={boxPreviewDefault}
                             alt="Box Template"
                             width={1000}
                             height={1000}
                             className="w-full h-auto object-contain"
+                            priority
                         />
 
                         {characterImages.length > 0 && (
@@ -182,31 +145,31 @@ const captureAndResizeBox = async () => {
                                             if (total === 2) {
                                                 return [
                                                     { i: 1, x: -20, y: -18, scale: 0.72, z: 1, size: '38%' },
-                                                    { i: 0, x: 0, y: 0, scale: 1, z: 3, size: '55%' },
+                                                    { i: 0, x: 0,   y: 0,   scale: 1,    z: 3, size: '55%' },
                                                 ];
                                             }
                                             if (total === 3) {
                                                 return [
                                                     { i: 1, x: -22, y: -18, scale: 0.72, z: 1, size: '38%' },
-                                                    { i: 2, x: 22, y: -18, scale: 0.72, z: 1, size: '38%' },
-                                                    { i: 0, x: 0, y: 0, scale: 1, z: 3, size: '55%' },
+                                                    { i: 2, x:  22, y: -18, scale: 0.72, z: 1, size: '38%' },
+                                                    { i: 0, x: 0,   y: 0,   scale: 1,    z: 3, size: '55%' },
                                                 ];
                                             }
                                             if (total === 4) {
                                                 return [
                                                     { i: 0, x: -22, y: -15, scale: 0.65, z: 1, size: '95%', clip: '0% 25% 10% 23%' },
-                                                    { i: 3, x: 22, y: -15, scale: 0.65, z: 1, size: '95%', clip: '0% 23% 10% 25%' },
+                                                    { i: 3, x:  22, y: -15, scale: 0.65, z: 1, size: '95%', clip: '0% 23% 10% 25%' },
                                                     { i: 1, x: -26, y: 10, scale: 0.78, z: 2, size: '80%', clip: '0% 27% 55% 28%' },
-                                                    { i: 2, x: 26, y: 10, scale: 0.78, z: 2, size: '80%', clip: '0% 27% 55% 25%' },
-                                                    { i: 0, x: 0, y: 32, scale: 1, z: 3, size: '99%', clip: '0% 25% 49.3% 25%' },
+                                                    { i: 2, x:  26, y: 10, scale: 0.78, z: 2, size: '80%', clip: '0% 27% 55% 25%' },
+                                                    { i: 0, x: 0,   y: 32,   scale: 1,    z: 3, size: '99%', clip: '0% 25% 49.3% 25%' },
                                                 ];
                                             }
                                             return [
                                                 { i: 3, x: -21, y: -15, scale: 0.65, z: 1, size: '95%' },
-                                                { i: 4, x: 21, y: -15, scale: 0.65, z: 1, size: '95%' },
+                                                { i: 4, x:  21, y: -15, scale: 0.65, z: 1, size: '95%' },
                                                 { i: 1, x: -26, y: 10, scale: 0.78, z: 2, size: '80%', clip: '0% 27% 55% 28%' },
-                                                { i: 2, x: 26, y: 10, scale: 0.78, z: 2, size: '80%', clip: '0% 27% 55% 25%' },
-                                                { i: 0, x: 0, y: 32, scale: 1, z: 3, size: '99%', clip: '0% 25% 49.3% 25%' },
+                                                { i: 2, x:  26, y: 10, scale: 0.78, z: 2, size: '80%', clip: '0% 27% 55% 25%' },
+                                                { i: 0, x: 0,   y: 32,   scale: 1,    z: 3, size: '99%', clip: '0% 25% 49.3% 25%' },
                                             ];
                                         };
 
@@ -236,7 +199,7 @@ const captureAndResizeBox = async () => {
                                         ));
                                     })()}
                                 </div>
-
+                                
                                 {/* Zone 3 — Right side strip: stacked head thumbnails */}
                                 <div
                                     className="absolute z-10 flex flex-col items-center justify-start"

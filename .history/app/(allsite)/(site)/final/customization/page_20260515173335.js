@@ -10,7 +10,7 @@ import { useEffect, useRef, useState } from "react";
 import { BiLeftArrowAlt } from "react-icons/bi";
 import { IoCartOutline } from "react-icons/io5";
 import { MdOutlineShoppingBag } from "react-icons/md";
-import domtoimage from 'dom-to-image-more';
+import html2canvas from "html2canvas";
 
 const LAYER_ORDER = ["dresses", "skin_tones", "hairs", "crowns", "beards", "eyes", "mouths", "noses"];
 
@@ -61,27 +61,33 @@ const adddeckcart = async (e) => {
 const { deckcart, updateCart } = useDeckFinalPreview();
 
 const captureAndResizeBox = async () => {
-    if (!boxPreviewRef.current) return null;
+    if (!boxPreviewRef.current) {
+        console.log('boxPreviewRef is null');
+        return null;
+    }
+    console.log('Capturing box preview...');
     try {
-        const dataUrl = await domtoimage.toPng(boxPreviewRef.current, {
-            width: boxPreviewRef.current.offsetWidth,
-            height: boxPreviewRef.current.offsetHeight,
-            style: { transform: 'scale(1)' },
+        const captured = await html2canvas(boxPreviewRef.current, {
+            useCORS: true,
+            allowTaint: true,
+            scale: 3,
+            backgroundColor: '#ffffff',
         });
-        console.log('Captured successfully, length:', dataUrl.length);
-        const img = new window.Image();
-        await new Promise((resolve) => { img.onload = resolve; img.src = dataUrl; });
+        console.log('Captured size:', captured.width, captured.height);
         const resized = document.createElement('canvas');
         resized.width = 2325;
         resized.height = 1950;
         const ctx = resized.getContext('2d');
-        ctx.drawImage(img, 0, 0, 2325, 1950);
-        return resized.toDataURL('image/png');
+        ctx.drawImage(captured, 0, 0, 2325, 1950);
+        const result = resized.toDataURL('image/png');
+        console.log('Result length:', result.length);
+        return result;
     } catch (err) {
         console.error('Box capture failed:', err);
         return null;
     }
 };
+
     useEffect(() => {
         const chars = deckcart[0]?.CharacterImages || [];
         setCharacterImages(chars);

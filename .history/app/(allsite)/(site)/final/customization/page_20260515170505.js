@@ -10,7 +10,8 @@ import { useEffect, useRef, useState } from "react";
 import { BiLeftArrowAlt } from "react-icons/bi";
 import { IoCartOutline } from "react-icons/io5";
 import { MdOutlineShoppingBag } from "react-icons/md";
-import domtoimage from 'dom-to-image-more';
+import html2canvas from "html2canvas";
+import { useRef } from "react";
 
 const LAYER_ORDER = ["dresses", "skin_tones", "hairs", "crowns", "beards", "eyes", "mouths", "noses"];
 
@@ -21,6 +22,9 @@ const FinalCardsPage = () => {
     const [checkoutLoading, setCheckoutLoading] = useState(false);
     const [characterImages, setCharacterImages] = useState([]);
     const router = useRouter();
+    const { deckcart } = useDeckFinalPreview();
+    const boxPreviewRef = useRef(null);
+
 
     const ensureDeckInCart = () => {
         const deckItem = deckcart?.[0];
@@ -63,25 +67,61 @@ const { deckcart, updateCart } = useDeckFinalPreview();
 const captureAndResizeBox = async () => {
     if (!boxPreviewRef.current) return null;
     try {
-        const dataUrl = await domtoimage.toPng(boxPreviewRef.current, {
-            width: boxPreviewRef.current.offsetWidth,
-            height: boxPreviewRef.current.offsetHeight,
-            style: { transform: 'scale(1)' },
+        const captured = await html2canvas(boxPreviewRef.current, {
+            useCORS: true,
+            allowTaint: true,
+            scale: 3,
+            backgroundColor: null,
         });
-        console.log('Captured successfully, length:', dataUrl.length);
-        const img = new window.Image();
-        await new Promise((resolve) => { img.onload = resolve; img.src = dataUrl; });
         const resized = document.createElement('canvas');
         resized.width = 2325;
         resized.height = 1950;
         const ctx = resized.getContext('2d');
-        ctx.drawImage(img, 0, 0, 2325, 1950);
+        ctx.drawImage(captured, 0, 0, 2325, 1950);
         return resized.toDataURL('image/png');
     } catch (err) {
         console.error('Box capture failed:', err);
         return null;
     }
 };
+
+    // const captureAndResizeBox = async () => {
+    //     if (!boxPreviewRef.current) return null;
+    //     try {
+    //         // Capture at screen resolution
+    //         const captured = await html2canvas(boxPreviewRef.current, {
+    //             useCORS: true,
+    //             allowTaint: true,
+    //             scale: 3, // higher = better quality
+    //             backgroundColor: null,
+    //         });
+
+    //         // Resize to exact TGC requirement: 2325x1950
+    //         const resized = document.createElement('canvas');
+    //         resized.width = 2325;
+    //         resized.height = 1950;
+    //         const ctx = resized.getContext('2d');
+    //         ctx.drawImage(captured, 0, 0, 2325, 1950);
+    //         return resized.toDataURL('image/png');
+    //     } catch (err) {
+    //         console.error('Box capture failed:', err);
+    //         return null;
+    //     }
+    // };
+
+
+    const captureAndResizeBox = async () => {
+        if (!boxPreviewRef.current) return null;
+
+        const rect = boxPreviewRef.current.getBoundingClientRect();
+        console.log('Box preview dimensions:', {
+            width: rect.width,
+            height: rect.height,
+            ratio: rect.width / rect.height,
+        });
+        console.log('TGC ratio:', 2325 / 1950);
+    }
+
     useEffect(() => {
         const chars = deckcart[0]?.CharacterImages || [];
         setCharacterImages(chars);
@@ -131,12 +171,13 @@ const captureAndResizeBox = async () => {
                     <div ref={boxPreviewRef} className="relative w-[280px] sm:w-[340px] md:w-[420px] rounded-xl border border-gray-200 bg-white shadow-lg overflow-hidden">
 
                         {/* Box Template Background */}
-                        <img
-                            src="/boxpreview.png"
+                        <Image
+                            src={boxPreviewDefault}
                             alt="Box Template"
                             width={1000}
                             height={1000}
                             className="w-full h-auto object-contain"
+                            priority
                         />
 
                         {characterImages.length > 0 && (

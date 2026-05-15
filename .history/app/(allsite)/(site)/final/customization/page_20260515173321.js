@@ -10,7 +10,7 @@ import { useEffect, useRef, useState } from "react";
 import { BiLeftArrowAlt } from "react-icons/bi";
 import { IoCartOutline } from "react-icons/io5";
 import { MdOutlineShoppingBag } from "react-icons/md";
-import domtoimage from 'dom-to-image-more';
+import html2canvas from "html2canvas";
 
 const LAYER_ORDER = ["dresses", "skin_tones", "hairs", "crowns", "beards", "eyes", "mouths", "noses"];
 
@@ -63,25 +63,24 @@ const { deckcart, updateCart } = useDeckFinalPreview();
 const captureAndResizeBox = async () => {
     if (!boxPreviewRef.current) return null;
     try {
-        const dataUrl = await domtoimage.toPng(boxPreviewRef.current, {
-            width: boxPreviewRef.current.offsetWidth,
-            height: boxPreviewRef.current.offsetHeight,
-            style: { transform: 'scale(1)' },
+        const captured = await html2canvas(boxPreviewRef.current, {
+            useCORS: true,
+            allowTaint: true,
+            scale: 3,
+            backgroundColor: null,
         });
-        console.log('Captured successfully, length:', dataUrl.length);
-        const img = new window.Image();
-        await new Promise((resolve) => { img.onload = resolve; img.src = dataUrl; });
         const resized = document.createElement('canvas');
         resized.width = 2325;
         resized.height = 1950;
         const ctx = resized.getContext('2d');
-        ctx.drawImage(img, 0, 0, 2325, 1950);
+        ctx.drawImage(captured, 0, 0, 2325, 1950);
         return resized.toDataURL('image/png');
     } catch (err) {
         console.error('Box capture failed:', err);
         return null;
     }
 };
+
     useEffect(() => {
         const chars = deckcart[0]?.CharacterImages || [];
         setCharacterImages(chars);

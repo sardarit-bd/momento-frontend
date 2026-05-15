@@ -1,5 +1,6 @@
 "use client";
 
+import SpinLoader from "@/app/componnent/SpingLoader";
 import useCartStore from "@/store/useCartStore";
 import useboxcartstore from "@/store/useboxcartstore";
 import getId from "@/utilis/helper/cookie/getid";
@@ -9,7 +10,6 @@ import { useEffect, useState } from "react";
 import { FiEdit3 } from "react-icons/fi";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import useDeckFinalPreview from "@/store/useDeckFinalPreview";
 
 const inputStyle =
   "w-full bg-[#F3F4F6] text-gray-900 placeholder-gray-500 px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-400 transition-all text-sm border border-transparent";
@@ -28,27 +28,41 @@ export default function CheckoutPage() {
   const id = getId();
   const token = getCookie();
   const router = useRouter();
-
+  
   const [loading, setloading] = useState(false);
-
+  
   // Form State
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [phone, setphone] = useState("");
   const [City, setCity] = useState("");
   const [state, setState] = useState("");
-  const [country, setCountry] = useState("");
+  const [country, setCountry] = useState("");     
   const [zipcode, setzipcode] = useState("");
   const [address, setaddress] = useState("");
   const [address2, setAddress2] = useState("");
   const [company, setCompany] = useState("");
-
+  
   // Deck Customization State
   const [deckFinish, setDeckFinish] = useState("prism");
-  const { deckcart } = useDeckFinalPreview();
 
   const { cart } = useCartStore();
   const { boxs, setboxs } = useboxcartstore();
+
+  useEffect(() => {
+      if (cart.length > 0 && boxs.length === 0 && !deckcart?.[0]?.BoxImage) {
+          setboxs(["/boxprevew.png"]);
+          return;
+      }
+      if (cart.length === 0 && boxs.length > 0) {
+          setboxs([]);
+      }
+  }, [cart.length, boxs.length, setboxs, deckcart]);
+
+    if (cart.length === 0 && boxs.length > 0) {
+      setboxs([]);
+    }
+  }, [cart.length, boxs.length, setboxs]);
 
   const getSavedCustomization = (item) => {
     if (!item?.customizationStorageKey) return null;
@@ -108,7 +122,7 @@ export default function CheckoutPage() {
   const calculateSubTotal = () => {
     return cart.reduce((total, item) => total + Number(item.productUnitPrice) * Number(item.productQuantity), 0);
   };
-
+  
   const subtotal = calculateSubTotal();
   const tax = subtotal * 0.08;
   const total = subtotal + tax;
@@ -190,10 +204,10 @@ export default function CheckoutPage() {
             ? "back"
             : "front";
 
-      normalized.push({
-        rank,
-        image,
-        name: card?.name ?? null,
+      normalized.push({ 
+          rank, 
+          image,
+          name: card?.name ?? null,
       });
     }
 
@@ -210,10 +224,10 @@ export default function CheckoutPage() {
     for (let index = 0; index < sourceCards.length; index += 1) {
       const card = sourceCards[index];
       console.log('card raw:', {
-        rank: card?.rank,
-        name: card?.name,
-        has_image: !!card?.image,
-        image_prefix: card?.image?.substring(0, 30),
+          rank: card?.rank,
+          name: card?.name,
+          has_image: !!card?.image,
+          image_prefix: card?.image?.substring(0, 30),
       });
       const rawType =
         card?.editedCard || card?.card_type || card?.type || card?.rank || null;
@@ -227,10 +241,10 @@ export default function CheckoutPage() {
       const image = await ensureImageDataUrl(imageSource);
 
       if (!image || !rank) continue;
-      normalized.push({
-        rank,
-        image,
-        name: card?.name ?? null,
+      normalized.push({ 
+          rank, 
+          image,
+          name: card?.name ?? null,
       });
     }
 
@@ -319,35 +333,35 @@ export default function CheckoutPage() {
       );
 
       console.log('cartItems FinalProduct check:', cartItems[0]?.FinalProduct?.map(c => ({
-        rank: c.rank,
-        name: c.name,
-        has_image: !!c.image,
-      })));
+            rank: c.rank,
+            name: c.name,
+            has_image: !!c.image,
+        })));
 
       // Backend checkout currently validates email as required.
       const checkoutEmail = `${id || "guest"}@example.com`;
 
       const checkoutData = {
-        first_name: firstName,
-        last_name: lastName,
-        email: checkoutEmail,
-        phone,
-        address1: address,
-        address2,
-        city: City,
-        state,
-        country,
-        zipcode,
-        gateway: "stripe",
-        items: cartItems,
-        userID: id,
-        tuckbox_image: deckcart?.[0]?.BoxImage || null,
+          first_name: firstName,
+          last_name: lastName,
+          email: checkoutEmail,
+          phone,
+          address1: address,
+          address2,
+          city: City,
+          state,
+          country,
+          zipcode,
+          gateway: "stripe",
+          items: cartItems,
+          userID: id,
+          tuckbox_image: boxs[0] || null,
       };
 
       const checkoutEndpoint =
         process.env.NEXT_PUBLIC_CHECKOUT_SESSION_ENDPOINT || "/api/create-checkout-session";
 
-      console.log('checkoutData items[0].FinalProduct[0]:', cartItems[0]?.FinalProduct?.[0]?.name, cartItems[0]?.FinalProduct?.[0]?.image?.substring(0, 30));
+        console.log('checkoutData items[0].FinalProduct[0]:', cartItems[0]?.FinalProduct?.[0]?.name, cartItems[0]?.FinalProduct?.[0]?.image?.substring(0, 30));
       const response = await fetch(
         checkoutEndpoint.startsWith("http")
           ? checkoutEndpoint
@@ -388,12 +402,12 @@ export default function CheckoutPage() {
   return (
     <section className="min-h-screen bg-[#fafafa] py-12 px-4 sm:px-6 lg:px-8 font-sans text-gray-900">
       <ToastContainer />
-
+      
       <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">
-
+        
         {/* LEFT COLUMN - Order Summary & Details */}
         <div className="lg:col-span-7 space-y-6">
-
+          
           {/* Card 1: Your Deck */}
           <div className="bg-white rounded-2xl p-4 sm:p-6 shadow-[0_2px_10px_rgba(0,0,0,0.02)] border border-gray-100">
             <div className="flex justify-between items-center mb-6">
@@ -420,74 +434,82 @@ export default function CheckoutPage() {
                   const previewCards = getItemPreviewCards(item);
                   const hasManyCards = previewCards.length > 2;
                   return (
-                    <div key={idx} className="flex flex-col sm:flex-row gap-4 sm:items-center">
-                      <div className={`${hasManyCards ? "grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5" : "flex"} gap-2`}>
-                        {previewCards.map((previewCard, imageIndex) => (
-                          <div
-                            key={imageIndex}
-                            className={`${hasManyCards ? "w-[68px] h-[96px] sm:w-[76px] sm:h-[108px] md:w-[82px] md:h-[116px]" : "w-[88px] h-[123px] sm:w-24 sm:h-32 md:w-28 md:h-40"} bg-gray-100 rounded-lg border border-gray-200 overflow-hidden relative`}
-                          >
-                            {previewCard.type === "deck" ? (
-                              <div className="relative w-full h-full bg-white">
-                                <img
-                                  src={previewCard.card.baseImage}
-                                  alt={`${item?.productName || "Product"} customized card ${imageIndex + 1}`}
-                                  className="w-full h-full object-cover bg-white"
-                                />
-                                {deckPreviewLayers.map((layer) => (
-                                  previewCard.card?.selectedLayers?.[layer] ? (
-                                    <div key={`${imageIndex}-${layer}`}>
-                                      <img
-                                        src={previewCard.card.selectedLayers[layer]}
-                                        alt={`${layer} top`}
-                                        className="absolute left-1/2 -translate-x-1/2 top-[8%] w-[64%] h-[43%] object-contain"
-                                      />
-                                      <img
-                                        src={previewCard.card.selectedLayers[layer]}
-                                        alt={`${layer} bottom`}
-                                        className="absolute left-1/2 -translate-x-1/2 bottom-[8%] w-[64%] h-[43%] object-contain scale-y-[-1]"
-                                      />
-                                    </div>
-                                  ) : null
-                                ))}
-                              </div>
-                            ) : (
+                  <div key={idx} className="flex flex-col sm:flex-row gap-4 sm:items-center">
+                    <div className={`${hasManyCards ? "grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5" : "flex"} gap-2`}>
+                      {previewCards.map((previewCard, imageIndex) => (
+                        <div
+                          key={imageIndex}
+                          className={`${hasManyCards ? "w-[68px] h-[96px] sm:w-[76px] sm:h-[108px] md:w-[82px] md:h-[116px]" : "w-[88px] h-[123px] sm:w-24 sm:h-32 md:w-28 md:h-40"} bg-gray-100 rounded-lg border border-gray-200 overflow-hidden relative`}
+                        >
+                          {previewCard.type === "deck" ? (
+                            <div className="relative w-full h-full bg-white">
                               <img
-                                src={previewCard.src}
-                                alt={`${item?.productName || "Product"} preview ${imageIndex + 1}`}
+                                src={previewCard.card.baseImage}
+                                alt={`${item?.productName || "Product"} customized card ${imageIndex + 1}`}
                                 className="w-full h-full object-cover bg-white"
                               />
-                            )}
-                          </div>
-                        ))}
-                        {previewCards.length === 0 && (
-                          <div className="w-[88px] h-[123px] sm:w-24 sm:h-32 md:w-28 md:h-40 bg-gray-100 rounded-lg border border-gray-200 overflow-hidden relative flex items-center justify-center text-gray-300">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
-                          </div>
-                        )}
-                      </div>
-                      <div className="flex-1">
-                        <p className="text-sm font-medium">{item.productName}</p>
-                        <p className="text-xs text-gray-500">Qty: {item.productQuantity}</p>
-                        {previewCards.length > 1 && (
-                          <p className="text-xs text-gray-500 mt-0.5">{previewCards.length} customized cards</p>
-                        )}
-                      </div>
+                              {deckPreviewLayers.map((layer) => (
+                                previewCard.card?.selectedLayers?.[layer] ? (
+                                  <div key={`${imageIndex}-${layer}`}>
+                                    <img
+                                      src={previewCard.card.selectedLayers[layer]}
+                                      alt={`${layer} top`}
+                                      className="absolute left-1/2 -translate-x-1/2 top-[8%] w-[64%] h-[43%] object-contain"
+                                    />
+                                    <img
+                                      src={previewCard.card.selectedLayers[layer]}
+                                      alt={`${layer} bottom`}
+                                      className="absolute left-1/2 -translate-x-1/2 bottom-[8%] w-[64%] h-[43%] object-contain scale-y-[-1]"
+                                    />
+                                  </div>
+                                ) : null
+                              ))}
+                            </div>
+                          ) : (
+                            <img
+                              src={previewCard.src}
+                              alt={`${item?.productName || "Product"} preview ${imageIndex + 1}`}
+                              className="w-full h-full object-cover bg-white"
+                            />
+                          )}
+                        </div>
+                      ))}
+                      {previewCards.length === 0 && (
+                        <div className="w-[88px] h-[123px] sm:w-24 sm:h-32 md:w-28 md:h-40 bg-gray-100 rounded-lg border border-gray-200 overflow-hidden relative flex items-center justify-center text-gray-300">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+                        </div>
+                      )}
                     </div>
-                  )
-                })
+                    <div className="flex-1">
+                       <p className="text-sm font-medium">{item.productName}</p>
+                       <p className="text-xs text-gray-500">Qty: {item.productQuantity}</p>
+                       {previewCards.length > 1 && (
+                        <p className="text-xs text-gray-500 mt-0.5">{previewCards.length} customized cards</p>
+                       )}
+                    </div>
+                  </div>
+                )})
               )}
             </div>
 
-            {cart.length > 0 && deckcart?.[0]?.BoxImage && (
-                <div className="mb-6">
-                    <h3 className="text-sm font-semibold text-gray-700 mb-3">Box Preview</h3>
-                    <div className="flex flex-wrap gap-3">
-                        <div className="w-[160px] sm:w-[190px] md:w-[220px] rounded-xl border border-gray-200 bg-white p-2 shadow-sm">
-                            <img className="h-auto w-full object-contain" src={deckcart[0].BoxImage} alt="box-preview" />
-                        </div>
-                    </div>
-                </div>
+            {cart.length > 0 && boxs.length > 0 && (
+            <div className="mb-6">
+              <h3 className="text-sm font-semibold text-gray-700 mb-3">Box Preview</h3>
+              <div className="flex flex-wrap gap-3">
+                {boxs.map((item, index) => (
+                  <div
+                    key={index}
+                    className="w-[160px] sm:w-[190px] md:w-[220px] rounded-xl border border-gray-200 bg-white p-2 shadow-sm"
+                  >
+                    <img
+                      className="h-auto w-full object-contain"
+                      src={item}
+                      alt={`box-preview-${index + 1}`}
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
             )}
 
             <div className="border-t border-gray-100 pt-4 space-y-3">
@@ -520,144 +542,144 @@ export default function CheckoutPage() {
 
               {/* Shipping Information */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-3 mt-4">
-                  Shipping Information
-                </label>
+              <label className="block text-sm font-medium text-gray-700 mb-3 mt-4">
+                Shipping Information
+              </label>
 
-                <div className="space-y-4">
+              <div className="space-y-4">
 
-                  {/* Full Name */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div>
-                      <FieldLabel label="First Name" required />
-                      <input
-                        type="text"
-                        value={firstName}
-                        onChange={(e) => setFirstName(e.target.value)}
-                        placeholder="First Name"
-                        className={inputStyle}
-                        required
-                      />
-                    </div>
-
-                    <div>
-                      <FieldLabel label="Last Name" required />
-                      <input
-                        type="text"
-                        value={lastName}
-                        onChange={(e) => setLastName(e.target.value)}
-                        placeholder="Last Name"
-                        className={inputStyle}
-                        required
-                      />
-                    </div>
-                  </div>
-
-                  {/* Company */}
+                {/* Full Name */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
-                    <FieldLabel label="Company" />
+                    <FieldLabel label="First Name" required />
                     <input
                       type="text"
-                      value={company}
-                      onChange={(e) => setCompany(e.target.value)}
-                      placeholder="Company (optional)"
-                      className={inputStyle}
-                    />
-                  </div>
-
-                  {/* Phone */}
-                  <div>
-                    <FieldLabel label="Phone Number" required />
-                    <input
-                      type="tel"
-                      value={phone}
-                      onChange={(e) => setphone(e.target.value)}
-                      placeholder="Phone Number"
+                      value={firstName}
+                      onChange={(e) => setFirstName(e.target.value)}
+                      placeholder="First Name"
                       className={inputStyle}
                       required
                     />
                   </div>
 
-                  {/* Address 1 */}
                   <div>
-                    <FieldLabel label="Address 1" required />
+                    <FieldLabel label="Last Name" required />
                     <input
                       type="text"
-                      value={address}
-                      onChange={(e) => setaddress(e.target.value)}
-                      placeholder="Address 1"
+                      value={lastName}
+                      onChange={(e) => setLastName(e.target.value)}
+                      placeholder="Last Name"
+                      className={inputStyle}
+                      required
+                    />
+                  </div>
+                </div>
+
+                {/* Company */}
+                <div>
+                  <FieldLabel label="Company" />
+                  <input
+                    type="text"
+                    value={company}
+                    onChange={(e) => setCompany(e.target.value)}
+                    placeholder="Company (optional)"
+                    className={inputStyle}
+                  />
+                </div>
+
+                {/* Phone */}
+                <div>
+                  <FieldLabel label="Phone Number" required />
+                  <input
+                    type="tel"
+                    value={phone}
+                    onChange={(e) => setphone(e.target.value)}
+                    placeholder="Phone Number"
+                    className={inputStyle}
+                    required
+                  />
+                </div>
+
+                {/* Address 1 */}
+                <div>
+                  <FieldLabel label="Address 1" required />
+                  <input
+                    type="text"
+                    value={address}
+                    onChange={(e) => setaddress(e.target.value)}
+                    placeholder="Address 1"
+                    className={inputStyle}
+                    required
+                  />
+                </div>
+
+                {/* Address 2 */}
+                <div>
+                  <FieldLabel label="Address 2" />
+                  <input
+                    type="text"
+                    value={address2}
+                    onChange={(e) => setAddress2(e.target.value)}
+                    placeholder="Apartment, suite, unit, etc. (optional)"
+                    className={inputStyle}
+                  />
+                </div>
+
+                {/* City + State */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <FieldLabel label="City" required />
+                    <input
+                      type="text"
+                      value={City}
+                      onChange={(e) => setCity(e.target.value)}
+                      placeholder="City"
                       className={inputStyle}
                       required
                     />
                   </div>
 
-                  {/* Address 2 */}
                   <div>
-                    <FieldLabel label="Address 2" />
+                    <FieldLabel label="State / Province" required />
                     <input
                       type="text"
-                      value={address2}
-                      onChange={(e) => setAddress2(e.target.value)}
-                      placeholder="Apartment, suite, unit, etc. (optional)"
+                      value={state}
+                      onChange={(e) => setState(e.target.value)}
+                      placeholder="State / Province"
                       className={inputStyle}
+                      required
+                    />
+                  </div>
+                </div>
+
+                {/* Postal Code + Country */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <FieldLabel label="Zip / Postal Code" required />
+                    <input
+                      type="text"
+                      value={zipcode}
+                      onChange={(e) => setzipcode(e.target.value)}
+                      placeholder="Zip / Postal Code"
+                      className={inputStyle}
+                      required
                     />
                   </div>
 
-                  {/* City + State */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div>
-                      <FieldLabel label="City" required />
-                      <input
-                        type="text"
-                        value={City}
-                        onChange={(e) => setCity(e.target.value)}
-                        placeholder="City"
-                        className={inputStyle}
-                        required
-                      />
-                    </div>
-
-                    <div>
-                      <FieldLabel label="State / Province" required />
-                      <input
-                        type="text"
-                        value={state}
-                        onChange={(e) => setState(e.target.value)}
-                        placeholder="State / Province"
-                        className={inputStyle}
-                        required
-                      />
-                    </div>
-                  </div>
-
-                  {/* Postal Code + Country */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div>
-                      <FieldLabel label="Zip / Postal Code" required />
-                      <input
-                        type="text"
-                        value={zipcode}
-                        onChange={(e) => setzipcode(e.target.value)}
-                        placeholder="Zip / Postal Code"
-                        className={inputStyle}
-                        required
-                      />
-                    </div>
-
-                    <div>
-                      <FieldLabel label="Country" required />
-                      <input
-                        type="text"
-                        value={country}
-                        onChange={(e) => setCountry(e.target.value)}
-                        placeholder="Country"
-                        className={inputStyle}
-                        required
-                      />
-                    </div>
+                  <div>
+                    <FieldLabel label="Country" required />
+                    <input
+                      type="text"
+                      value={country}
+                      onChange={(e) => setCountry(e.target.value)}
+                      placeholder="Country"
+                      className={inputStyle}
+                      required
+                    />
                   </div>
                 </div>
               </div>
+            </div>
 
 
               {/* Submit Button */}

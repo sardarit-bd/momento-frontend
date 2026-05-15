@@ -479,16 +479,17 @@ export default function CheckoutPage() {
               )}
             </div>
 
-            {cart.length > 0 && deckcart?.[0]?.BoxImage && (
-                <div className="mb-6">
-                    <h3 className="text-sm font-semibold text-gray-700 mb-3">Box Preview</h3>
-                    <div className="flex flex-wrap gap-3">
-                        <div className="w-[160px] sm:w-[190px] md:w-[220px] rounded-xl border border-gray-200 bg-white p-2 shadow-sm">
-                            <img className="h-auto w-full object-contain" src={deckcart[0].BoxImage} alt="box-preview" />
-                        </div>
-                    </div>
-                </div>
-            )}
+            // ✅ After — read from deckcart
+{cart.length > 0 && deckcart?.[0]?.BoxImage && (
+    <div className="mb-6">
+        <h3 className="text-sm font-semibold text-gray-700 mb-3">Box Preview</h3>
+        <div className="flex flex-wrap gap-3">
+            <div className="w-[160px] sm:w-[190px] md:w-[220px] rounded-xl border border-gray-200 bg-white p-2 shadow-sm">
+                <img className="h-auto w-full object-contain" src={deckcart[0].BoxImage} alt="box-preview" />
+            </div>
+        </div>
+    </div>
+)}
 
             <div className="border-t border-gray-100 pt-4 space-y-3">
               <div className="flex justify-between text-sm text-gray-600">

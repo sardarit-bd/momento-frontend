@@ -46,20 +46,6 @@ const BaseSelector = ({ product, cards, activeCard, selectBase, editedCard, sete
     }
   }, [activeCard?.editedCard, editedCard, product, seteditedCard, allowedCardTypes]);
 
-  // useEffect(() => {
-  //   if (!product) return;
-
-  //   const allcard = product?.customizations?.base_cards || [];
-  //   const safeEditedCard = allowedCardTypes.includes(editedCard)
-  //     ? editedCard
-  //     : (allowedCardTypes.find((type) => allcard.some((card) => card?.card_type === type)) || allowedCardTypes[0]);
-  //   const filteredCards = allcard?.filter((card) => 
-  //       card?.card_type === editedCard || card?.name === editedCard
-  //   );
-
-  //   if (safeEditedCard !== editedCard) seteditedCard(safeEditedCard);
-  //   setactivebaseEditCard(filteredCards || []);
-  // }, [editedCard, product, setactivebaseEditCard, seteditedCard, allowedCardTypes]);
 
   useEffect(() => {
     if (!product) return;
@@ -85,18 +71,7 @@ const BaseSelector = ({ product, cards, activeCard, selectBase, editedCard, sete
     setactivebaseEditCard(filteredCards || []);
 
 }, [editedCard, product, setactivebaseEditCard, seteditedCard, allowedCardTypes]);
-//   const handleCardTypeSelect = (cardType) => {
-//     if (!allowedCardTypes.includes(cardType)) return;
 
-//     const allcard = product?.customizations?.base_cards;
-//     const filteredCards = allcard?.filter((card) => card?.card_type === cardType);
-//     const matchedCard = filteredCards?.find(
-//         (card) => card?.image === activeCard?.baseImage
-//     ) || filteredCards?.[0];
-
-//     seteditedCard(cardType);
-//     selectBase(matchedCard?.image, cardType, matchedCard?.name);
-// };
 const handleCardTypeSelect = (cardType) => {
     if (!allowedCardTypes.includes(cardType)) return;
 
@@ -130,8 +105,6 @@ const handleCardTypeSelect = (cardType) => {
         </div>
         <IoIosArrowDown className={`text-gray-500 transition-transform ${isOpen ? "rotate-180" : ""}`} />
       </button>
-
-      {/* <p className="pb-2 text-sm text-gray-500">Only 5 customizable cards (Jack, Queen, King, Ace, and Joker).</p> */}
 
       {isOpen && (
         <>

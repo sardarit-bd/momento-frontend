@@ -120,15 +120,27 @@ const ProductCustomizer = () => {
                     return acc;
                 }, {});
 
+                const firstBaseNameByType = baseCards.reduce((acc, item) => {
+                    const canonicalType = getCanonicalCardType(item?.card_type);
+                    if (!canonicalType || acc[canonicalType]) return acc;
+                    acc[canonicalType] = item?.name;
+                    return acc;
+                }, {});
+
                 const sanitizedCards = parsedCards.map((card) => {
                     const canonicalType = getCanonicalCardType(card?.editedCard);
                     if (!canonicalType) return card;
                     const hasValidBase = validBaseByType[canonicalType]?.has(card?.baseImage);
-                    if (hasValidBase) return { ...card, editedCard: canonicalType };
+                    if (hasValidBase) return { 
+                        ...card, 
+                        editedCard: canonicalType,
+                        slotName: card?.slotName || firstBaseNameByType[canonicalType] || null,
+                    };
                     return {
                         ...card,
                         editedCard: canonicalType,
                         baseImage: firstBaseImageByType[canonicalType] || card?.baseImage,
+                        slotName: card?.slotName || firstBaseNameByType[canonicalType] || null,
                     };
                 });
 
@@ -175,7 +187,16 @@ const ProductCustomizer = () => {
             console.log('fallbackBase:', fallbackBase);
             console.log('base_cards:', res?.data?.customizations?.base_cards);
 
-            setCards([{ editedCard: CARD_FLOW[0], baseImage: baseForFirstStep || fallbackBase, selectedLayers: initialLayers }]);
+            const firstBaseCard = baseCards.find(
+                (item) => getCanonicalCardType(item?.card_type) === CARD_FLOW[0]
+            );
+
+            setCards([{ 
+                editedCard: CARD_FLOW[0], 
+                baseImage: firstBaseCard?.image || baseForFirstStep || fallbackBase,
+                slotName: firstBaseCard?.name || null,
+                selectedLayers: initialLayers 
+            }]);
             setActiveCardIndex(0);
             seteditedCard(CARD_FLOW[0]);
         };
@@ -258,9 +279,18 @@ const ProductCustomizer = () => {
             if (items?.length > 0) initialLayersTwo[layer] = items[0]?.image;
         });
 
+        const baseCard = product?.customizations?.base_cards?.find(
+            (item) => getCanonicalCardType(item?.card_type) === cardType
+        );
+
         setCards((prev) => [
             ...prev,
-            { editedCard: cardType, baseImage: baseForType, selectedLayers: initialLayersTwo },
+            { 
+                editedCard: cardType, 
+                baseImage: baseCard?.image || baseForType,
+                slotName: baseCard?.name || null,
+                selectedLayers: initialLayersTwo 
+            },
         ]);
 
         if (shouldSetActive) {

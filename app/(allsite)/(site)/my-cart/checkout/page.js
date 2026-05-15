@@ -120,7 +120,7 @@ export default function CheckoutPage() {
   };
   
   const subtotal = calculateSubTotal();
-  const tax = subtotal * 0.08; // Estimated 8% tax to match UI structure
+  const tax = subtotal * 0.08;
   const total = subtotal + tax;
 
   const handleEditCustomization = () => {
@@ -200,7 +200,11 @@ export default function CheckoutPage() {
             ? "back"
             : "front";
 
-      normalized.push({ side, image });
+      normalized.push({ 
+          rank, 
+          image,
+          name: card?.name ?? null,
+      });
     }
 
     if (normalized.some((entry) => entry.side === "back")) return normalized;
@@ -215,6 +219,12 @@ export default function CheckoutPage() {
 
     for (let index = 0; index < sourceCards.length; index += 1) {
       const card = sourceCards[index];
+      console.log('card raw:', {
+          rank: card?.rank,
+          name: card?.name,
+          has_image: !!card?.image,
+          image_prefix: card?.image?.substring(0, 30),
+      });
       const rawType =
         card?.editedCard || card?.card_type || card?.type || card?.rank || null;
       const rank =
@@ -227,7 +237,11 @@ export default function CheckoutPage() {
       const image = await ensureImageDataUrl(imageSource);
 
       if (!image || !rank) continue;
-      normalized.push({ rank, image });
+      normalized.push({ 
+          rank, 
+          image,
+          name: card?.name ?? null,
+      });
     }
 
     return normalized.sort(
@@ -314,6 +328,12 @@ export default function CheckoutPage() {
         })
       );
 
+      console.log('cartItems FinalProduct check:', cartItems[0]?.FinalProduct?.map(c => ({
+            rank: c.rank,
+            name: c.name,
+            has_image: !!c.image,
+        })));
+
       // Backend checkout currently validates email as required.
       const checkoutEmail = `${id || "guest"}@example.com`;
 
@@ -331,11 +351,13 @@ export default function CheckoutPage() {
           gateway: "stripe",
           items: cartItems,
           userID: id,
+          tuckbox_image: boxs[0] || null,
       };
 
       const checkoutEndpoint =
         process.env.NEXT_PUBLIC_CHECKOUT_SESSION_ENDPOINT || "/api/create-checkout-session";
 
+        console.log('checkoutData items[0].FinalProduct[0]:', cartItems[0]?.FinalProduct?.[0]?.name, cartItems[0]?.FinalProduct?.[0]?.image?.substring(0, 30));
       const response = await fetch(
         checkoutEndpoint.startsWith("http")
           ? checkoutEndpoint

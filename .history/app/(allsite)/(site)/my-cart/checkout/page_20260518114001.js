@@ -848,23 +848,23 @@ export default function CheckoutPage() {
                     </div>
 
                     <div>
-                      <FieldLabel label="Country" required />
+  <FieldLabel label="Country" required />
 
-                      <select
-                        value={country}
-                        onChange={(e) => setCountry(e.target.value)}
-                        className={inputStyle}
-                        required
-                      >
-                        <option value="">Select Country</option>
+  <select
+    value={country}
+    onChange={(e) => setCountry(e.target.value)}
+    className={inputStyle}
+    required
+  >
+    <option value="">Select Country</option>
 
-                        {countries.map((item) => (
-                          <option key={item.code} value={item.code}>
-                            {item.name} ({item.code})
-                          </option>
-                        ))}
-                      </select>
-                    </div>
+    {countries.map((item) => (
+      <option key={item.code} value={item.code}>
+        {item.name} ({item.code})
+      </option>
+    ))}
+  </select>
+</div>
                   </div>
                 </div>
               </div>

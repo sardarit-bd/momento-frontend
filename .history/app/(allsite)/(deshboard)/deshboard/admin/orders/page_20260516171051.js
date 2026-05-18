@@ -346,23 +346,23 @@ function ImageDownloadInfo({ modalinfo, modaltype }) {
                             </h3>
                             <div className="flex flex-wrap gap-4">
                                 {tuckboxImages.map((url, index) => (
-                                    <a                                    // ← was missing
-                                        key={`tuckbox-${index}`}
-                                        href={url}
-                                        download={`tuckbox-${index + 1}.png`}
-                                        rel="noreferrer"
-                                        className="block bg-white rounded-xl border border-slate-200 p-2 shadow-sm hover:shadow-md transition w-[200px]"
-                                    >
-                                        <img
-                                            src={url}
-                                            alt={`tuckbox-${index + 1}`}
-                                            className="w-full h-auto rounded-lg object-contain"
-                                        />
-                                        <p className="text-xs text-center text-slate-500 mt-1">
-                                            Box {index + 1}
-                                        </p>
-                                    </a>
-                                ))}
+                                <a                                    // ← was missing
+                                    key={`tuckbox-${index}`}
+                                    href={url}
+                                    download={`tuckbox-${index + 1}.png`}
+                                    rel="noreferrer"
+                                    className="block bg-white rounded-xl border border-slate-200 p-2 shadow-sm hover:shadow-md transition w-[200px]"
+                                >
+                                    <img
+                                        src={url}
+                                        alt={`tuckbox-${index + 1}`}
+                                        className="w-full h-auto rounded-lg object-contain"
+                                    />
+                                    <p className="text-xs text-center text-slate-500 mt-1">
+                                        Box {index + 1}
+                                    </p>
+                                </a>
+                            ))}
                             </div>
                         </div>
                     )}
@@ -379,7 +379,7 @@ function ImageDownloadInfo({ modalinfo, modaltype }) {
                         ) : (
                             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-3 md:gap-4">
                                 {cardImages.map((url, index) => (
-                                    <a                                    
+                                    
                                         key={`card-${index}`}
                                         href={url}
                                         download={`card-${index + 1}.png`}

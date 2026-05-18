@@ -1,6 +1,4 @@
 "use client";
-
-import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { BackOne, FrontFour, FrontOne, FrontThree, FrontTwo } from "@/app/componnent/TextOverlayer";
 import TradingCardApplicationSkelaton from "@/app/componnent/TradingCardApplicationSkelaton";
 import TradingCardSidebar from "@/app/componnent/TradingCardSidebar";
@@ -9,6 +7,7 @@ import generateUserId from "@/utilis/helper/generateUserId";
 import { pdfGanarator } from "@/utilis/helper/pdfGanarator";
 import MakeGet from "@/utilis/requestrespose/get";
 import Image from "next/image";
+import { useParams, useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { BsArrowRepeat, BsCardText, BsCheckCircleFill, BsImage, BsSuitSpade, BsSuitSpadeFill } from "react-icons/bs";
 import { CiCirclePlus } from "react-icons/ci";
@@ -61,16 +60,6 @@ const defaultBackHighlights = [
 export default function ProductCustomizer() {
 
     const { slug } = useParams();
-    const searchParams   = useSearchParams();
-    const selectedPackage = searchParams.get("package"); // "single" | "trio" | "collection"
-
-    const PACKAGE_CONFIG = {
-    single:     { name: "Single",     designs: 1, copiesPerDesign: 18, totalCards: 18 },
-    trio:       { name: "Trio",       designs: 3, copiesPerDesign: 6,  totalCards: 18 },
-    collection: { name: "Collection", designs: 6, copiesPerDesign: 3,  totalCards: 18 },
-    };
-
-    const packageConfig = PACKAGE_CONFIG[selectedPackage] ?? PACKAGE_CONFIG["single"];
     const customizationStorageKey = slug ? `tradingCustomization:${slug}` : null;
     const hasHydratedFromStorage = useRef(false);
     const canPersistCustomization = useRef(false);

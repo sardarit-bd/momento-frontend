@@ -57,6 +57,8 @@ const SingleProduct = () => {
         fetching(slug);
     }, []);
 
+    console.log(data);
+
     // handle add to cart
     const handleaddToCart = (e) => {
 
@@ -91,6 +93,8 @@ const SingleProduct = () => {
         }, 1000);
     };
 
+
+
     // handle customizatio cart
     const handleaddToCustomizable = (e, type, slug) => {
 
@@ -100,12 +104,13 @@ const SingleProduct = () => {
         setTimeout(() => {
             setbtnLoading(false);
 
+
             if (data?.status) {
 
                 if (type == "customizable") {
                     router.push(`/application/deckcard/${slug}`);
                 } else {
-                    router.push(`/shop/${slug}/package`);
+                    router.push(`/application/tradingcard/${slug}`);
                 }
 
             } else {

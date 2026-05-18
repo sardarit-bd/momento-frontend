@@ -100,12 +100,13 @@ const SingleProduct = () => {
         setTimeout(() => {
             setbtnLoading(false);
 
+
             if (data?.status) {
 
                 if (type == "customizable") {
                     router.push(`/application/deckcard/${slug}`);
                 } else {
-                    router.push(`/shop/${slug}/package`);
+                    router.push(`/application/tradingcard/${slug}`);
                 }
 
             } else {

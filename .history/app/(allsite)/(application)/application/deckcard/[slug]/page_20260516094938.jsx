@@ -357,11 +357,11 @@ const ProductCustomizer = () => {
         };
 
         const FinalProduct = cards.map((card, i) => ({
-            rank: DECK_RANK_MAP[card.editedCard] || null,
-            image: compositeImages[i],
-            name: card.slotName ?? null,
-            character_image: characterOnlyImages[i] ?? null,
-        }));
+    rank: DECK_RANK_MAP[card.editedCard] || null,
+    image: compositeImages[i],
+    name: card.slotName ?? null,
+    character_image: characterOnlyImages[i] ?? null, // ← add
+}));
 
         clearCart();
 

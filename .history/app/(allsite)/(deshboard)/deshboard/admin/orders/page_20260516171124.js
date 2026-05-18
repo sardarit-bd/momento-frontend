@@ -379,20 +379,20 @@ function ImageDownloadInfo({ modalinfo, modaltype }) {
                         ) : (
                             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-3 md:gap-4">
                                 {cardImages.map((url, index) => (
-                                    <a                                    
-                                        key={`card-${index}`}
-                                        href={url}
-                                        download={`card-${index + 1}.png`}
-                                        rel="noreferrer"
-                                        className="block bg-white rounded-xl border border-slate-200 p-1.5 md:p-2 shadow-sm hover:shadow-md transition"
-                                    >
-                                        <img
-                                            src={url}
-                                            alt={`customized-card-${index + 1}`}
-                                            className="w-full h-auto rounded-lg object-contain"
-                                        />
-                                    </a>
-                                ))}
+    <a                                    // ← was missing
+        key={`card-${index}`}
+        href={url}
+        download={`card-${index + 1}.png`}
+        rel="noreferrer"
+        className="block bg-white rounded-xl border border-slate-200 p-1.5 md:p-2 shadow-sm hover:shadow-md transition"
+    >
+        <img
+            src={url}
+            alt={`customized-card-${index + 1}`}
+            className="w-full h-auto rounded-lg object-contain"
+        />
+    </a>
+))}
                             </div>
                         )}
                     </div>

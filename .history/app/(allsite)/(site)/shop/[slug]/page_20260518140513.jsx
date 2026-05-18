@@ -38,6 +38,9 @@ const SingleProduct = () => {
     const [currentIndex, setCurrentIndex] = useState(0);
     const { addToCart, cart, removeFromCart } = useCartStore();
 
+
+
+
     const fetching = useCallback(async (slug) => {
         try {
             const response = await MakeGet(`api/shop/${slug}`);
@@ -56,6 +59,10 @@ const SingleProduct = () => {
     useEffect(() => {
         fetching(slug);
     }, []);
+
+    console.log(data);
+
+
 
     // handle add to cart
     const handleaddToCart = (e) => {
@@ -91,6 +98,8 @@ const SingleProduct = () => {
         }, 1000);
     };
 
+
+
     // handle customizatio cart
     const handleaddToCustomizable = (e, type, slug) => {
 
@@ -100,12 +109,13 @@ const SingleProduct = () => {
         setTimeout(() => {
             setbtnLoading(false);
 
+
             if (data?.status) {
 
                 if (type == "customizable") {
                     router.push(`/application/deckcard/${slug}`);
                 } else {
-                    router.push(`/shop/${slug}/package`);
+                    router.push(`/application/tradingcard/${slug}`);
                 }
 
             } else {

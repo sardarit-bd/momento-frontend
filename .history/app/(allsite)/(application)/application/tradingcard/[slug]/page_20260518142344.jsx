@@ -9,6 +9,7 @@ import generateUserId from "@/utilis/helper/generateUserId";
 import { pdfGanarator } from "@/utilis/helper/pdfGanarator";
 import MakeGet from "@/utilis/requestrespose/get";
 import Image from "next/image";
+import { useParams, useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { BsArrowRepeat, BsCardText, BsCheckCircleFill, BsImage, BsSuitSpade, BsSuitSpadeFill } from "react-icons/bs";
 import { CiCirclePlus } from "react-icons/ci";

@@ -6,7 +6,6 @@ import TradingCardApplicationSkelaton from "@/app/componnent/TradingCardApplicat
 import TradingCardSidebar from "@/app/componnent/TradingCardSidebar";
 import useCartStore from "@/store/useCartStore";
 import generateUserId from "@/utilis/helper/generateUserId";
-import { pdfGanarator } from "@/utilis/helper/pdfGanarator";
 import MakeGet from "@/utilis/requestrespose/get";
 import Image from "next/image";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -15,13 +14,13 @@ import { CiCirclePlus } from "react-icons/ci";
 import { IoIosArrowDown } from "react-icons/io";
 import { Rnd } from "react-rnd";
 import { toast, ToastContainer } from "react-toastify";
-import ViewCard from "../../../../../componnent/ViewCard";
-
+import { FiShoppingCart } from "react-icons/fi";
 import CharactersCountComponent from "@/app/componnent/CharactersCountComponent";
-import useCardforTrading from "@/store/useCardforTrading";
 import captureNodeScreenshotForTranding from "@/utilis/helper/captureNodeScreenshotForTranding";
 import ImageResize from "@/utilis/helper/ImageResize";
 import captureNodeClean from "@/utilis/helper/captureNodeClean";
+import SpinLoader from "../../../../../componnent/SpingLoader";
+
 const fonts = ["Arial", "Poppins", "Times New Roman", "Courier New", "Comic Sans MS"];
 
 const cardTypeOptions = [
@@ -62,12 +61,105 @@ export default function ProductCustomizer() {
 
     const { slug } = useParams();
     const searchParams   = useSearchParams();
-    const selectedPackage = searchParams.get("package"); // "single" | "trio" | "collection"
+    const selectedPackage = searchParams.get("package");
+    const [editingSlotId, setEditingSlotId] = useState(null);
+
+    const safeLocalStorageSet = (key, value) => {
+        try {
+            safeLocalStorageSet(key, value);
+        } catch (e) {
+            console.warn("localStorage write failed:", e.message);
+        }
+    };
+
+    const handleEditSlot = (slot) => {
+    // Warn if canvas has unsaved work
+    if (editingSlotId === null && hasUnsavedWork()) {
+        const confirmed = window.confirm(
+            "You have unsaved changes on the current design. If you continue, they will be lost. Continue?"
+        );
+        if (!confirmed) return;
+    }
+
+    // If clicking the slot already being edited, do nothing
+    if (editingSlotId === slot.id) return;
+
+    // Load snapshot into canvas
+    const s = slot.snapshot;
+    setBaseFront(s.baseFront);
+    setUploads(Array.isArray(s.uploads) ? s.uploads : []);
+    setTexts(Array.isArray(s.texts) ? s.texts : []);
+    setcardti(s.cardti ?? "Card Title");
+    setcarddes(s.carddes ?? "Card Description");
+    setname(s.name ?? "Attribute One");
+    setname2(s.name2 ?? "Attribute Two");
+    setname3(s.name3 ?? "Attribute Three");
+    setlabelone(s.labelone ?? 69);
+    setlabeltwo(s.labeltwo ?? 55);
+    setlabelthree(s.labelthree ?? 78);
+    setacarddate(s.acarddate ?? "CLASS OF 2026");
+    setCardType(s.cardType ?? "graduation");
+    setAttrIconOne(s.attrIconOne ?? "/attribute-images/attribute_1.png");
+    setAttrIconTwo(s.attrIconTwo ?? "/attribute-images/attribute_2.png");
+    setAttrIconThree(s.attrIconThree ?? "/attribute-images/attribute_3.png");
+    setisblack(Boolean(s.isblack));
+    setActiveImage(null);
+    setActiveText(null);
+
+    // Switch to front tab
+    setworkingcard("front");
+    setSidebarTab("front");
+
+    setEditingSlotId(slot.id);
+};
+
+    const hasUnsavedWork = () => {
+        return (
+            uploads.length > 0 ||
+            texts.length > 0 ||
+            cardti !== "Card Title" ||
+            carddes !== "Card Description" ||
+            name !== "Attribute One" ||
+            name2 !== "Attribute Two" ||
+            name3 !== "Attribute Three"
+        );
+    };
+
+    const SLOT_TTL_MS = 72 * 60 * 60 * 1000; // 72 hours
+
+    const safeSet = (key, value) => {
+        try {
+            localStorage.setItem(key, JSON.stringify(value));
+            return true;
+        } catch (e) {
+            console.warn("localStorage write failed:", e.message);
+            return false;
+        }
+    };
+
+    const safeGet = (key) => {
+        try {
+            const raw = localStorage.getItem(key);
+            return raw ? JSON.parse(raw) : null;
+        } catch {
+            return null;
+        }
+    };
+
+    const safeRemove = (key) => {
+        try { localStorage.removeItem(key); } catch {}
+    };
+
+    const slotStorageKey = (slotId) =>
+        `${customizationStorageKey}:slot:${slotId}`;
+
+    const isExpired = (savedAt) =>
+        !savedAt || (Date.now() - savedAt) > SLOT_TTL_MS;
 
     const PACKAGE_CONFIG = {
-    single:     { name: "Single",     designs: 1, copiesPerDesign: 18, totalCards: 18 },
-    trio:       { name: "Trio",       designs: 3, copiesPerDesign: 6,  totalCards: 18 },
-    collection: { name: "Collection", designs: 6, copiesPerDesign: 3,  totalCards: 18 },
+        single:     { name: "Single",     designs: 1, copiesPerDesign: 18, totalCards: 18 },
+        trio:       { name: "Trio",       designs: 3, copiesPerDesign: 6,  totalCards: 18 },
+        collection: { name: "Collection", designs: 6, copiesPerDesign: 3,  totalCards: 18 },
     };
 
     const packageConfig = PACKAGE_CONFIG[selectedPackage] ?? PACKAGE_CONFIG["single"];
@@ -88,8 +180,8 @@ export default function ProductCustomizer() {
 
     const [baseFront, setBaseFront] = useState(null);
     const [baseBack, setBaseBack] = useState(null);
-    const [uploads, setUploads] = useState([]); // {id, url, x, y, width, height}
-    const [texts, setTexts] = useState([]); // {id, text, font, size, color, x, y, width}
+    const [uploads, setUploads] = useState([]);
+    const [texts, setTexts] = useState([]); 
 
     const [activeText, setActiveText] = useState(null);
     const [activeImage, setActiveImage] = useState(null);
@@ -97,10 +189,13 @@ export default function ProductCustomizer() {
     const [fetchingData, setfetchingData] = useState(null);
     const [fetchingDataLoading, setfetchingDataLoading] = useState(false);
 
-    // const [cards, setCards] = useState([]);
-    const { cards, setCards } = useCardforTrading();
-    const [activeCardIndex, setActiveCardIndex] = useState(0);
-    const [editmood, seteidtmood] = useState(true);
+    const [savedSlots, setSavedSlots] = useState([]);
+    const savedSlotsRef = useRef([]);
+
+    useEffect(() => {
+        savedSlotsRef.current = savedSlots;
+    }, [savedSlots]);
+
     const [spinloading, setspinloading] = useState(false);
     const router = useRouter();
     const [doneloading, setdoneloading] = useState(false);
@@ -171,7 +266,6 @@ export default function ProductCustomizer() {
                     setTexts(Array.isArray(parsed?.texts) ? parsed.texts : []);
                     setworkingcard(parsed?.workingcard || "front");
                     setisblack(Boolean(parsed?.isblack));
-
                     setcardti(parsed?.content?.cardti ?? "Card Title");
                     setcarddes(parsed?.content?.carddes ?? "Card Description");
                     setname(parsed?.content?.name ?? "Attribute One");
@@ -190,13 +284,53 @@ export default function ProductCustomizer() {
                     setBackHighlightsTitle(parsed?.content?.backHighlightsTitle ?? "Highlights");
                     setBackLegacyTagline(parsed?.content?.backLegacyTagline ?? "A moment captured forever");
                     setBackLegacyText(parsed?.content?.backLegacyText ?? "This card celebrates a special person and a special time. May it remind you of all the great memories we've shared.");
-                    const restoredHighlights = Array.isArray(parsed?.content?.backHighlights) ? parsed.content.backHighlights.slice(0, 6) : defaultBackHighlights;
+                    const restoredHighlights = Array.isArray(parsed?.content?.backHighlights)
+                        ? parsed.content.backHighlights.slice(0, 6)
+                        : defaultBackHighlights;
                     setBackHighlights(restoredHighlights.length >= 2 ? restoredHighlights : defaultBackHighlights);
 
-                    if (Array.isArray(parsed?.cards)) setCards(parsed.cards);
                     restoredFromStorage = true;
                     hasHydratedFromStorage.current = true;
                 }
+
+                // ── Restore saved slots ──────────────────────────────────────
+                const restoredSlots = [];
+                for (let i = 0; i < localStorage.length; i++) {
+                    const key = localStorage.key(i);
+                    if (!key?.startsWith(`${customizationStorageKey}:slot:`)) continue;
+
+                    const slotData = safeGet(key);
+                    if (!slotData) continue;
+
+                    // Remove expired slots
+                    if (isExpired(slotData.savedAt)) {
+                        safeRemove(key);
+                        continue;
+                    }
+
+                    // Skip slots saved under a different package
+                    if (slotData.selectedPackage && slotData.selectedPackage !== selectedPackage) {
+                        continue;
+                    }
+
+                    restoredSlots.push({
+                        id:             key.replace(`${customizationStorageKey}:slot:`, ""),
+                        savedAt:        slotData.savedAt,
+                        previewDataUrl: slotData.previewDataUrl,
+                        snapshot:       slotData.snapshot,
+                    });
+                }
+
+                restoredSlots.sort((a, b) => a.savedAt - b.savedAt);
+
+                // Enforce package design limit on restore
+                const validSlots = restoredSlots.slice(0, packageConfig.designs);
+
+                if (validSlots.length > 0) {
+                    setSavedSlots(validSlots);
+                }
+                // ── End slot restore ─────────────────────────────────────────
+
             } catch (error) {
                 console.error("Failed to restore trading customization state:", error);
             }
@@ -208,14 +342,11 @@ export default function ProductCustomizer() {
         }
         canPersistCustomization.current = true;
         setfetchingDataLoading(false);
-    }, [customizationStorageKey, setCards])
+    }, [customizationStorageKey]);
 
 
 
     function hanldeInputUpdater() {
-
-
-
         if (workingcard == 'front') {
             setcardti('Card Title');
             setcarddes('Card Description');
@@ -284,48 +415,33 @@ export default function ProductCustomizer() {
     useEffect(() => {
         if (!customizationStorageKey) return;
         if (!canPersistCustomization.current) return;
-        try {
-            const previous = localStorage.getItem(customizationStorageKey);
-            const previousParsed = previous ? JSON.parse(previous) : null;
-            const snapshot = {
-                productId: fetchingData?.id,
-                productSlug: fetchingData?.slug || slug,
-                savedAt: Date.now(),
-                cardfinder,
-                baseFront,
-                baseBack,
-                uploads,
-                texts,
-                cards,
-                workingcard,
-                isblack,
-                content: {
-                    cardti,
-                    carddes,
-                    name,
-                    name2,
-                    name3,
-                    labelone,
-                    labeltwo,
-                    labelthree,
-                    acarddate,
-                    cardType,
-                    attrIconOne,
-                    attrIconTwo,
-                    attrIconThree,
-                    backDate,
-                    backDescription,
-                    backHighlightsTitle,
-                    backHighlights,
-                    backLegacyTagline,
-                    backLegacyText,
-                },
-                previews: previousParsed?.previews || {},
-            };
-            localStorage.setItem(customizationStorageKey, JSON.stringify(snapshot));
-        } catch (error) {
-            console.error("Failed to persist trading customization state:", error);
-        }
+
+        const snapshot = {
+            productId:   fetchingData?.id,
+            productSlug: fetchingData?.slug || slug,
+            savedAt:     Date.now(),
+            cardfinder,
+            baseFront,
+            baseBack,
+            uploads,
+            texts,
+            workingcard,
+            isblack,
+            // Slot references only — no blobs
+            slotIds: savedSlots.map(s => s.id),
+            content: {
+                cardti, carddes,
+                name, name2, name3,
+                labelone, labeltwo, labelthree,
+                acarddate, cardType,
+                attrIconOne, attrIconTwo, attrIconThree,
+                backDate, backDescription,
+                backHighlightsTitle, backHighlights,
+                backLegacyTagline, backLegacyText,
+            },
+        };
+
+        safeSet(customizationStorageKey, snapshot);
     }, [
         customizationStorageKey,
         slug,
@@ -336,28 +452,17 @@ export default function ProductCustomizer() {
         baseBack,
         uploads,
         texts,
-        cards,
+        savedSlots,
         workingcard,
         isblack,
-        cardti,
-        carddes,
-        name,
-        name2,
-        name3,
-        labelone,
-        labeltwo,
-        labelthree,
-        acarddate,
-        cardType,
-        attrIconOne,
-        attrIconTwo,
-        attrIconThree,
-        backDate,
-        backDescription,
-        backHighlightsTitle,
-        backHighlights,
-        backLegacyTagline,
-        backLegacyText,
+        cardti, carddes,
+        name, name2, name3,
+        labelone, labeltwo, labelthree,
+        acarddate, cardType,
+        attrIconOne, attrIconTwo, attrIconThree,
+        backDate, backDescription,
+        backHighlightsTitle, backHighlights,
+        backLegacyTagline, backLegacyText,
     ]);
 
     useEffect(() => {
@@ -452,7 +557,6 @@ export default function ProductCustomizer() {
         return captureNodeClean(previewCardNodeRef.current, captureNodeScreenshotForTranding);
     };
 
-    const activeCard = cards[activeCardIndex];
 
     /******* Selected Layer Image Function ********/
     const selectLayerImage = (layer, url) => {
@@ -469,162 +573,226 @@ export default function ProductCustomizer() {
 
 
 
-    /******* Add New Card Function ********/
-    const addNewCard = () => {
+    const handleDeleteSlot = (slotId) => {
+        safeRemove(slotStorageKey(slotId));
+        setSavedSlots(prev => prev.filter(s => s.id !== slotId));
 
-        const basebartwo = data?.customizations?.base_cards?.[0];
-        const baseTwo = ImageLinkMaker(basebartwo?.image);
-        const initialLayersTwo = {};
-        layers.forEach(layer => {
-            if (layer === "beards") return;
-            const items = product?.customizations?.[layer];
+        // If deleting the slot currently being edited, reset canvas
+        if (editingSlotId === slotId) {
+            setEditingSlotId(null);
+            resetCanvas();
+        }
 
-            console.log(items);
-
-            if (items.length > 0) initialLayersTwo[layer] = ImageLinkMaker(items[0]?.image);
-        });
-
-        setCards([...cards, { baseImage: baseTwo, selectedLayers: initialLayersTwo }]);
-        setActiveCardIndex(cards.length);
-
-    };
-
-    /******* Removed Card Function ********/
-    const removeCard = (index) => {
-
-        const updated = cards.filter((_, i) => i !== index);
-        let newActive = activeCardIndex;
-        if (updated.length === 0) newActive = 0;
-        else if (index < activeCardIndex) newActive -= 1;
-        else if (index === activeCardIndex) newActive = Math.min(activeCardIndex, updated.length - 1);
-        setActiveCardIndex(newActive);
-
-        setCards([...updated]);
+        toast.info("Design removed.");
     };
 
 
     /******* Selected Layer Image Function ********/
     const goToFinalView = async () => {
-        if (!baseFront && !baseBack) {
-            toast.warn("Please select a base card first.");
+        if (savedSlots.length < 1) {
+            toast.warn("Please save at least one design before checking out.");
             return;
         }
 
         setspinloading(true);
 
         try {
-            const waitForRender = () =>
-                new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
-
-            const activeSide = workingcard;
-            let previewFront = null;
-            let previewBack = null;
-
             setActiveImage(null);
             setActiveText(null);
+            await new Promise(r => setTimeout(r, 200));
 
-            // Wait longer for React to re-render and clear borders
-            await new Promise((resolve) => setTimeout(resolve, 300));
-
-            setworkingcard("front");
-            await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
-            previewFront = await captureNodeClean(previewCardNodeRef.current, captureNodeScreenshotForTranding);
-            
+            // Capture global back side
             setworkingcard("back");
-            await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
-            previewBack = await captureNodeClean(previewCardNodeRef.current, captureNodeScreenshotForTranding);
+            await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
+            const backPreview = await captureNodeClean(
+            previewCardNodeRef.current,
+            captureNodeScreenshotForTranding
+            );
 
-            setworkingcard(activeSide);
-            await waitForRender();
+            // Build FinalProduct entries — backend expects front+back pairs
+            const FinalProduct = [];
 
-            const finalPreviewImages = [previewFront, previewBack].filter(Boolean);
-            if (finalPreviewImages.length === 0) {
-                toast.error("Could not capture card preview. Please try again.");
-                return;
+            for (const slot of savedSlots) {
+            const pairKey = crypto.randomUUID();
+
+            // Front entry
+            FinalProduct.push({
+                side:          "front",
+                image:         slot.previewDataUrl,
+                card_pair_key: pairKey,
+                name:          slot.snapshot.cardti || "Custom Design",
+            });
+
+            // Back entry (shared global back, same pairKey)
+            FinalProduct.push({
+                side:          "back",
+                image:         backPreview,
+                card_pair_key: pairKey,
+                name:          slot.snapshot.cardti || "Custom Design",
+            });
             }
 
-            const customizationSnapshot = {
-                productId: fetchingData?.id,
-                productSlug: fetchingData?.slug,
-                savedAt: Date.now(),
-                cardfinder,
-                baseFront,
-                baseBack,
-                uploads,
-                texts,
-                cards,
-                workingcard,
-                isblack,
-                content: {
-                    cardti, carddes, name, name2, name3,
-                    labelone, labeltwo, labelthree, acarddate,
-                    cardType, attrIconOne, attrIconTwo, attrIconThree,
-                    backDate, backDescription, backHighlightsTitle,
-                    backHighlights, backLegacyTagline, backLegacyText,
-                },
-                previews: { front: previewFront, back: previewBack },
-            };
-
-            if (customizationStorageKey) {
-                localStorage.setItem(customizationStorageKey, JSON.stringify(customizationSnapshot));
-            }
+            safeSet(customizationStorageKey, {
+                productId:      fetchingData?.id,
+                productSlug:    fetchingData?.slug,
+                savedAt:        Date.now(),
+                selectedPackage,
+                packageConfig,
+                slotIds:        savedSlots.map(s => s.id),
+            });
 
             const product = {
-                id: generateUserId(),
-                productId: fetchingData?.id,
-                productSlug: fetchingData?.slug,
-                productName: fetchingData?.name,
-                productType: fetchingData?.type,
-                productUnitPrice: fetchingData?.offer_price > 0 ? fetchingData?.offer_price : fetchingData?.price,
-                productQuantity: 1,
-                productImage: fetchingData?.image,
-                productGalary: fetchingData?.images,
-                productDescription: fetchingData?.description,
-                // Keep cart payload light to avoid localStorage quota overflow.
-                // Checkout rebuilds images from customizationStorageKey snapshot.
-                FinalProduct: [
-                    { side: 'front' },
-                    { side: 'back' },
-                ],
-                FinalProductImages: [],
-                FinalPDf: null,
+                id:                     generateUserId(),
+                productId:              fetchingData?.id,
+                productSlug:            fetchingData?.slug,
+                productName:            fetchingData?.name,
+                productType:            fetchingData?.type,
+                productUnitPrice:       fetchingData?.offer_price > 0
+                                            ? fetchingData?.offer_price
+                                            : fetchingData?.price,
+                productQuantity:        packageConfig.totalCards,
+                productImage:           fetchingData?.image,
+                productDescription:     fetchingData?.description,
+                selectedPackage,
+                packageConfig,
+                FinalProduct,                          
+                FinalProductImages:     [],
+                FinalPDf:               null,
+                customization_mode:     "trading",
                 customizationStorageKey: customizationStorageKey || null,
             };
 
             addToCart(product);
             router.push("/my-cart/checkout");
 
-        } catch (error) {
-            console.error(error);
-            toast.error("Failed to prepare customized item for checkout.");
+        } catch (err) {
+            console.error(err);
+            toast.error("Failed to prepare cart. Please try again.");
         } finally {
             setspinloading(false);
         }
     };
-    // end from here
+
+    const resetCanvas = useCallback((keepTemplate = false) => {
+        if (!keepTemplate) {
+            // Auto-select first template (your requirement #1)
+            const firstTemplate = frontImages?.[0]?.image || null;
+            setBaseFront(firstTemplate);
+        }
+        setUploads([]);
+        setTexts([]);
+        setActiveImage(null);
+        setActiveText(null);
+        setcardti("Card Title");
+        setcarddes("Card Description");
+        setname("Attribute One");
+        setname2("Attribute Two");
+        setname3("Attribute Three");
+        setlabelone(69);
+        setlabeltwo(55);
+        setlabelthree(78);
+        setacarddate("CLASS OF 2025");
+        setCardType("graduation");
+        setAttrIconOne("/attribute-images/attribute_1.png");
+        setAttrIconTwo("/attribute-images/attribute_2.png");
+        setAttrIconThree("/attribute-images/attribute_3.png");
+        setisblack(false);
+        }, [frontImages]);
 
 
-
-
-
-
-    const Done = async () => {
-        setdoneloading(true);
-        const currentPreview = workingcard === "front" ? baseFront : baseBack;
-        const fallbackPreview = baseFront || baseBack;
-        const nextCardPreview = currentPreview || fallbackPreview;
-
-        if (!nextCardPreview) {
-            toast.warn("Please select a base card first.");
-            setdoneloading(false);
+    const handleSaveSlot = async () => {
+        if (!baseFront) {
+            toast.warn("Please select a front template first.");
             return;
         }
 
-        setCards([...cards, nextCardPreview]);
-        setTimeout(() => {
+        if (editingSlotId === null && savedSlotsRef.current.length >= packageConfig.designs) {
+            toast.warn(`Your ${packageConfig.name} package only allows ${packageConfig.designs} design(s).`);
+            return;
+        }
+
+        setdoneloading(true);
+
+        try {
+            setworkingcard("front");
+            await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
+            const previewDataUrl = await captureNodeClean(
+                previewCardNodeRef.current,
+                captureNodeScreenshotForTranding
+            );
+
+            if (!previewDataUrl) {
+                toast.error("Could not capture card preview. Please try again.");
+                return;
+            }
+
+            const snapshot = {
+                baseFront, uploads, texts,
+                cardti, carddes,
+                name, name2, name3,
+                labelone, labeltwo, labelthree,
+                acarddate, cardType,
+                attrIconOne, attrIconTwo, attrIconThree,
+                isblack,
+            };
+
+            if (editingSlotId !== null) {
+                // ── Update existing slot ────────────────────────────────────
+                const updatedSlot = {
+                    id:            editingSlotId,
+                    savedAt:       Date.now(),
+                    previewDataUrl,
+                    snapshot,
+                };
+
+                // Update localStorage slot key
+                safeSet(slotStorageKey(editingSlotId), {
+                    savedAt:        updatedSlot.savedAt,
+                    selectedPackage,
+                    previewDataUrl,
+                    snapshot,
+                });
+
+                // Update in state — preserve position in array
+                setSavedSlots(prev =>
+                    prev.map(s => s.id === editingSlotId ? updatedSlot : s)
+                );
+
+                setEditingSlotId(null);
+                toast.success("Design updated!");
+
+            } else {
+                // ── Save new slot ───────────────────────────────────────────
+                const slotId  = crypto.randomUUID();
+                const savedAt = Date.now();
+
+                const newSlot = {
+                    id: slotId,
+                    savedAt,
+                    previewDataUrl,
+                    snapshot,
+                };
+
+                safeSet(slotStorageKey(slotId), {
+                    savedAt,
+                    selectedPackage,
+                    previewDataUrl,
+                    snapshot,
+                });
+
+                setSavedSlots(prev => [...prev, newSlot]);
+                toast.success(`Design ${savedSlotsRef.current.length + 1} saved!`);
+            }
+
+            resetCanvas();
+
+        } catch (err) {
+            console.error(err);
+            toast.error("Failed to save design. Please try again.");
+        } finally {
             setdoneloading(false);
-        }, [600])
-    }
+        }
+    };
 
     const renderIconPreview = (iconValue, altText) => {
         if (typeof iconValue === "string" && iconValue.startsWith("/attribute-images/")) {
@@ -681,11 +849,7 @@ export default function ProductCustomizer() {
     };
 
 
-
-
     if (fetchingDataLoading) return <TradingCardApplicationSkelaton />
-
-
 
     return (
         <div className="grid grid-cols-12 grid-rows-12 gap-0 lg:gap-2 h-screen w-screen fixed bg-gray-100">
@@ -694,7 +858,18 @@ export default function ProductCustomizer() {
                 {/* replace this with <CardSidebar /> when available */}
                 <div className="w-full h-full">
 
-                    <TradingCardSidebar cards={cards} addCard={addNewCard} Done={Done} removeCard={removeCard} editmood={editmood} seteidtmood={seteidtmood} doneloading={doneloading} />
+                    <TradingCardSidebar
+                        savedSlots={savedSlots}
+                        packageConfig={packageConfig}
+                        onSaveSlot={handleSaveSlot}
+                        onDeleteSlot={handleDeleteSlot}
+                        onEditSlot={handleEditSlot}
+                        onCheckout={goToFinalView}
+                        doneloading={doneloading}
+                        spinloading={spinloading}
+                        canSave={!!baseFront}
+                        editingSlotId={editingSlotId}
+                    />
 
                 </div>
             </div>
@@ -1356,12 +1531,17 @@ export default function ProductCustomizer() {
                                 </div>}
                                 {/* text control end here */}
                             </div>
-
-
+                            
                         </div>
-
-                        {/* Bottom Button */}
-                        <ViewCard smallconOpen={smallconOpen} isLoading={spinloading} goToFinalView={goToFinalView} />
+                        {savedSlots.length >= 1 && (
+                                    <button
+                                        onClick={goToFinalView}
+                                        disabled={spinloading}
+                                        className="w-full bg-[#00bcff] hover:bg-[#00bcff] text-white text-lg font-semibold py-2.5 mt-1 rounded-lg transition flex items-center justify-center gap-2 disabled:opacity-60"
+                                    >
+                                        {spinloading ? "Preparing..." : "Next"}
+                                    </button>
+                                )}
                     </div>
                 </div>
             </div>

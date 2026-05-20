@@ -57,6 +57,75 @@ const defaultBackHighlights = [
     { id: 2, icon: "/attribute-images/attribute_4.png", text: "Master of organization" },
 ];
 
+// ===== IndexedDB Helper =====
+const IDB_DB_NAME = "tradingCardCustomizer";
+const IDB_STORE = "customizations";
+
+async function idbOpen() {
+    return new Promise((resolve, reject) => {
+        const req = indexedDB.open(IDB_DB_NAME, 1);
+        req.onupgradeneeded = (e) => {
+            const db = e.target.result;
+            if (!db.objectStoreNames.contains(IDB_STORE)) {
+                db.createObjectStore(IDB_STORE);
+            }
+        };
+        req.onsuccess = () => resolve(req.result);
+        req.onerror = () => reject(req.error);
+    });
+}
+
+async function idbPut(key, value) {
+    try {
+        const db = await idbOpen();
+        return new Promise((resolve) => {
+            const tx = db.transaction(IDB_STORE, "readwrite");
+            tx.objectStore(IDB_STORE).put(value, key);
+            tx.oncomplete = () => resolve(true);
+            tx.onerror = () => { console.warn("IDB put failed:", tx.error); resolve(false); };
+        });
+    } catch { return false; }
+}
+
+async function idbGet(key) {
+    try {
+        const db = await idbOpen();
+        return new Promise((resolve) => {
+            const tx = db.transaction(IDB_STORE, "readonly");
+            const req = tx.objectStore(IDB_STORE).get(key);
+            req.onsuccess = () => resolve(req.result ?? null);
+            req.onerror = () => resolve(null);
+        });
+    } catch { return null; }
+}
+
+async function idbDelete(key) {
+    try {
+        const db = await idbOpen();
+        return new Promise((resolve) => {
+            const tx = db.transaction(IDB_STORE, "readwrite");
+            tx.objectStore(IDB_STORE).delete(key);
+            tx.oncomplete = () => resolve(true);
+            tx.onerror = () => resolve(false);
+        });
+    } catch { return false; }
+}
+
+async function idbGetKeysByPrefix(prefix) {
+    try {
+        const db = await idbOpen();
+        return new Promise((resolve) => {
+            const tx = db.transaction(IDB_STORE, "readonly");
+            const store = tx.objectStore(IDB_STORE);
+            const req = store.getAllKeys();
+            req.onsuccess = () => resolve(
+                req.result.filter(k => typeof k === "string" && k.startsWith(prefix))
+            );
+            req.onerror = () => resolve([]);
+        });
+    } catch { return []; }
+}
+
 export default function ProductCustomizer() {
 
     const { slug } = useParams();
@@ -69,6 +138,20 @@ export default function ProductCustomizer() {
             safeLocalStorageSet(key, value);
         } catch (e) {
             console.warn("localStorage write failed:", e.message);
+        }
+    };
+
+    const handleNext = async () => {
+        if (editingSlotId === null && savedSlotsRef.current.length >= packageConfig.designs) {
+            await goToFinalView(savedSlotsRef.current);
+            return;
+        }
+
+        const updatedSlots = await handleSaveSlot();
+        if (!updatedSlots) return;
+
+        if (updatedSlots.length >= packageConfig.designs) {
+            await goToFinalView(updatedSlots);
         }
     };
 
@@ -241,108 +324,147 @@ export default function ProductCustomizer() {
     // color state
     const [isblack, setisblack] = useState(false);
 
-
     const getBaseTrading = useCallback(async (slug) => {
-        setfetchingDataLoading(true);
-        const res = await MakeGet(`api/shop/${slug}`);
+    setfetchingDataLoading(true);
+    const res = await MakeGet(`api/shop/${slug}`);
 
-        setfrontImages(res?.data?.customizations?.trading_fronts);
-        setbackImages(res?.data?.customizations?.trading_backs);
-        setfetchingData(res?.data);
+    setfrontImages(res?.data?.customizations?.trading_fronts);
+    setbackImages(res?.data?.customizations?.trading_backs);
+    setfetchingData(res?.data);
 
-        const defaultFront = res?.data?.customizations?.trading_fronts?.[0]?.image || null;
-        const defaultBack = res?.data?.customizations?.trading_backs?.[0]?.image || null;
+    const defaultFront = res?.data?.customizations?.trading_fronts?.[0]?.image || null;
+    const defaultBack  = res?.data?.customizations?.trading_backs?.[0]?.image  || null;
 
-        let restoredFromStorage = false;
-        if (customizationStorageKey) {
-            try {
-                const saved = localStorage.getItem(customizationStorageKey);
-                if (saved) {
-                    const parsed = JSON.parse(saved);
-                    setcardfinder(parsed?.cardfinder ?? 0);
-                    setBaseFront(parsed?.baseFront || defaultFront);
-                    setBaseBack(parsed?.baseBack || defaultBack);
-                    setUploads(Array.isArray(parsed?.uploads) ? parsed.uploads : []);
-                    setTexts(Array.isArray(parsed?.texts) ? parsed.texts : []);
-                    setworkingcard(parsed?.workingcard || "front");
-                    setisblack(Boolean(parsed?.isblack));
-                    setcardti(parsed?.content?.cardti ?? "Card Title");
-                    setcarddes(parsed?.content?.carddes ?? "Card Description");
-                    setname(parsed?.content?.name ?? "Attribute One");
-                    setname2(parsed?.content?.name2 ?? "Attribute Two");
-                    setname3(parsed?.content?.name3 ?? "Attribute Three");
-                    setlabelone(parsed?.content?.labelone ?? 69);
-                    setlabeltwo(parsed?.content?.labeltwo ?? 55);
-                    setlabelthree(parsed?.content?.labelthree ?? 78);
-                    setacarddate(parsed?.content?.acarddate ?? "CLASS OF 2026");
-                    setCardType(parsed?.content?.cardType ?? "graduation");
-                    setAttrIconOne(parsed?.content?.attrIconOne ?? "/attribute-images/attribute_1.png");
-                    setAttrIconTwo(parsed?.content?.attrIconTwo ?? "/attribute-images/attribute_2.png");
-                    setAttrIconThree(parsed?.content?.attrIconThree ?? "/attribute-images/attribute_3.png");
-                    setBackDate(parsed?.content?.backDate ?? "");
-                    setBackDescription(parsed?.content?.backDescription ?? "");
-                    setBackHighlightsTitle(parsed?.content?.backHighlightsTitle ?? "Highlights");
-                    setBackLegacyTagline(parsed?.content?.backLegacyTagline ?? "A moment captured forever");
-                    setBackLegacyText(parsed?.content?.backLegacyText ?? "This card celebrates a special person and a special time. May it remind you of all the great memories we've shared.");
-                    const restoredHighlights = Array.isArray(parsed?.content?.backHighlights)
-                        ? parsed.content.backHighlights.slice(0, 6)
-                        : defaultBackHighlights;
-                    setBackHighlights(restoredHighlights.length >= 2 ? restoredHighlights : defaultBackHighlights);
+    let restoredFromStorage = false;
 
+    if (customizationStorageKey) {
+        try {
+            // =============================================
+            // BLOCK A — restore canvas state from IndexedDB
+            // =============================================
+            const saved = await idbGet(customizationStorageKey);
+            if (saved) {
+                setcardfinder(saved?.cardfinder ?? 0);
+                setBaseFront(saved?.baseFront || defaultFront);
+                setBaseBack(saved?.baseBack   || defaultBack);
+                setUploads(Array.isArray(saved?.uploads) ? saved.uploads : []);
+                setTexts(Array.isArray(saved?.texts)     ? saved.texts   : []);
+                setworkingcard(saved?.workingcard || "front");
+                setisblack(Boolean(saved?.isblack));
+                setcardti(saved?.content?.cardti             ?? "Card Title");
+                setcarddes(saved?.content?.carddes           ?? "Card Description");
+                setname(saved?.content?.name                 ?? "Attribute One");
+                setname2(saved?.content?.name2               ?? "Attribute Two");
+                setname3(saved?.content?.name3               ?? "Attribute Three");
+                setlabelone(saved?.content?.labelone         ?? 69);
+                setlabeltwo(saved?.content?.labeltwo         ?? 55);
+                setlabelthree(saved?.content?.labelthree     ?? 78);
+                setacarddate(saved?.content?.acarddate       ?? "CLASS OF 2026");
+                setCardType(saved?.content?.cardType         ?? "graduation");
+                setAttrIconOne(saved?.content?.attrIconOne   ?? "/attribute-images/attribute_1.png");
+                setAttrIconTwo(saved?.content?.attrIconTwo   ?? "/attribute-images/attribute_2.png");
+                setAttrIconThree(saved?.content?.attrIconThree ?? "/attribute-images/attribute_3.png");
+                setBackDate(saved?.content?.backDate         ?? "");
+                setBackDescription(saved?.content?.backDescription ?? "");
+                setBackHighlightsTitle(saved?.content?.backHighlightsTitle ?? "Highlights");
+                setBackLegacyTagline(saved?.content?.backLegacyTagline ?? "A moment captured forever");
+                setBackLegacyText(saved?.content?.backLegacyText ?? "This card celebrates a special person and a special time. May it remind you of all the great memories we've shared.");
+                const rh = Array.isArray(saved?.content?.backHighlights)
+                    ? saved.content.backHighlights.slice(0, 6)
+                    : defaultBackHighlights;
+                setBackHighlights(rh.length >= 2 ? rh : defaultBackHighlights);
+                restoredFromStorage = true;
+                hasHydratedFromStorage.current = true;
+            }
+
+            // =============================================
+            // BLOCK B — restore slots from IndexedDB
+            // =============================================
+            const slotPrefix = `${customizationStorageKey}:slot:`;
+            const allSlotKeys = await idbGetKeysByPrefix(slotPrefix);
+
+            const restoredSlots = [];
+            for (const k of allSlotKeys) {
+                const slotData = await idbGet(k);
+                if (!slotData) continue;
+                if (isExpired(slotData.savedAt)) {
+                    await idbDelete(k);    // ✅ clean up expired
+                    continue;
+                }
+                if (slotData.selectedPackage && selectedPackage &&
+                    slotData.selectedPackage !== selectedPackage) continue;
+
+                restoredSlots.push({
+                    id:             k.replace(slotPrefix, ""),
+                    savedAt:        slotData.savedAt,
+                    previewDataUrl: slotData.previewDataUrl,
+                    snapshot:       slotData.snapshot,
+                });
+            }
+
+            restoredSlots.sort((a, b) => a.savedAt - b.savedAt);
+            const validSlots = restoredSlots.slice(0, packageConfig.designs);
+
+            if (validSlots.length > 0) {
+                setSavedSlots(validSlots);
+                savedSlotsRef.current = validSlots;
+
+                const allDone = validSlots.length >= packageConfig.designs;
+                const lastSlot = validSlots[validSlots.length - 1];
+                const s = lastSlot.snapshot;
+
+                if (allDone) {
+                    setBaseFront(s.baseFront       ?? defaultFront);
+                    setUploads(Array.isArray(s.uploads) ? s.uploads : []);
+                    setTexts(Array.isArray(s.texts)     ? s.texts   : []);
+                    setcardti(s.cardti             ?? "Card Title");
+                    setcarddes(s.carddes           ?? "Card Description");
+                    setname(s.name                 ?? "Attribute One");
+                    setname2(s.name2               ?? "Attribute Two");
+                    setname3(s.name3               ?? "Attribute Three");
+                    setlabelone(s.labelone         ?? 69);
+                    setlabeltwo(s.labeltwo         ?? 55);
+                    setlabelthree(s.labelthree     ?? 78);
+                    setacarddate(s.acarddate       ?? "CLASS OF 2026");
+                    setCardType(s.cardType         ?? "graduation");
+                    setAttrIconOne(s.attrIconOne   ?? "/attribute-images/attribute_1.png");
+                    setAttrIconTwo(s.attrIconTwo   ?? "/attribute-images/attribute_2.png");
+                    setAttrIconThree(s.attrIconThree ?? "/attribute-images/attribute_3.png");
+                    setisblack(Boolean(s.isblack));
+                    setcardfinder(
+                        frontImages?.findIndex(img => img.image === s.baseFront) ?? 0
+                    );
                     restoredFromStorage = true;
                     hasHydratedFromStorage.current = true;
                 }
-
-                // ── Restore saved slots ──────────────────────────────────────
-                const restoredSlots = [];
-                for (let i = 0; i < localStorage.length; i++) {
-                    const key = localStorage.key(i);
-                    if (!key?.startsWith(`${customizationStorageKey}:slot:`)) continue;
-
-                    const slotData = safeGet(key);
-                    if (!slotData) continue;
-
-                    // Remove expired slots
-                    if (isExpired(slotData.savedAt)) {
-                        safeRemove(key);
-                        continue;
-                    }
-
-                    // Skip slots saved under a different package
-                    if (slotData.selectedPackage && slotData.selectedPackage !== selectedPackage) {
-                        continue;
-                    }
-
-                    restoredSlots.push({
-                        id:             key.replace(`${customizationStorageKey}:slot:`, ""),
-                        savedAt:        slotData.savedAt,
-                        previewDataUrl: slotData.previewDataUrl,
-                        snapshot:       slotData.snapshot,
-                    });
-                }
-
-                restoredSlots.sort((a, b) => a.savedAt - b.savedAt);
-
-                // Enforce package design limit on restore
-                const validSlots = restoredSlots.slice(0, packageConfig.designs);
-
-                if (validSlots.length > 0) {
-                    setSavedSlots(validSlots);
-                }
-                // ── End slot restore ─────────────────────────────────────────
-
-            } catch (error) {
-                console.error("Failed to restore trading customization state:", error);
             }
-        }
 
-        if (!restoredFromStorage) {
-            setBaseFront(defaultFront);
-            setBaseBack(defaultBack);
+            // =============================================
+            // BLOCK C — clean up legacy localStorage slot entries
+            // =============================================
+            const legacyKeysToRemove = [];
+            for (let i = 0; i < localStorage.length; i++) {
+                const k = localStorage.key(i);
+                if (k?.startsWith(slotPrefix)) {
+                    legacyKeysToRemove.push(k);
+                }
+            }
+            legacyKeysToRemove.forEach(k => safeRemove(k));
+
+        } catch (err) {
+            console.error("Failed to restore trading customization state:", err);
         }
-        canPersistCustomization.current = true;
-        setfetchingDataLoading(false);
-    }, [customizationStorageKey]);
+    }
+
+    if (!restoredFromStorage) {
+        setBaseFront(defaultFront);
+        setBaseBack(defaultBack);
+    }
+
+    canPersistCustomization.current = true;
+    setfetchingDataLoading(false);
+}, [customizationStorageKey]);
+    
 
 
 
@@ -413,69 +535,46 @@ export default function ProductCustomizer() {
     }, [workingcard]);
 
     useEffect(() => {
-        if (!customizationStorageKey) return;
-        if (!canPersistCustomization.current) return;
+    if (!customizationStorageKey) return;
+    if (!canPersistCustomization.current) return;
 
-        const snapshot = {
-            productId:   fetchingData?.id,
-            productSlug: fetchingData?.slug || slug,
-            savedAt:     Date.now(),
-            cardfinder,
-            baseFront,
-            baseBack,
-            uploads,
-            texts,
-            workingcard,
-            isblack,
-            // Slot references only — no blobs
-            slotIds: savedSlots.map(s => s.id),
-            content: {
-                cardti, carddes,
-                name, name2, name3,
-                labelone, labeltwo, labelthree,
-                acarddate, cardType,
-                attrIconOne, attrIconTwo, attrIconThree,
-                backDate, backDescription,
-                backHighlightsTitle, backHighlights,
-                backLegacyTagline, backLegacyText,
-            },
-        };
-
-        safeSet(customizationStorageKey, snapshot);
-    }, [
-        customizationStorageKey,
-        slug,
-        fetchingData?.id,
-        fetchingData?.slug,
-        cardfinder,
-        baseFront,
-        baseBack,
-        uploads,
-        texts,
-        savedSlots,
-        workingcard,
-        isblack,
-        cardti, carddes,
-        name, name2, name3,
-        labelone, labeltwo, labelthree,
-        acarddate, cardType,
-        attrIconOne, attrIconTwo, attrIconThree,
-        backDate, backDescription,
-        backHighlightsTitle, backHighlights,
-        backLegacyTagline, backLegacyText,
-    ]);
+    idbPut(customizationStorageKey, {
+        productId:   fetchingData?.id,
+        productSlug: fetchingData?.slug || slug,
+        savedAt:     Date.now(),
+        selectedPackage,
+        cardfinder,  baseFront, baseBack,
+        uploads,     texts,     workingcard, isblack,
+        slotIds:     savedSlots.map(s => s.id),
+        content: {
+            cardti, carddes, name, name2, name3,
+            labelone, labeltwo, labelthree,
+            acarddate, cardType,
+            attrIconOne, attrIconTwo, attrIconThree,
+            backDate, backDescription,
+            backHighlightsTitle, backHighlights,
+            backLegacyTagline, backLegacyText,
+        },
+    });
+}, [
+    customizationStorageKey, slug,
+    fetchingData?.id, fetchingData?.slug,
+    cardfinder, baseFront, baseBack,
+    uploads, texts, savedSlots, workingcard, isblack,
+    cardti, carddes, name, name2, name3,
+    labelone, labeltwo, labelthree,
+    acarddate, cardType,
+    attrIconOne, attrIconTwo, attrIconThree,
+    backDate, backDescription,
+    backHighlightsTitle, backHighlights,
+    backLegacyTagline, backLegacyText,
+]);
 
     useEffect(() => {
         if (sidebarTab === "front" || sidebarTab === "back") {
             setSidebarTab(workingcard);
         }
     }, [workingcard, sidebarTab]);
-
-
-
-
-
-
 
     /******** Upload Image ********/
     async function handleUpload(e) {
@@ -522,35 +621,6 @@ export default function ProductCustomizer() {
     }
 
 
-
-    // const captureCardSide = async (side) => {
-    //     setworkingcard(side);
-    //     await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
-
-    //     // Hide Rnd drag handles before capture
-    //     const rndHandles = previewCardNodeRef.current?.querySelectorAll('[class*="react-resizable-handle"]');
-    //     rndHandles?.forEach(el => el.style.display = 'none');
-
-    //     // Remove dashed border from Rnd wrappers
-    //     const rndWrappers = previewCardNodeRef.current?.querySelectorAll('[style*="border"]');
-    //     const originalStyles = [];
-    //     rndWrappers?.forEach(el => {
-    //         originalStyles.push(el.style.border);
-    //         el.style.border = 'none';
-    //     });
-
-    //     const dataUrl = await captureNodeScreenshotForTranding(previewCardNodeRef.current);
-
-    //     // Restore styles
-    //     rndWrappers?.forEach((el, i) => el.style.border = originalStyles[i]);
-    //     rndHandles?.forEach(el => el.style.display = '');
-
-    //     return dataUrl;
-    // };
-
-
-    // start from here
-
     const captureCardSide = async (side) => {
         setworkingcard(side);
         await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
@@ -571,13 +641,12 @@ export default function ProductCustomizer() {
         );
     };
 
-
-
     const handleDeleteSlot = (slotId) => {
-        safeRemove(slotStorageKey(slotId));
+        idbDelete(slotStorageKey(slotId)); 
+        safeRemove(slotStorageKey(slotId)); 
+
         setSavedSlots(prev => prev.filter(s => s.id !== slotId));
 
-        // If deleting the slot currently being edited, reset canvas
         if (editingSlotId === slotId) {
             setEditingSlotId(null);
             resetCanvas();
@@ -588,95 +657,80 @@ export default function ProductCustomizer() {
 
 
     /******* Selected Layer Image Function ********/
-    const goToFinalView = async () => {
-        if (savedSlots.length < 1) {
-            toast.warn("Please save at least one design before checking out.");
-            return;
-        }
+    const goToFinalView = async (slotsOverride) => {
+    const slots = slotsOverride ?? savedSlotsRef.current;
 
-        setspinloading(true);
+    if (slots.length < 1) {
+        toast.warn("Please save at least one design before checking out.");
+        return;
+    }
 
-        try {
-            setActiveImage(null);
-            setActiveText(null);
-            await new Promise(r => setTimeout(r, 200));
+    setspinloading(true);
 
-            // Capture global back side
-            setworkingcard("back");
-            await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
-            const backPreview = await captureNodeClean(
+    try {
+        setActiveImage(null);
+        setActiveText(null);
+        await new Promise(r => setTimeout(r, 200));
+
+        setworkingcard("back");
+        await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
+        const backPreview = await captureNodeClean(
             previewCardNodeRef.current,
             captureNodeScreenshotForTranding
-            );
+        );
 
-            // Build FinalProduct entries — backend expects front+back pairs
-            const FinalProduct = [];
+        const FinalProduct = [];
 
-            for (const slot of savedSlots) {
+        for (const slot of slots) {
             const pairKey = crypto.randomUUID();
-
-            // Front entry
-            FinalProduct.push({
-                side:          "front",
-                image:         slot.previewDataUrl,
-                card_pair_key: pairKey,
-                name:          slot.snapshot.cardti || "Custom Design",
-            });
-
-            // Back entry (shared global back, same pairKey)
-            FinalProduct.push({
-                side:          "back",
-                image:         backPreview,
-                card_pair_key: pairKey,
-                name:          slot.snapshot.cardti || "Custom Design",
-            });
-            }
-
-            safeSet(customizationStorageKey, {
-                productId:      fetchingData?.id,
-                productSlug:    fetchingData?.slug,
-                savedAt:        Date.now(),
-                selectedPackage,
-                packageConfig,
-                slotIds:        savedSlots.map(s => s.id),
-            });
-
-            const product = {
-                id:                     generateUserId(),
-                productId:              fetchingData?.id,
-                productSlug:            fetchingData?.slug,
-                productName:            fetchingData?.name,
-                productType:            fetchingData?.type,
-                productUnitPrice:       fetchingData?.offer_price > 0
-                                            ? fetchingData?.offer_price
-                                            : fetchingData?.price,
-                productQuantity:        packageConfig.totalCards,
-                productImage:           fetchingData?.image,
-                productDescription:     fetchingData?.description,
-                selectedPackage,
-                packageConfig,
-                FinalProduct,                          
-                FinalProductImages:     [],
-                FinalPDf:               null,
-                customization_mode:     "trading",
-                customizationStorageKey: customizationStorageKey || null,
-            };
-
-            addToCart(product);
-            router.push("/my-cart/checkout");
-
-        } catch (err) {
-            console.error(err);
-            toast.error("Failed to prepare cart. Please try again.");
-        } finally {
-            setspinloading(false);
+            FinalProduct.push({ side: "front", image: slot.previewDataUrl, card_pair_key: pairKey, name: slot.snapshot.cardti || "Custom Design" });
+            FinalProduct.push({ side: "back",  image: backPreview,          card_pair_key: pairKey, name: slot.snapshot.cardti || "Custom Design" });
         }
-    };
 
+        // ✅ Write to IndexedDB instead of localStorage
+        await idbPut(customizationStorageKey, {
+            productId:      fetchingData?.id,
+            productSlug:    fetchingData?.slug,
+            savedAt:        Date.now(),
+            selectedPackage,
+            packageConfig,
+            slotIds:        savedSlots.map(s => s.id),
+        });
+
+        const product = {
+            id:                     generateUserId(),
+            productId:              fetchingData?.id,
+            productSlug:            fetchingData?.slug,
+            productName:            fetchingData?.name,
+            productType:            fetchingData?.type,
+            productUnitPrice:       fetchingData?.offer_price > 0
+                                        ? fetchingData?.offer_price
+                                        : fetchingData?.price,
+            productQuantity:        packageConfig.totalCards,
+            productImage:           fetchingData?.image,
+            productDescription:     fetchingData?.description,
+            selectedPackage,
+            packageConfig,
+            FinalProduct,
+            FinalProductImages:     [],
+            FinalPDf:               null,
+            customization_mode:     "trading",
+            customizationStorageKey: customizationStorageKey || null,
+        };
+
+        addToCart(product);
+        router.push("/my-cart/checkout");
+
+    } catch (err) {
+        console.error(err);
+        toast.error("Failed to prepare cart. Please try again.");
+    } finally {
+        setspinloading(false);
+    }
+};
     const resetCanvas = useCallback((keepTemplate = false) => {
         if (!keepTemplate) {
-            // Auto-select first template (your requirement #1)
-            const firstTemplate = frontImages?.[0]?.image || null;
+            const firstTemplate = frontImages?.[0]?.image ?? null;
             setBaseFront(firstTemplate);
         }
         setUploads([]);
@@ -691,108 +745,121 @@ export default function ProductCustomizer() {
         setlabelone(69);
         setlabeltwo(55);
         setlabelthree(78);
-        setacarddate("CLASS OF 2025");
+        setacarddate("CLASS OF 2026");
         setCardType("graduation");
         setAttrIconOne("/attribute-images/attribute_1.png");
         setAttrIconTwo("/attribute-images/attribute_2.png");
         setAttrIconThree("/attribute-images/attribute_3.png");
         setisblack(false);
-        }, [frontImages]);
+        setcardfinder(0); 
+    }, [frontImages]); 
+
+
 
 
     const handleSaveSlot = async () => {
-        if (!baseFront) {
-            toast.warn("Please select a front template first.");
-            return;
+    if (!baseFront) {
+        toast.warn("Please select a front template first.");
+        return null;
+    }
+    if (editingSlotId === null && savedSlotsRef.current.length >= packageConfig.designs) {
+        toast.warn(`Your ${packageConfig.name} package only allows ${packageConfig.designs} design(s).`);
+        return null;
+    }
+
+    setdoneloading(true);
+
+    try {
+        setworkingcard("front");
+        await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
+
+        const previewDataUrl = await captureNodeClean(
+            previewCardNodeRef.current,
+            captureNodeScreenshotForTranding
+        );
+
+        if (!previewDataUrl) {
+            toast.error("Could not capture card preview. Please try again.");
+            return null;
         }
 
-        if (editingSlotId === null && savedSlotsRef.current.length >= packageConfig.designs) {
-            toast.warn(`Your ${packageConfig.name} package only allows ${packageConfig.designs} design(s).`);
-            return;
-        }
+        const snapshot = {
+            baseFront, uploads, texts,
+            cardti, carddes,
+            name, name2, name3,
+            labelone, labeltwo, labelthree,
+            acarddate, cardType,
+            attrIconOne, attrIconTwo, attrIconThree,
+            isblack,
+        };
 
-        setdoneloading(true);
+        let updatedSlots;
 
-        try {
-            setworkingcard("front");
-            await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
-            const previewDataUrl = await captureNodeClean(
-                previewCardNodeRef.current,
-                captureNodeScreenshotForTranding
-            );
+        if (editingSlotId !== null) {
+            const updatedSlot = { id: editingSlotId, savedAt: Date.now(), previewDataUrl, snapshot };
 
-            if (!previewDataUrl) {
-                toast.error("Could not capture card preview. Please try again.");
-                return;
+            // ✅ IndexedDB instead of localStorage
+            await idbPut(slotStorageKey(editingSlotId), { savedAt: updatedSlot.savedAt, selectedPackage, previewDataUrl, snapshot });
+
+            updatedSlots = savedSlotsRef.current.map(s => s.id === editingSlotId ? updatedSlot : s);
+            setEditingSlotId(null);
+            toast.success("Design updated!");
+        } else {
+            const slotId  = crypto.randomUUID();
+            const savedAt = Date.now();
+            const newSlot = { id: slotId, savedAt, previewDataUrl, snapshot };
+
+            // ✅ IndexedDB instead of localStorage
+            const saved = await idbPut(slotStorageKey(slotId), { savedAt, selectedPackage, previewDataUrl, snapshot });
+            if (!saved) {
+                toast.error("Storage full — could not save design. Please try removing an existing design.");
+                return null;
             }
 
-            const snapshot = {
-                baseFront, uploads, texts,
-                cardti, carddes,
-                name, name2, name3,
+            updatedSlots = [...savedSlotsRef.current, newSlot];
+            toast.success(`Design ${updatedSlots.length} saved!`);
+        }
+
+        // Sync ref synchronously FIRST
+        savedSlotsRef.current = updatedSlots;
+
+        // Write main snapshot explicitly — also use IndexedDB for the main key
+        await idbPut(customizationStorageKey, {
+            productId:   fetchingData?.id,
+            productSlug: fetchingData?.slug || slug,
+            savedAt:     Date.now(),
+            cardfinder,  baseFront, baseBack,
+            uploads,     texts,     workingcard, isblack,
+            slotIds:     updatedSlots.map(s => s.id),
+            selectedPackage,
+            content: {
+                cardti, carddes, name, name2, name3,
                 labelone, labeltwo, labelthree,
                 acarddate, cardType,
                 attrIconOne, attrIconTwo, attrIconThree,
-                isblack,
-            };
+                backDate, backDescription,
+                backHighlightsTitle, backHighlights,
+                backLegacyTagline, backLegacyText,
+            },
+        });
 
-            if (editingSlotId !== null) {
-                // ── Update existing slot ────────────────────────────────────
-                const updatedSlot = {
-                    id:            editingSlotId,
-                    savedAt:       Date.now(),
-                    previewDataUrl,
-                    snapshot,
-                };
+        // Update React state
+        setSavedSlots(updatedSlots);
 
-                // Update localStorage slot key
-                safeSet(slotStorageKey(editingSlotId), {
-                    savedAt:        updatedSlot.savedAt,
-                    selectedPackage,
-                    previewDataUrl,
-                    snapshot,
-                });
+        // Reset canvas for next design
+        resetCanvas();
 
-                // Update in state — preserve position in array
-                setSavedSlots(prev =>
-                    prev.map(s => s.id === editingSlotId ? updatedSlot : s)
-                );
+        return updatedSlots;
 
-                setEditingSlotId(null);
-                toast.success("Design updated!");
+    } catch (err) {
+        console.error(err);
+        toast.error("Failed to save design. Please try again.");
+        return null;
+    } finally {
+        setdoneloading(false);
+    }
+};
 
-            } else {
-                // ── Save new slot ───────────────────────────────────────────
-                const slotId  = crypto.randomUUID();
-                const savedAt = Date.now();
-
-                const newSlot = {
-                    id: slotId,
-                    savedAt,
-                    previewDataUrl,
-                    snapshot,
-                };
-
-                safeSet(slotStorageKey(slotId), {
-                    savedAt,
-                    selectedPackage,
-                    previewDataUrl,
-                    snapshot,
-                });
-
-                setSavedSlots(prev => [...prev, newSlot]);
-                toast.success(`Design ${savedSlotsRef.current.length + 1} saved!`);
-            }
-
-            resetCanvas();
-
-        } catch (err) {
-            console.error(err);
-            toast.error("Failed to save design. Please try again.");
-        } finally {
-            setdoneloading(false);
-        }
-    };
 
     const renderIconPreview = (iconValue, altText) => {
         if (typeof iconValue === "string" && iconValue.startsWith("/attribute-images/")) {
@@ -1533,15 +1600,25 @@ export default function ProductCustomizer() {
                             </div>
                             
                         </div>
-                        {savedSlots.length >= 1 && (
-                                    <button
-                                        onClick={goToFinalView}
-                                        disabled={spinloading}
-                                        className="w-full bg-[#00bcff] hover:bg-[#00bcff] text-white text-lg font-semibold py-2.5 mt-1 rounded-lg transition flex items-center justify-center gap-2 disabled:opacity-60"
-                                    >
-                                        {spinloading ? "Preparing..." : "Next"}
-                                    </button>
-                                )}
+
+                        {savedSlots.length >= 0 && (
+                            <button
+                                onClick={handleNext}
+                                disabled={spinloading || doneloading || (!baseFront && !(savedSlots.length >= packageConfig.designs && editingSlotId === null))}
+                                className="w-full bg-[#00bcff] text-white text-lg font-semibold py-2.5 mt-1 rounded-lg transition flex items-center justify-center gap-2 disabled:opacity-60"
+                            >
+                                {doneloading || spinloading
+                                    ? "Please wait..."
+                                    : editingSlotId
+                                        ? "Update Design"
+                                        : savedSlots.length >= packageConfig.designs
+                                            ? "Go to Checkout"
+                                            : savedSlots.length >= packageConfig.designs - 1
+                                                ? `Save & Checkout (${savedSlots.length + 1}/${packageConfig.designs})`
+                                                : `Next (${savedSlots.length + 1}/${packageConfig.designs})`
+                                }
+                            </button>
+                        )}
                     </div>
                 </div>
             </div>

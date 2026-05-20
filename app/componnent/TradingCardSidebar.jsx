@@ -9,12 +9,12 @@ const TradingCardSidebar = ({
     packageConfig,
     onSaveSlot,
     onDeleteSlot,
-    onEditSlot,        // ← NEW
+    onEditSlot,     
     onCheckout,
     doneloading,
     spinloading,
     canSave,
-    editingSlotId,     // ← NEW
+    editingSlotId,   
 }) => {
     return (
         <div className="w-full border-b lg:border-r border-gray-200 bg-white h-full px-3 md:px-7 lg:px-8 py-3 z-20 shadow-sm flex flex-col">
@@ -28,7 +28,7 @@ const TradingCardSidebar = ({
             </h3>
 
             {/* Slot list */}
-            <div className="flex-1 overflow-y-auto scrollbar-hide space-y-2 bg-gray-50 rounded-xl border border-gray-100 shadow-inner p-2 min-h-[200px] max-h-[60vh]">
+            <div className="flex-1 overflow-y-auto scrollbar-hide space-y-2 bg-gray-50 rounded-xl border border-gray-100 shadow-inner p-2 min-h-[200px] max-h-[80vh]">
                 {savedSlots.length === 0 && (
                     <div className="h-full flex items-center justify-center text-xs text-gray-400 text-center py-8">
                         No designs saved yet.<br />Customize and save your first design.
@@ -41,7 +41,7 @@ const TradingCardSidebar = ({
                         <div
                             key={slot.id}
                             onClick={() => onEditSlot(slot)}
-                            className={`flex items-center gap-2 border rounded-lg p-2 shadow-sm cursor-pointer transition-all duration-200 ${
+                            className={`h-32 flex  gap-2 border rounded-lg p-2 shadow-sm cursor-pointer transition-all duration-200 ${
                                 isEditing
                                     ? "bg-sky-50 border-sky-400 ring-2 ring-sky-200"
                                     : "bg-white border-gray-200 hover:border-sky-300 hover:bg-sky-50"
@@ -51,15 +51,15 @@ const TradingCardSidebar = ({
                             <img
                                 src={slot.previewDataUrl}
                                 alt={`Design ${index + 1}`}
-                                className="w-10 h-14 object-cover rounded border border-gray-200 flex-shrink-0"
+                                className="w-20 h-30 object-cover rounded border border-gray-200 flex-shrink-0"
                             />
 
                             {/* Info */}
                             <div className="flex-1 min-w-0">
-                                <p className="text-xs font-medium text-gray-700 truncate">
+                                <p className="text-md font-medium text-gray-700 truncate">
                                     Design {index + 1}
                                 </p>
-                                <p className="text-[10px] text-gray-400 truncate">
+                                <p className="text-[12px] text-gray-400 truncate">
                                     {slot.snapshot.cardti}
                                 </p>
                                 {isEditing ? (
@@ -79,41 +79,11 @@ const TradingCardSidebar = ({
                                 className="flex-shrink-0 text-red-400 hover:text-red-600 transition p-1 rounded hover:bg-red-50"
                                 title="Remove design"
                             >
-                                <RxCross2 className="text-sm" />
+                                <RxCross2 className="text-md cursor-pointer" />
                             </button>
                         </div>
                     );
                 })}
-            </div>
-
-            {/* Save / Update button */}
-            <div className="mt-3">
-                {editingSlotId !== null ? (
-                    // Editing mode — show Update button
-                    <button
-                        onClick={onSaveSlot}
-                        disabled={doneloading || !canSave}
-                        className="w-full flex items-center justify-center gap-1 bg-sky-500 hover:bg-sky-600 text-white rounded-lg py-2 text-xs font-semibold transition disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                        {doneloading ? "Updating..." : "✓ Update Design"}
-                    </button>
-                ) : savedSlots.length < packageConfig.designs ? (
-                    // New slot mode — show Save button
-                    <button
-                        onClick={onSaveSlot}
-                        disabled={doneloading || !canSave}
-                        className="w-full flex items-center justify-center gap-1 border border-dashed border-gray-300 rounded-lg py-2 text-xs text-gray-500 hover:border-sky-400 hover:text-sky-500 transition disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                        <CiCirclePlus className="text-base" />
-                        {doneloading
-                            ? "Saving..."
-                            : `Save Design (${savedSlots.length + 1}/${packageConfig.designs})`}
-                    </button>
-                ) : (
-                    <div className="w-full text-center py-2 bg-emerald-50 border border-emerald-200 rounded-lg text-xs text-emerald-600 font-medium">
-                        ✓ All {packageConfig.designs} design(s) saved
-                    </div>
-                )}
             </div>
 
             {/* Checkout */}

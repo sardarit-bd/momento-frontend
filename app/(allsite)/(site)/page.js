@@ -13,7 +13,7 @@ const Homepage = () => {
       <Hero />
       <Category />
       <Info />
-      <Tradition />
+      {/* <Tradition /> */}
       <Trading />
       <Deckgame />
       <Cta />

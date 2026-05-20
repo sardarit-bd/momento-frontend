@@ -151,7 +151,7 @@ export default function MomentoLanding() {
                             Cards
                         </h1>
                         <p style={{ fontSize: "1.125rem", color: "#8B6B3D", lineHeight: 1.7, marginBottom: "0.75rem", fontWeight: 300, maxWidth: "32rem" }}>
-                            Create personalized card experiences for game nights, milestones, and unforgettable gifts — all in just a few minutes.
+                            Create premium personalized cards for game nights, milestones, gifts, and unforgettable memories — all in just a few minutes.
                         </p>
                         <p style={{ fontSize: "0.875rem", color: "rgba(139,107,61,0.7)", marginBottom: "2rem", fontWeight: 500 }}>
                             Perfect for birthdays, graduations, holidays, couples, and friends.
@@ -166,7 +166,7 @@ export default function MomentoLanding() {
                             <span>✦ Takes less than 2 minutes</span>
                         </div>
                         <div style={{ display: "flex", flexWrap: "wrap", gap: "1.5rem", paddingTop: "1.5rem", borderTop: "1px solid rgba(201,168,76,0.2)" }}>
-                            {["Easy to create", "Premium quality", "Made to be shared"].map((t) => (
+                            {["Easy to Customize", "Premium Quality", "Delivered to Your Door"].map((t) => (
                                 <div key={t} style={{ display: "flex", alignItems: "center", gap: "0.5rem", fontSize: "0.875rem", fontWeight: 500, color: "#1A1209" }}>
                                     <span style={{ color: "#C9A84C", fontSize: "1rem" }}>◈</span> {t}
                                 </div>
@@ -246,8 +246,8 @@ export default function MomentoLanding() {
                     <div className="scroll-reveal" style={{ textAlign: "center", marginBottom: "4rem" }}>
                         <div className="section-divider" style={{ marginBottom: "2rem" }} />
                         <h2 style={{ fontFamily: "'Playfair Display',serif", fontSize: "clamp(2rem,4vw,3rem)", fontWeight: 900, marginBottom: "1rem", color: "#1A1209" }}>Two Ways to Create<br />Your Cards</h2>
-                        <h4 style={{ color: "#8B6B3D", fontSize: "1.6rem", fontWeight: 300, marginBottom: "1rem" }}>Play with your people or capture a moment</h4>
-                        <p style={{ color: "#8B6B3D", fontSize: "1.125rem", fontWeight: 300 }}>Whether you want to play or preserve a moment — there&apos;s a format for you.</p>
+                        <h4 style={{ color: "#8B6B3D", fontSize: "1.6rem", fontWeight: 300, marginBottom: "1rem" }}>Play with your people or preserve a moment.</h4>
+                        <p style={{ color: "#8B6B3D", fontSize: "1.125rem", fontWeight: 300 }}>Personalized cards made for game nights, gifts, and meaningful memories.</p>
                     </div>
                     <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(300px,1fr))", gap: "2rem" }}>
                         {/* Portrait Deck */}
@@ -255,9 +255,9 @@ export default function MomentoLanding() {
                             <div style={{ position: "absolute", top: 0, right: 0, width: 192, height: 192, borderRadius: "50%", background: "radial-gradient(circle,#C9A84C,transparent)", opacity: 0.2, transform: "translate(30%,-30%)" }} />
                             <div style={{ position: "relative" }}>
                                 <div style={{ width: 56, height: 56, borderRadius: 16, display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "1.5rem", background: "linear-gradient(135deg,#C9A84C,#8b6b3d)", fontSize: "1.5rem" }}>🃏</div>
-                                <div style={{ fontSize: "0.7rem", fontWeight: 600, letterSpacing: "0.12em", textTransform: "uppercase", color: "#C9A84C", marginBottom: 8 }}>Portrait Deck</div>
-                                <h3 style={{ fontFamily: "'Playfair Display',serif", fontSize: "1.75rem", fontWeight: 900, marginBottom: "1rem", color: "#1A1209" }}>Playable &amp;<br />Personal</h3>
-                                <p style={{ color: "#8B6B3D", lineHeight: 1.7, marginBottom: "2rem" }}>A full playable card deck built from your people — designed for game nights and replay value.</p>
+                                <div style={{ fontSize: "0.7rem", fontWeight: 600, letterSpacing: "0.12em", textTransform: "uppercase", color: "#C9A84C", marginBottom: 8 }}>Momento Portrait Deck</div>
+                                <h3 style={{ fontFamily: "'Playfair Display',serif", fontSize: "1.75rem", fontWeight: 900, marginBottom: "1rem", color: "#1A1209" }}>Playable &amp; Personal</h3>
+                                <p style={{ color: "#8B6B3D", lineHeight: 1.7, marginBottom: "2rem" }}>A fully playable custom deck built around your favorite people — designed for game nights, inside jokes, memories, and replay value.</p>
                                 <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", marginBottom: "2rem" }}>
                                     {["Game Nights", "Friends", "Couples", "Family"].map(tag => (
                                         <span key={tag} style={{ padding: "4px 12px", borderRadius: 9999, fontSize: "0.75rem", fontWeight: 500, background: "rgba(26,18,9,0.06)", color: "rgba(26,18,9,0.6)" }}>{tag}</span>
@@ -271,9 +271,9 @@ export default function MomentoLanding() {
                             <div style={{ position: "absolute", top: 0, right: 0, width: 192, height: 192, borderRadius: "50%", background: "radial-gradient(circle,#C9A84C,transparent)", opacity: 0.1, transform: "translate(30%,-30%)" }} />
                             <div style={{ position: "relative" }}>
                                 <div style={{ width: 56, height: 56, borderRadius: 16, display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "1.5rem", background: "rgba(201,168,76,0.15)", border: "1px solid rgba(201,168,76,0.3)", fontSize: "1.5rem" }}>✨</div>
-                                <div style={{ fontSize: "0.7rem", fontWeight: 600, letterSpacing: "0.12em", textTransform: "uppercase", color: "#C9A84C", marginBottom: 8 }}>Momento Cards</div>
-                                <h3 style={{ fontFamily: "'Playfair Display',serif", fontSize: "1.75rem", fontWeight: 900, marginBottom: "1rem", color: "#F5EFE0" }}>Collectible &amp;<br />Giftable</h3>
-                                <p style={{ color: "rgba(245,239,224,0.6)", lineHeight: 1.7, marginBottom: "2rem" }}>Turn real moments into collectible cards — perfect for gifting or keeping forever.</p>
+                                <div style={{ fontSize: "0.7rem", fontWeight: 600, letterSpacing: "0.12em", textTransform: "uppercase", color: "#C9A84C", marginBottom: 8 }}>Momento Trading Cards</div>
+                                <h3 style={{ fontFamily: "'Playfair Display',serif", fontSize: "1.75rem", fontWeight: 900, marginBottom: "1rem", color: "#F5EFE0" }}>Collectible &amp; Giftable</h3>
+                                <p style={{ color: "rgba(245,239,224,0.6)", lineHeight: 1.7, marginBottom: "2rem" }}>Turn meaningful moments into collectible personalized cards designed for gifting, celebrating milestones, and keeping forever.</p>
                                 <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", marginBottom: "2rem" }}>
                                     {["Birthdays", "Milestones", "Gifts"].map(tag => (
                                         <span key={tag} style={{ padding: "4px 12px", borderRadius: 9999, fontSize: "0.75rem", fontWeight: 500, color: "rgba(201,168,76,0.6)", background: "rgba(201,168,76,0.1)", border: "1px solid rgba(201,168,76,0.2)" }}>{tag}</span>
@@ -296,9 +296,9 @@ export default function MomentoLanding() {
                     </div>
                     <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(260px,1fr))", gap: "2rem", marginBottom: "3.5rem" }}>
                         {[
-                            { n: "01", icon: <svg style={{ width: 20, height: 20, color: "#1A1209" }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5"><path d="M4 6h16M4 12h8m-8 6h16" /></svg>, title: "Choose your format", desc: "Pick between a full Portrait Deck or individual Momento Cards — whatever fits the moment." },
-                            { n: "02", icon: <svg style={{ width: 20, height: 20, color: "#1A1209" }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5"><path d="M15.232 5.232l3.536 3.536M9 13l6-6m2 2l-9 9H5v-3l9-9z" /></svg>, title: "Customize your cards", desc: "Upload photos, add names, and personalize every card exactly the way you want it." },
-                            { n: "03", icon: <svg style={{ width: 20, height: 20, color: "#1A1209" }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5"><circle cx="9" cy="21" r="1" /><circle cx="20" cy="21" r="1" /><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" /></svg>, title: "Preview and order", desc: "See exactly how it looks before you place the order. Then sit back — we handle the rest." },
+                            { n: "01", icon: <svg style={{ width: 20, height: 20, color: "#1A1209" }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5"><path d="M4 6h16M4 12h8m-8 6h16" /></svg>, title: "Choose Your Product", desc: "Pick between a Momento Portrait Deck or Momento Trading Cards." },
+                            { n: "02", icon: <svg style={{ width: 20, height: 20, color: "#1A1209" }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5"><path d="M15.232 5.232l3.536 3.536M9 13l6-6m2 2l-9 9H5v-3l9-9z" /></svg>, title: "Personalize Your Cards", desc: "Upload photos and customize your cards in minutes." },
+                            { n: "03", icon: <svg style={{ width: 20, height: 20, color: "#1A1209" }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5"><circle cx="9" cy="21" r="1" /><circle cx="20" cy="21" r="1" /><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" /></svg>, title: "Preview & Order", desc: "Preview your design, place your order, and we’ll deliver it straight to your door." },
                         ].map(({ n, icon, title, desc }, i) => (
                             <div key={n} className="scroll-reveal" style={{ position: "relative", transitionDelay: `${i * 0.15}s` }}>
                                 <div className="step-num" style={{ position: "absolute", top: -16, left: -8, pointerEvents: "none", userSelect: "none" }}>{n}</div>
@@ -329,7 +329,7 @@ export default function MomentoLanding() {
                             <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: "2rem" }}>
                                 <div>
                                     <div style={{ fontSize: "0.7rem", fontWeight: 600, letterSpacing: "0.12em", textTransform: "uppercase", color: "rgba(201,168,76,0.6)", marginBottom: 8 }}>Portrait Deck</div>
-                                    <h3 style={{ fontFamily: "'Playfair Display',serif", fontSize: "1.75rem", fontWeight: 900, color: "#F5EFE0" }}>Playable Deck</h3>
+                                    <h3 style={{ fontFamily: "'Playfair Display',serif", fontSize: "1.75rem", fontWeight: 900, color: "#F5EFE0" }}>Momento Portrait Deck</h3>
                                 </div>
                                 <div style={{ textAlign: "right" }}>
                                     <div style={{ fontFamily: "'Playfair Display',serif", fontSize: "2.25rem", fontWeight: 900, color: "#C9A84C" }}>$59</div>
@@ -344,7 +344,7 @@ export default function MomentoLanding() {
                                     </div>
                                 ))}
                             </div>
-                            <p style={{ color: "rgba(245,239,224,0.6)", lineHeight: 1.7, marginBottom: "1.5rem" }}>Turn your friends, family, or partner into a full playable deck — where every card feels personal.</p>
+                            <p style={{ color: "rgba(245,239,224,0.6)", lineHeight: 1.7, marginBottom: "1.5rem" }}>Turn your friends, family, or partner into a fully playable personalized deck where every card feels personal.</p>
                             <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", marginBottom: "2rem" }}>
                                 {["🎮 Game Nights", "👫 Couples", "👨‍👩‍👧 Family", "🎉 Friends"].map(tag => (
                                     <span key={tag} style={{ padding: "4px 12px", borderRadius: 9999, fontSize: "0.75rem", fontWeight: 500, color: "rgba(201,168,76,0.6)", background: "rgba(201,168,76,0.08)", border: "1px solid rgba(201,168,76,0.15)" }}>{tag}</span>
@@ -355,11 +355,11 @@ export default function MomentoLanding() {
 
                         {/* Momento Cards */}
                         <div className="scroll-reveal" style={{ display: "flex", flexDirection: "column", gap: "1rem", transitionDelay: "0.15s" }}>
-                            <div style={{ fontSize: "0.7rem", fontWeight: 600, letterSpacing: "0.12em", textTransform: "uppercase", color: "rgba(201,168,76,0.6)", padding: "0 0.5rem", marginBottom: 8 }}>Momento Cards</div>
+                            <div style={{ fontSize: "0.7rem", fontWeight: 600, letterSpacing: "0.12em", textTransform: "uppercase", color: "rgba(201,168,76,0.6)", padding: "0 0.5rem", marginBottom: 8 }}>Momento Trading Cards</div>
                             {[
                                 { emoji: "🎴", title: "Momento Single", desc: "One custom moment • Perfect for a simple gift", price: "$29", badge: null, featured: false },
                                 { emoji: "🎁", title: "Momento Trio", desc: "Three meaningful moments • Great for storytelling", price: "$49", badge: "⭐ Most Popular", featured: true },
-                                { emoji: "📦", title: "Momento Collection", desc: "Six custom moments • Only $13 per moment", price: "$79", badge: "🔥 Best Value", featured: false, sub: "Includes full printed card set" },
+                                { emoji: "📦", title: "Momento Collection", desc: "Six personalized moments • Only $13 per moment", price: "$79", badge: "🔥 Best Value", featured: false, sub: "Includes full printed card set" },
                             ].map(({ emoji, title, desc, price, badge, featured, sub }) => (
                                 <div key={title} className={`price-card${featured ? " featured" : ""}`} style={{ borderRadius: "1rem", padding: "1.5rem", display: "flex", alignItems: "center", gap: "1.25rem", position: "relative", overflow: "hidden" }}>
                                     {badge && <div style={{ position: "absolute", top: 12, right: 12, padding: "4px 10px", borderRadius: 9999, fontSize: "0.7rem", fontWeight: 700, letterSpacing: "0.05em", ...(featured ? { background: "linear-gradient(135deg,#C9A84C,#E8C96A)", color: "#1A1209" } : { background: "rgba(201,168,76,0.2)", border: "1px solid rgba(201,168,76,0.3)", color: "#F5EFE0" }) }}>{badge}</div>}
@@ -388,8 +388,8 @@ export default function MomentoLanding() {
                     </div>
                     <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(280px,1fr))", gap: "2rem", marginBottom: "3rem" }}>
                         {[
-                            { emoji: "🎮", title: "Fun & Connection", tags: ["🃏 Game Nights", "💑 Couples", "👨‍👩‍👧 Family"], desc: "Bring people together around the table with cards that feel like inside jokes in physical form.", delay: "0s" },
-                            { emoji: "🎁", title: "Milestones & Gifts", tags: ["🎓 Graduation", "🎂 Birthdays", "🎄 Holidays"], desc: "Give something that actually means something — a gift they'll hold onto and talk about for years.", delay: "0.15s" },
+                            { emoji: "🎮", title: "Fun & Connection", tags: ["🃏 Game Nights", "💑 Couples", "👨‍👩‍👧 Family"], desc: "Bring people together around personalized cards built from inside jokes, memories, and moments that actually mean something.", delay: "0s" },
+                            { emoji: "🎁", title: "Milestones & Gifts", tags: ["🎓 Graduation", "🎂 Birthdays", "🎄 Holidays"], desc: "Turn memories into something people can actually hold onto.", delay: "0.15s" },
                         ].map(({ emoji, title, tags, desc, delay }) => (
                             <div key={title} className="scroll-reveal card-ui" style={{ borderRadius: "1.5rem", padding: "2.5rem", position: "relative", overflow: "hidden", transitionDelay: delay }}>
                                 <div style={{ position: "absolute", inset: 0, opacity: 0.05, background: "radial-gradient(ellipse at top right,#C9A84C,transparent)" }} />
@@ -404,8 +404,33 @@ export default function MomentoLanding() {
                             </div>
                         ))}
                     </div>
-                    <div className="scroll-reveal" style={{ textAlign: "center" }}>
-                        <button className="btn-outline" style={{ padding: "1rem 2.5rem", borderRadius: 9999, fontSize: "1rem" }}>Create Yours →</button>
+                    <div
+                    className="scroll-reveal"
+                    style={{
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        gap: "1rem",
+                        flexWrap: "wrap",
+                        width: "100%",
+                        textAlign: "center",
+                    }}
+                    >
+                        <button className="btn-primary" style={{ padding: "1rem 2.5rem", borderRadius: 9999, fontSize: "1rem", border: "none" }}>
+                            Create Your Deck
+                        </button>
+
+                        <button
+                            className="btn-outline"
+                            style={{
+                            padding: "1rem 2.5rem",
+                            borderRadius: "9999px",
+                            fontSize: "1rem",
+                            minWidth: "220px",
+                            }}
+                        >
+                            Create a Momento
+                        </button>
                     </div>
                 </div>
             </section>
@@ -420,7 +445,7 @@ export default function MomentoLanding() {
                             This Isn&apos;t<br /><em className="gold-shimmer" style={{ fontStyle: "normal" }}>Just Cards</em>
                         </h2>
                         <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: "2rem", marginTop: "2rem" }}>
-                            {["Fully personalized", "Made to be shared", "Built for real moments"].map(t => (
+                            {["Inside jokes you can shuffle", "Memories you can hold onto", "Gifts people actually keep"].map(t => (
                                 <div key={t} style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
                                     <div style={{ width: 32, height: 32, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", background: "linear-gradient(135deg,#C9A84C,#a07830)" }}>
                                         <svg style={{ width: 16, height: 16, color: "#1A1209" }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5"><polyline points="20 6 9 17 4 12" /></svg>
@@ -436,7 +461,7 @@ export default function MomentoLanding() {
                             <div>
                                 <div style={{ fontSize: "0.7rem", fontWeight: 600, letterSpacing: "0.12em", textTransform: "uppercase", color: "#C9A84C", marginBottom: "1rem" }}>Quality</div>
                                 <h3 style={{ fontFamily: "'Playfair Display',serif", fontSize: "clamp(1.75rem,3vw,2.5rem)", fontWeight: 900, color: "#F5EFE0", marginBottom: "1.5rem" }}>Made to Be Played,<br />Kept, and Gifted</h3>
-                                <p style={{ color: "rgba(245,239,224,0.5)", lineHeight: 1.7, marginBottom: "2rem" }}>Every deck and card is printed on premium stock built to last — whether it&apos;s being shuffled on a game night or kept as a keepsake forever.</p>
+                                <p style={{ color: "rgba(245,239,224,0.5)", lineHeight: 1.7, marginBottom: "2rem" }}>Every Momento product is printed on premium card stock designed to feel collectible, durable, and worth holding onto forever.</p>
                                 <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
                                     {[["Premium card stock", "Thick, satisfying, built to last"], ["Durable finish", "Scratch and smudge resistant coating"], ["High-quality print", "Vibrant, true-to-life colors every time"]].map(([title, sub]) => (
                                         <div key={title} style={{ display: "flex", alignItems: "center", gap: "1rem", padding: "1rem", borderRadius: 12, background: "rgba(201,168,76,0.05)", border: "1px solid rgba(201,168,76,0.1)" }}>
@@ -496,10 +521,10 @@ export default function MomentoLanding() {
                         Create Something<br />They&apos;ll Actually<br />
                         <span className="gold-shimmer">Remember</span>
                     </h2>
-                    <p style={{ color: "#8B6B3D", fontSize: "1.25rem", fontWeight: 300, marginBottom: "3rem", maxWidth: "28rem", margin: "0 auto 3rem" }}>Real people. Real moments. Real reactions.</p>
+                    <p style={{ color: "#8B6B3D", fontSize: "1.25rem", fontWeight: 300, marginBottom: "3rem", maxWidth: "28rem", margin: "0 auto 3rem" }}>Fast & Easy Ordering — Customize your cards in minutes and have them delivered straight to your door.</p>
                     <div style={{ display: "flex", flexWrap: "wrap", gap: "1.25rem", justifyContent: "center", marginBottom: "3rem" }}>
-                        <button className="btn-primary" style={{ padding: "1.25rem 3rem", borderRadius: 9999, fontSize: "1.125rem", border: "none", boxShadow: "0 20px 60px rgba(201,168,76,0.3)" }}>Create Your Deck</button>
-                        <button className="btn-outline" style={{ padding: "1.25rem 3rem", borderRadius: 9999, fontSize: "1.125rem" }}>Create Your Momento</button>
+                        <button className="btn-primary" style={{ padding: "1.25rem 3rem", borderRadius: 9999, fontSize: "1.125rem", border: "none", boxShadow: "0 20px 60px rgba(201,168,76,0.3)" }}>Explore Cards</button>
+                        <button className="btn-outline" style={{ padding: "1.25rem 3rem", borderRadius: 9999, fontSize: "1.125rem" }}>Start Creating</button>
                     </div>
                     <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "0.75rem", fontSize: "0.875rem", color: "rgba(139,107,61,0.5)", flexWrap: "wrap" }}>
                         <span>✦ No design skills needed</span>
@@ -514,7 +539,7 @@ export default function MomentoLanding() {
             {/* FOOTER */}
             <footer className="ink-section" style={{ padding: "2.5rem 1.5rem", textAlign: "center" }}>
                 <div style={{ fontFamily: "'Playfair Display',serif", fontWeight: 700, fontSize: "1.25rem", color: "#C9A84C", marginBottom: 8 }}>Momento<span style={{ color: "rgba(201,168,76,0.5)" }}>.</span></div>
-                <p style={{ color: "rgba(245,239,224,0.25)", fontSize: "0.75rem", letterSpacing: "0.05em" }}>© 2025 Momento. All rights reserved.</p>
+                <p style={{ color: "rgba(245,239,224,0.25)", fontSize: "0.75rem", letterSpacing: "0.05em" }}>© 2026 Momento. All rights reserved.</p>
             </footer>
         </div>
     );

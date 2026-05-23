@@ -20,6 +20,9 @@ import captureNodeScreenshotForTranding from "@/utilis/helper/captureNodeScreens
 import ImageResize from "@/utilis/helper/ImageResize";
 import captureNodeClean from "@/utilis/helper/captureNodeClean";
 import SpinLoader from "../../../../../componnent/SpingLoader";
+import useboxcartstore from "@/store/useboxcartstore";
+import TradingBoxPreview from "@/app/componnent/TradingBoxPreview/TradingBoxPreview";
+import domtoimage from 'dom-to-image-more';
 
 const fonts = ["Arial", "Poppins", "Times New Roman", "Courier New", "Comic Sans MS"];
 
@@ -132,6 +135,7 @@ export default function ProductCustomizer() {
     const searchParams   = useSearchParams();
     const selectedPackage = searchParams.get("package");
     const [editingSlotId, setEditingSlotId] = useState(null);
+    const { setboxs } = useboxcartstore();
 
     const safeLocalStorageSet = (key, value) => {
         try {
@@ -249,13 +253,36 @@ export default function ProductCustomizer() {
     const customizationStorageKey = slug ? `tradingCustomization:${slug}` : null;
     const hasHydratedFromStorage = useRef(false);
     const canPersistCustomization = useRef(false);
+    
 
     const previewCardNodeRef = useRef(null);
+    const tradingBoxPreviewRef = useRef(null);
+
+    const captureTradingBox = async () => {
+    if (!tradingBoxPreviewRef.current) return null;
+    try {
+        const dataUrl = await domtoimage.toPng(tradingBoxPreviewRef.current, {
+            width:  tradingBoxPreviewRef.current.offsetWidth,
+            height: tradingBoxPreviewRef.current.offsetHeight,
+            style:  { transform: "scale(1)" },
+        });
+        const img = new window.Image();
+        await new Promise((resolve) => { img.onload = resolve; img.src = dataUrl; });
+        const resized = document.createElement("canvas");
+        resized.width  = 2325;
+        resized.height = 1950;
+        const ctx = resized.getContext("2d");
+        ctx.drawImage(img, 0, 0, 2325, 1950);
+        return resized.toDataURL("image/png");
+    } catch (err) {
+        console.error("Trading box capture failed:", err);
+        return null;
+    }
+};
 
     const [smallconOpen, setsmallconOpen] = useState(false);
     const [sidebarTab, setSidebarTab] = useState("front");
     const [isCardTypeOpen, setIsCardTypeOpen] = useState(false);
-
 
     // replace these with real image URLs or keep as keys and map to your assets
     const [frontImages, setfrontImages] = useState(null);
@@ -665,6 +692,16 @@ export default function ProductCustomizer() {
         return;
     }
 
+    if (!cardti.trim()) {
+        toast.warn("Please enter a Pack Title for your box.");
+        return;
+    }
+
+    if (!carddes.trim()) {
+        toast.warn("Please enter a name in the Created For field.");
+        return;
+    }
+
     setspinloading(true);
 
     try {
@@ -717,6 +754,12 @@ export default function ProductCustomizer() {
             customization_mode:     "trading",
             customizationStorageKey: customizationStorageKey || null,
         };
+        
+        const composedBoxImage = await captureTradingBox();
+        setboxs([{
+            BoxImage: composedBoxImage || "/tradingbox.png",
+            bfor: "trading",
+        }]);
 
         addToCart(product);
         router.push("/my-cart/checkout");
@@ -1622,6 +1665,15 @@ export default function ProductCustomizer() {
                     </div>
                 </div>
             </div>
+            {/* Hidden trading box composite — always mounted so ref is populated at capture time */}
+            <div className="absolute opacity-0 pointer-events-none" style={{ zIndex: -1 }}>
+                <TradingBoxPreview
+                    ref={tradingBoxPreviewRef}
+                    packTitle={cardti}
+                    createdFor={carddes}
+                />
+            </div>
+
             <ToastContainer position="bottom-center" />
         </div>
     );

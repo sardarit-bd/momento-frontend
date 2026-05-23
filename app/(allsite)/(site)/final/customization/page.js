@@ -154,7 +154,7 @@ const captureAndResizeBox = async () => {
                                                 width: `${Math.min(22, 90 / characterImages.length)}%`,
                                                 aspectRatio: '1 / 1',
                                                 borderRadius: '50%',
-                                                marginLeft: idx === 0 ? '0' : '-4px', // ← controls overlap, 0 = adjacent, negative = overlap
+                                                marginLeft: idx === 0 ? '0' : '-4px',
                                             }}
                                         >
                                             <img

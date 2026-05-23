@@ -11,7 +11,7 @@ const About = () => {
             <Two />
             <DesignedForPlay />
             <Four />
-            <Five />
+            {/* <Five /> */}
         </div>
     )
 }

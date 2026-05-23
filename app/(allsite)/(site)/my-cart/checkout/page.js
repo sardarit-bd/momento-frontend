@@ -296,14 +296,41 @@ export default function CheckoutPage() {
     );
   };
 
-  const getItemPreviewCards = (item) => {
-    if (Array.isArray(item?.FinalProduct) && item.FinalProduct.some(isDeckCustomizedCard)) {
-      return item.FinalProduct
-        .filter(isDeckCustomizedCard)
-        .map((card) => ({ type: "deck", card }));
-    }
+  // const getItemPreviewCards = (item) => {
+  //   if (Array.isArray(item?.FinalProduct) && item.FinalProduct.some(isDeckCustomizedCard)) {
+  //     return item.FinalProduct
+  //       .filter(isDeckCustomizedCard)
+  //       .map((card) => ({ type: "deck", card }));
+  //   }
 
-    return getItemPreviewImages(item).map((src) => ({ type: "image", src }));
+  //   return getItemPreviewImages(item).map((src) => ({ type: "image", src }));
+  // };
+
+  const getItemPreviewCards = (item) => {
+      // ── Deck card: has editedCard/selectedLayers structure ──
+      if (Array.isArray(item?.FinalProduct) && item.FinalProduct.some(isDeckCustomizedCard)) {
+          return item.FinalProduct
+              .filter(isDeckCustomizedCard)
+              .map((card) => ({ type: "deck", card }));
+      }
+
+      // ── Trading card: has {side, image, card_pair_key} structure ──
+      if (item?.customization_mode === "trading" && Array.isArray(item?.FinalProduct)) {
+          const fronts = item.FinalProduct
+              .filter(c => c?.side === "front" && c?.image)
+              .map(c => ({ type: "image", src: c.image }));
+
+          const back = item.FinalProduct
+              .find(c => c?.side === "back" && c?.image);
+
+          const cards = [...fronts];
+          if (back) cards.push({ type: "image", src: back.image });
+
+          if (cards.length > 0) return cards;
+      }
+
+      // ── Fallback ──
+      return getItemPreviewImages(item).map((src) => ({ type: "image", src }));
   };
 
   // Calculations
@@ -361,49 +388,71 @@ export default function CheckoutPage() {
     }
   };
 
-  const normalizeTradingFinalProduct = async (item) => {
-    const snapshot = getSavedCustomization(item);
-    const snapshotPreviews = [snapshot?.previews?.front, snapshot?.previews?.back].filter(Boolean);
-    if (snapshotPreviews.length > 0) {
-      const front = await ensureImageDataUrl(snapshotPreviews[0]);
-      const back = await ensureImageDataUrl(snapshotPreviews[1] || snapshotPreviews[0]);
-      return [
-        front ? { side: "front", image: front } : null,
-        back ? { side: "back", image: back } : null,
-      ].filter(Boolean);
-    }
+  // const normalizeTradingFinalProduct = async (item) => {
+  //   const snapshot = getSavedCustomization(item);
+  //   const snapshotPreviews = [snapshot?.previews?.front, snapshot?.previews?.back].filter(Boolean);
+  //   if (snapshotPreviews.length > 0) {
+  //     const front = await ensureImageDataUrl(snapshotPreviews[0]);
+  //     const back = await ensureImageDataUrl(snapshotPreviews[1] || snapshotPreviews[0]);
+  //     return [
+  //       front ? { side: "front", image: front } : null,
+  //       back ? { side: "back", image: back } : null,
+  //     ].filter(Boolean);
+  //   }
 
+  //   const sourceCards = Array.isArray(item?.FinalProduct) ? item.FinalProduct : [];
+  //   const normalized = [];
+
+  //   for (let index = 0; index < sourceCards.length; index += 1) {
+  //     const card = sourceCards[index];
+  //     const imageSource =
+  //       typeof card === "string"
+  //         ? card
+  //         : card?.image || card?.baseImage || card?.src || null;
+  //     const image = await ensureImageDataUrl(imageSource);
+  //     if (!image) continue;
+
+  //     const side =
+  //       card && typeof card === "object" && card?.side
+  //         ? card.side
+  //         : index === sourceCards.length - 1
+  //           ? "back"
+  //           : "front";
+
+  //     normalized.push({
+  //       rank,
+  //       image,
+  //       name: card?.name ?? null,
+  //     });
+  //   }
+
+  //   if (normalized.some((entry) => entry.side === "back")) return normalized;
+  //   const backFallback = await ensureImageDataUrl(item?.FinalProductImages?.[1] || item?.FinalProductImages?.[0]);
+  //   if (backFallback) normalized.push({ side: "back", image: backFallback });
+  //   return normalized;
+  // };
+
+  const normalizeTradingFinalProduct = async (item) => {
+    // Trading card FinalProduct already has {side, image, card_pair_key}
+    // image was captured as base64 dataUrl at save time — use it directly
     const sourceCards = Array.isArray(item?.FinalProduct) ? item.FinalProduct : [];
+
     const normalized = [];
 
-    for (let index = 0; index < sourceCards.length; index += 1) {
-      const card = sourceCards[index];
-      const imageSource =
-        typeof card === "string"
-          ? card
-          : card?.image || card?.baseImage || card?.src || null;
-      const image = await ensureImageDataUrl(imageSource);
-      if (!image) continue;
+    for (const card of sourceCards) {
+        if (!card?.side || !card?.image) continue;
 
-      const side =
-        card && typeof card === "object" && card?.side
-          ? card.side
-          : index === sourceCards.length - 1
-            ? "back"
-            : "front";
-
-      normalized.push({
-        rank,
-        image,
-        name: card?.name ?? null,
-      });
+        // image is already a base64 dataUrl from captureNodeClean
+        normalized.push({
+            side:          card.side,
+            image:         card.image,
+            card_pair_key: card.card_pair_key ?? null,
+            name:          card.name ?? null,
+        });
     }
 
-    if (normalized.some((entry) => entry.side === "back")) return normalized;
-    const backFallback = await ensureImageDataUrl(item?.FinalProductImages?.[1] || item?.FinalProductImages?.[0]);
-    if (backFallback) normalized.push({ side: "back", image: backFallback });
     return normalized;
-  };
+};
 
   const normalizeDeckFinalProduct = async (item) => {
     const sourceCards = Array.isArray(item?.FinalProduct) ? item.FinalProduct : [];
@@ -692,6 +741,25 @@ export default function CheckoutPage() {
                     </div>
                 </div>
             )}
+
+            {/* Trading Card Box Preview — completely isolated from deck card logic */}
+            {cart.some((item) => item.productType === "trading") &&
+              boxs?.some((b) => b?.bfor === "trading") && (
+                <div className="mb-6">
+                  <h3 className="text-sm font-semibold text-gray-700 mb-3">
+                    Trading Card Box Preview
+                  </h3>
+                  <div className="flex flex-wrap gap-3">
+                    <div className="w-[160px] sm:w-[190px] md:w-[220px] rounded-xl border border-gray-200 bg-white p-2 shadow-sm">
+                      <img
+                        className="h-auto w-full object-contain"
+                        src={boxs.find((b) => b?.bfor === "trading")?.BoxImage}
+                        alt="trading-card-box-preview"
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
 
             <div className="border-t border-gray-100 pt-4 space-y-3">
               <div className="flex justify-between text-sm text-gray-600">

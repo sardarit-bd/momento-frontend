@@ -45,6 +45,7 @@ const AdminOrders = () => {
                 setIsPageLoading(true);
             }
             const response = await MakeGet(`api/admin/orders?page=${page}`, token);
+            console.log("RAW orders response:", response);
 
             const payload = response?.data || {};
             setallorders(payload?.orders || []);
@@ -132,21 +133,46 @@ function OrderTable({ allorders, pagination, onPageChange, token, isPageLoading 
     const openOrderModal = async (order, type) => {
         setmodaltype(type);
         setismodalopen(true);
-        setmodalinfo(order);
+        setmodalinfo(null); // reset first
 
-        const needsDetailFetch = type === "pdf" ? !hasPdfData(order) : !hasPngData(order);
-        if (!needsDetailFetch) {
-            setModalLoading(false);
+        if (type === "receipt") {
+            if (!order?.tgc_receipt_id) {
+                setmodalinfo({ _error: "No TGC receipt found for this order." });
+                return;
+            }
+            setModalLoading(true);
+            try {
+                const res = await MakeGet(`api/tgc/receipts/${order.tgc_receipt_id}`, token);
+                setmodalinfo(res?.data?.data || res?.data || {});
+
+                const receipt = res?.data?.data || res?.data || {};
+
+                if (receipt?.shipping_address_id) {
+                    const addrRes = await MakeGet(`api/tgc/addresses/${receipt.shipping_address_id}`, token);
+                    receipt._shippingAddress = addrRes?.data?.data || addrRes?.data || null;
+                }
+
+                setmodalinfo(receipt);
+
+            } catch (error) {
+                console.error("Failed to fetch receipt:", error);
+                setmodalinfo({ _error: "Failed to load receipt." });
+            } finally {
+                setModalLoading(false);
+            }
             return;
         }
+
+        // existing pdf/png logic unchanged
+        setmodalinfo(order);
+        const needsDetailFetch = type === "pdf" ? !hasPdfData(order) : !hasPngData(order);
+        if (!needsDetailFetch) { setModalLoading(false); return; }
 
         setModalLoading(true);
         try {
             const detailRes = await MakeGet(`api/admin/orders/${order.id}`, token);
             const detailData = detailRes?.data?.order || detailRes?.data;
-            if (detailData) {
-                setmodalinfo(detailData);
-            }
+            if (detailData) setmodalinfo(detailData);
         } catch (error) {
             console.error("Failed to load order details:", error);
         } finally {
@@ -216,8 +242,8 @@ function OrderTable({ allorders, pagination, onPageChange, token, isPageLoading 
                                 </td>
 
                                 <td className="px-4 py-3 text-center">
-                                    <button onClick={() => { openOrderModal(order, "pdf"); }} className="text-blue-600 hover:underline text-sm mr-3 cursor-pointer">
-                                        View PDF
+                                    <button onClick={() => { openOrderModal(order, "receipt"); }} className="text-blue-600 hover:underline text-sm mr-3 cursor-pointer">
+                                        Receipt
                                     </button>
                                     <button onClick={() => { openOrderModal(order, "png"); }} className="text-blue-600 hover:underline text-sm mr-3 cursor-pointer">
                                         View PNG
@@ -333,7 +359,9 @@ function ImageDownloadInfo({ modalinfo, modaltype }) {
 
     return (
         <div className="w-full h-full rounded-xl bg-white">
-            {modaltype === "pdf" ? (
+            { modaltype === "receipt" ? (        
+                <ReceiptView data={modalinfo} />
+            ) : modaltype === "pdf" ? (
                 <PDFViewers fulldata={modalinfo} url={pdfUrl} />
             ) : (
                 <div className="w-full h-full overflow-y-auto p-6 bg-slate-50 space-y-8">
@@ -399,6 +427,158 @@ function ImageDownloadInfo({ modalinfo, modaltype }) {
 
                 </div>
             )}
+        </div>
+    );
+}
+
+
+function ReceiptView({ data }) {
+
+    console.log("Receipt data keys:", Object.keys(data ?? {}));
+    console.log("Shipping address:", data?.shipping_address);
+    console.log("Full receipt data:", JSON.stringify(data, null, 2));
+
+    if (!data || data?._error) {
+        return (
+            <div className="flex items-center justify-center h-full text-red-500 text-sm">
+                {data?._error || "No receipt data available."}
+            </div>
+        );
+    }
+
+    const items = data?.packing_list?.[0]?.packing_list
+        ? Object.entries(data.packing_list[0].packing_list).map(([name, qty]) => ({ name, qty }))
+        : [];
+
+    const subtotal        = parseFloat(data?.subtotal        ?? 0);
+    const shippingCost    = parseFloat(data?.shipping_cost   ?? 0);
+    const handlingFee     = parseFloat(data?.handling_fee    ?? 0);
+    const insuranceCost   = parseFloat(data?.insurance_cost  ?? 0);
+    const total           = parseFloat(data?.total           ?? 0);
+    const shopCreditUsed  = parseFloat(data?.shop_credit_used ?? 0);
+    const grandTotal      = parseFloat(data?.grand_total     ?? 0);
+    const shippingMethod  = data?.shipping_method ?? "Standard Shipping";
+
+    const shipping    = data?._shippingAddress ?? {};
+    const shipName    = shipping?.name          ?? data?.name     ?? "";
+    const shipCompany = shipping?.company       ?? "";
+    const shipAddr1   = shipping?.address1      ?? "";
+    const shipAddr2   = shipping?.address2      ?? "";
+    const shipCity    = shipping?.city          ?? "";
+    const shipState   = shipping?.state         ?? "";
+    const shipZip     = shipping?.postal_code   ?? "";
+    const shipCountry = shipping?.country       ?? "";
+    const shipPhone   = shipping?.phone_number  ?? "";
+
+    const fmt = (n) => `$${Math.abs(n).toFixed(2)}`;
+
+    return (
+        <div className="w-full h-full overflow-y-auto bg-white p-8 font-sans text-sm text-gray-800">
+
+            {/* Header */}
+            <h1 className="text-2xl font-bold text-gray-900 mb-1">Thank You For Your Purchase!</h1>
+            <p className="text-gray-600 mb-6">We really appreciate your business. Please tell your friends about us.</p>
+
+            {/* Items Table */}
+            <table className="w-full border border-gray-300 mb-6 text-sm">
+                <thead>
+                    <tr className="border-b border-gray-300">
+                        <th className="text-left px-3 py-2 font-semibold">Name</th>
+                        <th className="text-center px-3 py-2 font-semibold">Quantity</th>
+                        <th className="text-right px-3 py-2 font-semibold">Price Each</th>
+                        <th className="text-right px-3 py-2 font-semibold">Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {items.length > 0 ? items.map((item, i) => (
+                        <tr key={i} className="border-b border-gray-200">
+                            <td className="px-3 py-2 text-blue-600">{item.name}</td>
+                            <td className="px-3 py-2 text-center">{item.qty}</td>
+                            <td className="px-3 py-2 text-right">{fmt(subtotal)}</td>
+                            <td className="px-3 py-2 text-right">{fmt(subtotal * item.qty)}</td>
+                        </tr>
+                    )) : (
+                        <tr className="border-b border-gray-200">
+                            <td className="px-3 py-2 text-blue-600">{data?.id}</td>
+                            <td className="px-3 py-2 text-center">1</td>
+                            <td className="px-3 py-2 text-right">{fmt(subtotal)}</td>
+                            <td className="px-3 py-2 text-right">{fmt(subtotal)}</td>
+                        </tr>
+                    )}
+
+                    {/* Subtotal */}
+                    <tr className="border-b border-gray-300 bg-white">
+                        <td colSpan={3} className="px-3 py-2 font-bold">Subtotal</td>
+                        <td className="px-3 py-2 text-right font-bold">{fmt(subtotal)}</td>
+                    </tr>
+
+                    {/* Shipping */}
+                    <tr className="border-b border-gray-200 bg-gray-50">
+                        <td colSpan={3} className="px-3 py-2">Shipping Method: {shippingMethod}</td>
+                        <td className="px-3 py-2 text-right">{fmt(shippingCost)}</td>
+                    </tr>
+
+                    {/* Handling */}
+                    {handlingFee > 0 && (
+                        <tr className="border-b border-gray-200 bg-gray-50">
+                            <td colSpan={3} className="px-3 py-2">Handling Fee</td>
+                            <td className="px-3 py-2 text-right">{fmt(handlingFee)}</td>
+                        </tr>
+                    )}
+
+                    {/* Insurance */}
+                    {insuranceCost > 0 && (
+                        <tr className="border-b border-gray-200 bg-gray-50">
+                            <td colSpan={3} className="px-3 py-2">Shipping Insurance</td>
+                            <td className="px-3 py-2 text-right">{fmt(insuranceCost)}</td>
+                        </tr>
+                    )}
+
+                    {/* Total */}
+                    <tr className="border-b border-gray-300 bg-white">
+                        <td colSpan={3} className="px-3 py-2 font-bold">Total</td>
+                        <td className="px-3 py-2 text-right font-bold">{fmt(total)}</td>
+                    </tr>
+
+                    {/* Shop Credit */}
+                    {shopCreditUsed > 0 && (
+                        <tr className="border-b border-gray-200 bg-gray-50">
+                            <td colSpan={3} className="px-3 py-2">Shop Credit</td>
+                            <td className="px-3 py-2 text-right text-gray-800">-{fmt(shopCreditUsed)}</td>
+                        </tr>
+                    )}
+
+                    {/* Refunds */}
+                    {grandTotal < 0 && (
+                        <tr className="border-b border-gray-200 bg-gray-50">
+                            <td colSpan={3} className="px-3 py-2">Refunds Applied</td>
+                            <td className="px-3 py-2 text-right">-{fmt(Math.abs(grandTotal))}</td>
+                        </tr>
+                    )}
+
+                    {/* Grand Total */}
+                    <tr className="bg-white">
+                        <td colSpan={3} className="px-3 py-2 font-bold">Grand Total</td>
+                        <td className="px-3 py-2 text-right font-bold">
+                            {grandTotal < 0 ? `-${fmt(grandTotal)}` : fmt(grandTotal)}
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            {/* Ship To */}
+            <h2 className="text-xl font-bold text-gray-900 mb-2">Ship To</h2>
+            <div className="text-gray-700 leading-6">
+                {shipName    && <p>{shipName}</p>}
+                {shipCompany && <p>{shipCompany}</p>}
+                {shipAddr1   && <p>{shipAddr1}</p>}
+                {shipAddr2   && <p>{shipAddr2}</p>}
+                {(shipCity || shipState || shipZip) && (
+                    <p>{[shipCity, shipState, shipZip].filter(Boolean).join(", ")}</p>
+                )}
+                {shipCountry && <p>{shipCountry}</p>}
+                {shipPhone   && <p>{shipPhone}</p>}
+            </div>
         </div>
     );
 }

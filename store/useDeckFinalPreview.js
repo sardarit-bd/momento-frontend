@@ -1,16 +1,24 @@
+// store/useDeckFinalPreview.js
 import { create } from "zustand";
 
-const useDeckFinalPreview = create((set, get) => ({
+const useDeckFinalPreview = create((set) => ({
     deckcart: [],
-    addToCart: (product) => set((state) => ({ deckcart: [...state.deckcart, product] })),
+
+    addToCart: (item) => set((state) => ({
+        deckcart: [...state.deckcart, item]
+    })),
+
+    // ✅ THIS WAS MISSING
     updateCart: (updatedItem) => set((state) => ({
         deckcart: state.deckcart.map((item) =>
             item.id === updatedItem.id ? { ...item, ...updatedItem } : item
-        ),
+        )
     })),
-    removeFromCart: (id) => set((state) => ({
-        deckcart: state.deckcart.filter((item) => item.productId !== id),
+
+    removeFromCart: (productId) => set((state) => ({
+        deckcart: state.deckcart.filter((item) => item.productId !== productId)
     })),
+
     clearCart: () => set({ deckcart: [] }),
 }));
 

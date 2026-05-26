@@ -11,6 +11,7 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import useDeckFinalPreview from "@/store/useDeckFinalPreview";
 import { getNames } from "country-list";
+import DeckBoxPreview from "@/app/componnent/DeckBoxPreview";
 
 const inputStyle =
   "w-full bg-[#F3F4F6] text-gray-900 placeholder-gray-500 px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-400 transition-all text-sm border border-transparent";
@@ -388,53 +389,8 @@ export default function CheckoutPage() {
     }
   };
 
-  // const normalizeTradingFinalProduct = async (item) => {
-  //   const snapshot = getSavedCustomization(item);
-  //   const snapshotPreviews = [snapshot?.previews?.front, snapshot?.previews?.back].filter(Boolean);
-  //   if (snapshotPreviews.length > 0) {
-  //     const front = await ensureImageDataUrl(snapshotPreviews[0]);
-  //     const back = await ensureImageDataUrl(snapshotPreviews[1] || snapshotPreviews[0]);
-  //     return [
-  //       front ? { side: "front", image: front } : null,
-  //       back ? { side: "back", image: back } : null,
-  //     ].filter(Boolean);
-  //   }
-
-  //   const sourceCards = Array.isArray(item?.FinalProduct) ? item.FinalProduct : [];
-  //   const normalized = [];
-
-  //   for (let index = 0; index < sourceCards.length; index += 1) {
-  //     const card = sourceCards[index];
-  //     const imageSource =
-  //       typeof card === "string"
-  //         ? card
-  //         : card?.image || card?.baseImage || card?.src || null;
-  //     const image = await ensureImageDataUrl(imageSource);
-  //     if (!image) continue;
-
-  //     const side =
-  //       card && typeof card === "object" && card?.side
-  //         ? card.side
-  //         : index === sourceCards.length - 1
-  //           ? "back"
-  //           : "front";
-
-  //     normalized.push({
-  //       rank,
-  //       image,
-  //       name: card?.name ?? null,
-  //     });
-  //   }
-
-  //   if (normalized.some((entry) => entry.side === "back")) return normalized;
-  //   const backFallback = await ensureImageDataUrl(item?.FinalProductImages?.[1] || item?.FinalProductImages?.[0]);
-  //   if (backFallback) normalized.push({ side: "back", image: backFallback });
-  //   return normalized;
-  // };
 
   const normalizeTradingFinalProduct = async (item) => {
-    // Trading card FinalProduct already has {side, image, card_pair_key}
-    // image was captured as base64 dataUrl at save time — use it directly
     const sourceCards = Array.isArray(item?.FinalProduct) ? item.FinalProduct : [];
 
     const normalized = [];
@@ -579,6 +535,8 @@ export default function CheckoutPage() {
       // Backend checkout currently validates email as required.
       const checkoutEmail = `${id || "guest"}@example.com`;
 
+      const tradingItem = cart.find(item => item.productType === "trading");
+      
       const checkoutData = {
         first_name: firstName,
         last_name: lastName,
@@ -594,12 +552,15 @@ export default function CheckoutPage() {
         items: cartItems,
         userID: id,
         tuckbox_image: deckcart?.[0]?.BoxImage || null,
+        trading_box_pack_title:  tradingItem?.packTitle  || null,
+        trading_box_created_for: tradingItem?.createdFor || null,
       };
 
       const checkoutEndpoint =
         process.env.NEXT_PUBLIC_CHECKOUT_SESSION_ENDPOINT || "/api/create-checkout-session";
 
-      console.log('checkoutData items[0].FinalProduct[0]:', cartItems[0]?.FinalProduct?.[0]?.name, cartItems[0]?.FinalProduct?.[0]?.image?.substring(0, 30));
+      console.log('checkoutData full:', JSON.stringify(checkoutData, null, 2));
+
       const response = await fetch(
         checkoutEndpoint.startsWith("http")
           ? checkoutEndpoint
@@ -618,12 +579,15 @@ export default function CheckoutPage() {
       const result = await response.json();
 
       if (result?.success && result?.checkout_url) {
-        window.location.href = result.checkout_url;
+        if (typeof window !== "undefined") {
+          window.location.href = result.checkout_url;
+        }
       } else {
         const errorMessage = result?.message || result?.error || "Failed to create checkout session";
         toast.error(errorMessage);
       }
     } catch (error) {
+      console.error("Checkout error full:", error);
       toast.error("Failed to initiate checkout. Please try again.");
     } finally {
       setloading(false);
@@ -731,13 +695,22 @@ export default function CheckoutPage() {
               )}
             </div>
 
-            {cart.length > 0 && deckcart?.[0]?.BoxImage && (
+            {/* {cart.length > 0 && deckcart?.[0]?.BoxImage && (
                 <div className="mb-6">
                     <h3 className="text-sm font-semibold text-gray-700 mb-3">Box Preview</h3>
                     <div className="flex flex-wrap gap-3">
                         <div className="w-[160px] sm:w-[190px] md:w-[220px] rounded-xl border border-gray-200 bg-white p-2 shadow-sm">
                             <img className="h-auto w-full object-contain" src={deckcart[0].BoxImage} alt="box-preview" />
                         </div>
+                    </div>
+                </div>
+            )} */}
+
+            {cart.length > 0 && deckcart?.[0]?.CharacterImages?.length > 0 && (
+                <div className="mb-6">
+                    <h3 className="text-sm font-semibold text-gray-700 mb-3">Box Preview</h3>
+                    <div className="flex flex-wrap gap-3">
+                        <DeckBoxPreview characterImages={deckcart[0].CharacterImages} />
                     </div>
                 </div>
             )}

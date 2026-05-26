@@ -1,4 +1,8 @@
 async function captureNodeScreenshotForTranding(domNode) {
+    if (typeof window === "undefined" || typeof document === "undefined") {
+        return null;
+    }
+
     if (!domNode || !document.body.contains(domNode)) return null;
 
     await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
@@ -13,6 +17,9 @@ async function captureNodeScreenshotForTranding(domNode) {
     try {
         const html2canvas = (await import("html2canvas")).default;
 
+        const sourceWidth  = domNode.offsetWidth  || domNode.clientWidth;
+        const sourceHeight = domNode.offsetHeight || domNode.clientHeight;
+
         const canvas = await html2canvas(domNode, {
             scale: 3,
             useCORS: true,
@@ -20,7 +27,12 @@ async function captureNodeScreenshotForTranding(domNode) {
             backgroundColor: null,
             logging: false,
             ignoreElements: shouldIgnore,
-
+            width: sourceWidth,
+            height: sourceHeight,
+            windowWidth: sourceWidth,
+            windowHeight: sourceHeight,
+            scrollX: 0,
+            scrollY: 0,
             onclone: async (clonedDoc, clonedEl) => {
 
             try { await clonedDoc.fonts.ready; } catch (_) {}

@@ -4,6 +4,10 @@
  * @returns {Promise<string|null>}
  */
 export default async function captureNodeClean(node, captureFn) {
+  if (typeof window === "undefined") {
+    return null;
+  }
+
   if (!node) return null;
 
 

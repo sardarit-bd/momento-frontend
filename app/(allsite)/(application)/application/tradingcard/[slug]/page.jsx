@@ -56,7 +56,7 @@ const attributeIconOptions = [
 ];
 
 const defaultBackHighlights = [
-    { id: 1, icon: "/attribute-images/attribute_1.png", text: "Always brings energy to the room" },
+    { id: 1, icon: "/attribute-images/attribute_2.png", text: "Always brings energy to the room" },
     { id: 2, icon: "/attribute-images/attribute_4.png", text: "Master of organization" },
 ];
 
@@ -177,7 +177,7 @@ export default function ProductCustomizer() {
     setUploads(Array.isArray(s.uploads) ? s.uploads : []);
     setTexts(Array.isArray(s.texts) ? s.texts : []);
     setcardti(s.cardti ?? "Card Title");
-    setcarddes(s.carddes ?? "Card Description");
+    setcarddes(s.carddes ?? "Created For");
     setname(s.name ?? "Attribute One");
     setname2(s.name2 ?? "Attribute Two");
     setname3(s.name3 ?? "Attribute Three");
@@ -186,9 +186,9 @@ export default function ProductCustomizer() {
     setlabelthree(s.labelthree ?? 78);
     setacarddate(s.acarddate ?? "CLASS OF 2026");
     setCardType(s.cardType ?? "graduation");
-    setAttrIconOne(s.attrIconOne ?? "/attribute-images/attribute_1.png");
-    setAttrIconTwo(s.attrIconTwo ?? "/attribute-images/attribute_2.png");
-    setAttrIconThree(s.attrIconThree ?? "/attribute-images/attribute_3.png");
+    setAttrIconOne(s.attrIconOne ?? "/attribute-images/attribute_2.png");
+    setAttrIconTwo(s.attrIconTwo ?? "/attribute-images/attribute_3.png");
+    setAttrIconThree(s.attrIconThree ?? "/attribute-images/attribute_4.png");
     setisblack(Boolean(s.isblack));
     setActiveImage(null);
     setActiveText(null);
@@ -205,7 +205,7 @@ export default function ProductCustomizer() {
             uploads.length > 0 ||
             texts.length > 0 ||
             cardti !== "Card Title" ||
-            carddes !== "Card Description" ||
+            carddes !== "Created For" ||
             name !== "Attribute One" ||
             name2 !== "Attribute Two" ||
             name3 !== "Attribute Three"
@@ -315,7 +315,7 @@ export default function ProductCustomizer() {
 
     //text state is here
     const [cardti, setcardti] = useState('Card Title');
-    const [carddes, setcarddes] = useState('Card Description');
+    const [carddes, setcarddes] = useState('Created For');
     const [name, setname] = useState('Attribute One');
     const [name2, setname2] = useState('Attribute Two');
     const [name3, setname3] = useState('Attribute Three');
@@ -324,15 +324,15 @@ export default function ProductCustomizer() {
     const [labelthree, setlabelthree] = useState(78);
     const [acarddate, setacarddate] = useState('CLASS OF 2025');
     const [cardType, setCardType] = useState("graduation");
-    const [attrIconOne, setAttrIconOne] = useState("/attribute-images/attribute_1.png");
-    const [attrIconTwo, setAttrIconTwo] = useState("/attribute-images/attribute_2.png");
-    const [attrIconThree, setAttrIconThree] = useState("/attribute-images/attribute_3.png");
+    const [attrIconOne, setAttrIconOne] = useState("/attribute-images/attribute_2.png");
+    const [attrIconTwo, setAttrIconTwo] = useState("/attribute-images/attribute_3.png");
+    const [attrIconThree, setAttrIconThree] = useState("/attribute-images/attribute_4.png");
     const [activeIconPicker, setActiveIconPicker] = useState(null);
     const [backDate, setBackDate] = useState("");
     const [backDescription, setBackDescription] = useState("");
     const [backHighlightsTitle, setBackHighlightsTitle] = useState("Highlights");
     const [backHighlights, setBackHighlights] = useState(defaultBackHighlights);
-    const [backLegacyTagline, setBackLegacyTagline] = useState("A moment captured forever");
+    const [backLegacyTagline, setBackLegacyTagline] = useState("A moment");
     const [backLegacyText, setBackLegacyText] = useState("This card celebrates a special person and a special time. May it remind you of all the great memories we've shared.");
     const [activeBackHighlightPicker, setActiveBackHighlightPicker] = useState(null);
 
@@ -341,7 +341,7 @@ export default function ProductCustomizer() {
 
     // text inputer limite
     const [cardtiltelimite, setcardtiltelimite] = useState(12);
-    const [carddeslimite, setcarddeslimite] = useState(95);
+    const [carddeslimite, setcarddeslimite] = useState(15);
     const [namelimite, setnamelimite] = useState(15);
     const [name2limite, setname2limite] = useState(15);
     const [name3limite, setname3limite] = useState(15);
@@ -379,7 +379,7 @@ export default function ProductCustomizer() {
                 setworkingcard(saved?.workingcard || "front");
                 setisblack(Boolean(saved?.isblack));
                 setcardti(saved?.content?.cardti             ?? "Card Title");
-                setcarddes(saved?.content?.carddes           ?? "Card Description");
+                setcarddes(saved?.content?.carddes           ?? "Created For");
                 setname(saved?.content?.name                 ?? "Attribute One");
                 setname2(saved?.content?.name2               ?? "Attribute Two");
                 setname3(saved?.content?.name3               ?? "Attribute Three");
@@ -388,13 +388,13 @@ export default function ProductCustomizer() {
                 setlabelthree(saved?.content?.labelthree     ?? 78);
                 setacarddate(saved?.content?.acarddate       ?? "CLASS OF 2026");
                 setCardType(saved?.content?.cardType         ?? "graduation");
-                setAttrIconOne(saved?.content?.attrIconOne   ?? "/attribute-images/attribute_1.png");
-                setAttrIconTwo(saved?.content?.attrIconTwo   ?? "/attribute-images/attribute_2.png");
-                setAttrIconThree(saved?.content?.attrIconThree ?? "/attribute-images/attribute_3.png");
+                setAttrIconOne(saved?.content?.attrIconOne   ?? "/attribute-images/attribute_2.png");
+                setAttrIconTwo(saved?.content?.attrIconTwo   ?? "/attribute-images/attribute_3.png");
+                setAttrIconThree(saved?.content?.attrIconThree ?? "/attribute-images/attribute_4.png");
                 setBackDate(saved?.content?.backDate         ?? "");
                 setBackDescription(saved?.content?.backDescription ?? "");
                 setBackHighlightsTitle(saved?.content?.backHighlightsTitle ?? "Highlights");
-                setBackLegacyTagline(saved?.content?.backLegacyTagline ?? "A moment captured forever");
+                setBackLegacyTagline(saved?.content?.backLegacyTagline ?? "A moment");
                 setBackLegacyText(saved?.content?.backLegacyText ?? "This card celebrates a special person and a special time. May it remind you of all the great memories we've shared.");
                 const rh = Array.isArray(saved?.content?.backHighlights)
                     ? saved.content.backHighlights.slice(0, 6)
@@ -445,7 +445,7 @@ export default function ProductCustomizer() {
                     setUploads(Array.isArray(s.uploads) ? s.uploads : []);
                     setTexts(Array.isArray(s.texts)     ? s.texts   : []);
                     setcardti(s.cardti             ?? "Card Title");
-                    setcarddes(s.carddes           ?? "Card Description");
+                    setcarddes(s.carddes           ?? "Created For");
                     setname(s.name                 ?? "Attribute One");
                     setname2(s.name2               ?? "Attribute Two");
                     setname3(s.name3               ?? "Attribute Three");
@@ -454,9 +454,9 @@ export default function ProductCustomizer() {
                     setlabelthree(s.labelthree     ?? 78);
                     setacarddate(s.acarddate       ?? "CLASS OF 2026");
                     setCardType(s.cardType         ?? "graduation");
-                    setAttrIconOne(s.attrIconOne   ?? "/attribute-images/attribute_1.png");
-                    setAttrIconTwo(s.attrIconTwo   ?? "/attribute-images/attribute_2.png");
-                    setAttrIconThree(s.attrIconThree ?? "/attribute-images/attribute_3.png");
+                    setAttrIconOne(s.attrIconOne   ?? "/attribute-images/attribute_2.png");
+                    setAttrIconTwo(s.attrIconTwo   ?? "/attribute-images/attribute_3.png");
+                    setAttrIconThree(s.attrIconThree ?? "/attribute-images/attribute_4.png");
                     setisblack(Boolean(s.isblack));
                     setcardfinder(
                         frontImages?.findIndex(img => img.image === s.baseFront) ?? 0
@@ -498,17 +498,17 @@ export default function ProductCustomizer() {
     function hanldeInputUpdater() {
         if (workingcard == 'front') {
             setcardti('Card Title');
-            setcarddes('Card Description');
+            setcarddes('Created For');
             setname('Attribute One');
             setname2('Attribute Two');
             setname3('Attribute Three');
-            setAttrIconOne("/attribute-images/attribute_1.png");
-            setAttrIconTwo("/attribute-images/attribute_2.png");
-            setAttrIconThree("/attribute-images/attribute_3.png");
+            setAttrIconOne("/attribute-images/attribute_2.png");
+            setAttrIconTwo("/attribute-images/attribute_3.png");
+            setAttrIconThree("/attribute-images/attribute_4.png");
             setacarddate('CLASS OF 2026');
 
             setcardtiltelimite(15);
-            setcarddeslimite(95);
+            setcarddeslimite(15);
             setnamelimite(15);
             setname2limite(15);
             setname3limite(15);
@@ -530,7 +530,7 @@ export default function ProductCustomizer() {
 
 
             setcardtiltelimite(15);
-            setcarddeslimite(95);
+            setcarddeslimite(15);
             setnamelimite(15);
             setname2limite(95);
             setname3limite(15);
@@ -716,6 +716,8 @@ export default function ProductCustomizer() {
             captureNodeScreenshotForTranding
         );
 
+        console.log('backPreview:', backPreview?.substring(0, 50));
+
         const FinalProduct = [];
 
         for (const slot of slots) {
@@ -736,6 +738,8 @@ export default function ProductCustomizer() {
 
         const product = {
             id:                     generateUserId(),
+            packTitle:              cardti,
+            createdFor:             carddes,
             productId:              fetchingData?.id,
             productSlug:            fetchingData?.slug,
             productName:            fetchingData?.name,
@@ -761,6 +765,9 @@ export default function ProductCustomizer() {
             bfor: "trading",
         }]);
 
+        console.log('FinalProduct here:', JSON.stringify(FinalProduct, null, 2));
+        await new Promise(r => setTimeout(r, 5000));
+
         addToCart(product);
         router.push("/my-cart/checkout");
 
@@ -781,7 +788,7 @@ export default function ProductCustomizer() {
         setActiveImage(null);
         setActiveText(null);
         setcardti("Card Title");
-        setcarddes("Card Description");
+        setcarddes("Created For");
         setname("Attribute One");
         setname2("Attribute Two");
         setname3("Attribute Three");
@@ -790,9 +797,9 @@ export default function ProductCustomizer() {
         setlabelthree(78);
         setacarddate("CLASS OF 2026");
         setCardType("graduation");
-        setAttrIconOne("/attribute-images/attribute_1.png");
-        setAttrIconTwo("/attribute-images/attribute_2.png");
-        setAttrIconThree("/attribute-images/attribute_3.png");
+        setAttrIconOne("/attribute-images/attribute_2.png");
+        setAttrIconTwo("/attribute-images/attribute_3.png");
+        setAttrIconThree("/attribute-images/attribute_4.png");
         setisblack(false);
         setcardfinder(0); 
     }, [frontImages]); 
@@ -937,7 +944,7 @@ export default function ProductCustomizer() {
         }
         setBackHighlights((prev) => [
             ...prev,
-            { id: Date.now(), icon: "/attribute-images/attribute_1.png", text: "" },
+            { id: Date.now(), icon: "/attribute-images/attribute_2.png", text: "" },
         ]);
     };
 
@@ -1061,7 +1068,7 @@ export default function ProductCustomizer() {
                                         {
                                             workingcard === "front" ? (
                                                 <>
-                                                    {cardfinder == 0 && <FrontOne cardti={cardti} carddes={carddes} name={displayAttributeOne} name2={displayAttributeTwo} name3={displayAttributeThree} acarddate={acarddate} labelone={labelone} labeltwo={labeltwo} labelthree={labelthree} iconOne={attrIconOne} iconTwo={attrIconTwo} iconThree={attrIconThree} />}
+                                                    {cardfinder == 0 && <FrontOne cardti={cardti}  name={displayAttributeOne} name2={displayAttributeTwo} name3={displayAttributeThree} acarddate={acarddate} labelone={labelone} labeltwo={labeltwo} labelthree={labelthree} iconOne={attrIconOne} iconTwo={attrIconTwo} iconThree={attrIconThree} />}
                                                     {cardfinder == 1 && <FrontTwo cardti={cardti} carddes={carddes} name={displayAttributeOne} name2={displayAttributeTwo} name3={displayAttributeThree} acarddate={acarddate} labelone={labelone} labeltwo={labeltwo} labelthree={labelthree} iconOne={attrIconOne} iconTwo={attrIconTwo} iconThree={attrIconThree} />}
                                                     {cardfinder == 2 && <FrontThree cardti={cardti} carddes={carddes} name={displayAttributeOne} name2={displayAttributeTwo} name3={displayAttributeThree} acarddate={acarddate} labelone={labelone} labeltwo={labeltwo} labelthree={labelthree} iconOne={attrIconOne} iconTwo={attrIconTwo} iconThree={attrIconThree} />}
                                                     {cardfinder == 3 && <FrontFour cardti={cardti} carddes={carddes} name={displayAttributeOne} name2={displayAttributeTwo} name3={displayAttributeThree} acarddate={acarddate} labelone={labelone} labeltwo={labeltwo} labelthree={labelthree} iconOne={attrIconOne} iconTwo={attrIconTwo} iconThree={attrIconThree} />}
@@ -1246,7 +1253,7 @@ export default function ProductCustomizer() {
 
                                 {sidebarTab === "back" && (
                                     <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm space-y-5">
-                                        <div>
+                                        {/* <div>
                                             <label className="block text-gray-800 font-semibold mb-2">Date (Optional)</label>
                                             <input
                                                 type="date"
@@ -1254,7 +1261,7 @@ export default function ProductCustomizer() {
                                                 onChange={(e) => setBackDate(e.target.value)}
                                                 className="h-11 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 text-gray-700 outline-none transition-all duration-200 focus:ring-2 focus:ring-gray-300 focus:border-gray-300"
                                             />
-                                        </div>
+                                        </div> */}
 
                                         <div>
                                             <label className="block text-gray-800 font-semibold mb-2">Description</label>
@@ -1392,7 +1399,7 @@ export default function ProductCustomizer() {
                                     <input onChange={handleUpload} id="uploadImage" type="file" className="hidden" accept="image/*" />
                                 </div>}
 
-                                {sidebarTab === "front" && (
+                                {/* {sidebarTab === "front" && (
                                     <div className="rounded-2xl border border-slate-200 bg-gradient-to-b from-slate-50 to-white p-4 shadow-sm">
                                         <button
                                             type="button"
@@ -1431,7 +1438,7 @@ export default function ProductCustomizer() {
                                             </div>
                                         )}
                                     </div>
-                                )}
+                                )} */}
 
 
                                 {/* text control start here */}
@@ -1456,7 +1463,7 @@ export default function ProductCustomizer() {
 
                                         <div className="w-full flex items-center gap-3 mb-3 rounded-lg p-1 transition-shadow duration-200 hover:shadow-sm">
                                             <div className="w-full">
-                                                <label className="text-gray-500 mb-1 text-sm">Card Descriptions: <span className="text-red-600 text-xl">*</span>
+                                                <label className="text-gray-500 mb-1 text-sm">Created For: <span className="text-red-600 text-xl">*</span>
                                                     <div className="relative">
                                                         <CharactersCountComponent text={carddes} limit={carddeslimite} />
                                                     </div>

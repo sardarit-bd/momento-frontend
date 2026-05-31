@@ -4,7 +4,7 @@ import useFilterStore from "@/store/useFilterStore";
 import Image from "next/image";
 import Link from "next/link";
 import { FaRegSquareCheck } from "react-icons/fa6";
-import cardsTradition from "../../public/allcardstucture.png";
+import cardsTradition from "../../public/portaitdeck.png";
 
 export default function Tradition() {
 

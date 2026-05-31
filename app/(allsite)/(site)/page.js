@@ -1,6 +1,5 @@
 import Category from "../../componnent/Category";
 import Cta from "../../componnent/Cta";
-import Deckgame from "../../componnent/Deckgame";
 import Hero from "../../componnent/Hero";
 import Info from "../../componnent/Info";
 import Trading from "../../componnent/Trading";
@@ -15,7 +14,7 @@ const Homepage = () => {
       <Info />
       <Tradition />
       <Trading />
-      <Deckgame />
+      {/* <Deckgame /> */}
       <Cta />
     </main>
   );

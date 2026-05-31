@@ -20,14 +20,14 @@ export default function Cta() {
                 {/* Content */}
                 <div className="relative z-10 px-3 md:px-4 lg:px-6">
                     <h1 className="text-4xl md:text-5xl font-bold text-white uppercase">
-                        Design your custom deck today
+                      Create Something They’ll Actually Remember
                     </h1>
                     <p className="text-lg text-white mt-4">
-                        Start creating, sharing, and playing with purpose.
+                       Personalized cards made for memories, gifts, collections, and unforgettable moments.
                     </p>
                     <div className="pt-10">
                         <Link href={'/shop'} className="mt-10 px-8 py-3 bg-[#FF6F3C] text-[#ffffff] text-lg font-semibold rounded-md shadow-md hover:brightness-110 transition cursor-pointer">
-                            Start Customizing
+                            Start Creating
                         </Link>
                     </div>
                 </div>

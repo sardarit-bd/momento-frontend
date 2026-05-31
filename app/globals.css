@@ -114,10 +114,17 @@ body {
 
 /* hero background pata image here */
 .heroBgPataImage {
-  background: url('../public/pata.png');
+  background: url('../public/heroBg.jpg');
   background-repeat: no-repeat;
+  background-position: 80% center;
   background-size: cover;
-  background-position: center -50px;
+}
+
+.heroTwoBg{
+  background: url('../public/heroBgTwo.png');
+  background-repeat: no-repeat;
+  background-position: 80% center;
+  background-size: cover;
 }
 
 

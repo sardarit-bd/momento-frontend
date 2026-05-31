@@ -6,23 +6,23 @@ import spade from "../../public/spade.png";
 export default function Info() {
     const cards = [
         {
-            title: "Limitless creativity",
-            description: "Build a deck that’s uniquely yours.",
+            title: "Limitless Creativity",
+            description: "Design cards that feel personal, unique, and completely your own.",
             image: spade,
         },
         {
-            title: "Premium materials",
-            description: "Durable, high-quality finishes for long-lasting play",
+            title: "Premium Quality",
+            description: "Durable premium materials and finishes designed to look and feel collectible.",
             image: dice,
         },
         {
-            title: "Effortless customization",
-            description: "No complicated tools, just pure creative freedom",
+            title: "Easy Customization",
+            description: "No complicated tools — create your cards in just a few minutes.",
             image: heart,
         },
         {
-            title: "Designed for moments",
-            description: "Whether for play, collections, or special occasions.",
+            title: "Fast & Easy Ordering",
+            description: "Customize your cards, place your order, and let Momento handle the rest with an easy delivery process right to your door.",
             image: club,
         },
     ];

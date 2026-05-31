@@ -3,9 +3,8 @@
 import useFilterStore from "@/store/useFilterStore";
 import Image from "next/image";
 import Link from "next/link";
-import TredingOne from "../../public/tranding.png";
-import TredingThree from "../../public/TredingThree.png";
-import TredingTwo from "../../public/tredingTwo.png";
+import TredingOne from "../../public/portaitdeck.png";
+import TredingThree from "../../public/tradingcard.png";
 
 export default function Category() {
 
@@ -13,8 +12,8 @@ export default function Category() {
 
     const categories = [
         {
-            title: "Momento Play Deck",
-            description: "Classic playing cards with personalized faces and themes",
+            title: "Momento Portrait Deck",
+            description: "A fully playable custom deck featuring personalized Kings, Queens, Jacks, Aces, and optional custom Jokers designed around you and your favorite people.",
             image: TredingOne,
             href: "/shop",
             type: "customizable"
@@ -22,37 +21,29 @@ export default function Category() {
 
         {
             title: "Momento Trading Cards",
-            description: "Custom collectibles designed for creators, fans, and collectors.",
+            description: "Turn your favorite people, memories, and milestones into collectible personalized trading cards worth keeping forever.",
             image: TredingThree,
             href: "/shop",
             type: "trading"
-        },
-
-        {
-            title: "Momento Game Deck",
-            description: "Tailor-made for unique gameplay, strategy, and storytelling",
-            image: TredingTwo,
-            href: "/shop",
-            type: "all"
-        },
+        }
     ];
     return (
-        <section className="py-16 w-full">
+        <section className="py-16 w-screen">
             <div className="text-center text-[#333333] font-bold mb-12">
                 <h2 className="text-5xl mb-3">
-                    Turn Meaningful Moments <br />into Stunning Cards
+                    Turn Meaningful Moments <br /> Into Custom Cards
                 </h2>
                 <span className="text-gray-500 text-lg">
-                    Explore the three types of Momento Cards
+                    Create personalized cards designed around the people and memories that matter most.
                 </span>
             </div>
-            <div className="w-full max-w-7xl mx-auto px-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 lg:gap-6">
+            <div className="w-full max-w-7xl mx-auto px-4 grid grid-cols-1 sm:grid-cols-2 gap-5 lg:gap-6">
                 {categories.map((cat, idx) => (
                     <div
                         key={idx}
                         className="w-full text-center bg-white rounded-xl shadow-lg overflow-hidden hover:scale-102 transform transition duration-300"
                     >
-                        <div className="relative w-full h-64">
+                        <div className="relative w-full h-76">
                             <Image
                                 src={cat.image}
                                 alt={cat.title}

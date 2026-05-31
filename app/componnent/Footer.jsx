@@ -14,7 +14,7 @@ const Footer = () => {
                     <div className="w-full col-span-4 md:col-span-2 lg:col-span-1">
                         <h3 className="font-bold text-2xl text-gray-600">About</h3>
                         <p className="text-gray-500 text-md pt-5">
-                            At Momento Cards, we turn memories into moments of play. Whether you're customizing a deck for fun, gifting, or collecting — we make it easy to design cards that truly reflect you.
+                            At Momento, we turn memories into collectible experiences. Whether you're creating a Momento Portrait Deck or Momento Trading Cards, we make it easy to design cards that feel personal, meaningful, and worth keeping forever.
                         </p>
                         <div className="flex items-center gap-4 mt-6">
                             <Link className="z-30" href={'/'}>

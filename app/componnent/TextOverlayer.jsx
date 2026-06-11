@@ -118,7 +118,6 @@ export const FrontOne = ({ cardti, carddes, name, name2, name3, acarddate, label
             <div className="absolute left-[25px] right-[25px] bottom-[33px] h-1/3 z-40 pointer-events-none rounded-bl-2xl rounded-br-2xl overflow-hidden">
                 <div
                     className="absolute left-0 top-0 bottom-0 w-full"
-                    style={{ background: "linear-gradient(180deg, rgba(252,211,77,0) 0%, rgba(228, 228, 226, 0.34) 18%, rgba(156, 122, 43, 0.62) 100%)" }}
                 />
             </div>
 
@@ -157,9 +156,9 @@ export const FrontOne = ({ cardti, carddes, name, name2, name3, acarddate, label
                 />
             </div>
 
-            <div className="absolute right-[40px] bottom-[19%] z-50 w-[115px] lg:w-[180px] text-right" style={{ backgroundColor: 'transparent' }}>
-                <span className="block uppercase text-xs lg:text-4xl RamaGothicFont font-bold leading-tight TradingCardTitleMetal">{cardti}</span>
-                <span className="block RamaGothicFont font-bold lg:font-extrabold text-[11px] lg:text-[1.35rem] tracking-tighter leading-tight mt-0 TradingCardDateGrayGradient">{acarddate}</span>
+            <div className="absolute right-[40px] bottom-[16%] z-50 w-[115px] lg:w-[180px] text-right" style={{ backgroundColor: 'transparent' }}>
+                <span className="block text-xs lg:text-[2.1rem] CorsicaFont font-bold leading-tight TradingCardTitleMetal">{cardti}</span>
+                <span className="block CorsicaFont text-[11px] lg:text-[1rem] tracking-tighter leading-tight mt-0 TradingCardDateGrayGradient">{acarddate}</span>
             </div>
             <span className="absolute bottom-[33px] left-1/2 -translate-x-1/2 z-50 text-[8px] lg:text-[10px] text-[#1f1f1f] BrunsonFont tracking-wide text-center whitespace-nowrap">
                 &copy; {currentYear} MOMENTO TRADING CARDS
@@ -185,7 +184,7 @@ export const FrontTwo = ({ cardti, carddes, name, name2, name3, acarddate, label
                 />
             </div>
 
-            <div className="absolute left-[25px] bottom-[33px] z-50 w-[112px] lg:w-[132px]">
+            <div className="absolute left-[25px] bottom-[33px] z-50 w-[112px] lg:w-[132px]" style={{ backgroundColor: 'transparent' }}>
                 <AttributeMetric
                     icon={iconOne}
                     text={name}
@@ -220,7 +219,7 @@ export const FrontTwo = ({ cardti, carddes, name, name2, name3, acarddate, label
                 />
             </div>
 
-            <div className="absolute right-[25px] bottom-[33px] z-50 w-[115px] lg:w-[180px] text-right">
+            <div className="absolute right-[25px] bottom-[33px] z-50 w-[115px] lg:w-[180px] text-right" style={{ backgroundColor: 'transparent' }}>
                 <span className="block text-white text-stroke uppercase text-sm lg:text-2xl GustanBlackFont font-bold lg:font-extrabold leading-tight">{cardti}</span>
                 <span className="block font-bold lg:font-extrabold text-[11px] lg:text-[1.35rem] tracking-tighter leading-tight mt-0 TradingCardDateGrayGradient">{acarddate}</span>
             </div>
@@ -248,7 +247,7 @@ export const FrontThree = ({ cardti, carddes, name, name2, name3, acarddate, lab
                 />
             </div>
 
-            <div className="absolute left-[25px] bottom-[33px] z-50 w-[102px] lg:w-[118px]">
+            <div className="absolute left-[25px] bottom-[33px] z-50 w-[102px] lg:w-[118px]" style={{ backgroundColor: 'transparent' }}>
                 <AttributeMetric
                     icon={iconOne}
                     text={name}
@@ -283,7 +282,7 @@ export const FrontThree = ({ cardti, carddes, name, name2, name3, acarddate, lab
                 />
             </div>
 
-            <div className="absolute right-[25px] bottom-[33px] z-50 w-[130px] lg:w-[200px] text-right">
+            <div className="absolute right-[25px] bottom-[33px] z-50 w-[130px] lg:w-[200px] text-right" style={{ backgroundColor: 'transparent' }}>
                 <span className="block uppercase text-white font-extrabold text-xs lg:text-xl BrunsonFont leading-tight">{cardti}</span>
                 <span className="block font-semibold BrunsonFont tracking-widest lg:font-medium text-[11px] lg:text-[2.2rem] tracking-tighter leading-tight mt-0 TradingCardDateGrayGradient">{acarddate}</span>
             </div>
@@ -311,13 +310,13 @@ export const FrontFour = ({ cardti, carddes, name, name2, name3, acarddate, icon
                 />
             </div>
 
-            <div className="absolute left-[25px] bottom-[33px] z-50 w-[120px]">
+            <div className="absolute left-[25px] bottom-[33px] z-50 w-[120px]" style={{ backgroundColor: 'transparent' }}>
                 <AttributeLabel icon={iconOne} text={name.toUpperCase()} className="block text-white text-xs font-bold text-left" />
                 <AttributeLabel icon={iconTwo} text={name2} className="block text-white text-xs font-bold text-left mt-1" />
                 <AttributeLabel icon={iconThree} text={name3} className="block text-white text-xs font-bold text-left mt-1" />
             </div>
 
-            <div className="absolute right-[25px] bottom-[33px] z-50 w-[130px] lg:w-[180px] text-right">
+            <div className="absolute right-[25px] bottom-[33px] z-50 w-[130px] lg:w-[180px] text-right" style={{ backgroundColor: 'transparent' }}>
                 <span className="block text-white text-sm lg:text-2xl font-bold tracking-widest bebas leading-tight">{cardti}</span>
                 <span className="block lg:font-extrabold text-[11px] lg:text-[1.35rem] tracking-tighter leading-tight mt-0 TradingCardDateGrayGradient">{acarddate}</span>
             </div>

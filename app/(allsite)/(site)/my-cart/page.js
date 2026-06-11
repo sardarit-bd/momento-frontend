@@ -7,7 +7,7 @@ import useLogedUserStore from '@/store/useLogedUser';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ImNotification } from "react-icons/im";
 import { IoMdArrowRoundBack } from 'react-icons/io';
 import { RxCross2 } from 'react-icons/rx';
@@ -19,6 +19,31 @@ const MyCart = () => {
     const [isLoading, setIsLoading] = useState(false);
     const { addToCart, cart, removeFromCart, increaseQuantity, decreaseQuantity } = useCartStore();
     const { loginUser } = useLogedUserStore();
+
+    useEffect(() => {
+        const needsUpdate = cart.some(
+            (item) =>
+                item.productType === "trading" &&
+                item.productQuantity > 1 &&
+                (item.productQuantity === item.packageConfig?.totalCards || item.productQuantity > 10)
+        );
+
+        if (needsUpdate) {
+            useCartStore.setState({
+                cart: cart.map((item) => {
+                    if (
+                        item.productType === "trading" &&
+                        item.productQuantity > 1 &&
+                        (item.productQuantity === item.packageConfig?.totalCards || item.productQuantity > 10)
+                    ) {
+                        return { ...item, productQuantity: 1 };
+                    }
+                    return item;
+                }),
+            });
+        }
+    }, [cart]);
+
     // calculate total price
     const calculateTotalPrice = () => {
         return cart.reduce((total, item) => total + item.productUnitPrice * item.productQuantity, 0);

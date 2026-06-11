@@ -18,7 +18,7 @@ export default function PackageSelectionPage() {
 
   const handleContinue = () => {
     if (!selected) return;
-    router.push(`/application/tradingcard/${slug}?package=${selected.slug}`);
+    router.push(`/shop/${slug}/template?package=${selected.slug}`);
   };
 
   return (

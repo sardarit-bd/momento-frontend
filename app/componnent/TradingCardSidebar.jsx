@@ -3,6 +3,7 @@ import { CiCirclePlus } from "react-icons/ci";
 import { RxCross2 } from "react-icons/rx";
 import { FiShoppingCart } from "react-icons/fi";
 import SpinLoader from "./SpingLoader";
+import TradingCardPreview from "@/app/(allsite)/(application)/application/tradingcard/[slug]/_tradingcard/components/TradingCardPreview";
 
 const TradingCardSidebar = ({
     savedSlots,
@@ -14,7 +15,8 @@ const TradingCardSidebar = ({
     doneloading,
     spinloading,
     canSave,
-    editingSlotId,   
+    editingSlotId,
+    state,
 }) => {
     return (
         <div className="w-full border-b lg:border-r border-gray-200 bg-white h-full px-3 md:px-7 lg:px-8 py-3 z-20 shadow-sm flex flex-col">
@@ -29,9 +31,72 @@ const TradingCardSidebar = ({
 
             {/* Slot list */}
             <div className="flex-1 overflow-y-auto scrollbar-hide space-y-2 bg-gray-50 rounded-xl border border-gray-100 shadow-inner p-2 min-h-[200px] max-h-[80vh]">
-                {savedSlots.length === 0 && (
+                {savedSlots.length === 0 && editingSlotId !== null && (
                     <div className="h-full flex items-center justify-center text-xs text-gray-400 text-center py-8">
                         No designs saved yet.<br />Customize and save your first design.
+                    </div>
+                )}
+
+                {/* Show Live Preview for New Unsaved Design */}
+                {editingSlotId === null && savedSlots.length < packageConfig.designs && state && (
+                    <div
+                        className="relative flex flex-col items-center border rounded-xl p-3 shadow-sm bg-sky-50 border-sky-400 ring-2 ring-sky-200 cursor-default"
+                    >
+                        {/* Live Thumbnail */}
+                        <div style={{ width: 110, height: 161, overflow: "hidden", position: "relative" }} className="w-[110px] h-[161px] flex-shrink-0 rounded border border-gray-200 bg-white">
+                            <div style={{
+                                width: 390,
+                                height: 570,
+                                transform: "scale(0.28205)",
+                                transformOrigin: "top left",
+                                pointerEvents: "none"
+                            }}>
+                                <TradingCardPreview
+                                    previewCardNodeRef={null}
+                                    uploads={state.uploads}
+                                    activeText={null}
+                                    setActiveText={() => {}}
+                                    activeImage={null}
+                                    setActiveImage={() => {}}
+                                    updateUploadPosition={() => {}}
+                                    updateUploadSize={() => {}}
+                                    workingcard={state.workingcard}
+                                    setworkingcard={() => {}}
+                                    baseFront={state.baseFront}
+                                    baseBack={state.baseBack}
+                                    cardfinder={state.cardfinder}
+                                    cardti={state.cardti}
+                                    carddes={state.carddes}
+                                    displayAttributeOne={state.displayAttributeOne}
+                                    displayAttributeTwo={state.displayAttributeTwo}
+                                    displayAttributeThree={state.displayAttributeThree}
+                                    acarddate={state.acarddate}
+                                    labelone={state.labelone}
+                                    labeltwo={state.labeltwo}
+                                    labelthree={state.labelthree}
+                                    attrIconOne={state.attrIconOne}
+                                    attrIconTwo={state.attrIconTwo}
+                                    attrIconThree={state.attrIconThree}
+                                    backDateDisplay={state.backDateDisplay}
+                                    backDescription={state.backDescription}
+                                    backHighlightsTitle={state.backHighlightsTitle}
+                                    backHighlightsPreview={state.backHighlightsPreview}
+                                    backLegacyTagline={state.backLegacyTagline}
+                                    backLegacyText={state.backLegacyText}
+                                    isblack={state.isblack}
+                                    isMini={true}
+                                />
+                            </div>
+                        </div>
+                        {/* Info */}
+                        <div className="mt-2 text-center">
+                            <p className="text-sm font-semibold text-gray-700">
+                                Front #{savedSlots.length + 1}
+                            </p>
+                            <span className="inline-flex items-center gap-1 text-[10px] text-sky-600 font-medium">
+                                ✏️ Editing
+                            </span>
+                        </div>
                     </div>
                 )}
 
@@ -41,33 +106,78 @@ const TradingCardSidebar = ({
                         <div
                             key={slot.id}
                             onClick={() => onEditSlot(slot)}
-                            className={`h-32 flex  gap-2 border rounded-lg p-2 shadow-sm cursor-pointer transition-all duration-200 ${
+                            className={`relative flex flex-col items-center border rounded-xl p-3 shadow-sm cursor-pointer transition-all duration-200 ${
                                 isEditing
                                     ? "bg-sky-50 border-sky-400 ring-2 ring-sky-200"
                                     : "bg-white border-gray-200 hover:border-sky-300 hover:bg-sky-50"
                             }`}
                         >
-                            {/* Thumbnail */}
-                            <img
-                                src={slot.previewDataUrl}
-                                alt={`Design ${index + 1}`}
-                                className="w-20 h-30 object-cover rounded border border-gray-200 flex-shrink-0"
-                            />
+                            {/* Thumbnail (Live if editing) */}
+                            {isEditing && state ? (
+                                <div style={{ width: 110, height: 161, overflow: "hidden", position: "relative" }} className="w-[110px] h-[161px] flex-shrink-0 rounded border border-gray-200 bg-white">
+                                    <div style={{
+                                        width: 390,
+                                        height: 570,
+                                        transform: "scale(0.28205)",
+                                        transformOrigin: "top left",
+                                        pointerEvents: "none"
+                                    }}>
+                                        <TradingCardPreview
+                                            previewCardNodeRef={null}
+                                            uploads={state.uploads}
+                                            activeText={null}
+                                            setActiveText={() => {}}
+                                            activeImage={null}
+                                            setActiveImage={() => {}}
+                                            updateUploadPosition={() => {}}
+                                            updateUploadSize={() => {}}
+                                            workingcard={state.workingcard}
+                                            setworkingcard={() => {}}
+                                            baseFront={state.baseFront}
+                                            baseBack={state.baseBack}
+                                            cardfinder={state.cardfinder}
+                                            cardti={state.cardti}
+                                            carddes={state.carddes}
+                                            displayAttributeOne={state.displayAttributeOne}
+                                            displayAttributeTwo={state.displayAttributeTwo}
+                                            displayAttributeThree={state.displayAttributeThree}
+                                            acarddate={state.acarddate}
+                                            labelone={state.labelone}
+                                            labeltwo={state.labeltwo}
+                                            labelthree={state.labelthree}
+                                            attrIconOne={state.attrIconOne}
+                                            attrIconTwo={state.attrIconTwo}
+                                            attrIconThree={state.attrIconThree}
+                                            backDateDisplay={state.backDateDisplay}
+                                            backDescription={state.backDescription}
+                                            backHighlightsTitle={state.backHighlightsTitle}
+                                            backHighlightsPreview={state.backHighlightsPreview}
+                                            backLegacyTagline={state.backLegacyTagline}
+                                            backLegacyText={state.backLegacyText}
+                                            isblack={state.isblack}
+                                            isMini={true}
+                                        />
+                                    </div>
+                                </div>
+                            ) : (
+                                <img
+                                    src={slot.previewDataUrl}
+                                    alt={`Design ${index + 1}`}
+                                    className="w-[110px] h-[161px] object-cover rounded border border-gray-200 flex-shrink-0"
+                                />
+                            )}
 
                             {/* Info */}
-                            <div className="flex-1 min-w-0">
-                                <p className="text-md font-medium text-gray-700 truncate">
-                                    Design {index + 1}
-                                </p>
-                                <p className="text-[12px] text-gray-400 truncate">
-                                    {slot.snapshot.cardti}
+                            <div className="mt-2 text-center">
+                                <p className="text-sm font-semibold text-gray-700">
+                                    Front #{index + 1}
                                 </p>
                                 {isEditing ? (
-                                    <span className="inline-flex items-center gap-1 text-[10px] text-sky-600 font-medium mt-0.5">
-                                        ✏️ Editing...
+                                    <span className="inline-flex items-center gap-1 text-[10px] text-sky-600 font-medium">
+                                        ✏️ Editing
                                     </span>
                                 ) : (
-                                    <span className="inline-flex items-center gap-1 text-[10px] text-emerald-600 font-medium mt-0.5">
+                                    <span className="inline-flex items-center gap-1 text-[10px] text-emerald-600 font-medium">
                                         <BsCheckCircleFill className="text-[10px]" /> Saved
                                     </span>
                                 )}
@@ -76,10 +186,10 @@ const TradingCardSidebar = ({
                             {/* Delete */}
                             <button
                                 onClick={(e) => { e.stopPropagation(); onDeleteSlot(slot.id); }}
-                                className="flex-shrink-0 text-red-400 hover:text-red-600 transition p-1 rounded hover:bg-red-50"
+                                className="absolute top-2 right-2 text-red-400 hover:text-red-600 transition p-1.5 rounded-full bg-white/90 shadow-sm border border-gray-100 hover:bg-red-50 z-10"
                                 title="Remove design"
                             >
-                                <RxCross2 className="text-md cursor-pointer" />
+                                <RxCross2 className="text-sm cursor-pointer" />
                             </button>
                         </div>
                     );

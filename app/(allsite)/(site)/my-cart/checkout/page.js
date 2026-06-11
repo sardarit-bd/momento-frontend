@@ -251,6 +251,31 @@ export default function CheckoutPage() {
   const { deckcart } = useDeckFinalPreview();
 
   const { cart } = useCartStore();
+
+  useEffect(() => {
+    const needsUpdate = cart.some(
+      (item) =>
+        item.productType === "trading" &&
+        item.productQuantity > 1 &&
+        (item.productQuantity === item.packageConfig?.totalCards || item.productQuantity > 10)
+    );
+
+    if (needsUpdate) {
+      useCartStore.setState({
+        cart: cart.map((item) => {
+          if (
+            item.productType === "trading" &&
+            item.productQuantity > 1 &&
+            (item.productQuantity === item.packageConfig?.totalCards || item.productQuantity > 10)
+          ) {
+            return { ...item, productQuantity: 1 };
+          }
+          return item;
+        }),
+      });
+    }
+  }, [cart]);
+
   const { boxs, setboxs } = useboxcartstore();
 
   const getSavedCustomization = (item) => {
@@ -635,6 +660,9 @@ export default function CheckoutPage() {
                 cart.map((item, idx) => {
                   const previewCards = getItemPreviewCards(item);
                   const hasManyCards = previewCards.length > 2;
+                  const customizedCount = item?.customization_mode === "trading" && Array.isArray(item?.FinalProduct)
+                    ? item.FinalProduct.filter(c => c?.side === "front" && c?.image).length
+                    : previewCards.length;
                   return (
                     <div key={idx} className="flex flex-col sm:flex-row gap-4 sm:items-center">
                       <div className={`${hasManyCards ? "grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5" : "flex"} gap-2`}>
@@ -645,27 +673,27 @@ export default function CheckoutPage() {
                           >
                             {previewCard.type === "deck" ? (
                               <div className="relative w-full h-full bg-white">
-                                <img
-                                  src={previewCard.card.baseImage}
-                                  alt={`${item?.productName || "Product"} customized card ${imageIndex + 1}`}
-                                  className="w-full h-full object-cover bg-white"
-                                />
-                                {deckPreviewLayers.map((layer) => (
-                                  previewCard.card?.selectedLayers?.[layer] ? (
-                                    <div key={`${imageIndex}-${layer}`}>
-                                      <img
-                                        src={previewCard.card.selectedLayers[layer]}
-                                        alt={`${layer} top`}
-                                        className="absolute left-1/2 -translate-x-1/2 top-[8%] w-[64%] h-[43%] object-contain"
-                                      />
-                                      <img
-                                        src={previewCard.card.selectedLayers[layer]}
-                                        alt={`${layer} bottom`}
-                                        className="absolute left-1/2 -translate-x-1/2 bottom-[8%] w-[64%] h-[43%] object-contain scale-y-[-1]"
-                                      />
-                                    </div>
-                                  ) : null
-                                ))}
+                                  <img
+                                      src={previewCard.card.baseImage}
+                                      alt={`${item?.productName || "Product"} customized card ${imageIndex + 1}`}
+                                      className="w-full h-full object-cover bg-white"
+                                  />
+                                  {deckPreviewLayers.map((layer) => (
+                                      previewCard.card?.selectedLayers?.[layer] ? (
+                                          <div key={`${imageIndex}-${layer}`}>
+                                              <img
+                                                  src={previewCard.card.selectedLayers[layer]}
+                                                  alt={`${layer} top`}
+                                                  className="absolute left-1/2 -translate-x-1/2 top-[8%] w-[64%] h-[43%] object-contain"
+                                              />
+                                              <img
+                                                  src={previewCard.card.selectedLayers[layer]}
+                                                  alt={`${layer} bottom`}
+                                                  className="absolute left-1/2 -translate-x-1/2 bottom-[8%] w-[64%] h-[43%] object-contain scale-y-[-1]"
+                                              />
+                                          </div>
+                                      ) : null
+                                  ))}
                               </div>
                             ) : (
                               <img
@@ -685,8 +713,8 @@ export default function CheckoutPage() {
                       <div className="flex-1">
                         <p className="text-sm font-medium">{item.productName}</p>
                         <p className="text-xs text-gray-500">Qty: {item.productQuantity}</p>
-                        {previewCards.length > 1 && (
-                          <p className="text-xs text-gray-500 mt-0.5">{previewCards.length} customized cards</p>
+                        {customizedCount > 1 && (
+                          <p className="text-xs text-gray-500 mt-0.5">{customizedCount} customized cards</p>
                         )}
                       </div>
                     </div>

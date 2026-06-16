@@ -106,6 +106,7 @@ export function useTradingCardState() {
     const customizationStorageKey = slug ? `tradingCustomization:${slug}` : null;
     const hasHydratedFromStorage = useRef(false);
     const canPersistCustomization = useRef(false);
+    const getBaseTradingDone = useRef(false);
 
     const previewCardNodeRef = useRef(null);
     const captureNodeRef = useRef(null);
@@ -165,7 +166,14 @@ export function useTradingCardState() {
 
     // text state
     const [cardti, setcardti] = useState('Card Title');
-    const [carddes, setcarddes] = useState('Created For');
+    // const [carddes, setcarddes] = useState('Created For');
+    const [carddes, setcarddes] = useState(() => {
+        if (typeof window !== "undefined") {
+            return localStorage.getItem("persistent_carddes") ?? "Created For";
+        }
+        return "Created For";
+    });
+
     const [name, setname] = useState('Attribute One');
     const [name2, setname2] = useState('Attribute Two');
     const [name3, setname3] = useState('Attribute Three');
@@ -200,6 +208,11 @@ export function useTradingCardState() {
     const [isblack, setisblack] = useState(false);
 
     const getBaseTrading = useCallback(async (slug) => {
+        // At the top of getBaseTrading:
+        const persistedCarddes = localStorage.getItem("persistent_carddes") ?? "Created For";
+        console.log("[DEBUG] getBaseTrading slug:", slug, "persistedCarddes:", persistedCarddes);
+        setcarddes(persistedCarddes);
+
         setfetchingDataLoading(true);
         const res = await MakeGet(`api/shop/${slug}`);
         const apiFronts = res?.data?.customizations?.trading_fronts;
@@ -217,6 +230,10 @@ export function useTradingCardState() {
             try {
                 // BLOCK A — restore canvas state from IndexedDB
                 const saved = await idbGet(customizationStorageKey);
+                const persistedCarddes = localStorage.getItem("persistent_carddes") ?? "Created For";
+
+                setcarddes(persistedCarddes);
+
                 if (saved) {
                     setcardfinder(saved?.cardfinder ?? 0);
                     setBaseFront(saved?.baseFront || defaultFront);
@@ -226,7 +243,6 @@ export function useTradingCardState() {
                     setworkingcard(saved?.workingcard || "front");
                     setisblack(Boolean(saved?.isblack));
                     setcardti(saved?.content?.cardti             ?? "Card Title");
-                    setcarddes(saved?.content?.carddes           ?? "Created For");
                     setname(saved?.content?.name                 ?? "Attribute One");
                     setname2(saved?.content?.name2               ?? "Attribute Two");
                     setname3(saved?.content?.name3               ?? "Attribute Three");
@@ -290,7 +306,6 @@ export function useTradingCardState() {
                         setUploads(Array.isArray(s.uploads) ? s.uploads : []);
                         setTexts(Array.isArray(s.texts)     ? s.texts   : []);
                         setcardti(s.cardti             ?? "Card Title");
-                        setcarddes(s.carddes           ?? "Created For");
                         setname(s.name                 ?? "Attribute One");
                         setname2(s.name2               ?? "Attribute Two");
                         setname3(s.name3               ?? "Attribute Three");
@@ -337,13 +352,15 @@ export function useTradingCardState() {
             setcardfinder(templateConfig.cardfinder);
         }
         canPersistCustomization.current = true;
+        getBaseTradingDone.current = true;
         setfetchingDataLoading(false);
     }, [customizationStorageKey, templateConfig, selectedPackage, packageConfig.designs]);
 
     const hanldeInputUpdater = useCallback(() => {
+        console.log("[DEBUG] hanldeInputUpdater fired, workingcard:", workingcard, "getBaseTradingDone:", getBaseTradingDone.current);
+
         if (workingcard == 'front') {
             setcardti('Card Title');
-            setcarddes('Created For');
             setname('Attribute One');
             setname2('Attribute Two');
             setname3('Attribute Three');
@@ -363,7 +380,6 @@ export function useTradingCardState() {
 
         } else {
             setcardti('Profile');
-            setcarddes('This Trading Card Customization is easy to customize, if your want the Try Out. You will enjoy!');
             setname('Achievements');
             setname2('Lorem Ipsum 10, This Momento card Customization One of the best Placeform');
             setname3('Awards');
@@ -384,20 +400,27 @@ export function useTradingCardState() {
     }, [workingcard]);
 
     useEffect(() => {
+        if (typeof window !== "undefined" && carddes && carddes !== "Created For") {
+            localStorage.setItem("persistent_carddes", carddes);
+        }
+    }, [carddes]);
+
+    useEffect(() => {
         getBaseTrading(slug);
     }, [slug, getBaseTrading]);
 
     useEffect(() => {
         hasHydratedFromStorage.current = false;
         canPersistCustomization.current = false;
+        getBaseTradingDone.current = false;
     }, [slug]);
 
     useEffect(() => {
-        if (!hasHydratedFromStorage.current) {
+        if (!hasHydratedFromStorage.current && getBaseTradingDone.current) {
             hanldeInputUpdater();
             hasHydratedFromStorage.current = true;
         }
-    }, [workingcard, hanldeInputUpdater]);
+    }, [workingcard, hanldeInputUpdater, fetchingDataLoading]);
 
     useEffect(() => {
         if (!customizationStorageKey) return;
@@ -634,7 +657,6 @@ export function useTradingCardState() {
         setActiveImage(null);
         setActiveText(null);
         setcardti("Card Title");
-        setcarddes("Created For");
         setname("Attribute One");
         setname2("Attribute Two");
         setname3("Attribute Three");
@@ -779,7 +801,7 @@ export function useTradingCardState() {
         setUploads(Array.isArray(s.uploads) ? s.uploads : []);
         setTexts(Array.isArray(s.texts) ? s.texts : []);
         setcardti(s.cardti ?? "Card Title");
-        setcarddes(s.carddes ?? "Created For");
+        setcarddes(localStorage.getItem("persistent_carddes") ?? s.carddes ?? "Created For");
         setname(s.name ?? "Attribute One");
         setname2(s.name2 ?? "Attribute Two");
         setname3(s.name3 ?? "Attribute Three");

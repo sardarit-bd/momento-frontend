@@ -638,13 +638,15 @@ export default function CheckoutPage() {
           {/* Card 1: Your Deck */}
           <div className="bg-white rounded-2xl p-4 sm:p-6 shadow-[0_2px_10px_rgba(0,0,0,0.02)] border border-gray-100">
             <div className="flex justify-between items-center mb-6">
-              <h2 className="text-xl font-bold">Your Deck</h2>
-              <button onClick={handleEditCustomization} className="text-sky-600 text-sm font-medium flex items-center gap-1.5 hover:underline cursor-pointer">
+              <h2 className="text-xl font-bold">
+                  {cart.some(item => item?.productType === "trading") ? "Your Trading Card" : "Your Deck Card"}
+              </h2>
+              {/* <button onClick={handleEditCustomization} className="text-sky-600 text-sm font-medium flex items-center gap-1.5 hover:underline cursor-pointer">
                 <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-sky-100 text-sky-700">
                   <FiEdit3 className="text-[12px]" />
                 </span>
                 Edit
-              </button>
+              </button> */}
             </div>
 
             <div className="inline-flex items-center gap-1.5 bg-sky-50 text-sky-700 text-xs font-semibold px-3 py-1.5 rounded-full mb-6">

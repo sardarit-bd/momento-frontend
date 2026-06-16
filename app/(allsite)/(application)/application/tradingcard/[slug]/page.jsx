@@ -8,6 +8,7 @@ import TradingCardApplicationSkelaton from "@/app/componnent/TradingCardApplicat
 import TradingCardSidebar from "@/app/componnent/TradingCardSidebar";
 import TradingBoxPreview from "@/app/componnent/TradingBoxPreview/TradingBoxPreview";
 import { ToastContainer } from "react-toastify";
+import TradingCardCaptureNode from "@/app/componnent/TradingCardCaptureNode";
 
 export default function ProductCustomizer() {
     const state = useTradingCardState();
@@ -161,6 +162,34 @@ export default function ProductCustomizer() {
                     createdFor={state.carddes}
                 />
             </div>
+
+            <TradingCardCaptureNode
+                ref={state.captureNodeRef}
+                workingcard={state.workingcard}
+                baseFront={state.baseFront}
+                baseBack={state.baseBack}
+                cardfinder={state.cardfinder}
+                uploads={state.uploads}
+                cardti={state.cardti}
+                carddes={state.carddes}
+                displayAttributeOne={state.displayAttributeOne}
+                displayAttributeTwo={state.displayAttributeTwo}
+                displayAttributeThree={state.displayAttributeThree}
+                acarddate={state.acarddate}
+                labelone={state.labelone}
+                labeltwo={state.labeltwo}
+                labelthree={state.labelthree}
+                attrIconOne={state.attrIconOne}
+                attrIconTwo={state.attrIconTwo}
+                attrIconThree={state.attrIconThree}
+                backDateDisplay={state.backDateDisplay}
+                backDescription={state.backDescription}
+                backHighlightsTitle={state.backHighlightsTitle}
+                backHighlightsPreview={state.backHighlightsPreview}
+                backLegacyTagline={state.backLegacyTagline}
+                backLegacyText={state.backLegacyText}
+                isblack={state.isblack}
+            />
 
             <ToastContainer position="bottom-center" />
         </div>

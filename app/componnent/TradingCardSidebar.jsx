@@ -3,6 +3,7 @@ import { CiCirclePlus } from "react-icons/ci";
 import { RxCross2 } from "react-icons/rx";
 import { FiShoppingCart } from "react-icons/fi";
 import SpinLoader from "./SpingLoader";
+import { useRef, useEffect } from "react";
 import TradingCardPreview from "@/app/(allsite)/(application)/application/tradingcard/[slug]/_tradingcard/components/TradingCardPreview";
 
 const TradingCardSidebar = ({
@@ -17,7 +18,13 @@ const TradingCardSidebar = ({
     canSave,
     editingSlotId,
     state,
+    onLivePreviewRef,
 }) => {
+    const livePreviewNodeRef = useRef(null);
+
+    useEffect(() => {
+        if (onLivePreviewRef) onLivePreviewRef(livePreviewNodeRef);
+    }, [onLivePreviewRef]);
     return (
         <div className="w-full border-b lg:border-r border-gray-200 bg-white h-full px-3 md:px-7 lg:px-8 py-3 z-20 shadow-sm flex flex-col">
 
@@ -44,13 +51,16 @@ const TradingCardSidebar = ({
                     >
                         {/* Live Thumbnail */}
                         <div style={{ width: 110, height: 161, overflow: "hidden", position: "relative" }} className="w-[110px] h-[161px] flex-shrink-0 rounded border border-gray-200 bg-white">
-                            <div style={{
-                                width: 390,
-                                height: 570,
-                                transform: "scale(0.28205)",
-                                transformOrigin: "top left",
-                                pointerEvents: "none"
-                            }}>
+                            <div
+                                ref={livePreviewNodeRef}
+                                style={{
+                                    width: 390,
+                                    height: 570,
+                                    transform: "scale(0.28205)",
+                                    transformOrigin: "top left",
+                                    pointerEvents: "none"
+                                }}
+                            >
                                 <TradingCardPreview
                                     previewCardNodeRef={null}
                                     uploads={state.uploads}
@@ -115,13 +125,16 @@ const TradingCardSidebar = ({
                             {/* Thumbnail (Live if editing) */}
                             {isEditing && state ? (
                                 <div style={{ width: 110, height: 161, overflow: "hidden", position: "relative" }} className="w-[110px] h-[161px] flex-shrink-0 rounded border border-gray-200 bg-white">
-                                    <div style={{
-                                        width: 390,
-                                        height: 570,
-                                        transform: "scale(0.28205)",
-                                        transformOrigin: "top left",
-                                        pointerEvents: "none"
-                                    }}>
+                                    <div
+                                        ref={livePreviewNodeRef}
+                                        style={{
+                                            width: 390,
+                                            height: 570,
+                                            transform: "scale(0.28205)",
+                                            transformOrigin: "top left",
+                                            pointerEvents: "none"
+                                        }}
+                                    >
                                         <TradingCardPreview
                                             previewCardNodeRef={null}
                                             uploads={state.uploads}
@@ -160,11 +173,51 @@ const TradingCardSidebar = ({
                                     </div>
                                 </div>
                             ) : (
-                                <img
-                                    src={slot.previewDataUrl}
-                                    alt={`Design ${index + 1}`}
-                                    className="w-[110px] h-[161px] object-cover rounded border border-gray-200 flex-shrink-0"
-                                />
+                                <div style={{ width: 110, height: 161, overflow: "hidden", position: "relative" }} className="flex-shrink-0 rounded border border-gray-200 bg-white">
+                                    <div style={{
+                                        width: 390,
+                                        height: 570,
+                                        transform: "scale(0.28205)",
+                                        transformOrigin: "top left",
+                                        pointerEvents: "none"
+                                    }}>
+                                        <TradingCardPreview
+                                            previewCardNodeRef={null}
+                                            uploads={slot.snapshot.uploads ?? []}
+                                            activeText={null}
+                                            setActiveText={() => {}}
+                                            activeImage={null}
+                                            setActiveImage={() => {}}
+                                            updateUploadPosition={() => {}}
+                                            updateUploadSize={() => {}}
+                                            workingcard="front"
+                                            setworkingcard={() => {}}
+                                            baseFront={slot.snapshot.baseFront}
+                                            baseBack={null}
+                                            cardfinder={slot.snapshot.cardfinder ?? 0}
+                                            cardti={slot.snapshot.cardti}
+                                            carddes={slot.snapshot.carddes}
+                                            displayAttributeOne={slot.snapshot.name}
+                                            displayAttributeTwo={slot.snapshot.name2}
+                                            displayAttributeThree={slot.snapshot.name3}
+                                            acarddate={slot.snapshot.acarddate}
+                                            labelone={slot.snapshot.labelone}
+                                            labeltwo={slot.snapshot.labeltwo}
+                                            labelthree={slot.snapshot.labelthree}
+                                            attrIconOne={slot.snapshot.attrIconOne}
+                                            attrIconTwo={slot.snapshot.attrIconTwo}
+                                            attrIconThree={slot.snapshot.attrIconThree}
+                                            backDateDisplay=""
+                                            backDescription=""
+                                            backHighlightsTitle=""
+                                            backHighlightsPreview={[]}
+                                            backLegacyTagline=""
+                                            backLegacyText=""
+                                            isblack={slot.snapshot.isblack ?? false}
+                                            isMini={true}
+                                        />
+                                    </div>
+                                </div>
                             )}
 
                             {/* Info */}

@@ -108,6 +108,7 @@ export function useTradingCardState() {
     const canPersistCustomization = useRef(false);
 
     const previewCardNodeRef = useRef(null);
+    const captureNodeRef = useRef(null);
     const tradingBoxPreviewRef = useRef(null);
 
     const captureTradingBox = async () => {
@@ -545,12 +546,21 @@ export function useTradingCardState() {
             setActiveText(null);
             await new Promise(r => setTimeout(r, 200));
 
+            const html2canvas = (await import("html2canvas")).default;
+
             setworkingcard("back");
             await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
-            const backPreview = await captureNodeClean(
-                previewCardNodeRef.current,
-                (node) => captureNodeScreenshotForTranding(node, baseBack, uploads)
-            );
+            const backNode = captureNodeRef.current;
+            const backCanvas = await html2canvas(backNode, {
+                width: 390,
+                height: 570,
+                scale: 3,
+                useCORS: true,
+                allowTaint: false,
+                backgroundColor: "#ffffff",
+                logging: false,
+            });
+            const backPreview = backCanvas.toDataURL("image/png");
 
             console.log('backPreview:', backPreview?.substring(0, 50));
 
@@ -657,26 +667,35 @@ export function useTradingCardState() {
 
             await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
             await waitForImagesToLoad(previewCardNodeRef.current);
-            
 
-            console.log("nodeRef element:", previewCardNodeRef.current);
-            console.log("nodeRef innerHTML length:", previewCardNodeRef.current?.innerHTML?.length);
-            console.log("nodeRef children count:", previewCardNodeRef.current?.children?.length);
+            const html2canvas = (await import("html2canvas")).default;
+            const node = captureNodeRef.current;
+            if (!node) throw new Error("Capture node not found");
 
-            const previewDataUrl = await captureNodeClean(
-                previewCardNodeRef.current,
-                (node) => captureNodeScreenshotForTranding(node, baseFront, uploads, {
-                    cardfinder,
-                    cardti, carddes,
-                    name, name2, name3,
-                    labelone, labeltwo, labelthree,
-                    acarddate,
-                    attrIconOne, attrIconTwo, attrIconThree,
-                })
-            );
+            await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
+
+            const capturedCanvas = await html2canvas(node, {
+                width: 390,
+                height: 570,
+                scale: 3,
+                useCORS: true,
+                allowTaint: false,
+                backgroundColor: "#ffffff",
+                logging: false,
+            });
+
+            const previewDataUrl = capturedCanvas.toDataURL("image/png");
+
+            console.log("previewDataUrl preview:", previewDataUrl?.substring(0, 50));
+
+            // const a = document.createElement('a');
+            // a.href = previewDataUrl;
+            // a.download = 'sidebar-capture.png';
+            // a.click();
 
             const snapshot = {
                 baseFront, uploads, texts,
+                cardfinder,
                 cardti, carddes,
                 name, name2, name3,
                 labelone, labeltwo, labelthree,
@@ -773,6 +792,7 @@ export function useTradingCardState() {
         setAttrIconTwo(s.attrIconTwo ?? "/attribute-images/attribute_3.png");
         setAttrIconThree(s.attrIconThree ?? "/attribute-images/attribute_4.png");
         setisblack(Boolean(s.isblack));
+        setcardfinder(s.cardfinder ?? 0);
         setActiveImage(null);
         setActiveText(null);
 
@@ -941,6 +961,7 @@ export function useTradingCardState() {
         goToFinalView,
         resetCanvas,
         handleSaveSlot,
+        captureNodeRef,
         renderIconPreview,
         getSliderTrackStyle,
         addBackHighlight,

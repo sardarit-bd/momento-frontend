@@ -61,8 +61,6 @@ async function drawAttributeMetric(ctx, {
     fontSize, fontFamily, textColor,
     trackColor, fillColor,
 }) {
-    // JSX grid: col1=34px icon, gap=8px, col2=text+bar
-    // icon (34×34) — top-aligned at y
     const iconSize = 34;
     const colGap   = 8;
     const barH     = 7;
@@ -75,7 +73,6 @@ async function drawAttributeMetric(ctx, {
         } catch {}
     }
 
-    // Label — paddingTop 2px from JSX
     ctx.save();
     ctx.fillStyle    = textColor;
     ctx.font         = `${fontSize}px "${fontFamily}"`;
@@ -84,9 +81,7 @@ async function drawAttributeMetric(ctx, {
     ctx.fillText(text || "", textX, y + 2);
     ctx.restore();
 
-    // Bar — paddingBottom 3px + bar (JSX: mt-[4px] from span)
-    const barY = y + fontSize + 9;  // 2(paddingTop) + fontSize + 3(paddingBottom) + 4(mt)
-
+    const barY = y + fontSize + 9;
     ctx.save();
     ctx.fillStyle = trackColor;
     ctx.beginPath();
@@ -117,13 +112,16 @@ const DATE_GRAY_STOPS = [
 ];
 
 // ── FrontOne ────────────────────────────────────────────────────────────────
-// JSX (lg = 390×570):
-//   description : top-111 (444px)  left-8 (32px)   text-xs(12px)  Aileron thin
-//   metrics     : left-[40px]  bottom-[60px]  w-[132px]
-//                 mt-2 (8px) between rows
-//   title       : right-[40px]  bottom-[16%]   text-[2.1rem](33.6px)  CorsicaFont
-//   date        : below title   text-[1rem](16px)  CorsicaFont
-//   copyright   : bottom-[33px] center  text-[10px]  BrunsonFont
+// All positions are % of W / H so they work at ANY card size.
+//
+// JSX (lg = 390×570) → percentage:
+//   description : top-111(444px)=77.9%H  left-8(32px)=8.2%W
+//   metrics     : left-[40px]=10.3%W  bottom-[60px]=10.5%H
+//   barWidth    : w-[132px]=33.8%W
+//   iconSize    : 34px=8.7%W  (scale with W)
+//   title       : right-[40px]=10.3%W  bottom-[16%]H
+//   date        : below title
+//   copyright   : bottom-[33px]=5.8%H  center
 // ───────────────────────────────────────────────────────────────────────────
 async function drawFrontOne(ctx, props, W, H) {
     const {
@@ -134,89 +132,111 @@ async function drawFrontOne(ctx, props, W, H) {
         iconOne, iconTwo, iconThree,
     } = props;
 
+    // Scale factor relative to reference card (390×570)
+    const sx = W / 390;
+    const sy = H / 570;
+
     // ── Description
-    // top-111 = 111 * 4px = 444px,  left-8 = 32px
+    const descFontSize = Math.round(12 * sy);
     ctx.save();
     ctx.fillStyle    = "rgba(255,255,255,0.9)";
-    ctx.font         = `300 12px "AileronCanvas"`;
+    ctx.font         = `300 ${descFontSize}px "AileronCanvas"`;
     ctx.textBaseline = "top";
     ctx.textAlign    = "left";
-    ctx.fillText(carddes || "", 32, 444);
+    ctx.fillText(carddes || "", 32 * sx, 444 * sy);
     ctx.restore();
 
     // ── Attribute metrics
-    // bottom-[60px] → top of block = H - 60 - totalHeight
-    // Each row: icon(34) + bar below text. Row height = 34 + mt-2(8) = ~42px
-    // but JSX uses mt-1.5(6px) between rows for lg, so rowGap = 6
-    const iconSize  = 34;
-    const barH      = 7;
-    const fontSize  = 13;
-    const rowGap    = 8;   // mt-2 = 8px
-    const rowHeight = iconSize + rowGap;  // 42px
-    const barWidth  = 132;
-    const metricsBottom = 60;
-    const totalMetricsH = rowHeight * 3 - rowGap; // 3 rows
-    const startY = H - metricsBottom - totalMetricsH;
+    const iconSize  = Math.round(34 * sx);
+    const colGap    = Math.round(8  * sx);
+    const barH      = Math.round(7  * sy);
+    const fontSize  = Math.round(13 * sy);
+    const barWidth  = Math.round(132 * sx);
+    const rowGap    = Math.round(8  * sy);
+    const rowHeight = iconSize + rowGap;
+    const metLeft   = 40 * sx;
+    const startY    = H - 60 * sy - rowHeight * 3;
 
-    const metBase = {
-        barWidth, fontSize,
-        fontFamily: "GustanBlackCanvas",
-        textColor:  "#f7f7f7",
-        trackColor: "#000000",
-        fillColor:  "#f56f41",
+    const drawMetric = async (iconSrc, text, value, y) => {
+        const textX = metLeft + iconSize + colGap;
+        if (iconSrc) {
+            try {
+                const icon = await loadImage(iconSrc);
+                ctx.drawImage(icon, metLeft, y, iconSize, iconSize);
+            } catch {}
+        }
+        ctx.save();
+        ctx.fillStyle    = "#f7f7f7";
+        ctx.font         = `${fontSize}px "GustanBlackCanvas"`;
+        ctx.textBaseline = "top";
+        ctx.textAlign    = "left";
+        ctx.fillText(text || "", textX, y + 2);
+        ctx.restore();
+
+        const barY = y + fontSize + Math.round(9 * sy);
+        ctx.save();
+        ctx.fillStyle = "#000000";
+        ctx.beginPath();
+        ctx.roundRect(textX, barY, barWidth, barH, barH / 2);
+        ctx.fill();
+        ctx.restore();
+
+        const fillW = (barWidth * Math.min(Math.max(Number(value) || 0, 0), 100)) / 100;
+        ctx.save();
+        ctx.fillStyle = "#f56f41";
+        ctx.beginPath();
+        ctx.roundRect(textX, barY, fillW, barH, barH / 2);
+        ctx.fill();
+        ctx.restore();
     };
-    await drawAttributeMetric(ctx, { ...metBase, iconSrc: iconOne,   text: name,  value: labelone,   x: 40, y: startY });
-    await drawAttributeMetric(ctx, { ...metBase, iconSrc: iconTwo,   text: name2, value: labeltwo,   x: 40, y: startY + rowHeight });
-    await drawAttributeMetric(ctx, { ...metBase, iconSrc: iconThree, text: name3, value: labelthree, x: 40, y: startY + rowHeight * 2 });
+
+    await drawMetric(iconOne,   name,  labelone,   startY);
+    await drawMetric(iconTwo,   name2, labeltwo,   startY + rowHeight);
+    await drawMetric(iconThree, name3, labelthree, startY + rowHeight * 2);
 
     // ── Title
-    // right-[40px]  bottom-[16%] → baseline y = H - H*0.16 = H - 91.2 ≈ H - 91
-    // text-[2.1rem] = 33.6px → use 34px, CorsicaFont 900, TradingCardTitleMetal
-    const titleSize = 34;
-    const titleY    = H - Math.round(H * 0.16);  // 479
+    // bottom-[16%] → baseline at H - H*0.16
+    const titleSize = Math.round(33.6 * sy);  // text-[2.1rem]
+    const titleY    = H - H * 0.16;
     drawGradientText(
         ctx,
         cardti || "",
-        W - 40, titleY,
+        W - 40 * sx, titleY,
         `900 ${titleSize}px "CorsicaCanvas"`,
         METAL_STOPS,
         titleSize,
         "rgba(107,114,128,0.9)",
-        1.2,
+        1.2 * sx,
         "right"
     );
 
     // ── Date
-    // block below title, text-[1rem] = 16px, CorsicaFont, TradingCardDateGrayGradient
-    // leading-tight ≈ 1.25 → line height = titleSize * 1.25 = 42.5 → dateY = titleY + 20
-    const dateSize = 16;
-    const dateY    = titleY + titleSize * 0.6 + dateSize;  // snug below title
+    // text-[1rem] = 16px scaled, block below title
+    const dateSize = Math.round(16 * sy);
+    const dateY    = titleY + titleSize * 0.3 + dateSize;
     drawGradientText(
         ctx,
         acarddate || "",
-        W - 40, dateY,
+        W - 40 * sx, dateY,
         `900 ${dateSize}px "CorsicaCanvas"`,
         DATE_GRAY_STOPS,
         dateSize,
         "rgba(17,24,39,0.78)",
-        0.6,
+        0.6 * sx,
         "right"
     );
 
     // ── Copyright
-    // bottom-[33px] center, text-[10px], BrunsonFont, #1f1f1f
+    const copySize = Math.round(10 * sy);
     ctx.save();
     ctx.fillStyle    = "#1f1f1f";
-    ctx.font         = `400 10px "BrunsonCanvas"`;
+    ctx.font         = `400 ${copySize}px "BrunsonCanvas"`;
     ctx.textAlign    = "center";
     ctx.textBaseline = "alphabetic";
-    ctx.fillText(`© ${new Date().getFullYear()} MOMENTO TRADING CARDS`, W / 2, H - 33);
+    ctx.fillText(`© ${new Date().getFullYear()} MOMENTO TRADING CARDS`, W / 2, H - 33 * sy);
     ctx.restore();
 }
 
-// ── FrontTwo ────────────────────────────────────────────────────────────────
-// (unchanged from previous version — update if JSX changes)
-// ───────────────────────────────────────────────────────────────────────────
 async function drawFrontTwo(ctx, props, W, H) {
     const {
         cardti, carddes,
@@ -226,61 +246,244 @@ async function drawFrontTwo(ctx, props, W, H) {
         iconOne, iconTwo, iconThree,
     } = props;
 
+    const sx = W / 390;
+    const sy = H / 570;
+
+    const descFontSize = Math.round(12 * sy);
     ctx.save();
     ctx.fillStyle    = "rgba(240,240,240,0.9)";
-    ctx.font         = `300 12px "AileronCanvas"`;
+    ctx.font         = `300 ${descFontSize}px "AileronCanvas"`;
     ctx.textBaseline = "top";
     ctx.textAlign    = "left";
-    ctx.fillText(carddes || "", 32, 434);
+    ctx.fillText(carddes || "", 32 * sx, 434 * sy);
     ctx.restore();
 
-    const rowHeight = 42;
-    const startY    = H - 33 - rowHeight * 3;
-    const metBase   = {
-        barWidth:   132,
-        fontSize:   13,
-        fontFamily: "GustanBlackCanvas",
-        textColor:  "#f7f7f7",
-        trackColor: "#000000",
-        fillColor:  "#5ba2d8",
-    };
-    await drawAttributeMetric(ctx, { ...metBase, iconSrc: iconOne,   text: name,  value: labelone,   x: 25, y: startY });
-    await drawAttributeMetric(ctx, { ...metBase, iconSrc: iconTwo,   text: name2, value: labeltwo,   x: 25, y: startY + rowHeight });
-    await drawAttributeMetric(ctx, { ...metBase, iconSrc: iconThree, text: name3, value: labelthree, x: 25, y: startY + rowHeight * 2 });
+    const iconSize  = Math.round(34 * sx);
+    const colGap    = Math.round(8  * sx);
+    const barH      = Math.round(7  * sy);
+    const fontSize  = Math.round(13 * sy);
+    const barWidth  = Math.round(132 * sx);
+    const rowGap    = Math.round(8  * sy);
+    const rowHeight = iconSize + rowGap;
+    const metLeft   = 25 * sx;
+    const startY    = H - 33 * sy - rowHeight * 3;
 
-    const dateBaseline  = H - 33;
-    const titleBaseline = dateBaseline - 28;
+    const drawMetric = async (iconSrc, text, value, y) => {
+        const textX = metLeft + iconSize + colGap;
+        if (iconSrc) {
+            try {
+                const icon = await loadImage(iconSrc);
+                ctx.drawImage(icon, metLeft, y, iconSize, iconSize);
+            } catch {}
+        }
+        ctx.save();
+        ctx.fillStyle    = "#f7f7f7";
+        ctx.font         = `${fontSize}px "GustanBlackCanvas"`;
+        ctx.textBaseline = "top";
+        ctx.textAlign    = "left";
+        ctx.fillText(text || "", textX, y + 2);
+        ctx.restore();
+
+        const barY = y + fontSize + Math.round(9 * sy);
+        ctx.save();
+        ctx.fillStyle = "#000000";
+        ctx.beginPath();
+        ctx.roundRect(textX, barY, barWidth, barH, barH / 2);
+        ctx.fill();
+        ctx.restore();
+
+        const fillW = (barWidth * Math.min(Math.max(Number(value) || 0, 0), 100)) / 100;
+        ctx.save();
+        ctx.fillStyle = "#5ba2d8";
+        ctx.beginPath();
+        ctx.roundRect(textX, barY, fillW, barH, barH / 2);
+        ctx.fill();
+        ctx.restore();
+    };
+
+    await drawMetric(iconOne,   name,  labelone,   startY);
+    await drawMetric(iconTwo,   name2, labeltwo,   startY + rowHeight);
+    await drawMetric(iconThree, name3, labelthree, startY + rowHeight * 2);
+
+    const dateBaseline  = H - 33 * sy;
+    const titleSize     = Math.round(24 * sy);
+    const dateSize      = Math.round(22 * sy);
+    const titleBaseline = dateBaseline - dateSize - Math.round(6 * sy);
 
     ctx.save();
     ctx.fillStyle    = "#ffffff";
-    ctx.font         = `900 24px "GustanBlackCanvas"`;
+    ctx.font         = `900 ${titleSize}px "GustanBlackCanvas"`;
     ctx.textAlign    = "right";
     ctx.textBaseline = "alphabetic";
-    ctx.fillText((cardti || "").toUpperCase(), W - 25, titleBaseline);
+    ctx.fillText((cardti || "").toUpperCase(), W - 25 * sx, titleBaseline);
     ctx.restore();
 
     drawGradientText(
         ctx,
         acarddate || "",
-        W - 25, dateBaseline,
-        `900 22px "GustanBlackCanvas"`,
+        W - 25 * sx, dateBaseline,
+        `900 ${dateSize}px "GustanBlackCanvas"`,
         DATE_GRAY_STOPS,
-        22,
+        dateSize,
         "rgba(17,24,39,0.78)",
-        0.6,
+        0.6 * sx,
         "right"
     );
 
+    const copySize = Math.round(12 * sy);
     ctx.save();
     ctx.fillStyle    = "#1f1f1f";
-    ctx.font         = `600 12px "AileronCanvas"`;
+    ctx.font         = `600 ${copySize}px "AileronCanvas"`;
     ctx.textAlign    = "center";
     ctx.textBaseline = "alphabetic";
-    ctx.fillText(`© ${new Date().getFullYear()} MOMENTO TRADING CARDS`, W / 2, H - 8);
+    ctx.fillText(`© ${new Date().getFullYear()} MOMENTO TRADING CARDS`, W / 2, H - 8 * sy);
     ctx.restore();
 }
 
-// ── Main export ─────────────────────────────────────────────────────────────
+// ── BackOne ─────────────────────────────────────────────────────────────────
+// JSX (lg = 390×570):
+//   dateLabel   : top-10(40px)   left-8(32px)   text-xl(20px)   extrabold  TradingCardDateGrayGradient
+//   description : top-22(88px)   left-15(60px)  text-xs(12px)   thin       white/black
+//   highlightsTitle: top-44(176px) left-37(148px) text-md(16px) extrabold  white/black
+//   highlights  : top-57(228px)  left-15(60px)  text-[13px]    thin       white/black
+//   legacyTagline: top-98.5(394px) left-15(60px) text-md(16px) extrabold  white/black
+//   legacyText  : top-107(428px) left-15(60px)  text-xs(12px)  thin       white/black
+// ─────────────────────────────────────────────────────────────────────────────
+async function drawBackOne(ctx, props, W, H) {
+    const {
+        dateLabel,
+        description,
+        highlightsTitle,
+        highlights = [],
+        legacyTagline,
+        legacyText,
+        isblack,
+    } = props;
+
+    const textColor  = isblack ? "#000000" : "#ffffff";
+    const safeHighlights = Array.isArray(highlights) ? highlights.slice(0, 6) : [];
+
+    // ── Date label (TradingCardDateGrayGradient, extrabold, text-xl=20px)
+    // top-10 = 40px, left-8 = 32px
+    const dateText = (dateLabel || "Memory Card").toUpperCase();
+    drawGradientText(
+        ctx,
+        dateText,
+        32, 40 + 20,           // x=32, y=baseline = top(40) + fontSize(20)
+        `800 20px "AileronCanvas"`,
+        DATE_GRAY_STOPS,
+        20,
+        "rgba(17,24,39,0.78)",
+        0.6,
+        "left"
+    );
+
+    // ── Description (top-22=88px, left-15=60px, text-xs=12px, thin)
+    ctx.save();
+    ctx.fillStyle    = textColor;
+    ctx.font         = `300 12px "AileronCanvas"`;
+    ctx.textBaseline = "top";
+    ctx.textAlign    = "left";
+    // Clamp to 3 lines manually
+    const descWords  = (description || "Add a brief description...").split(" ");
+    let   descLine   = "";
+    let   descY      = 88;
+    const descMaxW   = 270;
+    const descLineH  = 14;
+    let   descLines  = 0;
+    for (const word of descWords) {
+        const test = descLine ? descLine + " " + word : word;
+        if (ctx.measureText(test).width > descMaxW && descLine) {
+            if (descLines < 3) { ctx.fillText(descLine, 60, descY); descY += descLineH; descLines++; }
+            descLine = word;
+        } else {
+            descLine = test;
+        }
+    }
+    if (descLine && descLines < 3) ctx.fillText(descLine, 60, descY);
+    ctx.restore();
+
+    // ── Highlights title (top-44=176px, left-37=148px, text-md=16px, extrabold)
+    ctx.save();
+    ctx.fillStyle    = textColor;
+    ctx.font         = `800 16px "AileronCanvas"`;
+    ctx.textBaseline = "top";
+    ctx.textAlign    = "left";
+    ctx.fillText((highlightsTitle || "Highlights").toUpperCase(), 148, 176);
+    ctx.restore();
+
+    // ── Highlights list (top-57=228px, left-15=60px, text-[13px])
+    const iconSize = 24;
+    const gap      = 6;
+    let   hlY      = 228;
+    const hlLineH  = 28; // mb-1 = 4px + icon(24px)
+
+    if (safeHighlights.length > 0) {
+        for (const item of safeHighlights) {
+            const icon = typeof item === "object" ? item?.icon : null;
+            const text = typeof item === "object" ? item?.text : item;
+            if (!text) continue;
+
+            let textX = 60;
+            if (icon) {
+                try {
+                    const iconImg = await loadImage(icon);
+                    ctx.drawImage(iconImg, 60, hlY, iconSize, iconSize);
+                    textX = 60 + iconSize + gap;
+                } catch {}
+            }
+            ctx.save();
+            ctx.fillStyle    = textColor;
+            ctx.font         = `300 13px "AileronCanvas"`;
+            ctx.textBaseline = "middle";
+            ctx.textAlign    = "left";
+            ctx.fillText(text, textX, hlY + iconSize / 2);
+            ctx.restore();
+            hlY += hlLineH;
+        }
+    } else {
+        ctx.save();
+        ctx.fillStyle    = textColor;
+        ctx.font         = `300 12px "AileronCanvas"`;
+        ctx.textBaseline = "top";
+        ctx.textAlign    = "left";
+        ctx.fillText("Add highlights to show key moments.", 60, 228);
+        ctx.restore();
+    }
+
+    // ── Legacy tagline (top-98.5=394px, left-15=60px, text-md=16px, extrabold)
+    ctx.save();
+    ctx.fillStyle    = textColor;
+    ctx.font         = `800 16px "AileronCanvas"`;
+    ctx.textBaseline = "top";
+    ctx.textAlign    = "left";
+    ctx.fillText((legacyTagline || "Legacy Tagline").toUpperCase(), 60, 394);
+    ctx.restore();
+
+    // ── Legacy text (top-107=428px, left-15=60px, text-xs=12px, thin, 4 lines max)
+    ctx.save();
+    ctx.fillStyle    = textColor;
+    ctx.font         = `300 12px "AileronCanvas"`;
+    ctx.textBaseline = "top";
+    ctx.textAlign    = "left";
+    const ltWords  = (legacyText || "Legacy text").split(" ");
+    let   ltLine   = "";
+    let   ltY      = 428;
+    const ltMaxW   = 270;
+    const ltLineH  = 14;
+    let   ltLines  = 0;
+    for (const word of ltWords) {
+        const test = ltLine ? ltLine + " " + word : word;
+        if (ctx.measureText(test).width > ltMaxW && ltLine) {
+            if (ltLines < 4) { ctx.fillText(ltLine, 60, ltY); ltY += ltLineH; ltLines++; }
+            ltLine = word;
+        } else {
+            ltLine = test;
+        }
+    }
+    if (ltLine && ltLines < 4) ctx.fillText(ltLine, 60, ltY);
+    ctx.restore();
+}
 
 async function captureNodeScreenshotForTranding(domNode, baseImageSrc, uploads = [], props = {}) {
     if (typeof window === "undefined" || typeof document === "undefined") return null;
@@ -289,8 +492,8 @@ async function captureNodeScreenshotForTranding(domNode, baseImageSrc, uploads =
     await ensureFontsLoaded();
     await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
 
-    const CARD_W = domNode.offsetWidth  || 390;
-    const CARD_H = domNode.offsetHeight || 570;
+    const CARD_W = 390;
+    const CARD_H = 570;
     const SCALE  = 3;
 
     const canvas = document.createElement("canvas");
@@ -300,6 +503,7 @@ async function captureNodeScreenshotForTranding(domNode, baseImageSrc, uploads =
     ctx.scale(SCALE, SCALE);
     ctx.clearRect(0, 0, CARD_W, CARD_H);
 
+    // Pass 1 — uploaded photo
     for (const upload of uploads) {
         try {
             const img = await loadImage(upload.url);
@@ -307,6 +511,7 @@ async function captureNodeScreenshotForTranding(domNode, baseImageSrc, uploads =
         } catch (e) { console.warn("upload draw failed:", e.message); }
     }
 
+    // Pass 2 — base template
     if (baseImageSrc) {
         try {
             const img = await loadImage(baseImageSrc);
@@ -314,25 +519,47 @@ async function captureNodeScreenshotForTranding(domNode, baseImageSrc, uploads =
         } catch (e) { console.warn("base image draw failed:", e.message); }
     }
 
+    // Pass 3 — text overlay
     const {
+        isBack = false,
         cardfinder = 0,
+        // front props
         cardti, carddes,
         name, name2, name3,
         labelone, labeltwo, labelthree,
         acarddate,
         attrIconOne, attrIconTwo, attrIconThree,
+        // back props
+        backDateDisplay,
+        backDescription,
+        backHighlightsTitle,
+        backHighlightsPreview,
+        backLegacyTagline,
+        backLegacyText,
+        isblack,
     } = props;
 
-    const textProps = {
-        cardti, carddes,
-        name, name2, name3,
-        labelone, labeltwo, labelthree,
-        acarddate,
-        iconOne: attrIconOne, iconTwo: attrIconTwo, iconThree: attrIconThree,
-    };
-
-    if      (cardfinder === 0) await drawFrontOne(ctx, textProps, CARD_W, CARD_H);
-    else if (cardfinder === 1) await drawFrontTwo(ctx, textProps, CARD_W, CARD_H);
+    if (isBack) {
+        await drawBackOne(ctx, {
+            dateLabel:       backDateDisplay,
+            description:     backDescription,
+            highlightsTitle: backHighlightsTitle,
+            highlights:      backHighlightsPreview,
+            legacyTagline:   backLegacyTagline,
+            legacyText:      backLegacyText,
+            isblack,
+        }, CARD_W, CARD_H);
+    } else {
+        const textProps = {
+            cardti, carddes,
+            name, name2, name3,
+            labelone, labeltwo, labelthree,
+            acarddate,
+            iconOne: attrIconOne, iconTwo: attrIconTwo, iconThree: attrIconThree,
+        };
+        if      (cardfinder === 0) await drawFrontOne(ctx, textProps, CARD_W, CARD_H);
+        else if (cardfinder === 1) await drawFrontTwo(ctx, textProps, CARD_W, CARD_H);
+    }
 
     return canvas.toDataURL("image/png");
 }

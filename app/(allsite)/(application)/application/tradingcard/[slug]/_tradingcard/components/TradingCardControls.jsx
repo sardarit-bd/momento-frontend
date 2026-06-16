@@ -372,28 +372,62 @@ export default function TradingCardControls({
                     {/* Attribute Tab Controls */}
                     {sidebarTab === "attributes" && (
                         <div className="space-y-4">
+                            {/* Created For */}
+                            <div className="rounded-2xl border border-sky-100 bg-gradient-to-br from-sky-50 to-white p-5 shadow-sm">
+                                <div className="mb-4">
+                                    <h3 className="text-lg font-semibold text-slate-900">
+                                        Created For
+                                    </h3>
+                                </div>
+
+                                <label className="mb-2 flex items-center justify-between text-sm font-medium text-slate-700">
+                                    <span className="flex items-center gap-1">
+                                        Recipient Name
+                                        <span className="text-red-500">*</span>
+                                    </span>
+
+                                    <CharactersCountComponent
+                                        text={carddes}
+                                        limit={carddeslimite}
+                                    />
+                                </label>
+
+                                <textarea
+                                    maxLength={carddeslimite}
+                                    value={carddes}
+                                    onChange={(e) => setcarddes(e.target.value)}
+                                    placeholder="Write a meaningful message..."
+                                    className="h-14 w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-slate-700 outline-none transition-all duration-200 focus:border-sky-300 focus:ring-2 focus:ring-sky-100"
+                                />
+                            </div>
                             <div className="border border-gray-200 p-4 md:p-5 mb-4 rounded-xl bg-white shadow-sm ring-1 ring-gray-100">
-                                <label className="block text-xl text-gray-700 mb-3 font-semibold">Card Content</label>
+                                
+                                <label className="block text-xl text-gray-700 mb-3 mt-4 font-semibold">Card Content</label>
 
                                 <div className="w-full flex items-center gap-3 mb-3 rounded-lg p-1 transition-shadow duration-200 hover:shadow-sm">
                                     <div className="w-full">
-                                        <label className="text-gray-500 mb-1 text-sm flex items-center justify-between">
-                                            <span>Card Title: <span className="text-red-600 text-xl">*</span></span>
-                                            <div className="relative">
-                                                <CharactersCountComponent text={cardti} limit={cardtiltelimite} />
-                                            </div>
+                                        <label className="mb-2 flex items-center justify-between text-sm font-medium text-slate-700">
+                                            <span className="flex items-center gap-1">
+                                                Card Title
+                                                <span className="text-red-500">*</span>
+                                            </span>
+
+                                            <CharactersCountComponent
+                                                text={cardti}
+                                                limit={cardtiltelimite}
+                                            />
                                         </label>
                                         <input 
                                             value={cardti} 
                                             maxLength={cardtiltelimite} 
                                             onChange={(e) => setcardti(e.target.value)} 
                                             type="text" 
-                                            className="border border-gray-200 px-3 py-2 rounded-lg text-gray-600 outline-none w-full transition-all duration-200 focus:ring-2 focus:ring-gray-300 focus:border-gray-300" 
+                                            className="border border-slate-200 px-3 py-2 rounded-lg text-slate-700 outline-none w-full transition-all duration-200 focus:border-sky-300 focus:ring-2 focus:ring-sky-100" 
                                         />
                                     </div>
                                 </div>
 
-                                <div className="w-full flex items-center gap-3 mb-3 rounded-lg p-1 transition-shadow duration-200 hover:shadow-sm">
+                                {/* <div className="w-full flex items-center gap-3 mb-3 rounded-lg p-1 transition-shadow duration-200 hover:shadow-sm">
                                     <div className="w-full">
                                         <label className="text-gray-500 mb-1 text-sm flex items-center justify-between">
                                             <span>Created For: <span className="text-red-600 text-xl">*</span></span>
@@ -408,7 +442,7 @@ export default function TradingCardControls({
                                             className="border border-gray-200 px-3 py-2 rounded-lg text-gray-600 outline-none w-full h-[90px] transition-all duration-200 focus:ring-2 focus:ring-gray-300 focus:border-gray-300"
                                         />
                                     </div>
-                                </div>
+                                </div> */}
                             </div>
 
                             <div className="border border-gray-200 p-4 md:p-5 mb-4 rounded-xl bg-white shadow-sm ring-1 ring-gray-100">
@@ -431,7 +465,7 @@ export default function TradingCardControls({
                                                 onChange={(e) => setname(e.target.value)}
                                                 type="text"
                                                 placeholder="Attribute One"
-                                                className="h-12 w-full rounded-xl border border-slate-200 bg-white px-3 text-gray-700 outline-none transition-all duration-200 focus:ring-2 focus:ring-emerald-200 focus:border-emerald-300"
+                                                className="h-12 w-full rounded-xl border border-slate-200 bg-white px-3 text-slate-700 outline-none transition-all duration-200 focus:border-sky-300 focus:ring-2 focus:ring-sky-100"
                                             />
 
                                             {activeIconPicker === "one" && (
@@ -483,7 +517,7 @@ export default function TradingCardControls({
                                                 onChange={(e) => setname2(e.target.value)}
                                                 type="text"
                                                 placeholder="Attribute Two"
-                                                className="h-12 w-full rounded-xl border border-slate-200 bg-white px-3 text-gray-700 outline-none transition-all duration-200 focus:ring-2 focus:ring-emerald-200 focus:border-emerald-300"
+                                                className="h-12 w-full rounded-xl border border-slate-200 bg-white px-3 text-slate-700 outline-none transition-all duration-200 focus:border-sky-300 focus:ring-2 focus:ring-sky-100"
                                             />
 
                                             {activeIconPicker === "two" && (
@@ -535,7 +569,7 @@ export default function TradingCardControls({
                                                 onChange={(e) => setname3(e.target.value)}
                                                 type="text"
                                                 placeholder="Attribute Three"
-                                                className="h-12 w-full rounded-xl border border-slate-200 bg-white px-3 text-gray-700 outline-none transition-all duration-200 focus:ring-2 focus:ring-emerald-200 focus:border-emerald-300"
+                                                className="h-12 w-full rounded-xl border border-slate-200 bg-white px-3 text-slate-700 outline-none transition-all duration-200 focus:border-sky-300 focus:ring-2 focus:ring-sky-100"
                                             />
 
                                             {activeIconPicker === "three" && (
@@ -588,7 +622,7 @@ export default function TradingCardControls({
                                             maxLength={acarddatelimite} 
                                             onChange={(e) => setacarddate(e.target.value)} 
                                             type="text" 
-                                            className="border border-gray-300 px-3 py-2 rounded-lg text-gray-600 outline-none transition-all duration-200 focus:ring-2 focus:ring-gray-300 focus:border-gray-300" 
+                                            className="border border-slate-200 px-3 py-2 rounded-lg text-slate-700 outline-none transition-all duration-200 focus:border-sky-300 focus:ring-2 focus:ring-sky-100" 
                                         />
                                     </div>
                                 </div>

@@ -42,12 +42,17 @@ export default function TradingCardPreview({
     return (
         <div className={isMini ? "" : "col-span-10 row-span-9 lg:row-span-10 lg:col-span-6 flex items-center justify-center -translate-y-[35px] lg:-translate-y-[50px] w-screen lg:w-full z-40"}>
             <div className={isMini ? "" : "flex flex-col items-center gap-3"}>
-                <div 
-                    ref={isMini ? null : previewCardNodeRef} 
-                    className={
+            <div className={isMini ? "" : "w-[255px] h-[370px] lg:w-[390px] lg:h-[570px] overflow-hidden rounded-xl border border-gray-200 shadow-xl ring-1 ring-gray-100 relative bg-white"}>
+                <div
+                    ref={isMini ? null : previewCardNodeRef}
+                    className="w-[390px] h-[570px] relative overflow-hidden bg-white"
+                    style={
                         isMini
-                            ? "w-[390px] h-[570px] relative overflow-hidden"
-                            : "border border-gray-200 rounded-xl bg-white w-[255px] h-[370px] lg:w-[390px] lg:h-[570px] relative overflow-hidden shadow-xl ring-1 ring-gray-100"
+                            ? {}
+                            : {
+                                transform: "scale(var(--card-scale))",
+                                transformOrigin: "top left",
+                            }
                     }
                 >
                     {/* Uploaded images (zIndex:1) - draggable & resizable */}
@@ -231,6 +236,7 @@ export default function TradingCardPreview({
                         <span>{workingcard === "front" ? "Flip to Back" : "Flip to Front"}</span>
                     </button>
                 )}
+            </div>
             </div>
         </div>
     );

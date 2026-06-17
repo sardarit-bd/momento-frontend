@@ -562,6 +562,10 @@ export default function CheckoutPage() {
 
       const tradingItem = cart.find(item => item.productType === "trading");
       
+      const persistedPackageTitle = typeof window !== "undefined"
+        ? localStorage.getItem("persistent_packageTitle") ?? tradingItem?.packTitle ?? null
+        : tradingItem?.packTitle ?? null;
+        
       const checkoutData = {
         first_name: firstName,
         last_name: lastName,
@@ -577,8 +581,8 @@ export default function CheckoutPage() {
         items: cartItems,
         userID: id,
         tuckbox_image: deckcart?.[0]?.BoxImage || null,
-        trading_box_pack_title:  tradingItem?.packTitle  || null,
-        trading_box_created_for: tradingItem?.createdFor || null,
+        trading_box_pack_title:  persistedPackageTitle,
+        trading_box_created_for: localStorage.getItem("persistent_carddes") ?? tradingItem?.createdFor ?? null,
       };
 
       const checkoutEndpoint =

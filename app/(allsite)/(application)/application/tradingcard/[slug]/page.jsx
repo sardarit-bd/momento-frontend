@@ -110,6 +110,9 @@ export default function ProductCustomizer() {
                         activeImage={state.activeImage}
                         cardti={state.cardti}
                         setcardti={state.setcardti}
+                        packageTitle={state.packageTitle}
+                        setPackageTitle={state.setPackageTitle}
+                        packageTitlelimite={state.packageTitlelimite}
                         cardtiltelimite={state.cardtiltelimite}
                         carddes={state.carddes}
                         setcarddes={state.setcarddes}
@@ -158,7 +161,7 @@ export default function ProductCustomizer() {
             <div className="absolute opacity-0 pointer-events-none" style={{ zIndex: -1 }}>
                 <TradingBoxPreview
                     ref={state.tradingBoxPreviewRef}
-                    packTitle={state.cardti}
+                    packTitle={state.packageTitle}
                     createdFor={state.carddes}
                 />
             </div>

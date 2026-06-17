@@ -174,6 +174,13 @@ export function useTradingCardState() {
         return "Created For";
     });
 
+    const [packageTitle, setPackageTitle] = useState(() => {
+        if (typeof window !== "undefined") {
+            return localStorage.getItem("persistent_packageTitle") ?? "";
+        }
+        return "";
+    });
+
     const [name, setname] = useState('Attribute One');
     const [name2, setname2] = useState('Attribute Two');
     const [name3, setname3] = useState('Attribute Three');
@@ -199,6 +206,7 @@ export function useTradingCardState() {
     // text input limit states
     const [cardtiltelimite, setcardtiltelimite] = useState(8);
     const [carddeslimite, setcarddeslimite] = useState(15);
+    const [packageTitlelimite, setpackageTitlelimite] = useState(15);
     const [namelimite, setnamelimite] = useState(15);
     const [name2limite, setname2limite] = useState(15);
     const [name3limite, setname3limite] = useState(15);
@@ -210,8 +218,10 @@ export function useTradingCardState() {
     const getBaseTrading = useCallback(async (slug) => {
         // At the top of getBaseTrading:
         const persistedCarddes = localStorage.getItem("persistent_carddes") ?? "Created For";
-        console.log("[DEBUG] getBaseTrading slug:", slug, "persistedCarddes:", persistedCarddes);
         setcarddes(persistedCarddes);
+
+        const persistedPackageTitle = localStorage.getItem("persistent_packageTitle") ?? "";
+        setPackageTitle(persistedPackageTitle);
 
         setfetchingDataLoading(true);
         const res = await MakeGet(`api/shop/${slug}`);
@@ -405,6 +415,13 @@ export function useTradingCardState() {
         }
     }, [carddes]);
 
+
+    useEffect(() => {
+        if (typeof window !== "undefined" && packageTitle) {
+            localStorage.setItem("persistent_packageTitle", packageTitle);
+        }
+    }, [packageTitle]);
+
     useEffect(() => {
         getBaseTrading(slug);
     }, [slug, getBaseTrading]);
@@ -435,7 +452,7 @@ export function useTradingCardState() {
             uploads,     texts,     workingcard, isblack,
             slotIds:     savedSlots.map(s => s.id),
             content: {
-                cardti, carddes, name, name2, name3,
+                cardti, carddes, packageTitle, name, name2, name3,
                 labelone, labeltwo, labelthree,
                 acarddate, cardType,
                 attrIconOne, attrIconTwo, attrIconThree,
@@ -449,7 +466,7 @@ export function useTradingCardState() {
         fetchingData?.id, fetchingData?.slug,
         cardfinder, baseFront, baseBack,
         uploads, texts, savedSlots, workingcard, isblack,
-        cardti, carddes, name, name2, name3,
+        cardti, carddes, packageTitle, name, name2, name3,
         labelone, labeltwo, labelthree,
         acarddate, cardType,
         attrIconOne, attrIconTwo, attrIconThree,
@@ -552,12 +569,17 @@ export function useTradingCardState() {
             return;
         }
 
-        if (!cardti.trim()) {
+        // ✅ Read fresh from localStorage to avoid stale closure
+        const freshPackageTitle = localStorage.getItem("persistent_packageTitle") ?? packageTitle ?? "";
+        const freshCarddes = localStorage.getItem("persistent_carddes") ?? carddes ?? "";
+
+        // ✅ Validate packageTitle not cardti
+        if (!freshPackageTitle.trim()) {
             toast.warn("Please enter a Pack Title for your box.");
             return;
         }
 
-        if (!carddes.trim()) {
+        if (!freshCarddes.trim()) {
             toast.warn("Please enter a name in the Created For field.");
             return;
         }
@@ -605,28 +627,28 @@ export function useTradingCardState() {
             });
 
             const product = {
-                id:                     generateUserId(),
-                packTitle:              cardti,
-                createdFor:             carddes,
-                productId:              fetchingData?.id,
-                productSlug:            fetchingData?.slug,
-                productName:            fetchingData?.name,
-                productType:            fetchingData?.type,
-                productUnitPrice:       fetchingData?.offer_price > 0
+                id:                      generateUserId(),
+                packTitle:               freshPackageTitle,  // ✅ fresh value
+                createdFor:              freshCarddes,        // ✅ fresh value
+                productId:               fetchingData?.id,
+                productSlug:             fetchingData?.slug,
+                productName:             fetchingData?.name,
+                productType:             fetchingData?.type,
+                productUnitPrice:        fetchingData?.offer_price > 0
                                             ? fetchingData?.offer_price
                                             : fetchingData?.price,
-                productQuantity:        1,
-                productImage:           fetchingData?.image,
-                productDescription:     fetchingData?.description,
+                productQuantity:         1,
+                productImage:            fetchingData?.image,
+                productDescription:      fetchingData?.description,
                 selectedPackage,
                 packageConfig,
                 FinalProduct,
-                FinalProductImages:     [],
-                FinalPDf:               null,
-                customization_mode:     "trading",
+                FinalProductImages:      [],
+                FinalPDf:                null,
+                customization_mode:      "trading",
                 customizationStorageKey: customizationStorageKey || null,
             };
-            
+
             const composedBoxImage = await captureTradingBox();
             setboxs([{
                 BoxImage: composedBoxImage || "/tradingbox.png",
@@ -718,7 +740,7 @@ export function useTradingCardState() {
             const snapshot = {
                 baseFront, uploads, texts,
                 cardfinder,
-                cardti, carddes,
+                cardti, carddes, packageTitle,
                 name, name2, name3,
                 labelone, labeltwo, labelthree,
                 acarddate, cardType,
@@ -802,6 +824,7 @@ export function useTradingCardState() {
         setTexts(Array.isArray(s.texts) ? s.texts : []);
         setcardti(s.cardti ?? "Title");
         setcarddes(localStorage.getItem("persistent_carddes") ?? s.carddes ?? "Created For");
+        setPackageTitle(localStorage.getItem("persistent_packageTitle") ?? s.packageTitle ?? "");
         setname(s.name ?? "Attribute One");
         setname2(s.name2 ?? "Attribute Two");
         setname3(s.name3 ?? "Attribute Three");
@@ -933,6 +956,7 @@ export function useTradingCardState() {
         doneloading, setdoneloading,
         cardti, setcardti,
         carddes, setcarddes,
+        packageTitle, setPackageTitle,
         name, setname,
         name2, setname2,
         name3, setname3,
@@ -955,6 +979,7 @@ export function useTradingCardState() {
         cardfinder, setcardfinder,
         cardtiltelimite,
         carddeslimite,
+        packageTitlelimite,
         namelimite,
         name2limite,
         name3limite,

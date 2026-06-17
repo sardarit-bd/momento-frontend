@@ -40,10 +40,13 @@ export default function TradingCardControls({
     activeImage,
     cardti,
     setcardti,
+    packageTitle,
+    setPackageTitle,
     cardtiltelimite,
     carddes,
     setcarddes,
     carddeslimite,
+    packageTitlelimite,
     name,
     setname,
     namelimite,
@@ -372,15 +375,16 @@ export default function TradingCardControls({
                     {/* Attribute Tab Controls */}
                     {sidebarTab === "attributes" && (
                         <div className="space-y-4">
-                            {/* Created For */}
+                            {/* Packaging Information */}
                             <div className="rounded-2xl border border-sky-100 bg-gradient-to-br from-sky-50 to-white p-5 shadow-sm">
                                 <div className="mb-4">
                                     <h3 className="text-lg font-semibold text-slate-900">
-                                        Created For
+                                        Packaging Information
                                     </h3>
                                 </div>
 
-                                <label className="mb-2 flex items-center justify-between text-sm font-medium text-slate-700">
+                                <div>
+                                    <label className="mb-2 flex items-center justify-between text-sm font-medium text-slate-700">
                                     <span className="flex items-center gap-1">
                                         Recipient Name
                                         <span className="text-red-500">*</span>
@@ -397,6 +401,25 @@ export default function TradingCardControls({
                                     value={carddes}
                                     onChange={(e) => setcarddes(e.target.value)}
                                     placeholder="Write a meaningful message..."
+                                    className="h-14 w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-slate-700 outline-none transition-all duration-200 focus:border-sky-300 focus:ring-2 focus:ring-sky-100"
+                                />
+                                </div>
+
+                                <label className="mb-2 flex items-center justify-between text-sm font-medium text-slate-700">
+                                    <span className="flex items-center gap-1">
+                                        Package Title
+                                        <span className="text-red-500">*</span>
+                                    </span>
+                                    <CharactersCountComponent
+                                        text={packageTitle}
+                                        limit={packageTitlelimite}
+                                    />
+                                </label>
+                                <input
+                                    maxLength={packageTitlelimite}
+                                    value={packageTitle}
+                                    onChange={(e) => setPackageTitle(e.target.value)}
+                                    placeholder="Enter package title..."
                                     className="h-14 w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-slate-700 outline-none transition-all duration-200 focus:border-sky-300 focus:ring-2 focus:ring-sky-100"
                                 />
                             </div>

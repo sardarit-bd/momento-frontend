@@ -24,6 +24,15 @@ const CARD_STEPS = [
 ];
 const JOKER_STEP = { type: "Joker_Card", label: "Joker", icon: GiCardJoker };
 
+const getSortedInsertIndex = (currentCards, cardType) => {
+    const order = [...CARD_FLOW, "Joker_Card"];
+    const targetOrder = order.indexOf(cardType);
+    const insertAt = currentCards.findIndex(
+        (card) => order.indexOf(card.editedCard) > targetOrder
+    );
+    return insertAt === -1 ? currentCards.length : insertAt;
+};
+
 const CARD_FLOW = CARD_STEPS.map((step) => step.type);
 const MAX_CUSTOMIZABLE_CARDS = 5;
 const CARD_TYPE_LABELS = {
@@ -270,6 +279,9 @@ const ProductCustomizer = () => {
             return;
         }
 
+        const baseCard = product?.customizations?.base_cards?.find(
+            (item) => getCanonicalCardType(item?.card_type) === cardType
+        );
         const baseForType = product?.customizations?.custom_sets?.find(
             (item) => getCanonicalCardType(item?.card_type) === cardType
         )?.image;
@@ -281,23 +293,27 @@ const ProductCustomizer = () => {
             if (items?.length > 0) initialLayersTwo[layer] = items[0]?.image;
         });
 
-        const baseCard = product?.customizations?.base_cards?.find(
-            (item) => getCanonicalCardType(item?.card_type) === cardType
-        );
-
-        setCards((prev) => [
-            ...prev,
-            {
+        setCards((prev) => {
+            const newCard = {
                 editedCard: cardType,
                 baseImage: baseCard?.image || baseForType,
                 slotName: baseCard?.name || null,
-                selectedLayers: initialLayersTwo
-            },
-        ]);
+                selectedLayers: initialLayersTwo,
+            };
+            // ✅ Insert at the correct serialized position
+            const insertAt = getSortedInsertIndex(prev, cardType);
+            const newCards = [
+                ...prev.slice(0, insertAt),
+                newCard,
+                ...prev.slice(insertAt),
+            ];
 
-        if (shouldSetActive) {
-            setActiveCardIndex((prev) => prev + 1);
-        }
+            if (shouldSetActive) {
+                setActiveCardIndex(insertAt);
+            }
+
+            return newCards;
+        });
     };
 
     const removeCard = (index) => {
@@ -481,38 +497,51 @@ const ProductCustomizer = () => {
             return;
         }
 
-        const currentStep = CARD_FLOW.indexOf(activeType);
-        const currentIndex = currentStep >= 0 ? currentStep : CARD_FLOW.findIndex((type) => !cards.some((card) => card.editedCard === type)) - 1;
-        const nextStepIndex = currentIndex + 1;
+        const firstMissingType = CARD_FLOW.find(
+            (type) => !cards.some((card) => card.editedCard === type)
+        );
 
-        if (nextStepIndex >= CARD_FLOW.length) {
-            const hasJokerCard = cards.some((card) => card?.editedCard === "Joker_Card");
-            if (!hasJokerCard) {
-                setshowJokerUpsell(true);
-                setdoneloading(false);
-                return;
-            }
+        if (firstMissingType) {
+            seteditedCard(firstMissingType);
 
-            await goToFinalView();
+            const baseCard = product?.customizations?.base_cards?.find(
+                (item) => getCanonicalCardType(item?.card_type) === firstMissingType
+            );
+            const baseForType = product?.customizations?.custom_sets?.find(
+                (item) => getCanonicalCardType(item?.card_type) === firstMissingType
+            )?.image;
+
+            const initialLayers = {};
+            layers.forEach((layer) => {
+                if (layer === "beards") return;
+                const items = product?.customizations?.[layer];
+                if (items?.length > 0) initialLayers[layer] = items[0]?.image;
+            });
+
+            setCards((prev) => {
+                const newCard = {
+                    editedCard: firstMissingType,
+                    baseImage: baseCard?.image || baseForType,
+                    slotName: baseCard?.name || null,
+                    selectedLayers: initialLayers,
+                };
+                // ✅ Insert at the correct serialized position
+                const insertAt = getSortedInsertIndex(prev, firstMissingType);
+                const newCards = [
+                    ...prev.slice(0, insertAt),
+                    newCard,
+                    ...prev.slice(insertAt),
+                ];
+                setActiveCardIndex(insertAt);
+                return newCards;
+            });
+
             setTimeout(() => setdoneloading(false), 500);
             return;
         }
 
-        const nextCardType = CARD_FLOW[nextStepIndex];
-        const existingCardIndex = cards.findIndex((item) => item?.editedCard === nextCardType);
-
-        if (existingCardIndex >= 0) {
-            setActiveCardIndex(existingCardIndex);
-            seteditedCard(nextCardType);
-        } else {
-            seteditedCard(nextCardType);
-            addNewCard(nextCardType, false);
-            setActiveCardIndex((_prev) => {
-                return cards.length;
-            });
-        }
-
-        setTimeout(() => setdoneloading(false), 500);
+        setshowJokerUpsell(true);
+        setdoneloading(false);
     };
 
     const handleSkipJokerUpsell = async () => {
@@ -545,18 +574,22 @@ const ProductCustomizer = () => {
                 return prev;
             }
 
-            const nextCards = [
-                ...prev,
-                {
-                    editedCard: "Joker_Card",
-                    baseImage: jokerBase,
-                    selectedLayers: initialLayers,
-                },
+            const newCard = {
+                editedCard: "Joker_Card",
+                baseImage: jokerBase,
+                selectedLayers: initialLayers,
+            };
+            // ✅ Joker always sorts last, but use helper for consistency
+            const insertAt = getSortedInsertIndex(prev, "Joker_Card");
+            const newCards = [
+                ...prev.slice(0, insertAt),
+                newCard,
+                ...prev.slice(insertAt),
             ];
-
-            setActiveCardIndex(nextCards.length - 1);
-            return nextCards;
+            setActiveCardIndex(insertAt);
+            return newCards;
         });
+
         setshowJokerUpsell(false);
     };
 

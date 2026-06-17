@@ -68,7 +68,7 @@ export function useTradingCardState() {
         return (
             uploads.length > 0 ||
             texts.length > 0 ||
-            cardti !== "Card Title" ||
+            cardti !== "Title" ||
             carddes !== "Created For" ||
             name !== "Attribute One" ||
             name2 !== "Attribute Two" ||
@@ -165,7 +165,7 @@ export function useTradingCardState() {
     const [doneloading, setdoneloading] = useState(false);
 
     // text state
-    const [cardti, setcardti] = useState('Card Title');
+    const [cardti, setcardti] = useState('Title');
     // const [carddes, setcarddes] = useState('Created For');
     const [carddes, setcarddes] = useState(() => {
         if (typeof window !== "undefined") {
@@ -197,12 +197,12 @@ export function useTradingCardState() {
     const [cardfinder, setcardfinder] = useState(0);
 
     // text input limit states
-    const [cardtiltelimite, setcardtiltelimite] = useState(12);
+    const [cardtiltelimite, setcardtiltelimite] = useState(8);
     const [carddeslimite, setcarddeslimite] = useState(15);
     const [namelimite, setnamelimite] = useState(15);
     const [name2limite, setname2limite] = useState(15);
     const [name3limite, setname3limite] = useState(15);
-    const [acarddatelimite, setacarddatelimite] = useState(10);
+    const [acarddatelimite, setacarddatelimite] = useState(15);
 
     // color state
     const [isblack, setisblack] = useState(false);
@@ -242,7 +242,7 @@ export function useTradingCardState() {
                     setTexts(Array.isArray(saved?.texts)     ? saved.texts   : []);
                     setworkingcard(saved?.workingcard || "front");
                     setisblack(Boolean(saved?.isblack));
-                    setcardti(saved?.content?.cardti             ?? "Card Title");
+                    setcardti(saved?.content?.cardti             ?? "Title");
                     setname(saved?.content?.name                 ?? "Attribute One");
                     setname2(saved?.content?.name2               ?? "Attribute Two");
                     setname3(saved?.content?.name3               ?? "Attribute Three");
@@ -305,7 +305,7 @@ export function useTradingCardState() {
                         setBaseFront(s.baseFront       ?? defaultFront);
                         setUploads(Array.isArray(s.uploads) ? s.uploads : []);
                         setTexts(Array.isArray(s.texts)     ? s.texts   : []);
-                        setcardti(s.cardti             ?? "Card Title");
+                        setcardti(s.cardti             ?? "Title");
                         setname(s.name                 ?? "Attribute One");
                         setname2(s.name2               ?? "Attribute Two");
                         setname3(s.name3               ?? "Attribute Three");
@@ -360,7 +360,7 @@ export function useTradingCardState() {
         console.log("[DEBUG] hanldeInputUpdater fired, workingcard:", workingcard, "getBaseTradingDone:", getBaseTradingDone.current);
 
         if (workingcard == 'front') {
-            setcardti('Card Title');
+            setcardti('Title');
             setname('Attribute One');
             setname2('Attribute Two');
             setname3('Attribute Three');
@@ -656,7 +656,7 @@ export function useTradingCardState() {
         setTexts([]);
         setActiveImage(null);
         setActiveText(null);
-        setcardti("Card Title");
+        setcardti("Title");
         setname("Attribute One");
         setname2("Attribute Two");
         setname3("Attribute Three");
@@ -800,7 +800,7 @@ export function useTradingCardState() {
         setBaseFront(s.baseFront);
         setUploads(Array.isArray(s.uploads) ? s.uploads : []);
         setTexts(Array.isArray(s.texts) ? s.texts : []);
-        setcardti(s.cardti ?? "Card Title");
+        setcardti(s.cardti ?? "Title");
         setcarddes(localStorage.getItem("persistent_carddes") ?? s.carddes ?? "Created For");
         setname(s.name ?? "Attribute One");
         setname2(s.name2 ?? "Attribute Two");

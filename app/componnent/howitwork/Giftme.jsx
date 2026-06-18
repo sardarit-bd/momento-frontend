@@ -1,6 +1,6 @@
 import Link from "next/link";
-
 import { Gift } from 'lucide-react';
+
 export default function Giftme() {
     return (
         <>
@@ -16,7 +16,10 @@ export default function Giftme() {
                     <p className="text-2xl font-bold text-white mb-8">
                         These aren't just cards — they're memories you can play with.
                     </p>
-                    <Link href='/shop' className="px-10 py-5 bg-white text-orange-600 font-black rounded-xl hover:bg-orange-50 transition-all shadow-xl hover:shadow-2xl hover:scale-105 transform text-lg">
+                    <Link
+                        href='/shop'
+                        className="inline-flex items-center justify-center w-full sm:w-auto px-6 sm:px-10 py-4 sm:py-5 bg-white text-orange-600 font-black rounded-xl hover:bg-orange-50 transition-all shadow-xl hover:shadow-2xl hover:scale-105 transform text-base sm:text-lg max-w-xs sm:max-w-none mx-auto text-center"
+                    >
                         Customize & Gift a Deck
                     </Link>
                 </div>

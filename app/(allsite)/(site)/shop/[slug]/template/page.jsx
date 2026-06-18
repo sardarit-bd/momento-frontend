@@ -108,9 +108,9 @@ export default function TemplateSelectionPage() {
           })}
         </div>
 
-        {/* Continue CTA */}
+        {/* Continue CTA — desktop unchanged */}
         <div
-          className={`mt-10 text-center transition-all duration-500 ${
+          className={`hidden md:block mt-10 text-center transition-all duration-500 ${
             selected
               ? "opacity-100 translate-y-0"
               : "opacity-0 translate-y-2 pointer-events-none"
@@ -129,7 +129,25 @@ export default function TemplateSelectionPage() {
           </button>
         </div>
 
+        {/* Mobile spacer so fixed bar never overlaps last card */}
+        {selected && <div className="md:hidden h-28" />}
+
       </div>
+
+      {/* Mobile fixed bottom CTA — appears only once a template is selected */}
+      {selected && (
+        <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-[#f7f9fc] border-t border-slate-200 px-4 pt-3 pb-[max(1rem,env(safe-area-inset-bottom))]">
+          <p className="text-slate-500 text-xs mb-2 text-center truncate">
+            You selected <strong className="text-[#091124]">{selected?.name}</strong>
+          </p>
+          <button
+            onClick={handleContinue}
+            className="w-full bg-[#0d1527] text-white text-sm font-medium py-3 px-6 rounded-[10px] active:scale-[0.98] transition-all duration-200"
+          >
+            Continue to Design &rarr;
+          </button>
+        </div>
+      )}
     </main>
   );
 }

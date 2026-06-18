@@ -16,8 +16,6 @@ export default function Howwork() {
     ];
 
 
-
-
     return (
         <>
             <section id="how-it-works" className="relative max-w-7xl mx-auto px-6 py-20">
@@ -82,7 +80,7 @@ export default function Howwork() {
                         </div>
                         <div className="order-1 lg:order-2 relative h-fit rounded-3x w-full">
                             <img
-                                src={stepImages[0]}
+                                src="/trading-deck.png"
                                 alt="Step 1 visual"
                                 className="w-full h-full object-cover rounded-3xl shadow-2xl"
                             />
@@ -204,7 +202,7 @@ export default function Howwork() {
                         <div className="order-1 lg:order-1 relative h-fit rounded-3xl w-full flex items-center justify-center">
 
                             <img
-                                src={stepImages[3]}
+                                src="/trading-deck.png"
                                 alt="Step 1 visual"
                                 className="w-full h-full object-cover rounded-3xl shadow-2xl"
                             />

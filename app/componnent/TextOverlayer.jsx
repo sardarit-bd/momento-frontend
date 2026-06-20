@@ -510,12 +510,12 @@ export const BackOne = ({
     return (
         <div className="w-full h-full relative" style={{ backgroundColor: 'transparent' }}>
 
-            <span className="TradingCardDateGrayGradient text-md lg:text-xl font-semibold lg:font-extrabold absolute top-7.5 lg:top-10 left-10 lg:left-8 text-center w-[170px] lg:w-[176px] z-50 tracking-tighter">
+            <span className="TradingCardDateGrayGradient text-xl font-extrabold absolute top-10 left-8 text-center w-[176px] z-50 tracking-tighter">
                 {(dateLabel || "Memory Card").toUpperCase()}
             </span>
 
             <span
-                className={`${isblack ? "text-black" : "text-white"} text-[8px] lg:text-xs AileronFont tracking-wider font-thin leading-[1.05] lg:leading-[1.1] absolute top-17 lg:top-22 left-11 lg:left-15 text-center break-words w-[160px] lg:w-[270px] z-50`}
+                className={`${isblack ? "text-black" : "text-white"} text-xs AileronFont tracking-wider font-thin leading-[1.1] absolute top-22 left-15 text-center break-words w-[270px] z-50`}
                 style={{
                     display: '-webkit-box',
                     WebkitLineClamp: 3,
@@ -527,21 +527,20 @@ export const BackOne = ({
                 {description || "Add a brief description..."}
             </span>
 
-            <span className={`${isblack ? "text-black" : "text-white"} text-sm lg:text-md font-semibold lg:font-extrabold absolute top-30 lg:top-44 left-12 lg:left-37 text-left w-[176px] lg:w-[185px] z-50 tracking-tighter`}>
+            <span className={`${isblack ? "text-black" : "text-white"} text-md font-extrabold absolute top-44 left-37 text-left w-[185px] z-50 tracking-tighter`}>
                 {(highlightsTitle || "Highlights").toUpperCase()}
             </span>
 
             {safeHighlights.length > 0 ? (
-                <div className={`${isblack ? "text-black" : "text-white"} AileronFont tracking-wider font-thin absolute top-36.5 left-10 lg:top-57 lg:left-15 w-[170px] lg:w-[270px] z-50`}>
+                <div className={`${isblack ? "text-black" : "text-white"} AileronFont tracking-wider font-thin absolute top-57 left-15 w-[270px] z-50`}>
                     {safeHighlights.map((item, idx) => {
                         const icon = typeof item === "object" ? item?.icon : null;
                         const text = typeof item === "object" ? item?.text : item;
                         return (
-                            <span key={`${text || "highlight"}-${idx}`} className="mb-0.5 flex items-center gap-1 lg:mb-1">
-                                {icon ? <img src={icon} alt="highlight-icon" className="h-[16px] w-[16px] shrink-0 object-contain lg:h-[24px] lg:w-[24px]" /> : null}
-
+                            <span key={`${text || "highlight"}-${idx}`} className="mb-1 flex items-center gap-1">
+                                {icon ? <img src={icon} alt="highlight-icon" className="h-[24px] w-[24px] shrink-0 object-contain" /> : null}
                                 <span
-                                    className="text-left text-[14px] lg:text-[13px] leading-tight"
+                                    className="text-left text-[13px] leading-tight"
                                     style={{
                                         overflow: 'visible',
                                         textOverflow: 'unset',
@@ -556,17 +555,17 @@ export const BackOne = ({
                     })}
                 </div>
             ) : (
-                <span className={`${isblack ? "text-black" : "text-white"} text-[8px] lg:text-xs AileronFont tracking-wider font-thin absolute top-36.5 left-10 lg:top-57 lg:left-15 line-clamp-4 text-center w-[170px] lg:w-[270px] z-50`}>
+                <span className={`${isblack ? "text-black" : "text-white"} text-xs AileronFont tracking-wider font-thin absolute top-57 left-15 line-clamp-4 text-center w-[270px] z-50`}>
                     Add highlights to show key moments.
                 </span>
             )}
 
-            <span className={`${isblack ? "text-black" : "text-white"} text-sm lg:text-md font-semibold lg:font-extrabold absolute top-55.5 -left-4 lg:top-98.5 lg:left-15 text-right w-[176px] z-50 tracking-tighter`}>
+            <span className={`${isblack ? "text-black" : "text-white"} text-md font-extrabold absolute top-98.5 left-15 text-right w-[176px] z-50 tracking-tighter`}>
                 {(legacyTagline || "Legacy Tagline").toUpperCase()}
             </span>
 
             <span
-                className={`${isblack ? "text-black" : "text-white"} text-[8px] lg:text-xs AileronFont tracking-wider font-thin absolute top-63 left-10 lg:top-107 lg:left-15 text-center w-[170px] lg:w-[270px] z-50`}
+                className={`${isblack ? "text-black" : "text-white"} text-xs AileronFont tracking-wider font-thin absolute top-107 left-15 text-center w-[270px] z-50`}
                 style={{
                     display: '-webkit-box',
                     WebkitLineClamp: 4,
@@ -577,5 +576,5 @@ export const BackOne = ({
                 {legacyText || "Legacy text"}
             </span>
         </div>
-    )
+    );
 };

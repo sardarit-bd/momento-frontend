@@ -12,8 +12,12 @@ import TradingCardCaptureNode from "@/app/componnent/TradingCardCaptureNode";
 
 export default function ProductCustomizer() {
     const state = useTradingCardState();
-    // Mobile drawer: null | "front" | "attributes" | "back"
     const [mobileDrawer, setMobileDrawer] = useState(null);
+
+    React.useEffect(() => {
+        const h = document.querySelector("nav")?.offsetHeight;
+        console.log("Navbar height:", h);
+    }, []);
 
     if (state.fetchingDataLoading) {
         return <TradingCardApplicationSkelaton />;
@@ -81,7 +85,6 @@ export default function ProductCustomizer() {
                             backLegacyText={state.backLegacyText}
                             isblack={state.isblack}
                         />
-
                         <TradingCardControls
                             sidebarTab={state.sidebarTab}
                             setSidebarTab={state.setSidebarTab}
@@ -161,7 +164,6 @@ export default function ProductCustomizer() {
                     </div>
                 </div>
 
-                {/* Hidden trading box composite */}
                 <div className="absolute opacity-0 pointer-events-none" style={{ zIndex: -1 }}>
                     <TradingBoxPreview
                         ref={state.tradingBoxPreviewRef}
@@ -174,10 +176,29 @@ export default function ProductCustomizer() {
             {/* ─────────────────────────────────────────────
                 MOBILE LAYOUT  (below lg)
             ───────────────────────────────────────────── */}
-            <div className="lg:hidden flex flex-col w-screen fixed bg-gray-100 overflow-hidden justify-between" style={{ height: '100dvh' }}>
-
-                {/* 1. Card Canvas — fills remaining space above the bottom bar */}
-                <div className="flex-1 flex items-center justify-center relative overflow-hidden" style={{ minHeight: 0 }}>
+            <div
+                className="lg:hidden flex flex-col bg-gray-100"
+                style={{
+                    position: "fixed",
+                    top: "60px",
+                    height: "calc(100dvh - 60px)",
+                    overflow: "hidden",
+                    left: 0,
+                    right: 0,
+                }}
+            >
+                {/* 1. Canvas area */}
+                <div
+                    style={{
+                        flex: 1,
+                        minHeight: 0,
+                        position: "relative",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        overflow: "hidden",
+                    }}
+                >
                     <TradingCardPreview
                         isMobileCanvas={true}
                         previewCardNodeRef={state.previewCardNodeRef}
@@ -219,48 +240,120 @@ export default function ProductCustomizer() {
                         activeTab={mobileDrawer}
                         onTabClick={(tab) => {
                             setMobileDrawer(tab);
-                            // Sync sidebarTab so controls render the right panel
-                            if (tab === "front") { state.setSidebarTab("front"); state.setworkingcard("front"); }
-                            if (tab === "attributes") state.setSidebarTab("attributes");
-                            if (tab === "back") { state.setSidebarTab("back"); state.setworkingcard("back"); }
+                            if (tab === "front")      { state.setSidebarTab("front");      state.setworkingcard("front"); }
+                            if (tab === "attributes")   state.setSidebarTab("attributes");
+                            if (tab === "back")        { state.setSidebarTab("back");       state.setworkingcard("back"); }
                         }}
                     />
                 </div>
 
-                {/* 2. Bottom saved-cards bar — always visible, horizontally scrollable */}
-                <div className="flex-shrink-0 bg-white border-t border-gray-200 shadow-lg overflow-hidden" style={{ height: 155 }}>
-                    <MobileSavedSlotsBar
-                        savedSlots={state.savedSlots}
-                        packageConfig={state.packageConfig}
-                        editingSlotId={state.editingSlotId}
-                        onEditSlot={state.handleEditSlot}
-                        onDeleteSlot={state.handleDeleteSlot}
-                        state={state}
-                        onCheckout={state.goToFinalView}
-                    />
+                {/* 2. Bottom saved-cards bar */}
+
+                <div
+                    style={{
+                        flexShrink: 0,
+                        height: 165,
+                        minHeight: 165,
+                        maxHeight: 165,
+                        background: "#fff",
+                        borderTop: "1px solid #e5e7eb",
+                        boxShadow: "0 -2px 8px rgba(0,0,0,0.06)",
+                        display: "flex",
+                        flexDirection: "column",
+                        overflow: "hidden",
+                    }}
+                >
+                    {/* Saved slots scrollable bar */}
+                    <div style={{ height: 110, overflow: "hidden" }}>
+                        <MobileSavedSlotsBar
+                            savedSlots={state.savedSlots}
+                            packageConfig={state.packageConfig}
+                            editingSlotId={state.editingSlotId}
+                            onEditSlot={state.handleEditSlot}
+                            onDeleteSlot={state.handleDeleteSlot}
+                            state={state}
+                            onCheckout={state.goToFinalView}
+                        />
+                    </div>
+
+                    {/* Next / Checkout button — always fully visible */}
+                    <div style={{ padding: "6px 16px 8px", flexShrink: 0 }}>
+                        <button
+                            onClick={() => { state.handleNext(); setMobileDrawer(null); }}
+                            disabled={
+                                state.spinloading ||
+                                state.doneloading ||
+                                (!state.baseFront && !(state.savedSlots.length >= state.packageConfig.designs && state.editingSlotId === null))
+                            }
+                            className="w-full bg-[#00bcff] text-white text-sm font-semibold py-2 rounded-xl transition flex items-center justify-center gap-2 disabled:opacity-60 shadow-md"
+                        >
+                            {state.doneloading || state.spinloading
+                                ? "Please wait..."
+                                : state.editingSlotId
+                                    ? "Update Design"
+                                    : state.savedSlots.length >= state.packageConfig.designs
+                                        ? state.workingcard === "front"
+                                            ? "Customize Back Card"
+                                            : "Go to Checkout"
+                                        : state.savedSlots.length >= state.packageConfig.designs - 1
+                                            ? state.workingcard === "front"
+                                                ? `Save & Customize Back (${state.savedSlots.length + 1}/${state.packageConfig.designs})`
+                                                : `Save & Checkout (${state.savedSlots.length + 1}/${state.packageConfig.designs})`
+                                            : `Next (${state.savedSlots.length + 1}/${state.packageConfig.designs})`
+                            }
+                        </button>
+                    </div>
                 </div>
 
-                {/* 3. Full-screen right drawer */}
+
+                {/* 3. Full-screen drawer — covers the entire layout area */}
                 {mobileDrawer && (
-                    <div className="absolute inset-0 z-50 bg-white flex flex-col">
-                        {/* Drawer header */}
-                        <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200 bg-white shadow-sm flex-shrink-0">
-                            <span className="text-gray-800 font-semibold text-base capitalize">
-                                {mobileDrawer === "front" ? "Front" : mobileDrawer === "attributes" ? "Attributes" : "Back"}
-                            </span>
+                    <div
+                        style={{
+                            position: "fixed",
+                            top: "75px",
+                            left: 0,
+                            right: 0,
+                            bottom: 0,
+                            zIndex: 50,
+                            background: "#fff",
+                            display: "flex",
+                            flexDirection: "column",
+                        }}
+                    >
+                        <div
+                            style={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: 10,
+                                padding: "12px 16px",
+                                borderBottom: "1px solid #e5e7eb",
+                                background: "#fff",
+                                boxShadow: "0 1px 4px rgba(0,0,0,0.06)",
+                                flexShrink: 0,
+                            }}
+                        >
                             <button
                                 onClick={() => setMobileDrawer(null)}
-                                className="w-9 h-9 flex items-center justify-center rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200 transition"
+                                style={{
+                                    width: 36, height: 36,
+                                    display: "flex", alignItems: "center", justifyContent: "center",
+                                    borderRadius: "50%", background: "#f3f4f6",
+                                    border: "none", cursor: "pointer", color: "#4b5563",
+                                    flexShrink: 0,
+                                }}
                                 aria-label="Close drawer"
                             >
                                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                                     <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
                                 </svg>
                             </button>
+                            <span style={{ fontWeight: 600, fontSize: 15, color: "#1f2937", textTransform: "capitalize" }}>
+                                {mobileDrawer === "front" ? "Front" : mobileDrawer === "attributes" ? "Attributes" : "Back"}
+                            </span>
                         </div>
 
-                        {/* Drawer body — full TradingCardControls in mobile mode */}
-                        <div className="flex-1 overflow-hidden">
+                        <div style={{ flex: 1, minHeight: 0, overflow: "hidden" }}>
                             <TradingCardControls
                                 isMobileDrawer={true}
                                 sidebarTab={state.sidebarTab}
@@ -421,23 +514,61 @@ function MobileTabStrip({ activeTab, onTabClick }) {
     ];
 
     return (
-        <div className="absolute right-0 top-1/2 -translate-y-1/2 z-40 flex flex-col gap-1 pr-0">
-            <div className="flex flex-col gap-1 bg-white/95 backdrop-blur-sm border border-gray-200 rounded-l-2xl shadow-xl overflow-hidden py-1">
+        /*
+         * position:absolute right:0, centered vertically in the canvas div.
+         * marginRight:-1 hides the pill's right border flush with the screen
+         * edge while keeping the rounded-left corners fully visible.
+         * The parent canvas div must have overflow:visible (not hidden) for
+         * this to render without clipping — which it now does.
+         */
+        <div
+            style={{
+                position: "absolute",
+                right: 0,
+                top: "50%",
+                transform: "translateY(-50%)",
+                zIndex: 40,
+            }}
+        >
+            <div
+                style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: 4,
+                    background: "rgba(255,255,255,0.95)",
+                    backdropFilter: "blur(8px)",
+                    border: "1px solid #e5e7eb",
+                    borderRight: "none",          // hide flush-right border
+                    borderRadius: "16px 0 0 16px",
+                    boxShadow: "-2px 0 12px rgba(0,0,0,0.08)",
+                    overflow: "hidden",
+                    padding: "4px 0",
+                }}
+            >
                 {tabs.map((tab) => {
                     const isActive = activeTab === tab.id;
                     return (
                         <button
                             key={tab.id}
                             onClick={() => onTabClick(tab.id)}
-                            className={`flex flex-col items-center justify-center gap-1 px-3 py-3 transition-all duration-200 min-w-[56px] ${
-                                isActive
-                                    ? "bg-sky-500 text-white"
-                                    : "text-gray-500 hover:bg-gray-50 hover:text-gray-800"
-                            }`}
+                            style={{
+                                display: "flex",
+                                flexDirection: "column",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                gap: 4,
+                                padding: "clamp(5px, 2vw, 8px) clamp(6px, 2.5vw, 10px)",
+                                minWidth: "clamp(40px, 12vw, 48px)",
+                                border: "none",
+                                cursor: "pointer",
+                                transition: "background 0.15s, color 0.15s",
+                                background: isActive ? "#0ea5e9" : "transparent",
+                                color: isActive ? "#fff" : "#6b7280",
+                            }}
                             aria-label={`Open ${tab.label} panel`}
                         >
                             {tab.icon}
-                            <span className="text-[10px] font-semibold leading-none">{tab.label}</span>
+                            <span style={{ fontSize: "clamp(7px, 2.2vw, 10px)", fontWeight: 600, lineHeight: 1 }}>{tab.label}</span>
                         </button>
                     );
                 })}
@@ -457,31 +588,29 @@ function MobileSavedSlotsBar({
     onCheckout,
 }) {
     return (
-        <div className="h-full flex flex-col">
+        <div style={{ height: "100%", display: "flex", flexDirection: "column" }}>
             {/* Bar header */}
-            <div className="flex items-center justify-between px-3 pt-2 pb-1 flex-shrink-0">
-                <span className="text-xs font-semibold text-gray-600">
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "8px 12px 4px", flexShrink: 0 }}>
+                <span style={{ fontSize: 12, fontWeight: 600, color: "#4b5563" }}>
                     Designs{" "}
-                    <span className="text-gray-400 font-normal">
+                    <span style={{ color: "#9ca3af", fontWeight: 400 }}>
                         {savedSlots.length}/{packageConfig.designs}
                     </span>
                 </span>
-                {savedSlots.length >= packageConfig.designs && (
-                    <button
-                        onClick={onCheckout}
-                        className="text-xs font-semibold bg-sky-500 text-white px-3 py-1 rounded-full shadow"
-                    >
-                        Checkout →
-                    </button>
-                )}
             </div>
 
             {/* Horizontally scrollable slots */}
             <div
-                className="flex-1 flex items-center gap-2 overflow-x-auto px-3 pb-2 scrollbar-hide"
-                style={{ WebkitOverflowScrolling: "touch" }}
+                style={{
+                    flex: 1,
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 8,
+                    overflowX: "auto",
+                    padding: "0 12px 8px",
+                    WebkitOverflowScrolling: "touch",
+                }}
             >
-                {/* Live "editing" slot — shown when a new design is in progress */}
                 {editingSlotId === null && savedSlots.length < packageConfig.designs && state && (
                     <MobileSavedSlotCard
                         isEditing
@@ -505,17 +634,26 @@ function MobileSavedSlotsBar({
                     />
                 ))}
 
-                {/* Empty placeholder slots */}
                 {Array.from({
                     length: Math.max(0, packageConfig.designs - savedSlots.length - (editingSlotId === null ? 1 : 0)),
                 }).map((_, i) => (
                     <div
                         key={`empty-${i}`}
-                        className="flex-shrink-0 flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-gray-200 bg-gray-50"
-                        style={{ width: 68, height: 90 }}
+                        style={{
+                            flexShrink: 0,
+                            display: "flex",
+                            flexDirection: "column",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            width: 62,
+                            height: 80,
+                            borderRadius: 12,
+                            border: "2px dashed #e5e7eb",
+                            background: "#f9fafb",
+                        }}
                     >
-                        <span className="text-gray-300 text-xl">+</span>
-                        <span className="text-[10px] text-gray-300 mt-0.5">Empty</span>
+                        <span style={{ color: "#d1d5db", fontSize: 20 }}>+</span>
+                        <span style={{ fontSize: 10, color: "#d1d5db", marginTop: 2 }}>Empty</span>
                     </div>
                 ))}
             </div>
@@ -525,7 +663,6 @@ function MobileSavedSlotsBar({
 
 /* ─── Individual slot card in the bottom bar ────────────────────── */
 function MobileSavedSlotCard({ isEditing, label, state, snapshot, onDelete, onClick }) {
-    // Determine which props to pass to the mini preview
     const previewProps = isEditing && state
         ? {
             uploads: state.uploads,
@@ -585,17 +722,34 @@ function MobileSavedSlotCard({ isEditing, label, state, snapshot, onDelete, onCl
     return (
         <div
             onClick={onClick}
-            className={`flex-shrink-0 relative flex flex-col items-center rounded-xl border-2 p-1.5 transition-all duration-200 ${
-                isEditing
-                    ? "border-sky-400 bg-sky-50 ring-2 ring-sky-200"
-                    : "border-gray-200 bg-white hover:border-sky-300 cursor-pointer"
-            }`}
-            style={{ width: 68, height: 90 }}
+            style={{
+                flexShrink: 0,
+                position: "relative",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                width: 68,
+                height: 90,
+                borderRadius: 12,
+                border: isEditing ? "2px solid #38bdf8" : "2px solid #e5e7eb",
+                background: isEditing ? "#f0f9ff" : "#fff",
+                boxShadow: isEditing ? "0 0 0 2px #bae6fd" : "none",
+                padding: 6,
+                cursor: onClick ? "pointer" : "default",
+                transition: "border 0.15s, box-shadow 0.15s",
+            }}
         >
             {/* Mini preview */}
             <div
-                style={{ width: 54, height: 68, overflow: "hidden", position: "relative", borderRadius: 6 }}
-                className="bg-white border border-gray-100"
+                style={{
+                    width: 48,
+                    height: 60,
+                    overflow: "hidden",
+                    position: "relative",
+                    borderRadius: 6,
+                    background: "#fff",
+                    border: "1px solid #f3f4f6",
+                }}
             >
                 {previewProps ? (
                     <div
@@ -621,16 +775,16 @@ function MobileSavedSlotCard({ isEditing, label, state, snapshot, onDelete, onCl
                         />
                     </div>
                 ) : (
-                    <div className="w-full h-full flex items-center justify-center text-gray-200 text-xs">
+                    <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", color: "#e5e7eb", fontSize: 12 }}>
                         Empty
                     </div>
                 )}
             </div>
 
             {/* Label + status */}
-            <div className="mt-1 text-center leading-none">
-                <p className="text-[10px] font-semibold text-gray-700">Front {label}</p>
-                <span className={`text-[9px] font-medium ${isEditing ? "text-sky-500" : "text-emerald-500"}`}>
+            <div style={{ marginTop: 4, textAlign: "center", lineHeight: 1 }}>
+                <p style={{ fontSize: 10, fontWeight: 600, color: "#374151", margin: 0 }}>Front {label}</p>
+                <span style={{ fontSize: 9, fontWeight: 500, color: isEditing ? "#0ea5e9" : "#10b981" }}>
                     {isEditing ? "✏️ Editing" : "✓ Saved"}
                 </span>
             </div>
@@ -639,7 +793,23 @@ function MobileSavedSlotCard({ isEditing, label, state, snapshot, onDelete, onCl
             {onDelete && (
                 <button
                     onClick={(e) => { e.stopPropagation(); onDelete(); }}
-                    className="absolute top-1 right-1 w-5 h-5 flex items-center justify-center rounded-full bg-white/90 border border-gray-100 text-red-400 hover:text-red-600 shadow-sm z-10"
+                    style={{
+                        position: "absolute",
+                        top: 4,
+                        right: 4,
+                        width: 20,
+                        height: 20,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        borderRadius: "50%",
+                        background: "rgba(255,255,255,0.9)",
+                        border: "1px solid #f3f4f6",
+                        color: "#f87171",
+                        cursor: "pointer",
+                        zIndex: 10,
+                        boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
+                    }}
                     aria-label="Remove design"
                 >
                     <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">

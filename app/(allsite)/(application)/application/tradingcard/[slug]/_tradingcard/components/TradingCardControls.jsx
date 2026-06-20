@@ -172,7 +172,7 @@ export default function TradingCardControls({
                 </div>
 
                 {/* Fixed Save/Next button at bottom of drawer */}
-                {savedSlots.length >= 0 && (
+                {/* {savedSlots.length >= 0 && (
                     <div className="flex-shrink-0 px-4 pb-4 pt-2 border-t border-gray-100 bg-white">
                         <button
                             onClick={handleNext}
@@ -195,7 +195,7 @@ export default function TradingCardControls({
                             }
                         </button>
                     </div>
-                )}
+                )} */}
             </div>
         );
     }
@@ -204,7 +204,7 @@ export default function TradingCardControls({
        DESKTOP MODE  (original layout — completely unchanged)
     ───────────────────────────────────────────────────────────── */
     return (
-        <div className={`absolute transition-all duration-300 ${smallconOpen ? "top-px" : "top-3/4 sm:top-2/3"} lg:static lg:block col-span-10 row-span-1 lg:row-span-10 lg:col-span-4 w-full max-w-full h-full bg-white border-t border-gray-300 lg:border-l lg:border-gray-200 px-2 md:px-6 lg:px-6 mt-2 lg:mt-0 shadow-2xl lg:shadow-md z-50 overflow-x-hidden`}>
+         <div className={`hidden lg:block absolute transition-all duration-300 ${smallconOpen ? "top-px" : "top-3/4 sm:top-2/3"} lg:static col-span-10 row-span-1 lg:row-span-10 lg:col-span-4 w-full max-w-full h-full bg-white border-t border-gray-300 lg:border-l lg:border-gray-200 px-2 md:px-6 lg:px-6 mt-2 lg:mt-0 shadow-2xl lg:shadow-md z-50 overflow-x-hidden`}>
 
             {/* Mobile swipe handle — desktop ignores this */}
             <div className="w-full flex lg:hidden items-center justify-center">

@@ -1,62 +1,36 @@
 'use client'
-
+ 
+import { useEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-
+ 
 const Navigation = ({ isOpen, setisOpen }) => {
-
-
+    const navRef = useRef(null);
+ 
+    useEffect(() => {
+        const update = () => {
+            const h = navRef.current?.offsetHeight ?? 56;
+            document.documentElement.style.setProperty("--navbar-height", h + "px");
+        };
+        update();
+        window.addEventListener("resize", update);
+        return () => window.removeEventListener("resize", update);
+    }, []);
+ 
     const navItems = [
-        {
-            name: "Home",
-            nested: false,
-            sub: [],
-            link: "/"
-        },
-        {
-            name: "About",
-            nested: false,
-            sub: [],
-            link: "/about"
-        },
-        {
-            name: "Shop",
-            nested: false,
-            sub: [],
-            link: "/shop"
-        },
-        {
-            name: "How it Works",
-            nested: false,
-            sub: [],
-            link: "/howitwork"
-        },
-        // {
-        //     name: "Card Customization",
-        //     nested: false,
-        //     sub: [],
-        //     link: "/card-customization"
-        // },
-        {
-            name: "Inspirations",
-            nested: false,
-            sub: [],
-            link: "/inspirations"
-        },
-        {
-            name: "Contact Us",
-            nested: false,
-            sub: [],
-            link: "/contact"
-        },
-    ]
-
-
+        { name: "Home",         nested: false, sub: [], link: "/" },
+        { name: "About",        nested: false, sub: [], link: "/about" },
+        { name: "Shop",         nested: false, sub: [], link: "/shop" },
+        { name: "How it Works", nested: false, sub: [], link: "/howitwork" },
+        { name: "Inspirations", nested: false, sub: [], link: "/inspirations" },
+        { name: "Contact Us",   nested: false, sub: [], link: "/contact" },
+    ];
+ 
     const pathname = usePathname();
 
 
     return (
-        <nav className={`${isOpen ? "flex items-start" : "hidden"} lg:flex lg:items-center h-screen w-screen lg:w-fit lg:h-full absolute top-[75px] left-0 lg:static h-screen bg-white border border-r border-gray-300 lg:border-0`}>
+        <nav ref={navRef} className={`${isOpen ? "flex items-start" : "hidden"} lg:flex lg:items-center h-screen w-screen lg:w-fit lg:h-full absolute top-[75px] left-0 lg:static h-screen bg-white border border-r border-gray-300 lg:border-0`}>
             <div className="flex flex-col lg:flex-row items-start lg:items-center gap-4 lg:gap-7 text-gray-500 mt-10 lg:mt-0 px-4 pr-6 lg:pr-0 lg:pl-0 w-full">
 
                 {

@@ -121,7 +121,7 @@ export default function TradingCardPreview({
         <div
             className={
                 isMobileCanvas
-                    ? "flex flex-col items-center justify-center w-full h-full"
+                    ? "flex flex-col items-center justify-center w-full h-full overflow-hidden"
                     : "col-span-10 row-span-9 lg:row-span-10 lg:col-span-6 flex items-center justify-center -translate-y-[35px] lg:-translate-y-[50px] w-screen lg:w-full z-40"
             }
         >
@@ -136,7 +136,7 @@ export default function TradingCardPreview({
                     }
                     style={
                         isMobileCanvas
-                            ? { width: 260, height: 378 }
+                            ? { width: "min(270px, 68vw)", height: "min(393px, 99.1vw)" }
                             : undefined
                     }
                 >
@@ -147,7 +147,7 @@ export default function TradingCardPreview({
                         style={
                             isMobileCanvas
                                 ? {
-                                    transform: `scale(${260 / 390})`,
+                                    transform: `scale(${Math.min(270, window.innerWidth * 0.68) / 390})`,
                                     transformOrigin: "top left",
                                 }
                                 : {
@@ -247,7 +247,7 @@ export default function TradingCardPreview({
                 </div>
 
                 {/* Flip button */}
-                <button
+                {!isMobileCanvas && <button
                     onClick={() => setworkingcard((prev) => (prev === "front" ? "back" : "front"))}
                     className={
                         isMobileCanvas
@@ -257,7 +257,7 @@ export default function TradingCardPreview({
                 >
                     <BsArrowRepeat className="text-xl" />
                     <span>{workingcard === "front" ? "Flip to Back" : "Flip to Front"}</span>
-                </button>
+                </button>}
             </div>
         </div>
     );

@@ -262,20 +262,17 @@ export const FrontOne = ({ cardti, carddes, name, name2, name3, acarddate, label
                 />
             </div>
 
-            <div className="absolute right-[40px] bottom-[16%] z-50 w-[115px] lg:w-[180px] text-right" style={{ backgroundColor: 'transparent', background: 'transparent' }}>
+            <div className="absolute right-[10%] bottom-[16%] z-50 w-[115px] lg:w-[180px] text-right" style={{ backgroundColor: 'transparent', background: 'transparent' }}>
                 <span
                     id="card-title"
                     className="
-                        absolute
-                        left-[11%]
+                        block
                         w-full
-                        bottom-[80%]
-                        text-center
-                        text-sm
+                        text-right
+                        text-[30px]
                         lg:text-4xl
                         font-bold
-                        leading-tight
-                        whitespace-nowrap
+                        leading-[0.9]
                         text-transparent
                         bg-clip-text
                         bg-[linear-gradient(180deg,_#3a3a3a_0%,_#787878_30%,_#ffffff_50%,_#787878_70%,_#3a3a3a_100%)]

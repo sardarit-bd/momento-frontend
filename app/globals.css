@@ -234,9 +234,6 @@ input[type=number] {
   border-radius: 0;
 }
 
-
-
-
 /* screenshort resizer border line manipulate css here */
 .capture-clean-mode,
 .capture-clean-mode * {
@@ -254,8 +251,6 @@ input[type=number] {
 .capture-clean-mode *::after {
   content: none !important;
 }
-
-
 
 
 .bebas {
@@ -352,4 +347,9 @@ input[type=number] {
     :root {
         --card-scale: 1;
     }
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
 }

@@ -8,11 +8,12 @@ import MakeGet from "@/utilis/requestrespose/get";
 import { useParams, useRouter } from "next/navigation";
 import { Fragment, useEffect, useRef, useState } from "react";
 import { GiCardAceClubs, GiCardJackClubs, GiCardJoker, GiCardKingClubs, GiCardQueenClubs } from "react-icons/gi";
-import { IoIosArrowDown, IoMdCheckmark } from "react-icons/io";
+import { IoMdCheckmark } from "react-icons/io";
 import { toast, ToastContainer } from "react-toastify";
 import CardPreview from "../../../../../componnent/CardPreview";
 import CardSidebar from "../../../../../componnent/CardSidebar";
 import SideController from "../../../../../componnent/SideController";
+import MobileCustomizerSheet from "../../../../../componnent/MobileCustomizerSheet";
 
 const layers = ["dresses", "skin_tones", "hairs", "crowns", "beards", "eyes", "mouths", "noses"];
 
@@ -67,12 +68,13 @@ const ProductCustomizer = () => {
     const [spinloading, setspinloading] = useState(false);
     const [doneloading, setdoneloading] = useState(false);
     const { addToCart, clearCart } = useDeckFinalPreview();
-    const [smallconOpen, setsmallconOpen] = useState(false);
     const [editedCard, seteditedCard] = useState("Ace_Card");
     const [activebaseEditCard, setactivebaseEditCard] = useState([]);
     const [showJokerUpsell, setshowJokerUpsell] = useState(false);
     const { setfinalCards } = usefinalCardsStore();
     const { setboxs } = useboxcartstore();
+
+    // ─── smallconOpen removed — MobileCustomizerSheet manages its own snap ───
 
     useEffect(() => {
         const fetchProduct = async () => {
@@ -156,7 +158,6 @@ const ProductCustomizer = () => {
                 });
 
                 if (sanitizedCards.length > 0) {
-                    // Migrate legacy storage key to product-scoped key.
                     localStorage.setItem(customCardsStorageKey, JSON.stringify(sanitizedCards));
                 }
 
@@ -183,20 +184,14 @@ const ProductCustomizer = () => {
                 (item) => getCanonicalCardType(item?.card_type) === CARD_FLOW[0]
             )?.image;
 
-
             const fallbackBase = customSets[0]?.image || baseCards[0]?.image;
 
             const initialLayers = {};
-
             layers.forEach((layer) => {
                 if (layer === "beards") return;
                 const items = res?.data?.customizations?.[layer];
                 if (items?.length > 0) initialLayers[layer] = items[0]?.image;
             });
-
-            console.log('baseForFirstStep:', baseForFirstStep);
-            console.log('fallbackBase:', fallbackBase);
-            console.log('base_cards:', res?.data?.customizations?.base_cards);
 
             const firstBaseCard = baseCards.find(
                 (item) => getCanonicalCardType(item?.card_type) === CARD_FLOW[0]
@@ -217,7 +212,6 @@ const ProductCustomizer = () => {
 
     useEffect(() => {
         if (!slug || !cards?.length) return;
-
         localStorage.setItem(customCardsStorageKey, JSON.stringify(cards));
         localStorage.setItem("customCards", JSON.stringify(cards));
         localStorage.setItem(customCardsActiveIndexStorageKey, String(activeCardIndex));
@@ -241,7 +235,6 @@ const ProductCustomizer = () => {
         const canonicalType = getCanonicalCardType(cardType);
         const directMatch = allBaseCards.find((item) => getCanonicalCardType(item?.card_type) === canonicalType)?.image;
         if (directMatch) return directMatch;
-
         const normalizedType = normalizeCardType(cardType);
         const normalizedMatch = allBaseCards.find((item) => normalizeCardType(item?.card_type) === normalizedType)?.image;
         return normalizedMatch || allBaseCards?.[0]?.image;
@@ -300,18 +293,13 @@ const ProductCustomizer = () => {
                 slotName: baseCard?.name || null,
                 selectedLayers: initialLayersTwo,
             };
-            // ✅ Insert at the correct serialized position
             const insertAt = getSortedInsertIndex(prev, cardType);
             const newCards = [
                 ...prev.slice(0, insertAt),
                 newCard,
                 ...prev.slice(insertAt),
             ];
-
-            if (shouldSetActive) {
-                setActiveCardIndex(insertAt);
-            }
-
+            if (shouldSetActive) setActiveCardIndex(insertAt);
             return newCards;
         });
     };
@@ -347,10 +335,7 @@ const ProductCustomizer = () => {
         let characterOnlyImages = [];
 
         try {
-            compositeImages = await Promise.all(
-                cards.map(card => compositeCardToBase64(card))
-            );
-            console.log('Composite done:', compositeImages.length);
+            compositeImages = await Promise.all(cards.map(card => compositeCardToBase64(card)));
         } catch (err) {
             console.error('Composite failed:', err);
             setspinloading(false);
@@ -358,9 +343,7 @@ const ProductCustomizer = () => {
         }
 
         try {
-            characterOnlyImages = await Promise.all(
-                cards.map(card => compositeCharacterOnly(card))
-            );
+            characterOnlyImages = await Promise.all(cards.map(card => compositeCharacterOnly(card)));
         } catch (err) {
             console.error('Character composite failed:', err);
         }
@@ -401,17 +384,12 @@ const ProductCustomizer = () => {
             customization_mode: 'deck',
         };
 
-        console.log('FinalProduct names:', FinalProduct.map(c => ({ rank: c.rank, name: c.name })));
         addToCart(producted);
         setspinloading(false);
         router.push(redirectToCheckout ? '/my-cart/checkout' : '/final/customization');
     };
 
     const compositeCardToBase64 = async (card) => {
-        console.log('Compositing card:', card.editedCard);
-        console.log('baseImage:', card.baseImage);
-        console.log('layers:', card.selectedLayers);
-
         const canvas = document.createElement('canvas');
         canvas.width = 750;
         canvas.height = 1050;
@@ -478,8 +456,7 @@ const ProductCustomizer = () => {
                 const w = 750 * 0.64;
                 const h = 1050 * 0.43;
                 const yTop = 1050 * 0.07;
-
-                ctx.drawImage(img, x, yTop, w, h); // ← top only, mirror block removed
+                ctx.drawImage(img, x, yTop, w, h);
             } catch { }
         }
 
@@ -487,7 +464,6 @@ const ProductCustomizer = () => {
     };
 
     const Done = async () => {
-        setsmallconOpen(false);
         setdoneloading(true);
 
         const hasJokerCardNow = cards.some((card) => card?.editedCard === "Joker_Card");
@@ -525,13 +501,8 @@ const ProductCustomizer = () => {
                     slotName: baseCard?.name || null,
                     selectedLayers: initialLayers,
                 };
-                // ✅ Insert at the correct serialized position
                 const insertAt = getSortedInsertIndex(prev, firstMissingType);
-                const newCards = [
-                    ...prev.slice(0, insertAt),
-                    newCard,
-                    ...prev.slice(insertAt),
-                ];
+                const newCards = [...prev.slice(0, insertAt), newCard, ...prev.slice(insertAt)];
                 setActiveCardIndex(insertAt);
                 return newCards;
             });
@@ -574,18 +545,9 @@ const ProductCustomizer = () => {
                 return prev;
             }
 
-            const newCard = {
-                editedCard: "Joker_Card",
-                baseImage: jokerBase,
-                selectedLayers: initialLayers,
-            };
-            // ✅ Joker always sorts last, but use helper for consistency
+            const newCard = { editedCard: "Joker_Card", baseImage: jokerBase, selectedLayers: initialLayers };
             const insertAt = getSortedInsertIndex(prev, "Joker_Card");
-            const newCards = [
-                ...prev.slice(0, insertAt),
-                newCard,
-                ...prev.slice(insertAt),
-            ];
+            const newCards = [...prev.slice(0, insertAt), newCard, ...prev.slice(insertAt)];
             setActiveCardIndex(insertAt);
             return newCards;
         });
@@ -596,20 +558,27 @@ const ProductCustomizer = () => {
     const hasJokerCard = cards.some((card) => card?.editedCard === "Joker_Card");
     const visibleSteps = hasJokerCard ? [...CARD_STEPS, JOKER_STEP] : CARD_STEPS;
     const doneButtonLabel = doneloading || spinloading ? "Loading..." : "Next Card";
-    const activeCardLabel = CARD_TYPE_LABELS[activeType] || "Ace / King / Queen / Jack";
+    const activeCardLabel = CARD_TYPE_LABELS[activeType] || "Card";
 
     const handleStepClick = (stepType) => {
         const targetCardIndex = cards.findIndex((card) => card?.editedCard === stepType);
         if (targetCardIndex < 0) return;
-
         setActiveCardIndex(targetCardIndex);
         seteditedCard(stepType);
     };
+
+    // ─────────────────────────────────────────────────────────────────
+    // How much bottom padding the card preview needs on mobile so it
+    // isn't hidden under the bottom sheet in "peek" state (80px).
+    // On desktop this value is ignored because the sheet is hidden.
+    // ─────────────────────────────────────────────────────────────────
+    const MOBILE_SHEET_PEEK = 80;
 
     return (
         <>
             <div className="bg-[#f2f4f8]">
                 {showJokerUpsell ? (
+                    /* ─── Joker upsell — unchanged ─── */
                     <main
                         className="relative mx-auto flex min-h-screen w-full items-center justify-center overflow-hidden px-4 py-5 sm:px-6 sm:py-8"
                         style={{
@@ -655,20 +624,13 @@ const ProductCustomizer = () => {
                                     </div>
 
                                     <div className="space-y-2.5 rounded-2xl p-3 sm:p-4" style={{ background: "#F3F4F6", border: "1px solid #D9EEFD" }}>
-                                        <button
-                                            type="button"
-                                            onClick={handleAddJokerCard}
+                                        <button type="button" onClick={handleAddJokerCard}
                                             className="flex h-12 w-full items-center justify-center rounded-xl text-base font-semibold text-white transition hover:opacity-95 sm:h-14 sm:rounded-2xl sm:text-lg"
-                                            style={{
-                                                background: "linear-gradient(90deg, #3CA9FF 0%, #6AC0FF 100%)",
-                                                boxShadow: "0 14px 30px rgba(60, 169, 255, 0.35)",
-                                            }}
+                                            style={{ background: "linear-gradient(90deg, #3CA9FF 0%, #6AC0FF 100%)", boxShadow: "0 14px 30px rgba(60, 169, 255, 0.35)" }}
                                         >
                                             Add Joker for $7
                                         </button>
-                                        <button
-                                            type="button"
-                                            onClick={handleSkipJokerUpsell}
+                                        <button type="button" onClick={handleSkipJokerUpsell}
                                             className="flex h-11 w-full items-center justify-center rounded-xl text-sm font-semibold text-slate-700 transition sm:h-12 sm:rounded-2xl sm:text-base"
                                             style={{ backgroundColor: "#F3F4F6", border: "1px solid #D9EEFD" }}
                                         >
@@ -680,27 +642,18 @@ const ProductCustomizer = () => {
                                 <div className="order-1 flex flex-col items-center md:order-2">
                                     <div
                                         className="flex h-16 w-16 items-center justify-center rounded-2xl text-white shadow-lg sm:h-20 sm:w-20 sm:rounded-3xl"
-                                        style={{
-                                            background: "linear-gradient(135deg, #3CA9FF 0%, #6AC0FF 100%)",
-                                            boxShadow: "0 14px 35px rgba(60, 169, 255, 0.34)",
-                                        }}
+                                        style={{ background: "linear-gradient(135deg, #3CA9FF 0%, #6AC0FF 100%)", boxShadow: "0 14px 35px rgba(60, 169, 255, 0.34)" }}
                                     >
                                         <GiCardJoker className="text-3xl sm:text-4xl" />
                                     </div>
-
                                     <div
                                         className="mt-4 flex w-full justify-center rounded-2xl p-3 sm:mt-5 sm:p-4"
                                         style={{ background: "linear-gradient(160deg, #D9EEFD 0%, #EBF6FF 100%)", border: "1px solid #BFE2FF" }}
                                     >
                                         {jokerPreviewImage ? (
-                                            <img
-                                                src={jokerPreviewImage}
-                                                alt="Joker card preview"
+                                            <img src={jokerPreviewImage} alt="Joker card preview"
                                                 className="h-[200px] w-[145px] rounded-xl object-cover shadow-md sm:h-[240px] sm:w-[175px]"
-                                                style={{
-                                                    border: "1px solid #3CA9FF",
-                                                    boxShadow: "0 12px 24px rgba(60, 169, 255, 0.24)",
-                                                }}
+                                                style={{ border: "1px solid #3CA9FF", boxShadow: "0 12px 24px rgba(60, 169, 255, 0.24)" }}
                                             />
                                         ) : null}
                                     </div>
@@ -710,6 +663,9 @@ const ProductCustomizer = () => {
                     </main>
                 ) : (
                     <>
+                        {/* ════════════════════════════════════════════
+                            STEP HEADER — shared mobile + desktop
+                        ════════════════════════════════════════════ */}
                         <header className="sticky top-[68px] z-50 w-full border-b border-gray-200 bg-white/95 backdrop-blur md:top-[76px]">
                             <div className="grid w-full grid-cols-1 xl:grid-cols-[260px_minmax(0,1fr)_350px]">
                                 <div className="hidden xl:block" />
@@ -731,12 +687,13 @@ const ProductCustomizer = () => {
                                                             className={`relative z-10 flex flex-col items-center gap-1.5 ${isSelectable ? "cursor-pointer" : "cursor-not-allowed"}`}
                                                         >
                                                             <div
-                                                                className={`flex h-10 w-10 items-center justify-center rounded-full border text-lg transition-all md:h-11 md:w-11 md:text-xl ${isActive
-                                                                    ? "border-[#3CA9FF] bg-[#3CA9FF] text-white shadow-lg shadow-indigo-300"
-                                                                    : isCompleted
-                                                                        ? "border-indigo-200 bg-[#B8E6FE] text-indigo-700"
-                                                                        : "border-gray-300 bg-gray-100 text-gray-400"
-                                                                    }`}
+                                                                className={`flex h-10 w-10 items-center justify-center rounded-full border text-lg transition-all md:h-11 md:w-11 md:text-xl ${
+                                                                    isActive
+                                                                        ? "border-[#3CA9FF] bg-[#3CA9FF] text-white shadow-lg shadow-indigo-300"
+                                                                        : isCompleted
+                                                                            ? "border-indigo-200 bg-[#B8E6FE] text-indigo-700"
+                                                                            : "border-gray-300 bg-gray-100 text-gray-400"
+                                                                }`}
                                                             >
                                                                 {isCompleted ? <IoMdCheckmark className="text-lg" /> : <Icon />}
                                                             </div>
@@ -744,10 +701,7 @@ const ProductCustomizer = () => {
                                                         </button>
 
                                                         {index !== visibleSteps.length - 1 && (
-                                                            <div
-                                                                className={`mt-5 h-[2px] flex-1 mx-2 md:mx-3 md:mt-6 ${isCompleted ? "bg-[#3CA9FF]" : "bg-[#B8E6FE]"
-                                                                    }`}
-                                                            />
+                                                            <div className={`mt-5 h-[2px] flex-1 mx-2 md:mx-3 md:mt-6 ${isCompleted ? "bg-[#3CA9FF]" : "bg-[#B8E6FE]"}`} />
                                                         )}
                                                     </Fragment>
                                                 );
@@ -759,7 +713,12 @@ const ProductCustomizer = () => {
                             </div>
                         </header>
 
+                        {/* ════════════════════════════════════════════
+                            MAIN LAYOUT
+                        ════════════════════════════════════════════ */}
                         <main className="grid w-full grid-cols-1 items-start xl:grid-cols-[260px_minmax(0,1fr)_350px] xl:h-[calc(100dvh-148px)]">
+
+                            {/* ── Desktop left sidebar (card list) — unchanged ── */}
                             <aside className="hidden border-r border-gray-200 bg-white xl:sticky xl:top-[148px] xl:block xl:h-[calc(100dvh-148px)] xl:overflow-hidden">
                                 <CardSidebar
                                     cards={cards}
@@ -772,15 +731,41 @@ const ProductCustomizer = () => {
                                 />
                             </aside>
 
-                            <section className="relative flex min-h-[460px] self-start items-center justify-center overflow-hidden px-3 pt-0 pb-2 md:px-6 md:pt-0 md:pb-4 xl:pt-0 xl:pb-4">
-                                <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_35%_30%,rgba(255,255,255,0.92),rgba(242,244,248,0.7)_60%,rgba(242,244,248,1))]" />
-                                <div className="relative z-10 flex w-full max-w-[980px] flex-col items-center">
-                                    <div className="relative flex min-h-[520px] w-full items-center justify-center md:min-h-[650px]">
-                                        <CardPreview activeCard={activeCard} previewCardNodeRef={previewCardNodeRef} />
+                            {/* ── Card preview ── */}
+                            <section
+                                className="relative flex self-start items-center justify-center overflow-hidden px-3 pt-0 pb-2 md:px-6 md:pt-0 md:pb-4 xl:pt-0 xl:pb-4"
+                                /*
+                                 * On mobile we add bottom padding equal to the sheet peek height (80px)
+                                 * so the card is never fully hidden behind the bottom sheet.
+                                 * The xl: override restores the desktop behaviour.
+                                 */
+                                style={{ paddingBottom: undefined }}
+                            >
+                                {/* Mobile-only: push card above the bottom sheet peek */}
+                                <div
+                                    className="xl:hidden"
+                                    style={{ paddingBottom: `${MOBILE_SHEET_PEEK + 8}px`, width: "100%" }}
+                                >
+                                    <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_35%_30%,rgba(255,255,255,0.92),rgba(242,244,248,0.7)_60%,rgba(242,244,248,1))]" />
+                                    <div className="relative z-10 flex w-full max-w-[980px] flex-col items-center mx-auto">
+                                        <div className="relative flex min-h-[420px] w-full items-center justify-center">
+                                            <CardPreview activeCard={activeCard} previewCardNodeRef={previewCardNodeRef} />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Desktop: original layout untouched */}
+                                <div className="hidden xl:block w-full">
+                                    <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_35%_30%,rgba(255,255,255,0.92),rgba(242,244,248,0.7)_60%,rgba(242,244,248,1))]" />
+                                    <div className="relative z-10 flex w-full max-w-[980px] flex-col items-center mx-auto">
+                                        <div className="relative flex min-h-[650px] w-full items-center justify-center">
+                                            <CardPreview activeCard={activeCard} previewCardNodeRef={previewCardNodeRef} />
+                                        </div>
                                     </div>
                                 </div>
                             </section>
 
+                            {/* ── Desktop right sidebar (customizer) — unchanged ── */}
                             <aside className="hidden border-l border-gray-200 bg-white xl:sticky xl:top-[148px] xl:flex xl:flex-col xl:h-[calc(100dvh-148px)] xl:overflow-hidden">
                                 <div className="min-h-0 flex-1 overflow-y-auto px-5">
                                     <SideController
@@ -807,43 +792,24 @@ const ProductCustomizer = () => {
                             </aside>
                         </main>
 
-                        <div className="fixed inset-x-0 bottom-0 z-50 px-2 pb-2 xl:hidden">
-                            <div className={`rounded-3xl border border-gray-200 bg-white shadow-2xl transition-transform duration-300 ${smallconOpen ? "translate-y-0" : "translate-y-[calc(100%-62px)]"}`}>
-                                <button
-                                    onClick={() => setsmallconOpen(!smallconOpen)}
-                                    className="flex w-full items-center justify-center py-3"
-                                >
-                                    <span className="flex h-2 w-24 items-center justify-center rounded-full bg-sky-300">
-                                        <IoIosArrowDown className={`text-white transition-transform ${smallconOpen ? "rotate-0" : "rotate-180"}`} />
-                                    </span>
-                                </button>
-
-                                <div className="max-h-[65vh] overflow-y-auto px-3 pb-3">
-                                    <SideController
-                                        product={product}
-                                        cards={cards}
-                                        activeCard={activeCard}
-                                        selectBase={selectBaseImage}
-                                        selectLayer={selectLayerImage}
-                                        editedCard={editedCard}
-                                        seteditedCard={seteditedCard}
-                                        activebaseEditCard={activebaseEditCard}
-                                        setactivebaseEditCard={setactivebaseEditCard}
-                                    />
-                                </div>
-
-                                <div className="border-t border-gray-200 p-3">
-                                    <button
-                                        onClick={Done}
-                                        className="flex h-12 w-full items-center justify-center rounded-xl bg-indigo-600 px-4 text-base font-semibold text-white shadow-lg shadow-indigo-200"
-                                        disabled={doneloading || spinloading}
-                                    >
-                                        {doneButtonLabel}
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-
+                        {/* ════════════════════════════════════════════
+                            MOBILE BOTTOM SHEET — xl:hidden inside
+                        ════════════════════════════════════════════ */}
+                        <MobileCustomizerSheet
+                            product={product}
+                            cards={cards}
+                            activeCard={activeCard}
+                            activeCardLabel={activeCardLabel}
+                            selectBase={selectBaseImage}
+                            selectLayer={selectLayerImage}
+                            editedCard={editedCard}
+                            seteditedCard={seteditedCard}
+                            activebaseEditCard={activebaseEditCard}
+                            setactivebaseEditCard={setactivebaseEditCard}
+                            Done={Done}
+                            doneloading={doneloading || spinloading}
+                            doneButtonLabel={doneButtonLabel}
+                        />
                     </>
                 )}
 

@@ -53,7 +53,7 @@ const About = () => {
                     <option value={"all"}>Select Card Type</option>
                     <option value={"trading"}>Trading Cards</option>
                     <option value={"customizable"}>Deck Cards</option>
-                    <option value={"simple"}>Simple Cards</option>
+                    {/* <option value={"simple"}>Simple Cards</option> */}
                 </select>
             </div>
             <div className="py-14 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 px-8 max-w-7xl mx-auto">

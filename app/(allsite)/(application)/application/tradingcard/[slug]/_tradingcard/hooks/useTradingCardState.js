@@ -658,7 +658,15 @@ export function useTradingCardState() {
             console.log('FinalProduct here:', JSON.stringify(FinalProduct, null, 2));
             await new Promise(r => setTimeout(r, 5000));
 
+            // addToCart(product);
+            // router.push("/my-cart/checkout");
             addToCart(product);
+            const { saveCartImagesToIDB } = await import("@/store/useCartStore");
+            console.log("Saving to IDB, product.id:", product.id);
+            console.log("FinalProduct count:", product.FinalProduct?.length);
+            console.log("First image prefix:", product.FinalProduct?.[0]?.image?.substring(0, 50));
+            await saveCartImagesToIDB([product]);
+            console.log("IDB save complete");
             router.push("/my-cart/checkout");
 
         } catch (err) {

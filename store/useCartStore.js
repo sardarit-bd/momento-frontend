@@ -47,6 +47,19 @@ const deepStripLargeImages = (value, visited = new WeakSet()) => {
  * Strips large base64 images and known binary fields.
  * ONLY used inside partialize — never touches in-memory state.
  */
+// const sanitizeForStorage = (item) => {
+//   if (!item || typeof item !== "object") return item;
+
+//   const stripped = deepStripLargeImages(item);
+
+//   return {
+//     ...stripped,
+//     // Always null these — they're binary and never needed from storage
+//     FinalPDf: null,
+//     FinalPDFBlob: null,
+//   };
+// };
+
 const sanitizeForStorage = (item) => {
   if (!item || typeof item !== "object") return item;
 
@@ -54,13 +67,57 @@ const sanitizeForStorage = (item) => {
 
   return {
     ...stripped,
-    // Always null these — they're binary and never needed from storage
+    FinalProduct: Array.isArray(item.FinalProduct)
+      ? item.FinalProduct.map((card) => ({ ...card, image: null }))
+      : [],
     FinalPDf: null,
     FinalPDFBlob: null,
   };
 };
 
+
+
 // ─── Safe localStorage wrapper ────────────────────────────────────────────────
+
+const idbCartKey = (cartId) => `cart-images:${cartId}`;
+
+export const saveCartImagesToIDB = async (cartItems) => {
+  const { idbPut } = await import("@/app/(allsite)/(application)/application/tradingcard/[slug]/_tradingcard/lib/idb");
+  for (const item of cartItems) {
+    if (!item?.id || !Array.isArray(item?.FinalProduct)) continue;
+    if (item?.customization_mode !== "trading") continue;
+    const key = idbCartKey(item.id);
+    console.log("IDB saving key:", key, "images:", item.FinalProduct.length);
+    const result = await idbPut(key, { FinalProduct: item.FinalProduct });
+    console.log("IDB put result:", result);
+  }
+};
+
+export const restoreCartImagesFromIDB = async (cartItems) => {
+  const { idbGet } = await import("@/app/(allsite)/(application)/application/tradingcard/[slug]/_tradingcard/lib/idb");
+  return Promise.all(
+    cartItems.map(async (item) => {
+      if (!item?.id) return item;
+      if (item?.customization_mode !== "trading") return item;
+      try {
+        const key = idbCartKey(item.id);
+        console.log("IDB restoring key:", key, "item.id:", item.id);
+        const saved = await idbGet(key);
+        console.log("IDB get result:", saved);
+        if (saved?.FinalProduct) {
+          console.log("Restored images count:", saved.FinalProduct.length);
+          return { ...item, FinalProduct: saved.FinalProduct };
+        } else {
+          console.warn("No FinalProduct found in IDB for key:", key);
+        }
+      } catch (e) {
+        console.error("IDB get error:", e);
+      }
+      return item;
+    })
+  );
+};
+
 
 const safeLocalStorage = {
   getItem: (name) => {

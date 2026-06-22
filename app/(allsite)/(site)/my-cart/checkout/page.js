@@ -1,17 +1,15 @@
 "use client";
 
+import DeckBoxPreview from "@/app/componnent/DeckBoxPreview";
 import useCartStore from "@/store/useCartStore";
+import useDeckFinalPreview from "@/store/useDeckFinalPreview";
 import useboxcartstore from "@/store/useboxcartstore";
 import getId from "@/utilis/helper/cookie/getid";
 import getCookie from "@/utilis/helper/cookie/gettooken";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { FiEdit3 } from "react-icons/fi";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import useDeckFinalPreview from "@/store/useDeckFinalPreview";
-import { getNames } from "country-list";
-import DeckBoxPreview from "@/app/componnent/DeckBoxPreview";
 
 const inputStyle =
   "w-full bg-[#F3F4F6] text-gray-900 placeholder-gray-500 px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-400 transition-all text-sm border border-transparent";
@@ -44,213 +42,233 @@ export default function CheckoutPage() {
   const [address, setaddress] = useState("");
   const [address2, setAddress2] = useState("");
   const [company, setCompany] = useState("");
-  
-  
+
+
   const countries = [
-  { code: "AF", name: "Afghanistan" },
-  { code: "AX", name: "Åland Islands" },
-  { code: "AL", name: "Albania" },
-  { code: "DZ", name: "Algeria" },
-  { code: "AD", name: "Andorra" },
-  { code: "AO", name: "Angola" },
-  { code: "AR", name: "Argentina" },
-  { code: "AM", name: "Armenia" },
-  { code: "AW", name: "Aruba" },
-  { code: "AU", name: "Australia" },
-  { code: "AT", name: "Austria" },
-  { code: "AZ", name: "Azerbaijan" },
-  { code: "PT", name: "Portugal" },
-  { code: "BS", name: "Bahamas" },
-  { code: "BH", name: "Bahrain" },
-  { code: "BD", name: "Bangladesh" },
-  { code: "BB", name: "Barbados" },
-  { code: "BY", name: "Belarus" },
-  { code: "BE", name: "Belgium" },
-  { code: "BZ", name: "Belize" },
-  { code: "BJ", name: "Benin" },
-  { code: "BM", name: "Bermuda" },
-  { code: "BT", name: "Bhutan" },
-  { code: "BO", name: "Bolivia" },
-  { code: "BA", name: "Bosnia and Herzegovina" },
-  { code: "BW", name: "Botswana" },
-  { code: "BR", name: "Brazil" },
-  { code: "BN", name: "Brunei" },
-  { code: "BG", name: "Bulgaria" },
-  { code: "BF", name: "Burkina Faso" },
-  { code: "BI", name: "Burundi" },
-  { code: "KH", name: "Cambodia" },
-  { code: "CM", name: "Cameroon" },
-  { code: "CA", name: "Canada" },
-  { code: "CV", name: "Cape Verde" },
-  { code: "KY", name: "Cayman Islands" },
-  { code: "CF", name: "Central African Republic" },
-  { code: "TS", name: "Unknown (Invalid ISO Code)" },
-  { code: "CL", name: "Chile" },
-  { code: "CN", name: "China" },
-  { code: "CO", name: "Colombia" },
-  { code: "CU", name: "Cuba" },
-  { code: "ZR", name: "Zaire (Historical, now DR Congo)" },
-  { code: "CG", name: "Republic of the Congo" },
-  { code: "FR", name: "France" },
-  { code: "CR", name: "Costa Rica" },
-  { code: "HR", name: "Croatia" },
-  { code: "CY", name: "Cyprus" },
-  { code: "CZ", name: "Czech Republic" },
-  { code: "DK", name: "Denmark" },
-  { code: "DJ", name: "Djibouti" },
-  { code: "DO", name: "Dominican Republic" },
-  { code: "EC", name: "Ecuador" },
-  { code: "EG", name: "Egypt" },
-  { code: "SV", name: "El Salvador" },
-  { code: "GQ", name: "Equatorial Guinea" },
-  { code: "ER", name: "Eritrea" },
-  { code: "EE", name: "Estonia" },
-  { code: "ET", name: "Ethiopia" },
-  { code: "FO", name: "Faroe Islands" },
-  { code: "FJ", name: "Fiji" },
-  { code: "FI", name: "Finland" },
-  { code: "FM", name: "Micronesia" },
-  { code: "GF", name: "French Guiana" },
-  { code: "PF", name: "French Polynesia" },
-  { code: "GA", name: "Gabon" },
-  { code: "GE", name: "Georgia" },
-  { code: "DE", name: "Germany" },
-  { code: "GH", name: "Ghana" },
-  { code: "GL", name: "Greenland" },
-  { code: "GI", name: "Gibraltar" },
-  { code: "GR", name: "Greece" },
-  { code: "GD", name: "Grenada" },
-  { code: "GP", name: "Guadeloupe" },
-  { code: "GT", name: "Guatemala" },
-  { code: "GN", name: "Guinea" },
-  { code: "GW", name: "Guinea-Bissau" },
-  { code: "GY", name: "Guyana" },
-  { code: "HT", name: "Haiti" },
-  { code: "HN", name: "Honduras" },
-  { code: "HK", name: "Hong Kong" },
-  { code: "HU", name: "Hungary" },
-  { code: "IS", name: "Iceland" },
-  { code: "IN", name: "India" },
-  { code: "ID", name: "Indonesia" },
-  { code: "IR", name: "Iran" },
-  { code: "IQ", name: "Iraq" },
-  { code: "IE", name: "Ireland" },
-  { code: "IL", name: "Israel" },
-  { code: "IT", name: "Italy" },
-  { code: "CI", name: "Ivory Coast" },
-  { code: "JM", name: "Jamaica" },
-  { code: "JP", name: "Japan" },
-  { code: "JO", name: "Jordan" },
-  { code: "KZ", name: "Kazakhstan" },
-  { code: "KE", name: "Kenya" },
-  { code: "KR", name: "South Korea" },
-  { code: "KW", name: "Kuwait" },
-  { code: "KG", name: "Kyrgyzstan" },
-  { code: "LA", name: "Laos" },
-  { code: "LB", name: "Lebanon" },
-  { code: "LV", name: "Latvia" },
-  { code: "LS", name: "Lesotho" },
-  { code: "LR", name: "Liberia" },
-  { code: "LI", name: "Liechtenstein" },
-  { code: "LT", name: "Lithuania" },
-  { code: "LY", name: "Libya" },
-  { code: "LU", name: "Luxembourg" },
-  { code: "MO", name: "Macau" },
-  { code: "MK", name: "North Macedonia" },
-  { code: "MG", name: "Madagascar" },
-  { code: "MW", name: "Malawi" },
-  { code: "MY", name: "Malaysia" },
-  { code: "MV", name: "Maldives" },
-  { code: "ML", name: "Mali" },
-  { code: "MT", name: "Malta" },
-  { code: "MQ", name: "Martinique" },
-  { code: "MR", name: "Mauritania" },
-  { code: "MU", name: "Mauritius" },
-  { code: "MX", name: "Mexico" },
-  { code: "MD", name: "Moldova" },
-  { code: "MN", name: "Mongolia" },
-  { code: "MC", name: "Monaco" },
-  { code: "ME", name: "Montenegro" },
-  { code: "MA", name: "Morocco" },
-  { code: "MZ", name: "Mozambique" },
-  { code: "NA", name: "Namibia" },
-  { code: "NR", name: "Nauru" },
-  { code: "NP", name: "Nepal" },
-  { code: "NL", name: "Netherlands" },
-  { code: "AN", name: "Netherlands Antilles (Historical)" },
-  { code: "KN", name: "Saint Kitts and Nevis" },
-  { code: "NC", name: "New Caledonia" },
-  { code: "NZ", name: "New Zealand" },
-  { code: "NI", name: "Nicaragua" },
-  { code: "NE", name: "Niger" },
-  { code: "NG", name: "Nigeria" },
-  { code: "NU", name: "Niue" },
-  { code: "MP", name: "Northern Mariana Islands" },
-  { code: "NO", name: "Norway" },
-  { code: "OM", name: "Oman" },
-  { code: "PK", name: "Pakistan" },
-  { code: "PA", name: "Panama" },
-  { code: "PG", name: "Papua New Guinea" },
-  { code: "PY", name: "Paraguay" },
-  { code: "PE", name: "Peru" },
-  { code: "PH", name: "Philippines" },
-  { code: "PL", name: "Poland" },
-  { code: "QA", name: "Qatar" },
-  { code: "RO", name: "Romania" },
-  { code: "RU", name: "Russia" },
-  { code: "RW", name: "Rwanda" },
-  { code: "LC", name: "Saint Lucia" },
-  { code: "VC", name: "Saint Vincent and the Grenadines" },
-  { code: "SM", name: "San Marino" },
-  { code: "SA", name: "Saudi Arabia" },
-  { code: "SN", name: "Senegal" },
-  { code: "RS", name: "Serbia" },
-  { code: "YU", name: "Yugoslavia (Historical)" },
-  { code: "SC", name: "Seychelles" },
-  { code: "SL", name: "Sierra Leone" },
-  { code: "SG", name: "Singapore" },
-  { code: "SK", name: "Slovakia" },
-  { code: "SI", name: "Slovenia" },
-  { code: "SB", name: "Solomon Islands" },
-  { code: "SO", name: "Somalia" },
-  { code: "ZA", name: "South Africa" },
-  { code: "SS", name: "South Sudan" },
-  { code: "ES", name: "Spain" },
-  { code: "LK", name: "Sri Lanka" },
-  { code: "SD", name: "Sudan" },
-  { code: "SZ", name: "Eswatini" },
-  { code: "SE", name: "Sweden" },
-  { code: "CH", name: "Switzerland" },
-  { code: "SY", name: "Syria" },
-  { code: "TW", name: "Taiwan" },
-  { code: "TJ", name: "Tajikistan" },
-  { code: "TZ", name: "Tanzania" },
-  { code: "TH", name: "Thailand" },
-  { code: "TG", name: "Togo" },
-  { code: "TT", name: "Trinidad and Tobago" },
-  { code: "TN", name: "Tunisia" },
-  { code: "TR", name: "Turkey" },
-  { code: "TM", name: "Turkmenistan" },
-  { code: "UG", name: "Uganda" },
-  { code: "UA", name: "Ukraine" },
-  { code: "AE", name: "United Arab Emirates" },
-  { code: "GB", name: "United Kingdom" },
-  { code: "US", name: "United States" },
-  { code: "UY", name: "Uruguay" },
-  { code: "UZ", name: "Uzbekistan" },
-  { code: "VU", name: "Vanuatu" },
-  { code: "VA", name: "Vatican City" },
-  { code: "VE", name: "Venezuela" },
-  { code: "VN", name: "Vietnam" },
-  { code: "WS", name: "Samoa" },
-  { code: "YE", name: "Yemen" }
-];
+    { code: "AF", name: "Afghanistan" },
+    { code: "AX", name: "Åland Islands" },
+    { code: "AL", name: "Albania" },
+    { code: "DZ", name: "Algeria" },
+    { code: "AD", name: "Andorra" },
+    { code: "AO", name: "Angola" },
+    { code: "AR", name: "Argentina" },
+    { code: "AM", name: "Armenia" },
+    { code: "AW", name: "Aruba" },
+    { code: "AU", name: "Australia" },
+    { code: "AT", name: "Austria" },
+    { code: "AZ", name: "Azerbaijan" },
+    { code: "PT", name: "Portugal" },
+    { code: "BS", name: "Bahamas" },
+    { code: "BH", name: "Bahrain" },
+    { code: "BD", name: "Bangladesh" },
+    { code: "BB", name: "Barbados" },
+    { code: "BY", name: "Belarus" },
+    { code: "BE", name: "Belgium" },
+    { code: "BZ", name: "Belize" },
+    { code: "BJ", name: "Benin" },
+    { code: "BM", name: "Bermuda" },
+    { code: "BT", name: "Bhutan" },
+    { code: "BO", name: "Bolivia" },
+    { code: "BA", name: "Bosnia and Herzegovina" },
+    { code: "BW", name: "Botswana" },
+    { code: "BR", name: "Brazil" },
+    { code: "BN", name: "Brunei" },
+    { code: "BG", name: "Bulgaria" },
+    { code: "BF", name: "Burkina Faso" },
+    { code: "BI", name: "Burundi" },
+    { code: "KH", name: "Cambodia" },
+    { code: "CM", name: "Cameroon" },
+    { code: "CA", name: "Canada" },
+    { code: "CV", name: "Cape Verde" },
+    { code: "KY", name: "Cayman Islands" },
+    { code: "CF", name: "Central African Republic" },
+    { code: "TS", name: "Unknown (Invalid ISO Code)" },
+    { code: "CL", name: "Chile" },
+    { code: "CN", name: "China" },
+    { code: "CO", name: "Colombia" },
+    { code: "CU", name: "Cuba" },
+    { code: "ZR", name: "Zaire (Historical, now DR Congo)" },
+    { code: "CG", name: "Republic of the Congo" },
+    { code: "FR", name: "France" },
+    { code: "CR", name: "Costa Rica" },
+    { code: "HR", name: "Croatia" },
+    { code: "CY", name: "Cyprus" },
+    { code: "CZ", name: "Czech Republic" },
+    { code: "DK", name: "Denmark" },
+    { code: "DJ", name: "Djibouti" },
+    { code: "DO", name: "Dominican Republic" },
+    { code: "EC", name: "Ecuador" },
+    { code: "EG", name: "Egypt" },
+    { code: "SV", name: "El Salvador" },
+    { code: "GQ", name: "Equatorial Guinea" },
+    { code: "ER", name: "Eritrea" },
+    { code: "EE", name: "Estonia" },
+    { code: "ET", name: "Ethiopia" },
+    { code: "FO", name: "Faroe Islands" },
+    { code: "FJ", name: "Fiji" },
+    { code: "FI", name: "Finland" },
+    { code: "FM", name: "Micronesia" },
+    { code: "GF", name: "French Guiana" },
+    { code: "PF", name: "French Polynesia" },
+    { code: "GA", name: "Gabon" },
+    { code: "GE", name: "Georgia" },
+    { code: "DE", name: "Germany" },
+    { code: "GH", name: "Ghana" },
+    { code: "GL", name: "Greenland" },
+    { code: "GI", name: "Gibraltar" },
+    { code: "GR", name: "Greece" },
+    { code: "GD", name: "Grenada" },
+    { code: "GP", name: "Guadeloupe" },
+    { code: "GT", name: "Guatemala" },
+    { code: "GN", name: "Guinea" },
+    { code: "GW", name: "Guinea-Bissau" },
+    { code: "GY", name: "Guyana" },
+    { code: "HT", name: "Haiti" },
+    { code: "HN", name: "Honduras" },
+    { code: "HK", name: "Hong Kong" },
+    { code: "HU", name: "Hungary" },
+    { code: "IS", name: "Iceland" },
+    { code: "IN", name: "India" },
+    { code: "ID", name: "Indonesia" },
+    { code: "IR", name: "Iran" },
+    { code: "IQ", name: "Iraq" },
+    { code: "IE", name: "Ireland" },
+    { code: "IL", name: "Israel" },
+    { code: "IT", name: "Italy" },
+    { code: "CI", name: "Ivory Coast" },
+    { code: "JM", name: "Jamaica" },
+    { code: "JP", name: "Japan" },
+    { code: "JO", name: "Jordan" },
+    { code: "KZ", name: "Kazakhstan" },
+    { code: "KE", name: "Kenya" },
+    { code: "KR", name: "South Korea" },
+    { code: "KW", name: "Kuwait" },
+    { code: "KG", name: "Kyrgyzstan" },
+    { code: "LA", name: "Laos" },
+    { code: "LB", name: "Lebanon" },
+    { code: "LV", name: "Latvia" },
+    { code: "LS", name: "Lesotho" },
+    { code: "LR", name: "Liberia" },
+    { code: "LI", name: "Liechtenstein" },
+    { code: "LT", name: "Lithuania" },
+    { code: "LY", name: "Libya" },
+    { code: "LU", name: "Luxembourg" },
+    { code: "MO", name: "Macau" },
+    { code: "MK", name: "North Macedonia" },
+    { code: "MG", name: "Madagascar" },
+    { code: "MW", name: "Malawi" },
+    { code: "MY", name: "Malaysia" },
+    { code: "MV", name: "Maldives" },
+    { code: "ML", name: "Mali" },
+    { code: "MT", name: "Malta" },
+    { code: "MQ", name: "Martinique" },
+    { code: "MR", name: "Mauritania" },
+    { code: "MU", name: "Mauritius" },
+    { code: "MX", name: "Mexico" },
+    { code: "MD", name: "Moldova" },
+    { code: "MN", name: "Mongolia" },
+    { code: "MC", name: "Monaco" },
+    { code: "ME", name: "Montenegro" },
+    { code: "MA", name: "Morocco" },
+    { code: "MZ", name: "Mozambique" },
+    { code: "NA", name: "Namibia" },
+    { code: "NR", name: "Nauru" },
+    { code: "NP", name: "Nepal" },
+    { code: "NL", name: "Netherlands" },
+    { code: "AN", name: "Netherlands Antilles (Historical)" },
+    { code: "KN", name: "Saint Kitts and Nevis" },
+    { code: "NC", name: "New Caledonia" },
+    { code: "NZ", name: "New Zealand" },
+    { code: "NI", name: "Nicaragua" },
+    { code: "NE", name: "Niger" },
+    { code: "NG", name: "Nigeria" },
+    { code: "NU", name: "Niue" },
+    { code: "MP", name: "Northern Mariana Islands" },
+    { code: "NO", name: "Norway" },
+    { code: "OM", name: "Oman" },
+    { code: "PK", name: "Pakistan" },
+    { code: "PA", name: "Panama" },
+    { code: "PG", name: "Papua New Guinea" },
+    { code: "PY", name: "Paraguay" },
+    { code: "PE", name: "Peru" },
+    { code: "PH", name: "Philippines" },
+    { code: "PL", name: "Poland" },
+    { code: "QA", name: "Qatar" },
+    { code: "RO", name: "Romania" },
+    { code: "RU", name: "Russia" },
+    { code: "RW", name: "Rwanda" },
+    { code: "LC", name: "Saint Lucia" },
+    { code: "VC", name: "Saint Vincent and the Grenadines" },
+    { code: "SM", name: "San Marino" },
+    { code: "SA", name: "Saudi Arabia" },
+    { code: "SN", name: "Senegal" },
+    { code: "RS", name: "Serbia" },
+    { code: "YU", name: "Yugoslavia (Historical)" },
+    { code: "SC", name: "Seychelles" },
+    { code: "SL", name: "Sierra Leone" },
+    { code: "SG", name: "Singapore" },
+    { code: "SK", name: "Slovakia" },
+    { code: "SI", name: "Slovenia" },
+    { code: "SB", name: "Solomon Islands" },
+    { code: "SO", name: "Somalia" },
+    { code: "ZA", name: "South Africa" },
+    { code: "SS", name: "South Sudan" },
+    { code: "ES", name: "Spain" },
+    { code: "LK", name: "Sri Lanka" },
+    { code: "SD", name: "Sudan" },
+    { code: "SZ", name: "Eswatini" },
+    { code: "SE", name: "Sweden" },
+    { code: "CH", name: "Switzerland" },
+    { code: "SY", name: "Syria" },
+    { code: "TW", name: "Taiwan" },
+    { code: "TJ", name: "Tajikistan" },
+    { code: "TZ", name: "Tanzania" },
+    { code: "TH", name: "Thailand" },
+    { code: "TG", name: "Togo" },
+    { code: "TT", name: "Trinidad and Tobago" },
+    { code: "TN", name: "Tunisia" },
+    { code: "TR", name: "Turkey" },
+    { code: "TM", name: "Turkmenistan" },
+    { code: "UG", name: "Uganda" },
+    { code: "UA", name: "Ukraine" },
+    { code: "AE", name: "United Arab Emirates" },
+    { code: "GB", name: "United Kingdom" },
+    { code: "US", name: "United States" },
+    { code: "UY", name: "Uruguay" },
+    { code: "UZ", name: "Uzbekistan" },
+    { code: "VU", name: "Vanuatu" },
+    { code: "VA", name: "Vatican City" },
+    { code: "VE", name: "Venezuela" },
+    { code: "VN", name: "Vietnam" },
+    { code: "WS", name: "Samoa" },
+    { code: "YE", name: "Yemen" }
+  ];
 
   // Deck Customization State
   const [deckFinish, setDeckFinish] = useState("prism");
   const { deckcart } = useDeckFinalPreview();
 
   const { cart } = useCartStore();
+  const [hydratedCart, setHydratedCart] = useState([]);
+  const [hydrating, setHydrating] = useState(true);
+
+  useEffect(() => {
+      if (cart.length === 0) return;
+
+      const restore = async () => {
+        try {
+          const { restoreCartImagesFromIDB } = await import("@/store/useCartStore");
+          const restored = await restoreCartImagesFromIDB(cart);
+          setHydratedCart(restored);
+        } catch (e) {
+          console.error("IDB restore failed:", e);
+          setHydratedCart(cart);
+        } finally {
+          setHydrating(false);
+        }
+      };
+      restore();
+    }, [cart.length]);
 
   useEffect(() => {
     const needsUpdate = cart.some(
@@ -333,30 +351,30 @@ export default function CheckoutPage() {
   // };
 
   const getItemPreviewCards = (item) => {
-      // ── Deck card: has editedCard/selectedLayers structure ──
-      if (Array.isArray(item?.FinalProduct) && item.FinalProduct.some(isDeckCustomizedCard)) {
-          return item.FinalProduct
-              .filter(isDeckCustomizedCard)
-              .map((card) => ({ type: "deck", card }));
-      }
+    // ── Deck card: has editedCard/selectedLayers structure ──
+    if (Array.isArray(item?.FinalProduct) && item.FinalProduct.some(isDeckCustomizedCard)) {
+      return item.FinalProduct
+        .filter(isDeckCustomizedCard)
+        .map((card) => ({ type: "deck", card }));
+    }
 
-      // ── Trading card: has {side, image, card_pair_key} structure ──
-      if (item?.customization_mode === "trading" && Array.isArray(item?.FinalProduct)) {
-          const fronts = item.FinalProduct
-              .filter(c => c?.side === "front" && c?.image)
-              .map(c => ({ type: "image", src: c.image }));
+    // ── Trading card: has {side, image, card_pair_key} structure ──
+    if (item?.customization_mode === "trading" && Array.isArray(item?.FinalProduct)) {
+      const fronts = item.FinalProduct
+        .filter(c => c?.side === "front" && c?.image)
+        .map(c => ({ type: "image", src: c.image }));
 
-          const back = item.FinalProduct
-              .find(c => c?.side === "back" && c?.image);
+      const back = item.FinalProduct
+        .find(c => c?.side === "back" && c?.image);
 
-          const cards = [...fronts];
-          if (back) cards.push({ type: "image", src: back.image });
+      const cards = [...fronts];
+      if (back) cards.push({ type: "image", src: back.image });
 
-          if (cards.length > 0) return cards;
-      }
+      if (cards.length > 0) return cards;
+    }
 
-      // ── Fallback ──
-      return getItemPreviewImages(item).map((src) => ({ type: "image", src }));
+    // ── Fallback ──
+    return getItemPreviewImages(item).map((src) => ({ type: "image", src }));
   };
 
   // Calculations
@@ -421,19 +439,19 @@ export default function CheckoutPage() {
     const normalized = [];
 
     for (const card of sourceCards) {
-        if (!card?.side || !card?.image) continue;
+      if (!card?.side || !card?.image) continue;
 
-        // image is already a base64 dataUrl from captureNodeClean
-        normalized.push({
-            side:          card.side,
-            image:         card.image,
-            card_pair_key: card.card_pair_key ?? null,
-            name:          card.name ?? null,
-        });
+      // image is already a base64 dataUrl from captureNodeClean
+      normalized.push({
+        side: card.side,
+        image: card.image,
+        card_pair_key: card.card_pair_key ?? null,
+        name: card.name ?? null,
+      });
     }
 
     return normalized;
-};
+  };
 
   const normalizeDeckFinalProduct = async (item) => {
     const sourceCards = Array.isArray(item?.FinalProduct) ? item.FinalProduct : [];
@@ -460,10 +478,10 @@ export default function CheckoutPage() {
 
       if (!image || !rank) continue;
       normalized.push({
-          rank,
-          image,
-          name: card?.name ?? null,
-          character_image: card?.character_image ?? null,
+        rank,
+        image,
+        name: card?.name ?? null,
+        character_image: card?.character_image ?? null,
       });
     }
 
@@ -501,12 +519,12 @@ export default function CheckoutPage() {
       return;
     }
 
-    if (cart.length === 0) {
+    if (hydratedCart.length === 0) {
       toast.warn("Your cart is empty");
       return;
     }
 
-    const invalidItems = cart.filter(item =>
+    const invalidItems = hydratedCart.filter(item =>
       !item.productId || !item.productQuantity || !item.productUnitPrice
     );
 
@@ -519,7 +537,7 @@ export default function CheckoutPage() {
 
     try {
       const cartItems = await Promise.all(
-        cart.map(async (item) => {
+          hydratedCart.map(async (item) => {
           let pdfData = null;
           if (item.FinalPDf && item.FinalPDf instanceof Blob) {
             pdfData = await new Promise((resolve, reject) => {
@@ -560,12 +578,12 @@ export default function CheckoutPage() {
       // Backend checkout currently validates email as required.
       const checkoutEmail = `${id || "guest"}@example.com`;
 
-      const tradingItem = cart.find(item => item.productType === "trading");
-      
+      const tradingItem = hydratedCart.find(item => item.productType === "trading");
+
       const persistedPackageTitle = typeof window !== "undefined"
         ? localStorage.getItem("persistent_packageTitle") ?? tradingItem?.packTitle ?? null
         : tradingItem?.packTitle ?? null;
-        
+
       const checkoutData = {
         first_name: firstName,
         last_name: lastName,
@@ -581,7 +599,7 @@ export default function CheckoutPage() {
         items: cartItems,
         userID: id,
         tuckbox_image: deckcart?.[0]?.BoxImage || null,
-        trading_box_pack_title:  persistedPackageTitle,
+        trading_box_pack_title: persistedPackageTitle,
         trading_box_created_for: localStorage.getItem("persistent_carddes") ?? tradingItem?.createdFor ?? null,
       };
 
@@ -643,7 +661,7 @@ export default function CheckoutPage() {
           <div className="bg-white rounded-2xl p-4 sm:p-6 shadow-[0_2px_10px_rgba(0,0,0,0.02)] border border-gray-100">
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-xl font-bold">
-                  {cart.some(item => item?.productType === "trading") ? "Your Trading Card" : "Your Deck Card"}
+                {cart.some(item => item?.productType === "trading") ? "Your Trading Card" : "Your Deck Card"}
               </h2>
               {/* <button onClick={handleEditCustomization} className="text-sky-600 text-sm font-medium flex items-center gap-1.5 hover:underline cursor-pointer">
                 <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-sky-100 text-sky-700">
@@ -660,10 +678,12 @@ export default function CheckoutPage() {
 
             {/* Display Cart Items visually */}
             <div className="mb-6 space-y-4">
-              {cart.length === 0 ? (
+              {hydrating ? (
+                <div className="text-gray-500 text-sm py-4">Loading...</div>
+              ) : hydratedCart.length === 0 ? (
                 <div className="text-gray-500 text-sm py-4">Your cart is empty</div>
               ) : (
-                cart.map((item, idx) => {
+                hydratedCart.map((item, idx) => {
                   const previewCards = getItemPreviewCards(item);
                   const hasManyCards = previewCards.length > 2;
                   const customizedCount = item?.customization_mode === "trading" && Array.isArray(item?.FinalProduct)
@@ -679,27 +699,27 @@ export default function CheckoutPage() {
                           >
                             {previewCard.type === "deck" ? (
                               <div className="relative w-full h-full bg-white">
-                                  <img
-                                      src={previewCard.card.baseImage}
-                                      alt={`${item?.productName || "Product"} customized card ${imageIndex + 1}`}
-                                      className="w-full h-full object-cover bg-white"
-                                  />
-                                  {deckPreviewLayers.map((layer) => (
-                                      previewCard.card?.selectedLayers?.[layer] ? (
-                                          <div key={`${imageIndex}-${layer}`}>
-                                              <img
-                                                  src={previewCard.card.selectedLayers[layer]}
-                                                  alt={`${layer} top`}
-                                                  className="absolute left-1/2 -translate-x-1/2 top-[8%] w-[64%] h-[43%] object-contain"
-                                              />
-                                              <img
-                                                  src={previewCard.card.selectedLayers[layer]}
-                                                  alt={`${layer} bottom`}
-                                                  className="absolute left-1/2 -translate-x-1/2 bottom-[8%] w-[64%] h-[43%] object-contain scale-y-[-1]"
-                                              />
-                                          </div>
-                                      ) : null
-                                  ))}
+                                <img
+                                  src={previewCard.card.baseImage}
+                                  alt={`${item?.productName || "Product"} customized card ${imageIndex + 1}`}
+                                  className="w-full h-full object-cover bg-white"
+                                />
+                                {deckPreviewLayers.map((layer) => (
+                                  previewCard.card?.selectedLayers?.[layer] ? (
+                                    <div key={`${imageIndex}-${layer}`}>
+                                      <img
+                                        src={previewCard.card.selectedLayers[layer]}
+                                        alt={`${layer} top`}
+                                        className="absolute left-1/2 -translate-x-1/2 top-[8%] w-[64%] h-[43%] object-contain"
+                                      />
+                                      <img
+                                        src={previewCard.card.selectedLayers[layer]}
+                                        alt={`${layer} bottom`}
+                                        className="absolute left-1/2 -translate-x-1/2 bottom-[8%] w-[64%] h-[43%] object-contain scale-y-[-1]"
+                                      />
+                                    </div>
+                                  ) : null
+                                ))}
                               </div>
                             ) : (
                               <img
@@ -741,12 +761,12 @@ export default function CheckoutPage() {
             )} */}
 
             {cart.length > 0 && deckcart?.[0]?.CharacterImages?.length > 0 && (
-                <div className="mb-6">
-                    <h3 className="text-sm font-semibold text-gray-700 mb-3">Box Preview</h3>
-                    <div className="flex flex-wrap gap-3">
-                        <DeckBoxPreview characterImages={deckcart[0].CharacterImages} />
-                    </div>
+              <div className="mb-6">
+                <h3 className="text-sm font-semibold text-gray-700 mb-3">Box Preview</h3>
+                <div className="flex flex-wrap gap-3">
+                  <DeckBoxPreview characterImages={deckcart[0].CharacterImages} />
                 </div>
+              </div>
             )}
 
             {/* Trading Card Box Preview — completely isolated from deck card logic */}

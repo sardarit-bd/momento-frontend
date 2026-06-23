@@ -43,7 +43,6 @@ export default function CheckoutPage() {
   const [address2, setAddress2] = useState("");
   const [company, setCompany] = useState("");
 
-
   const countries = [
     { code: "AF", name: "Afghanistan" },
     { code: "AX", name: "Åland Islands" },
@@ -253,22 +252,32 @@ export default function CheckoutPage() {
   const [hydrating, setHydrating] = useState(true);
 
   useEffect(() => {
-      if (cart.length === 0) return;
+    if (cart.length === 0) {
+      setHydrating(false);
+      return;
+    }
 
-      const restore = async () => {
-        try {
-          const { restoreCartImagesFromIDB } = await import("@/store/useCartStore");
-          const restored = await restoreCartImagesFromIDB(cart);
-          setHydratedCart(restored);
-        } catch (e) {
-          console.error("IDB restore failed:", e);
-          setHydratedCart(cart);
-        } finally {
-          setHydrating(false);
-        }
-      };
-      restore();
-    }, [cart.length]);
+    const restore = async () => {
+      try {
+        const { restoreCartImagesFromIDB, restoreDeckCartImagesFromIDB } = await import("@/store/useCartStore");
+
+        // Step 1: restore trading card images (existing logic — unchanged)
+        const tradingRestored = await restoreCartImagesFromIDB(cart);
+
+        // Step 2: restore deck card images on top
+        const fullyRestored = await restoreDeckCartImagesFromIDB(tradingRestored);
+
+        setHydratedCart(fullyRestored);
+      } catch (e) {
+        console.error("IDB restore failed:", e);
+        setHydratedCart(cart);
+      } finally {
+        setHydrating(false);
+      }
+    };
+
+    restore();
+  }, [cart.length]);
 
   useEffect(() => {
     const needsUpdate = cart.some(
@@ -321,7 +330,7 @@ export default function CheckoutPage() {
       return item.FinalProduct
         .map((card) => {
           if (typeof card === "string") return card;
-          if (card && typeof card === "object") return card.baseImage || null;
+          if (card && typeof card === "object") return card.image || card.baseImage || null;
           return null;
         })
         .filter(Boolean);
@@ -334,27 +343,37 @@ export default function CheckoutPage() {
     return Boolean(
       card &&
       typeof card === "object" &&
+      card.rank &&
+      card.image
+    );
+  };
+
+  const isDeckLayeredCard = (card) => {
+    return Boolean(
+      card &&
+      typeof card === "object" &&
       card.baseImage &&
       card.selectedLayers &&
       typeof card.selectedLayers === "object"
     );
   };
 
-  // const getItemPreviewCards = (item) => {
-  //   if (Array.isArray(item?.FinalProduct) && item.FinalProduct.some(isDeckCustomizedCard)) {
-  //     return item.FinalProduct
-  //       .filter(isDeckCustomizedCard)
-  //       .map((card) => ({ type: "deck", card }));
-  //   }
-
-  //   return getItemPreviewImages(item).map((src) => ({ type: "image", src }));
-  // };
-
   const getItemPreviewCards = (item) => {
-    // ── Deck card: has editedCard/selectedLayers structure ──
-    if (Array.isArray(item?.FinalProduct) && item.FinalProduct.some(isDeckCustomizedCard)) {
+    // ── Deck card restored from IDB: has rank + image (composited base64) ──
+    if (
+      item?.customization_mode === "deck" &&
+      Array.isArray(item?.FinalProduct) &&
+      item.FinalProduct.some(isDeckCustomizedCard)
+    ) {
       return item.FinalProduct
         .filter(isDeckCustomizedCard)
+        .map((card) => ({ type: "image", src: card.image }));
+    }
+
+    // ── Deck card in-memory (not refreshed): has baseImage + selectedLayers ──
+    if (Array.isArray(item?.FinalProduct) && item.FinalProduct.some(isDeckLayeredCard)) {
+      return item.FinalProduct
+        .filter(isDeckLayeredCard)
         .map((card) => ({ type: "deck", card }));
     }
 
@@ -432,16 +451,12 @@ export default function CheckoutPage() {
     }
   };
 
-
   const normalizeTradingFinalProduct = async (item) => {
     const sourceCards = Array.isArray(item?.FinalProduct) ? item.FinalProduct : [];
-
     const normalized = [];
 
     for (const card of sourceCards) {
       if (!card?.side || !card?.image) continue;
-
-      // image is already a base64 dataUrl from captureNodeClean
       normalized.push({
         side: card.side,
         image: card.image,
@@ -465,8 +480,20 @@ export default function CheckoutPage() {
         has_image: !!card?.image,
         image_prefix: card?.image?.substring(0, 30),
       });
-      const rawType =
-        card?.editedCard || card?.card_type || card?.type || card?.rank || null;
+
+      // Cards restored from IDB already have rank + image — use directly
+      if (card?.rank && card?.image && isDataUrlImage(card.image)) {
+        normalized.push({
+          rank: card.rank,
+          image: card.image,
+          name: card?.name ?? null,
+          character_image: card?.character_image ?? null,
+        });
+        continue;
+      }
+
+      // Fallback: derive rank and fetch/convert image
+      const rawType = card?.editedCard || card?.card_type || card?.type || card?.rank || null;
       const rank =
         DECK_RANK_MAP[rawType] ||
         (typeof rawType === "string" ? rawType.toLowerCase() : null);
@@ -497,13 +524,15 @@ export default function CheckoutPage() {
     if (Array.isArray(item?.FinalProduct) && item.FinalProduct.some((card) => card?.editedCard)) {
       return "deck";
     }
+    // Also detect deck from IDB-restored structure
+    if (Array.isArray(item?.FinalProduct) && item.FinalProduct.some((card) => card?.rank && card?.image)) {
+      return "deck";
+    }
     return "trading";
   };
 
   const handleCheckout = async (e) => {
     e.preventDefault();
-
-    const fullName = `${firstName} ${lastName}`.trim();
 
     if (
       !firstName ||
@@ -537,7 +566,7 @@ export default function CheckoutPage() {
 
     try {
       const cartItems = await Promise.all(
-          hydratedCart.map(async (item) => {
+        hydratedCart.map(async (item) => {
           let pdfData = null;
           if (item.FinalPDf && item.FinalPDf instanceof Blob) {
             pdfData = await new Promise((resolve, reject) => {
@@ -575,7 +604,6 @@ export default function CheckoutPage() {
         has_image: !!c.image,
       })));
 
-      // Backend checkout currently validates email as required.
       const checkoutEmail = `${id || "guest"}@example.com`;
 
       const tradingItem = hydratedCart.find(item => item.productType === "trading");
@@ -583,6 +611,9 @@ export default function CheckoutPage() {
       const persistedPackageTitle = typeof window !== "undefined"
         ? localStorage.getItem("persistent_packageTitle") ?? tradingItem?.packTitle ?? null
         : tradingItem?.packTitle ?? null;
+      
+      const deckItem = hydratedCart.find(item => item.customization_mode === 'deck');
+      const characterImages = deckItem?.CharacterImages ?? deckcart?.[0]?.CharacterImages ?? [];
 
       const checkoutData = {
         first_name: firstName,
@@ -598,7 +629,9 @@ export default function CheckoutPage() {
         gateway: "stripe",
         items: cartItems,
         userID: id,
-        tuckbox_image: deckcart?.[0]?.BoxImage || null,
+        tuckbox_image: null,
+        tuckbox_characters: characterImages,  
+        // tuckbox_image: deckcart?.[0]?.BoxImage || null,
         trading_box_pack_title: persistedPackageTitle,
         trading_box_created_for: localStorage.getItem("persistent_carddes") ?? tradingItem?.createdFor ?? null,
       };
@@ -663,12 +696,6 @@ export default function CheckoutPage() {
               <h2 className="text-xl font-bold">
                 {cart.some(item => item?.productType === "trading") ? "Your Trading Card" : "Your Deck Card"}
               </h2>
-              {/* <button onClick={handleEditCustomization} className="text-sky-600 text-sm font-medium flex items-center gap-1.5 hover:underline cursor-pointer">
-                <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-sky-100 text-sky-700">
-                  <FiEdit3 className="text-[12px]" />
-                </span>
-                Edit
-              </button> */}
             </div>
 
             <div className="inline-flex items-center gap-1.5 bg-sky-50 text-sky-700 text-xs font-semibold px-3 py-1.5 rounded-full mb-6">
@@ -698,6 +725,7 @@ export default function CheckoutPage() {
                             className={`${hasManyCards ? "w-[68px] h-[96px] sm:w-[76px] sm:h-[108px] md:w-[82px] md:h-[116px]" : "w-[88px] h-[123px] sm:w-24 sm:h-32 md:w-28 md:h-40"} bg-gray-100 rounded-lg border border-gray-200 overflow-hidden relative`}
                           >
                             {previewCard.type === "deck" ? (
+                              // In-memory layered preview (not refreshed)
                               <div className="relative w-full h-full bg-white">
                                 <img
                                   src={previewCard.card.baseImage}
@@ -722,6 +750,7 @@ export default function CheckoutPage() {
                                 ))}
                               </div>
                             ) : (
+                              // Composited image from IDB restore or trading card
                               <img
                                 src={previewCard.src}
                                 alt={`${item?.productName || "Product"} preview ${imageIndex + 1}`}
@@ -732,7 +761,7 @@ export default function CheckoutPage() {
                         ))}
                         {previewCards.length === 0 && (
                           <div className="w-[88px] h-[123px] sm:w-24 sm:h-32 md:w-28 md:h-40 bg-gray-100 rounded-lg border border-gray-200 overflow-hidden relative flex items-center justify-center text-gray-300">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
                           </div>
                         )}
                       </div>
@@ -744,30 +773,35 @@ export default function CheckoutPage() {
                         )}
                       </div>
                     </div>
-                  )
+                  );
                 })
               )}
             </div>
 
-            {/* {cart.length > 0 && deckcart?.[0]?.BoxImage && (
-                <div className="mb-6">
-                    <h3 className="text-sm font-semibold text-gray-700 mb-3">Box Preview</h3>
-                    <div className="flex flex-wrap gap-3">
-                        <div className="w-[160px] sm:w-[190px] md:w-[220px] rounded-xl border border-gray-200 bg-white p-2 shadow-sm">
-                            <img className="h-auto w-full object-contain" src={deckcart[0].BoxImage} alt="box-preview" />
-                        </div>
-                    </div>
-                </div>
-            )} */}
-
-            {cart.length > 0 && deckcart?.[0]?.CharacterImages?.length > 0 && (
+            {/* {cart.length > 0 && deckcart?.[0]?.CharacterImages?.length > 0 && (
               <div className="mb-6">
                 <h3 className="text-sm font-semibold text-gray-700 mb-3">Box Preview</h3>
                 <div className="flex flex-wrap gap-3">
                   <DeckBoxPreview characterImages={deckcart[0].CharacterImages} />
                 </div>
               </div>
-            )}
+            )} */}
+
+            {(() => {
+              const characterImages =
+                deckcart?.[0]?.CharacterImages?.length > 0
+                  ? deckcart[0].CharacterImages
+                  : hydratedCart.find(item => item.customization_mode === 'deck')?.CharacterImages ?? [];
+
+              return cart.length > 0 && characterImages.length > 0 ? (
+                <div className="mb-6">
+                  <h3 className="text-sm font-semibold text-gray-700 mb-3">Box Preview</h3>
+                  <div className="flex flex-wrap gap-3">
+                    <DeckBoxPreview characterImages={characterImages} />
+                  </div>
+                </div>
+              ) : null;
+            })()}
 
             {/* Trading Card Box Preview — completely isolated from deck card logic */}
             {cart.some((item) => item.productType === "trading") &&
@@ -816,7 +850,6 @@ export default function CheckoutPage() {
 
             <form onSubmit={handleCheckout} className="space-y-6">
 
-              {/* Shipping Information */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-3 mt-4">
                   Shipping Information
@@ -824,139 +857,59 @@ export default function CheckoutPage() {
 
                 <div className="space-y-4">
 
-                  {/* Full Name */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
                       <FieldLabel label="First Name" required />
-                      <input
-                        type="text"
-                        value={firstName}
-                        onChange={(e) => setFirstName(e.target.value)}
-                        placeholder="First Name"
-                        className={inputStyle}
-                        required
-                      />
+                      <input type="text" value={firstName} onChange={(e) => setFirstName(e.target.value)} placeholder="First Name" className={inputStyle} required />
                     </div>
-
                     <div>
                       <FieldLabel label="Last Name" required />
-                      <input
-                        type="text"
-                        value={lastName}
-                        onChange={(e) => setLastName(e.target.value)}
-                        placeholder="Last Name"
-                        className={inputStyle}
-                        required
-                      />
+                      <input type="text" value={lastName} onChange={(e) => setLastName(e.target.value)} placeholder="Last Name" className={inputStyle} required />
                     </div>
                   </div>
 
-                  {/* Company */}
                   <div>
                     <FieldLabel label="Company" />
-                    <input
-                      type="text"
-                      value={company}
-                      onChange={(e) => setCompany(e.target.value)}
-                      placeholder="Company (optional)"
-                      className={inputStyle}
-                    />
+                    <input type="text" value={company} onChange={(e) => setCompany(e.target.value)} placeholder="Company (optional)" className={inputStyle} />
                   </div>
 
-                  {/* Phone */}
                   <div>
                     <FieldLabel label="Phone Number" required />
-                    <input
-                      type="tel"
-                      value={phone}
-                      onChange={(e) => setphone(e.target.value)}
-                      placeholder="Phone Number"
-                      className={inputStyle}
-                      required
-                    />
+                    <input type="tel" value={phone} onChange={(e) => setphone(e.target.value)} placeholder="Phone Number" className={inputStyle} required />
                   </div>
 
-                  {/* Address 1 */}
                   <div>
                     <FieldLabel label="Address 1" required />
-                    <input
-                      type="text"
-                      value={address}
-                      onChange={(e) => setaddress(e.target.value)}
-                      placeholder="Address 1"
-                      className={inputStyle}
-                      required
-                    />
+                    <input type="text" value={address} onChange={(e) => setaddress(e.target.value)} placeholder="Address 1" className={inputStyle} required />
                   </div>
 
-                  {/* Address 2 */}
                   <div>
                     <FieldLabel label="Address 2" />
-                    <input
-                      type="text"
-                      value={address2}
-                      onChange={(e) => setAddress2(e.target.value)}
-                      placeholder="Apartment, suite, unit, etc. (optional)"
-                      className={inputStyle}
-                    />
+                    <input type="text" value={address2} onChange={(e) => setAddress2(e.target.value)} placeholder="Apartment, suite, unit, etc. (optional)" className={inputStyle} />
                   </div>
 
-                  {/* City + State */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
                       <FieldLabel label="City" required />
-                      <input
-                        type="text"
-                        value={City}
-                        onChange={(e) => setCity(e.target.value)}
-                        placeholder="City"
-                        className={inputStyle}
-                        required
-                      />
+                      <input type="text" value={City} onChange={(e) => setCity(e.target.value)} placeholder="City" className={inputStyle} required />
                     </div>
-
                     <div>
                       <FieldLabel label="State / Province" required />
-                      <input
-                        type="text"
-                        value={state}
-                        onChange={(e) => setState(e.target.value)}
-                        placeholder="State / Province"
-                        className={inputStyle}
-                        required
-                      />
+                      <input type="text" value={state} onChange={(e) => setState(e.target.value)} placeholder="State / Province" className={inputStyle} required />
                     </div>
                   </div>
 
-                  {/* Postal Code + Country */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
                       <FieldLabel label="Zip / Postal Code" required />
-                      <input
-                        type="text"
-                        value={zipcode}
-                        onChange={(e) => setzipcode(e.target.value)}
-                        placeholder="Zip / Postal Code"
-                        className={inputStyle}
-                        required
-                      />
+                      <input type="text" value={zipcode} onChange={(e) => setzipcode(e.target.value)} placeholder="Zip / Postal Code" className={inputStyle} required />
                     </div>
-
                     <div>
                       <FieldLabel label="Country" required />
-
-                      <select
-                        value={country}
-                        onChange={(e) => setCountry(e.target.value)}
-                        className={inputStyle}
-                        required
-                      >
+                      <select value={country} onChange={(e) => setCountry(e.target.value)} className={inputStyle} required>
                         <option value="">Select Country</option>
-
                         {countries.map((item) => (
-                          <option key={item.code} value={item.code}>
-                            {item.name} ({item.code})
-                          </option>
+                          <option key={item.code} value={item.code}>{item.name} ({item.code})</option>
                         ))}
                       </select>
                     </div>
@@ -964,8 +917,6 @@ export default function CheckoutPage() {
                 </div>
               </div>
 
-
-              {/* Submit Button */}
               <button
                 type="submit"
                 disabled={loading || cart.length === 0}

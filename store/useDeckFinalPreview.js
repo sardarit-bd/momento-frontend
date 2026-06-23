@@ -1,25 +1,41 @@
-// store/useDeckFinalPreview.js
 import { create } from "zustand";
+import { persist, createJSONStorage } from "zustand/middleware";
 
-const useDeckFinalPreview = create((set) => ({
-    deckcart: [],
+const useDeckFinalPreview = create(
+  persist(
+    (set) => ({
+      deckcart: [],
 
-    addToCart: (item) => set((state) => ({
-        deckcart: [...state.deckcart, item]
-    })),
+      addToCart: (item) => set((state) => ({
+        deckcart: [...state.deckcart, item],
+      })),
 
-    // ✅ THIS WAS MISSING
-    updateCart: (updatedItem) => set((state) => ({
+      updateCart: (updatedItem) => set((state) => ({
         deckcart: state.deckcart.map((item) =>
-            item.id === updatedItem.id ? { ...item, ...updatedItem } : item
-        )
-    })),
+          item.id === updatedItem.id ? { ...item, ...updatedItem } : item
+        ),
+      })),
 
-    removeFromCart: (productId) => set((state) => ({
-        deckcart: state.deckcart.filter((item) => item.productId !== productId)
-    })),
+      removeFromCart: (productId) => set((state) => ({
+        deckcart: state.deckcart.filter((item) => item.productId !== productId),
+      })),
 
-    clearCart: () => set({ deckcart: [] }),
-}));
+      clearCart: () => set({ deckcart: [] }),
+    }),
+    {
+      name: "momento-deck-preview-storage",
+      storage: createJSONStorage(() => localStorage),
+      partialize: (state) => ({
+        deckcart: state.deckcart.map((item) => ({
+          id: item.id,
+          productId: item.productId,
+          productType: item.productType,
+          CharacterImages: item.CharacterImages ?? [],
+          BoxImage: item.BoxImage ?? null,
+        })),
+      }),
+    }
+  )
+);
 
 export default useDeckFinalPreview;

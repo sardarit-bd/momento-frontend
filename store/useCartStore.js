@@ -14,10 +14,6 @@ const isLargeDataImage = (value) =>
   value.startsWith("data:image/") &&
   value.length > BASE64_SIZE_LIMIT;
 
-/**
- * Recursively strips large base64 strings — used ONLY for persist/storage.
- * Never call this on in-memory state.
- */
 const deepStripLargeImages = (value, visited = new WeakSet()) => {
   if (value === null || value === undefined) return value;
 
@@ -42,24 +38,6 @@ const deepStripLargeImages = (value, visited = new WeakSet()) => {
   return result;
 };
 
-/**
- * Storage-safe version of a cart item.
- * Strips large base64 images and known binary fields.
- * ONLY used inside partialize — never touches in-memory state.
- */
-// const sanitizeForStorage = (item) => {
-//   if (!item || typeof item !== "object") return item;
-
-//   const stripped = deepStripLargeImages(item);
-
-//   return {
-//     ...stripped,
-//     // Always null these — they're binary and never needed from storage
-//     FinalPDf: null,
-//     FinalPDFBlob: null,
-//   };
-// };
-
 const sanitizeForStorage = (item) => {
   if (!item || typeof item !== "object") return item;
 
@@ -67,19 +45,23 @@ const sanitizeForStorage = (item) => {
 
   return {
     ...stripped,
+    // Strip images for both trading and deck cards — restored from IDB on checkout
     FinalProduct: Array.isArray(item.FinalProduct)
-      ? item.FinalProduct.map((card) => ({ ...card, image: null }))
+      ? item.FinalProduct.map((card) => ({ ...card, image: null, character_image: null }))
       : [],
+    FinalProductImages: [],
+    CharacterImages: [],
     FinalPDf: null,
     FinalPDFBlob: null,
   };
 };
 
-
-
 // ─── Safe localStorage wrapper ────────────────────────────────────────────────
 
-const idbCartKey = (cartId) => `cart-images:${cartId}`;
+const idbCartKey      = (cartId) => `cart-images:${cartId}`;
+const idbDeckCartKey  = (cartId) => `cart-deck-images:${cartId}`;
+
+// ── Trading card (existing — unchanged) ──────────────────────────────────────
 
 export const saveCartImagesToIDB = async (cartItems) => {
   const { idbPut } = await import("@/app/(allsite)/(application)/application/tradingcard/[slug]/_tradingcard/lib/idb");
@@ -118,6 +100,66 @@ export const restoreCartImagesFromIDB = async (cartItems) => {
   );
 };
 
+// ── Deck card (new) ───────────────────────────────────────────────────────────
+
+/**
+ * Persists deck card composited images to IDB.
+ * Called from ProductCustomizer right before router.push to /final/customization.
+ *
+ * Saves:
+ *   FinalProduct      — array of { rank, image, name, character_image }
+ *   FinalProductImages — array of base64 strings (one per card)
+ *   CharacterImages    — array of base64 strings (one per card)
+ */
+export const saveDeckCartImagesToIDB = async (cartItems) => {
+  const { idbPut } = await import("@/app/(allsite)/(application)/application/tradingcard/[slug]/_tradingcard/lib/idb");
+  for (const item of cartItems) {
+    if (!item?.id) continue;
+    if (item?.customization_mode !== "deck") continue;
+    const key = idbDeckCartKey(item.id);
+    console.log("IDB saving deck key:", key);
+    await idbPut(key, {
+      FinalProduct:       item.FinalProduct       ?? [],
+      FinalProductImages: item.FinalProductImages ?? [],
+      CharacterImages:    item.CharacterImages    ?? [],
+    });
+  }
+};
+
+/**
+ * Restores deck card images from IDB into cart items.
+ * Called from CheckoutPage alongside the existing trading card restore.
+ */
+export const restoreDeckCartImagesFromIDB = async (cartItems) => {
+  const { idbGet } = await import("@/app/(allsite)/(application)/application/tradingcard/[slug]/_tradingcard/lib/idb");
+  return Promise.all(
+    cartItems.map(async (item) => {
+      if (!item?.id) return item;
+      if (item?.customization_mode !== "deck") return item;
+      try {
+        const key = idbDeckCartKey(item.id);
+        console.log("IDB restoring deck key:", key);
+        const saved = await idbGet(key);
+        if (saved?.FinalProduct?.length) {
+          console.log("Restored deck FinalProduct count:", saved.FinalProduct.length);
+          return {
+            ...item,
+            FinalProduct:       saved.FinalProduct,
+            FinalProductImages: saved.FinalProductImages ?? [],
+            CharacterImages:    saved.CharacterImages    ?? [],
+          };
+        } else {
+          console.warn("No deck FinalProduct found in IDB for key:", key);
+        }
+      } catch (e) {
+        console.error("IDB deck get error:", e);
+      }
+      return item;
+    })
+  );
+};
+
+// ─── Safe localStorage wrapper ────────────────────────────────────────────────
 
 const safeLocalStorage = {
   getItem: (name) => {
@@ -178,8 +220,6 @@ const useCartStore = create(
     (set) => ({
       cart: [],
 
-      // ✅ NO sanitization here — full product object stays in memory
-      // so checkout page can read FinalProduct, FinalProductImages, baseImage, etc.
       addToCart: (product) =>
         set((state) => ({ cart: [...state.cart, product] })),
 

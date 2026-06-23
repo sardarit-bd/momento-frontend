@@ -55,6 +55,14 @@ const getCanonicalCardType = (value = "") => {
     return null;
 };
 
+const DECK_RANK_MAP = {
+    Ace_Card: 'ace',
+    king_Card: 'king',
+    Queen_Card: 'queen',
+    Jeck_Card: 'jack',
+    Joker_Card: 'joker',
+};
+
 const ProductCustomizer = () => {
     const { slug } = useParams();
     const customCardsStorageKey = `customCards:${slug}`;
@@ -74,8 +82,6 @@ const ProductCustomizer = () => {
     const { setfinalCards } = usefinalCardsStore();
     const { setboxs } = useboxcartstore();
 
-    // ─── smallconOpen removed — MobileCustomizerSheet manages its own snap ───
-
     useEffect(() => {
         const fetchProduct = async () => {
             console.log('savedCards raw:', localStorage.getItem(customCardsStorageKey));
@@ -88,22 +94,6 @@ const ProductCustomizer = () => {
             }
 
             setProduct(res?.data);
-
-            console.table(
-                res?.data?.customizations?.base_cards?.map(b => ({
-                    card_type: b.card_type,
-                    canonical: getCanonicalCardType(b.card_type),
-                    has_image: !!b.image
-                }))
-            );
-            console.table(
-                res?.data?.customizations?.custom_sets?.map(b => ({
-                    card_type: b.card_type,
-                    name: b.name,
-                    canonical: getCanonicalCardType(b.card_type),
-                    has_image: !!b.image
-                }))
-            );
 
             const savedCards = localStorage.getItem(customCardsStorageKey) || localStorage.getItem("customCards");
             if (savedCards) {
@@ -132,7 +122,6 @@ const ProductCustomizer = () => {
                     acc[canonicalType].add(item.image);
                     return acc;
                 }, {});
-
                 const firstBaseNameByType = baseCards.reduce((acc, item) => {
                     const canonicalType = getCanonicalCardType(item?.card_type);
                     if (!canonicalType || acc[canonicalType]) return acc;
@@ -230,16 +219,6 @@ const ProductCustomizer = () => {
     const activeCard = cards[activeCardIndex];
     const activeType = activeCard?.editedCard;
 
-    const getBaseImageForType = (cardType) => {
-        const allBaseCards = product?.customizations?.custom_sets || [];
-        const canonicalType = getCanonicalCardType(cardType);
-        const directMatch = allBaseCards.find((item) => getCanonicalCardType(item?.card_type) === canonicalType)?.image;
-        if (directMatch) return directMatch;
-        const normalizedType = normalizeCardType(cardType);
-        const normalizedMatch = allBaseCards.find((item) => normalizeCardType(item?.card_type) === normalizedType)?.image;
-        return normalizedMatch || allBaseCards?.[0]?.image;
-    };
-
     const jokerPreviewImage =
         product?.customizations?.custom_sets?.find(
             (item) => item?.card_type === "Joker_Card" || item?.name === "Joker_Card"
@@ -294,11 +273,7 @@ const ProductCustomizer = () => {
                 selectedLayers: initialLayersTwo,
             };
             const insertAt = getSortedInsertIndex(prev, cardType);
-            const newCards = [
-                ...prev.slice(0, insertAt),
-                newCard,
-                ...prev.slice(insertAt),
-            ];
+            const newCards = [...prev.slice(0, insertAt), newCard, ...prev.slice(insertAt)];
             if (shouldSetActive) setActiveCardIndex(insertAt);
             return newCards;
         });
@@ -318,75 +293,6 @@ const ProductCustomizer = () => {
         setActiveCardIndex(nextActiveIndex);
         const nextEdited = updatedCards[nextActiveIndex]?.editedCard;
         if (nextEdited) seteditedCard(nextEdited);
-    };
-
-    const goToFinalView = async ({ redirectToCheckout = false } = {}) => {
-        const requiredCards = ["Ace_Card", "Queen_Card", "king_Card", "Jeck_Card"];
-        const hasAllCards = requiredCards.every((req) => cards.some((item) => item.editedCard === req));
-
-        if (!hasAllCards) {
-            toast.warn("Must Be Design at Least Ace Card, Queen Card, King Card, Jeck Card Cards");
-            return;
-        }
-
-        setspinloading(true);
-
-        let compositeImages = [];
-        let characterOnlyImages = [];
-
-        try {
-            compositeImages = await Promise.all(cards.map(card => compositeCardToBase64(card)));
-        } catch (err) {
-            console.error('Composite failed:', err);
-            setspinloading(false);
-            return;
-        }
-
-        try {
-            characterOnlyImages = await Promise.all(cards.map(card => compositeCharacterOnly(card)));
-        } catch (err) {
-            console.error('Character composite failed:', err);
-        }
-
-        let boxImage = null;
-
-        const DECK_RANK_MAP = {
-            Ace_Card: 'ace', king_Card: 'king',
-            Queen_Card: 'queen', Jeck_Card: 'jack', Joker_Card: 'joker'
-        };
-
-        const FinalProduct = cards.map((card, i) => ({
-            rank: DECK_RANK_MAP[card.editedCard] || null,
-            image: compositeImages[i],
-            name: card.slotName ?? null,
-            character_image: characterOnlyImages[i] ?? null,
-        }));
-
-        clearCart();
-
-        const hasJokerCard = cards.some(c => c.editedCard === 'Joker_Card');
-        const unitBasePrice = Number(product?.offer_price > 0 ? product?.offer_price : product?.price) || 0;
-
-        const producted = {
-            id: generateUserId(),
-            productId: product?.id,
-            productSlug: product?.slug,
-            productName: product?.name,
-            productType: product?.type,
-            productUnitPrice: hasJokerCard ? unitBasePrice + 7 : unitBasePrice,
-            productQuantity: 1,
-            productImage: product?.image,
-            FinalProduct,
-            FinalProductImages: compositeImages,
-            CharacterImages: characterOnlyImages,
-            BoxImage: boxImage,
-            jokerAdded: hasJokerCard,
-            customization_mode: 'deck',
-        };
-
-        addToCart(producted);
-        setspinloading(false);
-        router.push(redirectToCheckout ? '/my-cart/checkout' : '/final/customization');
     };
 
     const compositeCardToBase64 = async (card) => {
@@ -461,6 +367,79 @@ const ProductCustomizer = () => {
         }
 
         return canvas.toDataURL('image/png');
+    };
+
+    const goToFinalView = async ({ redirectToCheckout = false } = {}) => {
+        const requiredCards = ["Ace_Card", "Queen_Card", "king_Card", "Jeck_Card"];
+        const hasAllCards = requiredCards.every((req) => cards.some((item) => item.editedCard === req));
+
+        if (!hasAllCards) {
+            toast.warn("Must Be Design at Least Ace Card, Queen Card, King Card, Jeck Card Cards");
+            return;
+        }
+
+        setspinloading(true);
+
+        let compositeImages = [];
+        let characterOnlyImages = [];
+
+        try {
+            compositeImages = await Promise.all(cards.map(card => compositeCardToBase64(card)));
+            console.log('Composite done:', compositeImages.length);
+        } catch (err) {
+            console.error('Composite failed:', err);
+            setspinloading(false);
+            return;
+        }
+
+        try {
+            characterOnlyImages = await Promise.all(cards.map(card => compositeCharacterOnly(card)));
+        } catch (err) {
+            console.error('Character composite failed:', err);
+        }
+
+        const hasJokerCard = cards.some(c => c.editedCard === 'Joker_Card');
+        const unitBasePrice = Number(product?.offer_price > 0 ? product?.offer_price : product?.price) || 0;
+
+        const FinalProduct = cards.map((card, i) => ({
+            rank: DECK_RANK_MAP[card.editedCard] || null,
+            image: compositeImages[i],
+            name: card.slotName ?? null,
+            character_image: characterOnlyImages[i] ?? null,
+        }));
+
+        clearCart();
+
+        const cartItem = {
+            id: generateUserId(),
+            productId: product?.id,
+            productSlug: product?.slug,
+            productName: product?.name,
+            productType: product?.type,
+            productUnitPrice: hasJokerCard ? unitBasePrice + 7 : unitBasePrice,
+            productQuantity: 1,
+            productImage: product?.image,
+            FinalProduct,
+            FinalProductImages: compositeImages,
+            CharacterImages: characterOnlyImages,
+            BoxImage: null,
+            jokerAdded: hasJokerCard,
+            customization_mode: 'deck',
+        };
+
+        // ── Save composited images to IDB so checkout page survives refresh ──
+        try {
+            const { saveDeckCartImagesToIDB } = await import("@/store/useCartStore");
+            await saveDeckCartImagesToIDB([cartItem]);
+            console.log('Deck images saved to IDB');
+        } catch (err) {
+            // Non-fatal: cart will still work if navigated directly
+            console.warn('Failed to save deck images to IDB:', err);
+        }
+
+        addToCart(cartItem);
+        setspinloading(false);
+        router.push(redirectToCheckout ? '/my-cart/checkout' : '/final/customization');
     };
 
     const Done = async () => {
@@ -567,23 +546,15 @@ const ProductCustomizer = () => {
         seteditedCard(stepType);
     };
 
-    // ─────────────────────────────────────────────────────────────────
-    // How much bottom padding the card preview needs on mobile so it
-    // isn't hidden under the bottom sheet in "peek" state (80px).
-    // On desktop this value is ignored because the sheet is hidden.
-    // ─────────────────────────────────────────────────────────────────
     const MOBILE_SHEET_PEEK = 80;
 
     return (
         <>
             <div className="bg-[#f2f4f8]">
                 {showJokerUpsell ? (
-                    /* ─── Joker upsell — unchanged ─── */
                     <main
                         className="relative mx-auto flex min-h-screen w-full items-center justify-center overflow-hidden px-4 py-5 sm:px-6 sm:py-8"
-                        style={{
-                            background: "linear-gradient(135deg, #3CA9FF 0%, #8CCEFF 35%, #D9EEFD 62%, #EBF6FF 82%, #F3F4F6 100%)",
-                        }}
+                        style={{ background: "linear-gradient(135deg, #3CA9FF 0%, #8CCEFF 35%, #D9EEFD 62%, #EBF6FF 82%, #F3F4F6 100%)" }}
                     >
                         <div className="pointer-events-none absolute -left-16 top-10 h-44 w-44 rounded-[28px] opacity-80" style={{ background: "linear-gradient(140deg, #3CA9FF, #7DC8FF)" }} />
                         <div className="pointer-events-none absolute right-[-52px] top-[18%] h-36 w-36 rounded-[24px] opacity-70" style={{ background: "#D9EEFD" }} />
@@ -591,70 +562,31 @@ const ProductCustomizer = () => {
                         <div className="pointer-events-none absolute bottom-10 right-[10%] h-28 w-28 rounded-[20px] opacity-75" style={{ background: "linear-gradient(145deg, #3CA9FF, #B3DEFF)" }} />
                         <div
                             className="relative z-10 w-full max-w-[700px] overflow-hidden rounded-[30px] border p-4 shadow-2xl sm:p-6 md:p-8"
-                            style={{
-                                background: "linear-gradient(180deg, rgba(243,244,246,0.96) 0%, rgba(235,246,255,0.98) 100%)",
-                                borderColor: "#BFE2FF",
-                                boxShadow: "0 32px 80px rgba(60, 169, 255, 0.22)",
-                            }}
+                            style={{ background: "linear-gradient(180deg, rgba(243,244,246,0.96) 0%, rgba(235,246,255,0.98) 100%)", borderColor: "#BFE2FF", boxShadow: "0 32px 80px rgba(60, 169, 255, 0.22)" }}
                         >
                             <div className="grid grid-cols-1 gap-5 md:grid-cols-[1fr_1.1fr] md:gap-7">
                                 <div className="order-2 space-y-4 md:order-1 md:space-y-5">
                                     <div className="rounded-2xl p-4 sm:p-5" style={{ background: "#F3F4F6", border: "1px solid #D9EEFD" }}>
-                                        <h2 className="text-center text-2xl font-bold leading-tight text-sky-800 sm:text-3xl md:text-left">
-                                            Add a Wild Card to Your Deck
-                                        </h2>
-                                        <p className="mt-2 text-center text-sm leading-relaxed text-slate-600 sm:text-base md:text-left">
-                                            The Joker brings unpredictability and extra personality
-                                        </p>
+                                        <h2 className="text-center text-2xl font-bold leading-tight text-sky-800 sm:text-3xl md:text-left">Add a Wild Card to Your Deck</h2>
+                                        <p className="mt-2 text-center text-sm leading-relaxed text-slate-600 sm:text-base md:text-left">The Joker brings unpredictability and extra personality</p>
                                     </div>
-
                                     <div className="rounded-2xl p-4 sm:p-5" style={{ backgroundColor: "#EBF6FF", border: "1px solid #D9EEFD" }}>
-                                        <p className="flex items-start gap-2 text-sm text-slate-700 sm:text-base">
-                                            <IoMdCheckmark className="mt-0.5 shrink-0 text-lg" style={{ color: "#3CA9FF" }} />
-                                            Unique design that stands out
-                                        </p>
-                                        <p className="mt-2 flex items-start gap-2 text-sm text-slate-700 sm:text-base">
-                                            <IoMdCheckmark className="mt-0.5 shrink-0 text-lg" style={{ color: "#3CA9FF" }} />
-                                            Extra customization options
-                                        </p>
-                                        <p className="mt-2 flex items-start gap-2 text-sm text-slate-700 sm:text-base">
-                                            <IoMdCheckmark className="mt-0.5 shrink-0 text-lg" style={{ color: "#3CA9FF" }} />
-                                            Complete your deck perfectly
-                                        </p>
+                                        <p className="flex items-start gap-2 text-sm text-slate-700 sm:text-base"><IoMdCheckmark className="mt-0.5 shrink-0 text-lg" style={{ color: "#3CA9FF" }} />Unique design that stands out</p>
+                                        <p className="mt-2 flex items-start gap-2 text-sm text-slate-700 sm:text-base"><IoMdCheckmark className="mt-0.5 shrink-0 text-lg" style={{ color: "#3CA9FF" }} />Extra customization options</p>
+                                        <p className="mt-2 flex items-start gap-2 text-sm text-slate-700 sm:text-base"><IoMdCheckmark className="mt-0.5 shrink-0 text-lg" style={{ color: "#3CA9FF" }} />Complete your deck perfectly</p>
                                     </div>
-
                                     <div className="space-y-2.5 rounded-2xl p-3 sm:p-4" style={{ background: "#F3F4F6", border: "1px solid #D9EEFD" }}>
-                                        <button type="button" onClick={handleAddJokerCard}
-                                            className="flex h-12 w-full items-center justify-center rounded-xl text-base font-semibold text-white transition hover:opacity-95 sm:h-14 sm:rounded-2xl sm:text-lg"
-                                            style={{ background: "linear-gradient(90deg, #3CA9FF 0%, #6AC0FF 100%)", boxShadow: "0 14px 30px rgba(60, 169, 255, 0.35)" }}
-                                        >
-                                            Add Joker for $7
-                                        </button>
-                                        <button type="button" onClick={handleSkipJokerUpsell}
-                                            className="flex h-11 w-full items-center justify-center rounded-xl text-sm font-semibold text-slate-700 transition sm:h-12 sm:rounded-2xl sm:text-base"
-                                            style={{ backgroundColor: "#F3F4F6", border: "1px solid #D9EEFD" }}
-                                        >
-                                            Skip for Now
-                                        </button>
+                                        <button type="button" onClick={handleAddJokerCard} className="flex h-12 w-full items-center justify-center rounded-xl text-base font-semibold text-white transition hover:opacity-95 sm:h-14 sm:rounded-2xl sm:text-lg" style={{ background: "linear-gradient(90deg, #3CA9FF 0%, #6AC0FF 100%)", boxShadow: "0 14px 30px rgba(60, 169, 255, 0.35)" }}>Add Joker for $7</button>
+                                        <button type="button" onClick={handleSkipJokerUpsell} className="flex h-11 w-full items-center justify-center rounded-xl text-sm font-semibold text-slate-700 transition sm:h-12 sm:rounded-2xl sm:text-base" style={{ backgroundColor: "#F3F4F6", border: "1px solid #D9EEFD" }}>Skip for Now</button>
                                     </div>
                                 </div>
-
                                 <div className="order-1 flex flex-col items-center md:order-2">
-                                    <div
-                                        className="flex h-16 w-16 items-center justify-center rounded-2xl text-white shadow-lg sm:h-20 sm:w-20 sm:rounded-3xl"
-                                        style={{ background: "linear-gradient(135deg, #3CA9FF 0%, #6AC0FF 100%)", boxShadow: "0 14px 35px rgba(60, 169, 255, 0.34)" }}
-                                    >
+                                    <div className="flex h-16 w-16 items-center justify-center rounded-2xl text-white shadow-lg sm:h-20 sm:w-20 sm:rounded-3xl" style={{ background: "linear-gradient(135deg, #3CA9FF 0%, #6AC0FF 100%)", boxShadow: "0 14px 35px rgba(60, 169, 255, 0.34)" }}>
                                         <GiCardJoker className="text-3xl sm:text-4xl" />
                                     </div>
-                                    <div
-                                        className="mt-4 flex w-full justify-center rounded-2xl p-3 sm:mt-5 sm:p-4"
-                                        style={{ background: "linear-gradient(160deg, #D9EEFD 0%, #EBF6FF 100%)", border: "1px solid #BFE2FF" }}
-                                    >
+                                    <div className="mt-4 flex w-full justify-center rounded-2xl p-3 sm:mt-5 sm:p-4" style={{ background: "linear-gradient(160deg, #D9EEFD 0%, #EBF6FF 100%)", border: "1px solid #BFE2FF" }}>
                                         {jokerPreviewImage ? (
-                                            <img src={jokerPreviewImage} alt="Joker card preview"
-                                                className="h-[200px] w-[145px] rounded-xl object-cover shadow-md sm:h-[240px] sm:w-[175px]"
-                                                style={{ border: "1px solid #3CA9FF", boxShadow: "0 12px 24px rgba(60, 169, 255, 0.24)" }}
-                                            />
+                                            <img src={jokerPreviewImage} alt="Joker card preview" className="h-[200px] w-[145px] rounded-xl object-cover shadow-md sm:h-[240px] sm:w-[175px]" style={{ border: "1px solid #3CA9FF", boxShadow: "0 12px 24px rgba(60, 169, 255, 0.24)" }} />
                                         ) : null}
                                     </div>
                                 </div>
@@ -663,9 +595,6 @@ const ProductCustomizer = () => {
                     </main>
                 ) : (
                     <>
-                        {/* ════════════════════════════════════════════
-                            STEP HEADER — shared mobile + desktop
-                        ════════════════════════════════════════════ */}
                         <header className="sticky top-[68px] z-50 w-full border-b border-gray-200 bg-white/95 backdrop-blur md:top-[76px]">
                             <div className="grid w-full grid-cols-1 xl:grid-cols-[260px_minmax(0,1fr)_350px]">
                                 <div className="hidden xl:block" />
@@ -677,29 +606,14 @@ const ProductCustomizer = () => {
                                                 const isActive = activeType === step.type;
                                                 const isCompleted = cards.some((card) => card?.editedCard === step.type) && !isActive;
                                                 const isSelectable = cards.some((card) => card?.editedCard === step.type);
-
                                                 return (
                                                     <Fragment key={step.type}>
-                                                        <button
-                                                            type="button"
-                                                            onClick={() => handleStepClick(step.type)}
-                                                            disabled={!isSelectable}
-                                                            className={`relative z-10 flex flex-col items-center gap-1.5 ${isSelectable ? "cursor-pointer" : "cursor-not-allowed"}`}
-                                                        >
-                                                            <div
-                                                                className={`flex h-10 w-10 items-center justify-center rounded-full border text-lg transition-all md:h-11 md:w-11 md:text-xl ${
-                                                                    isActive
-                                                                        ? "border-[#3CA9FF] bg-[#3CA9FF] text-white shadow-lg shadow-indigo-300"
-                                                                        : isCompleted
-                                                                            ? "border-indigo-200 bg-[#B8E6FE] text-indigo-700"
-                                                                            : "border-gray-300 bg-gray-100 text-gray-400"
-                                                                }`}
-                                                            >
+                                                        <button type="button" onClick={() => handleStepClick(step.type)} disabled={!isSelectable} className={`relative z-10 flex flex-col items-center gap-1.5 ${isSelectable ? "cursor-pointer" : "cursor-not-allowed"}`}>
+                                                            <div className={`flex h-10 w-10 items-center justify-center rounded-full border text-lg transition-all md:h-11 md:w-11 md:text-xl ${isActive ? "border-[#3CA9FF] bg-[#3CA9FF] text-white shadow-lg shadow-indigo-300" : isCompleted ? "border-indigo-200 bg-[#B8E6FE] text-indigo-700" : "border-gray-300 bg-gray-100 text-gray-400"}`}>
                                                                 {isCompleted ? <IoMdCheckmark className="text-lg" /> : <Icon />}
                                                             </div>
                                                             <p className={`text-xs font-semibold md:text-sm ${isActive ? "text-[#3CA9FF]" : "text-gray-500"}`}>{step.label}</p>
                                                         </button>
-
                                                         {index !== visibleSteps.length - 1 && (
                                                             <div className={`mt-5 h-[2px] flex-1 mx-2 md:mx-3 md:mt-6 ${isCompleted ? "bg-[#3CA9FF]" : "bg-[#B8E6FE]"}`} />
                                                         )}
@@ -713,12 +627,8 @@ const ProductCustomizer = () => {
                             </div>
                         </header>
 
-                        {/* ════════════════════════════════════════════
-                            MAIN LAYOUT
-                        ════════════════════════════════════════════ */}
                         <main className="grid w-full grid-cols-1 items-start xl:grid-cols-[260px_minmax(0,1fr)_350px] xl:h-[calc(100dvh-148px)]">
 
-                            {/* ── Desktop left sidebar (card list) — unchanged ── */}
                             <aside className="hidden border-r border-gray-200 bg-white xl:sticky xl:top-[148px] xl:block xl:h-[calc(100dvh-148px)] xl:overflow-hidden">
                                 <CardSidebar
                                     cards={cards}
@@ -731,21 +641,9 @@ const ProductCustomizer = () => {
                                 />
                             </aside>
 
-                            {/* ── Card preview ── */}
-                            <section
-                                className="relative flex self-start items-center justify-center overflow-hidden px-3 pt-0 pb-2 md:px-6 md:pt-0 md:pb-4 xl:pt-0 xl:pb-4"
-                                /*
-                                 * On mobile we add bottom padding equal to the sheet peek height (80px)
-                                 * so the card is never fully hidden behind the bottom sheet.
-                                 * The xl: override restores the desktop behaviour.
-                                 */
-                                style={{ paddingBottom: undefined }}
-                            >
-                                {/* Mobile-only: push card above the bottom sheet peek */}
-                                <div
-                                    className="xl:hidden"
-                                    style={{ paddingBottom: `${MOBILE_SHEET_PEEK + 8}px`, width: "100%" }}
-                                >
+                            <section className="relative flex self-start items-center justify-center overflow-hidden px-3 pt-0 pb-2 md:px-6 md:pt-0 md:pb-4 xl:pt-0 xl:pb-4">
+                                {/* Mobile: push card above bottom sheet peek */}
+                                <div className="xl:hidden" style={{ paddingBottom: `${MOBILE_SHEET_PEEK + 8}px`, width: "100%" }}>
                                     <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_35%_30%,rgba(255,255,255,0.92),rgba(242,244,248,0.7)_60%,rgba(242,244,248,1))]" />
                                     <div className="relative z-10 flex w-full max-w-[980px] flex-col items-center mx-auto">
                                         <div className="relative flex min-h-[420px] w-full items-center justify-center">
@@ -753,8 +651,7 @@ const ProductCustomizer = () => {
                                         </div>
                                     </div>
                                 </div>
-
-                                {/* Desktop: original layout untouched */}
+                                {/* Desktop: original layout */}
                                 <div className="hidden xl:block w-full">
                                     <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_35%_30%,rgba(255,255,255,0.92),rgba(242,244,248,0.7)_60%,rgba(242,244,248,1))]" />
                                     <div className="relative z-10 flex w-full max-w-[980px] flex-col items-center mx-auto">
@@ -765,7 +662,6 @@ const ProductCustomizer = () => {
                                 </div>
                             </section>
 
-                            {/* ── Desktop right sidebar (customizer) — unchanged ── */}
                             <aside className="hidden border-l border-gray-200 bg-white xl:sticky xl:top-[148px] xl:flex xl:flex-col xl:h-[calc(100dvh-148px)] xl:overflow-hidden">
                                 <div className="min-h-0 flex-1 overflow-y-auto px-5">
                                     <SideController
@@ -792,9 +688,6 @@ const ProductCustomizer = () => {
                             </aside>
                         </main>
 
-                        {/* ════════════════════════════════════════════
-                            MOBILE BOTTOM SHEET — xl:hidden inside
-                        ════════════════════════════════════════════ */}
                         <MobileCustomizerSheet
                             product={product}
                             cards={cards}

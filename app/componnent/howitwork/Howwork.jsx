@@ -50,7 +50,7 @@ export default function Howwork() {
                                         <span className="text-white text-xs font-bold">✓</span>
                                     </div>
                                     <div>
-                                        <strong className="text-slate-900">Portrait Deck</strong>
+                                        <strong className="text-slate-900">Momento Portrait Deck</strong>
                                         <span className="text-slate-600"> – A full deck featuring custom character cards</span>
                                     </div>
                                 </li>
@@ -61,15 +61,6 @@ export default function Howwork() {
                                     <div>
                                         <strong className="text-slate-900">Momento Trading Cards</strong>
                                         <span className="text-slate-600"> – Individual cards with stats and inside jokes</span>
-                                    </div>
-                                </li>
-                                <li className="flex items-start gap-3">
-                                    <div className="w-6 h-6 bg-neutral-400 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
-                                        <span className="text-white text-xs font-bold">✓</span>
-                                    </div>
-                                    <div>
-                                        <strong className="text-slate-900">Chaos Cards</strong>
-                                        <span className="text-slate-600"> – Premade high-energy add-on deck with wild rules</span>
                                     </div>
                                 </li>
                             </ul>

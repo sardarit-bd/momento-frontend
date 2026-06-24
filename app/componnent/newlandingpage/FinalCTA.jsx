@@ -1,35 +1,46 @@
 'use client';
 
 import Link from 'next/link';
+import { ArrowRight, Sparkles } from 'lucide-react';
 
 export default function FinalCTA() {
     return (
-        <section className="py-20 md:py-24 px-4 bg-sky-400 relative overflow-hidden">
-            {/* Decorative background */}
-            <div className="absolute inset-0 opacity-40">
-                <div className="absolute top-0 left-1/4 w-96 h-96 bg-primary/10 rounded-full blur-3xl" />
-                <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-accent/10 rounded-full blur-3xl" />
-            </div>
+        <section className="relative py-24 px-4 overflow-hidden bg-sky-500">
+            {/* Premium Mesh Gradient Background */}
+            <div className="absolute inset-0 bg-gradient-to-br from-sky-400 via-sky-500 to-indigo-600 opacity-90" />
+            
+            {/* Eye-soothing ambient light orbs */}
+            <div className="absolute top-0 left-1/4 w-[30rem] h-[30rem] bg-white/20 rounded-full blur-[120px] mix-blend-overlay pointer-events-none" />
+            <div className="absolute bottom-0 right-1/4 w-[30rem] h-[30rem] bg-indigo-300/30 rounded-full blur-[120px] mix-blend-overlay pointer-events-none" />
 
             <div className="max-w-4xl mx-auto relative z-10 text-center">
-                <h2 className="text-5xl md:text-6xl font-bold text-white mb-6 text-balance leading-tight">
+                
+                {/* Decorative Eyebrow Badge */}
+                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white mb-8 shadow-sm">
+                    <Sparkles className="w-4 h-4 text-sky-200" />
+                    <span className="text-sm font-bold tracking-wide uppercase text-sky-50">
+                        The Ultimate Game Night
+                    </span>
+                </div>
+
+                <h2 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-white mb-6 text-balance tracking-tight">
                     Ready to Make Yours?
                 </h2>
 
-                <p className="text-2xl text-muted-foreground mb-12 text-balance">
-                    Design it your way. We'll handle the rest.
+                <p className="text-xl md:text-2xl text-sky-50 mb-12 text-balance font-light max-w-2xl mx-auto leading-relaxed">
+                    Design it your way. We'll handle the printing, cutting, and shipping straight to your door.
                 </p>
 
-                <Link href={"/shop"}
-                    size="lg"
-                    className="bg-white text-gray-700 px-6 py-4 text-lg rounded-full"
-                >
-                    Create Your Deck
-                </Link>
-
-                <p className="text-muted-foreground mt-10">
-                    Join thousands of people who've turned their moments into play.
-                </p>
+                <div className="flex flex-col items-center justify-center">
+                    {/* Primary Action Button */}
+                    <Link 
+                        href="/shop"
+                        className="group inline-flex items-center gap-2 bg-white text-sky-600 px-8 py-4 text-lg font-bold rounded-full shadow-2xl hover:shadow-sky-900/20 hover:bg-slate-50 transition-all duration-300 hover:-translate-y-1 active:scale-95"
+                    >
+                        Create Your Deck
+                        <ArrowRight className="w-5 h-5 text-sky-500 group-hover:translate-x-1 transition-transform" />
+                    </Link>
+                </div>
             </div>
         </section>
     );

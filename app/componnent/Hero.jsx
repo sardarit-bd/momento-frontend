@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import hero1 from "../../public/hero1.png";
-import hero2 from "../../public/hero2.png";
+
 import hero3 from "../../public/hero3.png";
 import hero4 from "../../public/hero4.png";
 import hero5 from "../../public/hero5.png";
@@ -12,16 +12,13 @@ const cards = [
     hero5,
     hero4,
     hero3,
-    hero2,
     hero1,
 ];
-const tickerItems = ["Designed to Be Remembered", "Fully Custom, Down to the Detail", "Premium Print Quality",];
 
+const tickerItems = ["Easy to Customize", "Premium Quality", "Delivered to Your Door",];
 
 
 const Hero = () => {
-
-
     const [mounted, setMounted] = useState(false);
     const tickerRef = useRef(null);
     const offset = useRef(0);
@@ -87,15 +84,14 @@ const Hero = () => {
                     {/* Left Text */}
                     <div className="w-full lg:w-1/2 flex flex-col items-center lg:items-start space-y-6 md:space-y-4 lg:space-y-6 text-center lg:text-left">
                         <h1 className="text-4xl sm:text-6xl lg:text-7xl font-extrabold leading-[50px] md:leading-[60px] lg:leading-[75px] uppercase text-[#333333]">
-                            Turning <br />
-                            <span className="text-[#3CA9FF]">Moments</span> <br /> Into Play
+                            Turn Your <br />
+                            <span className="text-[#3CA9FF]">Favorite People</span> <br /> Into Cards
                         </h1>
                         <p className="text-gray-700 text-base sm:text-lg lg:text-xl max-w-xl mx-auto lg:mx-0">
-                            Every deck holds a purpose, every design tells a story, and every card reflects a moment.
-                            Momento Cards isn’t just a game—it’s a way to preserve memories, craft experiences, and turn moments into play.
+                            Create premium personalized cards for game nights, milestones, gifts, and unforgettable memories.
                         </p>
                         <Link onClick={() => { settype("all") }} href={'/shop'} className="bg-[#3CA9FF] text-white px-6 py-3 rounded-lg font-semibold shadow-lg hover:bg-[#FF6F3C] transition">
-                            Explore Cards
+                            Create Your Cards
                         </Link>
                     </div>
                     {/* Right Cards */}

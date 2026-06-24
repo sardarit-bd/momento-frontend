@@ -184,7 +184,7 @@ body {
 
 /* hero background pata image here */
 .heroBgPataImage {
-  background: url('../public/pata.png');
+  background: url('../public/heroBg.webp');
   background-repeat: no-repeat;
   background-size: cover;
   background-position: center -50px;

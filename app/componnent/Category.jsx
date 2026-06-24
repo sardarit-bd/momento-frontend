@@ -4,8 +4,8 @@ import useFilterStore from "@/store/useFilterStore";
 import Image from "next/image";
 import Link from "next/link";
 
-import TredingOne from "../../public/tranding.png";
-import TredingThree from "../../public/TredingThree.png";
+import TredingOne from "../../public/mockup4.png";
+import TredingThree from "../../public/mockup5.png";
 
 export default function Category() {
     const { settype } = useFilterStore();

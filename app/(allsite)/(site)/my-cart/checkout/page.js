@@ -778,22 +778,18 @@ export default function CheckoutPage() {
               )}
             </div>
 
-            {/* {cart.length > 0 && deckcart?.[0]?.CharacterImages?.length > 0 && (
-              <div className="mb-6">
-                <h3 className="text-sm font-semibold text-gray-700 mb-3">Box Preview</h3>
-                <div className="flex flex-wrap gap-3">
-                  <DeckBoxPreview characterImages={deckcart[0].CharacterImages} />
-                </div>
-              </div>
-            )} */}
-
             {(() => {
               const characterImages =
                 deckcart?.[0]?.CharacterImages?.length > 0
                   ? deckcart[0].CharacterImages
                   : hydratedCart.find(item => item.customization_mode === 'deck')?.CharacterImages ?? [];
 
-              return cart.length > 0 && characterImages.length > 0 ? (
+              // ✅ Guard: only render if cart actually has a deck/customizable product
+              const hasDeckItem = cart.some(
+                item => item.productType === "customizable" || item.customization_mode === "deck"
+              );
+
+              return hasDeckItem && characterImages.length > 0 ? (
                 <div className="mb-6">
                   <h3 className="text-sm font-semibold text-gray-700 mb-3">Box Preview</h3>
                   <div className="flex flex-wrap gap-3">

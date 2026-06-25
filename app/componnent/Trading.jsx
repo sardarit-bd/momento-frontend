@@ -10,9 +10,9 @@ export default function Tradition() {
     const { settype } = useFilterStore();
 
     const features = [
-        "54 premium playing cards with standard face designs.",
-        "Smooth shuffle & durable finish for long-lasting use.",
-        "Ideal for poker nights, magic tricks, and casual gaming."
+        "Upload a real photo and customize the template to create a truly one-of-a-kind trading card starring someone special.",
+        "Premium-printed cards with vivid colors, collector-grade finish, and a design built to last as a keepsake.",
+        "The most unique personalized gift for graduations, birthdays, and every milestone worth remembering."
     ];
 
     return (

@@ -163,7 +163,7 @@ export default function Howwork() {
                         </div>
                         <div className="order-1 lg:order-2 relative h-fit w-full rounded-3xl flex items-center justify-center">
                             <img
-                                src={stepImages[2]}
+                                src="/mockup8.png"
                                 alt="Step 1 visual"
                                 className="w-full h-full object-cover rounded-3xl shadow-2xl"
                             />

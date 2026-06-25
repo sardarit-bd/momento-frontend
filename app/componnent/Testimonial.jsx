@@ -1,68 +1,105 @@
 "use client";
-import { useEffect, useState } from "react";
+
+import Image from "next/image";
 import Slider from "react-slick";
+import { Quote, Star } from "lucide-react";
+
+// Ensure you have these imported in your layout or component
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
+
+// Dummy image import based on your original code
 import hero1 from "../../public/hero1.png";
 
 export default function Testimonial() {
-    const [slidesToShow, setSlidesToShow] = useState(3);
-
-    useEffect(() => {
-        const update = () => {
-            const w = window.innerWidth;
-            if (w < 768) setSlidesToShow(1);
-            else if (w < 1024) setSlidesToShow(2);
-            else setSlidesToShow(3);
-        };
-        update();
-        window.addEventListener("resize", update);
-        return () => window.removeEventListener("resize", update);
-    }, []);
-
+    // We use react-slick's native responsive settings instead of manual window listeners
     const settings = {
         dots: true,
         infinite: true,
-        speed: 1500,
-        slidesToShow,
+        speed: 800, // Slightly faster, smoother transition
+        cssEase: "cubic-bezier(0.87, 0, 0.13, 1)", // Premium custom easing
+        slidesToShow: 3,
         slidesToScroll: 1,
         autoplay: true,
-        autoplaySpeed: 3000,
+        autoplaySpeed: 4000, // Give users time to read
         arrows: false,
-        draggable: true,
-        swipeToSlide: true,
         pauseOnHover: true,
+        responsive: [
+            {
+                breakpoint: 1024,
+                settings: { slidesToShow: 2 },
+            },
+            {
+                breakpoint: 768,
+                settings: { slidesToShow: 1 },
+            },
+        ],
     };
 
     const testimonials = [
-        { id: 1, name: "Alice Johnson", position: "Creative Designer", feedback: "Amazing experience! Loved the quality and design of the cards.", img: hero1 },
-        { id: 2, name: "Mark Williams", position: "Event Organizer", feedback: "Customer service was fantastic. Highly recommend!", img: hero1 },
-        { id: 3, name: "Sophia Lee", position: "Photographer", feedback: "The cards were stunning. Everyone loved them!", img: hero1 },
-        { id: 4, name: "John Doe", position: "Designer", feedback: "High-quality prints and fast delivery.", img: hero1 },
+        { id: 1, name: "Alice Johnson", position: "Creative Designer", feedback: "An absolutely amazing experience! I was blown away by the quality, the attention to detail, and the beautiful design of the cards.", img: hero1, rating: 5 },
+        { id: 2, name: "Mark Williams", position: "Event Organizer", feedback: "The customer service was fantastic from start to finish. Everything arrived on time and exceeded our expectations. Highly recommend!", img: hero1, rating: 5 },
+        { id: 3, name: "Sophia Lee", position: "Photographer", feedback: "These cards were stunning. Every single one of my clients loved them. They add such a professional touch to my deliveries.", img: hero1, rating: 5 },
+        { id: 4, name: "John Doe", position: "Lead Architect", feedback: "High-quality prints, incredibly fast delivery, and a seamless ordering process. I will definitely be a returning customer.", img: hero1, rating: 5 },
     ];
 
     return (
-        <section className="bg-gradient-to-b from-[#EBF6FE] to-[#F2F9FF]">
-            <div className="pb-20 pt-8 max-w-7xl mx-auto">
-                <div className="text-center text-[#333333] font-bold mb-12 mt-16 px-4">
-                    <span className="text-[#3CA9FF] font-bold border-2 border-[#3CA9FF] rounded-3xl py-3 px-6">
-                        TESTIMONIAL
+        <section className="bg-gradient-to-b from-slate-50 to-[#F2F9FF] py-24 relative overflow-hidden">
+            {/* Optional: Subtle background decorative elements for a premium feel */}
+            <div className="absolute top-0 left-0 w-full h-full overflow-hidden z-0 pointer-events-none">
+                <div className="absolute -top-40 -right-40 w-96 h-96 bg-blue-100 rounded-full mix-blend-multiply filter blur-3xl opacity-50"></div>
+                <div className="absolute top-40 -left-20 w-72 h-72 bg-indigo-100 rounded-full mix-blend-multiply filter blur-3xl opacity-50"></div>
+            </div>
+
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+                <div className="text-center max-w-3xl mx-auto mb-16">
+                    <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-50 border border-blue-200 text-blue-600 text-sm font-semibold tracking-wide uppercase mb-6 shadow-sm">
+                        <Star className="w-4 h-4 fill-current" />
+                        Testimonials
                     </span>
-                    <h1 className="text-3xl sm:text-5xl mt-8 uppercase leading-tight">
-                        Real Stories. Real Moments. Real Cards
-                    </h1>
+                    <h2 className="text-4xl md:text-5xl font-extrabold text-slate-900 tracking-tight leading-tight">
+                        Real Stories. <br className="hidden sm:block" />
+                        <span className="text-transparent bg-clip-text bg-[#3CA9FF]">
+                            Real Moments. Real Cards.
+                        </span>
+                    </h2>
                 </div>
 
-                <div className="w-full px-4">
-                    <Slider {...settings}>
+                <div className="w-full pb-10">
+                    <Slider {...settings} className="testimonial-slider">
                         {testimonials.map((t) => (
-                            <div key={t.id} className="px-4 pb-12">
-                                <div className="relative bg-white rounded-2xl shadow-xl p-6 flex flex-col items-center text-center transition-transform hover:scale-105 duration-300 overflow-hidden">
-                                    <div className="absolute -top-5 -right-5 bg-[#3CA9FF] w-20 h-20 rounded-full flex items-center justify-center shadow-lg">
-                                        <span className="text-white font-bold text-2xl">{t.id}</span>
+                            <div key={t.id} className="p-3 md:p-4 h-full">
+                                <div className="bg-white rounded-3xl p-8 border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] transition-all duration-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] hover:-translate-y-1 h-full flex flex-col group relative">
+                                    
+                                    {/* Quote Icon Background */}
+                                    <Quote className="absolute top-6 right-6 w-12 h-12 text-blue-50 rotate-180 transition-transform duration-500 group-hover:scale-110" />
+
+                                    {/* Rating */}
+                                    <div className="flex gap-1 mb-6 relative z-10">
+                                        {[...Array(t.rating)].map((_, i) => (
+                                            <Star key={i} className="w-4 h-4 fill-amber-400 text-amber-400" />
+                                        ))}
                                     </div>
-                                    <div className="mt-12">
-                                        <h3 className="font-bold text-lg text-[#333]">{t.name}</h3>
-                                        <p className="text-sm text-[#3CA9FF] mb-4">{t.position}</p>
-                                        <p className="text-gray-600 text-sm line-clamp-1">{t.feedback}</p>
+
+                                    {/* Feedback text */}
+                                    <p className="text-slate-600 leading-relaxed mb-8 flex-grow relative z-10 text-base md:text-lg">
+                                        "{t.feedback}"
+                                    </p>
+
+                                    {/* User Profile */}
+                                    <div className="flex items-center gap-4 mt-auto border-t border-slate-50 pt-6 relative z-10">
+                                        {/* <div className="relative w-12 h-12 rounded-full overflow-hidden border-2 border-white shadow-md flex-shrink-0 bg-slate-100">
+                                            <Image 
+                                                src={t.img} 
+                                                alt={t.name} 
+                                                fill
+                                                className="object-cover"
+                                            />
+                                        </div> */}
+                                        <div>
+                                            <h3 className="font-bold text-slate-900">{t.name}</h3>
+                                            <p className="text-sm font-medium text-blue-600">{t.position}</p>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

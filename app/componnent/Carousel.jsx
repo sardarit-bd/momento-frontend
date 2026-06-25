@@ -4,8 +4,8 @@ import { useEffect, useState } from "react";
 import Slider from "react-slick";
 import hero3 from "../../public/ele.png";
 import hero2 from "../../public/hero2.png";
-import hero4 from "../../public/ronaldo.webp";
-import hero1 from "../../public/tranding.png";
+import hero4 from "../../public/mockup5.png";
+import hero1 from "../../public/mockup4.png";
 import hero5 from "../../public/tredingTwo.png";
 
 export default function Carousel() {
@@ -39,10 +39,10 @@ export default function Carousel() {
     };
 
     const items = [
-        { id: 1, img: hero5, title: "Family Game Night Deck", desc: "\u201cCustom cards for every family member\u2014turned our gatherings into a tradition!\u201d" },
-        { id: 2, img: hero4, title: "Family Game Night Deck", desc: "\u201cCustom cards for every family member\u2014turned our gatherings into a tradition!\u201d" },
-        { id: 3, img: hero3, title: "Family Game Night Deck", desc: "\u201cCustom cards for every family member\u2014turned our gatherings into a tradition!\u201d" },
-        { id: 4, img: hero2, title: "Family Game Night Deck", desc: "\u201cCustom cards for every family member\u2014turned our gatherings into a tradition!\u201d" },
+        // { id: 1, img: hero5, title: "Family Game Night Deck", desc: "\u201cCustom cards for every family member\u2014turned our gatherings into a tradition!\u201d" },
+        { id: 2, img: hero4, title: "Memorable Trading card", desc: "\u201cCustom cards for every family member\u2014turned our gatherings into a tradition!\u201d" },
+        // { id: 3, img: hero3, title: "Family Game Night Deck", desc: "\u201cCustom cards for every family member\u2014turned our gatherings into a tradition!\u201d" },
+        // { id: 4, img: hero2, title: "Family Game Night Deck", desc: "\u201cCustom cards for every family member\u2014turned our gatherings into a tradition!\u201d" },
         { id: 5, img: hero1, title: "Family Game Night Deck", desc: "\u201cCustom cards for every family member\u2014turned our gatherings into a tradition!\u201d" },
     ];
 

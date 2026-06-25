@@ -63,8 +63,8 @@ const DeckBoxPreview = ({ characterImages = [] }) => {
                                     { i: 0, x: 0, y: 32, scale: 1, z: 3, size: '99%', clip: '0% 25% 49.3% 25%' },
                                 ];
                                 return [
-                                    { i: 3, x: -21, y: -15, scale: 0.65, z: 1, size: '95%' },
-                                    { i: 4, x: 21, y: -15, scale: 0.65, z: 1, size: '95%' },
+                                    { i: 3, x: -17, y: -2, scale: 0.80, z: 1, size: '99%', clip: '0% 25% 10% 24%' },
+                                    { i: 4, x: 17, y: -2, scale: 0.80, z: 1, size: '99%', clip: '0% 25% 10% 24%' },
                                     { i: 1, x: -26, y: 10, scale: 0.78, z: 2, size: '80%', clip: '0% 27% 55% 28%' },
                                     { i: 2, x: 26, y: 10, scale: 0.78, z: 2, size: '80%', clip: '0% 27% 55% 25%' },
                                     { i: 0, x: 0, y: 32, scale: 1, z: 3, size: '99%', clip: '0% 25% 49.3% 25%' },

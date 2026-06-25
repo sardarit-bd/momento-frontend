@@ -33,10 +33,10 @@ const Footer = () => {
                         <div className="mt-5">
                             <ul className="flex flex-col gap-3">
                                 <Link href={'/about'} className="text-gray-500 text-md z-30">About</Link>
-                                <Link href={'/about'} className="text-gray-500 text-md z-30">Shop</Link>
-                                <Link href={'/about'} className="text-gray-500 text-md z-30">Card customization</Link>
-                                <Link href={'/about'} className="text-gray-500 text-md z-30">Inspirations</Link>
-                                <Link href={'/about'} className="text-gray-500 text-md z-30">Contact Us</Link>
+                                {/* <Link href={'/shop'} className="text-gray-500 text-md z-30">Shop</Link> */}
+                                <Link href={'/shop'} className="text-gray-500 text-md z-30">Card customization</Link>
+                                <Link href={'/inspirations'} className="text-gray-500 text-md z-30">Inspirations</Link>
+                                <Link href={'/contact'} className="text-gray-500 text-md z-30">Contact Us</Link>
                             </ul>
                         </div>
                     </div>
@@ -44,8 +44,8 @@ const Footer = () => {
                         <h3 className="font-bold text-2xl text-gray-600">Shop</h3>
                         <div className="mt-5">
                             <ul className="flex flex-col gap-3">
-                                <Link href={'/about'} className="text-gray-500 text-md z-30">Momento Portrait Deck</Link>
-                                <Link href={'/about'} className="text-gray-500 text-md z-30">Momento Trading Cards</Link>
+                                <Link href={'/shop'} className="text-gray-500 text-md z-30">Momento Portrait Deck</Link>
+                                <Link href={'/shop'} className="text-gray-500 text-md z-30">Momento Trading Cards</Link>
                             </ul>
                         </div>
                     </div>

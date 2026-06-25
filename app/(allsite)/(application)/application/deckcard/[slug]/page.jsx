@@ -443,59 +443,57 @@ const ProductCustomizer = () => {
     };
 
     const Done = async () => {
-    setdoneloading(true);
+        setdoneloading(true);
 
-    // ── 1. Always check for missing required cards first ──────────────────
-    const firstMissingType = CARD_FLOW.find(
-        (type) => !cards.some((card) => card.editedCard === type)
-    );
-
-    if (firstMissingType) {
-        seteditedCard(firstMissingType);
-
-        const baseCard = product?.customizations?.base_cards?.find(
-            (item) => getCanonicalCardType(item?.card_type) === firstMissingType
+        const firstMissingType = CARD_FLOW.find(
+            (type) => !cards.some((card) => card.editedCard === type)
         );
-        const baseForType = product?.customizations?.custom_sets?.find(
-            (item) => getCanonicalCardType(item?.card_type) === firstMissingType
-        )?.image;
 
-        const initialLayers = {};
-        layers.forEach((layer) => {
-            if (layer === "beards") return;
-            const items = product?.customizations?.[layer];
-            if (items?.length > 0) initialLayers[layer] = items[0]?.image;
-        });
+        if (firstMissingType) {
+            seteditedCard(firstMissingType);
 
-        setCards((prev) => {
-            const newCard = {
-                editedCard: firstMissingType,
-                baseImage: baseCard?.image || baseForType,
-                slotName: baseCard?.name || null,
-                selectedLayers: initialLayers,
-            };
-            const insertAt = getSortedInsertIndex(prev, firstMissingType);
-            const newCards = [...prev.slice(0, insertAt), newCard, ...prev.slice(insertAt)];
-            setActiveCardIndex(insertAt);
-            return newCards;
-        });
+            const baseCard = product?.customizations?.base_cards?.find(
+                (item) => getCanonicalCardType(item?.card_type) === firstMissingType
+            );
+            const baseForType = product?.customizations?.custom_sets?.find(
+                (item) => getCanonicalCardType(item?.card_type) === firstMissingType
+            )?.image;
 
-        setTimeout(() => setdoneloading(false), 500);
-        return;
-    }
+            const initialLayers = {};
+            layers.forEach((layer) => {
+                if (layer === "beards") return;
+                const items = product?.customizations?.[layer];
+                if (items?.length > 0) initialLayers[layer] = items[0]?.image;
+            });
 
-    // ── 2. All required cards present — now check Joker path ──────────────
-    const hasJokerCardNow = cards.some((card) => card?.editedCard === "Joker_Card");
-    if (hasJokerCardNow) {
-        await goToFinalView();
-        setTimeout(() => setdoneloading(false), 500);
-        return;
-    }
+            setCards((prev) => {
+                const newCard = {
+                    editedCard: firstMissingType,
+                    baseImage: baseCard?.image || baseForType,
+                    slotName: baseCard?.name || null,
+                    selectedLayers: initialLayers,
+                };
+                const insertAt = getSortedInsertIndex(prev, firstMissingType);
+                const newCards = [...prev.slice(0, insertAt), newCard, ...prev.slice(insertAt)];
+                setActiveCardIndex(insertAt);
+                return newCards;
+            });
 
-    // ── 3. No Joker yet — show upsell ─────────────────────────────────────
-    setshowJokerUpsell(true);
-    setdoneloading(false);
-};
+            setTimeout(() => setdoneloading(false), 500);
+            return;
+        }
+
+  
+        const hasJokerCardNow = cards.some((card) => card?.editedCard === "Joker_Card");
+        if (hasJokerCardNow) {
+            await goToFinalView();
+            setTimeout(() => setdoneloading(false), 500);
+            return;
+        }
+
+        setshowJokerUpsell(true);
+        setdoneloading(false);
+    };
 
     const handleSkipJokerUpsell = async () => {
         setshowJokerUpsell(false);

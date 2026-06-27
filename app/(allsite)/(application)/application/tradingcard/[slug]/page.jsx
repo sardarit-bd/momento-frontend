@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useTradingCardState } from "./_tradingcard/hooks/useTradingCardState";
 import TradingCardPreview from "./_tradingcard/components/TradingCardPreview";
 import TradingCardControls from "./_tradingcard/components/TradingCardControls";
@@ -16,7 +16,6 @@ export default function ProductCustomizer() {
 
     React.useEffect(() => {
         const h = document.querySelector("nav")?.offsetHeight;
-        console.log("Navbar height:", h);
     }, []);
 
     if (state.fetchingDataLoading) {

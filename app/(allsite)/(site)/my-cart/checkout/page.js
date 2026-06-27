@@ -474,12 +474,6 @@ export default function CheckoutPage() {
 
     for (let index = 0; index < sourceCards.length; index += 1) {
       const card = sourceCards[index];
-      console.log('card raw:', {
-        rank: card?.rank,
-        name: card?.name,
-        has_image: !!card?.image,
-        image_prefix: card?.image?.substring(0, 30),
-      });
 
       // Cards restored from IDB already have rank + image — use directly
       if (card?.rank && card?.image && isDataUrlImage(card.image)) {
@@ -598,12 +592,6 @@ export default function CheckoutPage() {
         })
       );
 
-      console.log('cartItems FinalProduct check:', cartItems[0]?.FinalProduct?.map(c => ({
-        rank: c.rank,
-        name: c.name,
-        has_image: !!c.image,
-      })));
-
       const checkoutEmail = `${id || "guest"}@example.com`;
 
       const tradingItem = hydratedCart.find(item => item.productType === "trading");
@@ -638,8 +626,6 @@ export default function CheckoutPage() {
 
       const checkoutEndpoint =
         process.env.NEXT_PUBLIC_CHECKOUT_SESSION_ENDPOINT || "/api/create-checkout-session";
-
-      console.log('checkoutData full:', JSON.stringify(checkoutData, null, 2));
 
       const response = await fetch(
         checkoutEndpoint.startsWith("http")

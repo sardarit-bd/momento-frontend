@@ -75,13 +75,6 @@ const Two = () => {
     const layerBaseCardRef = useRef(layerBaseCard);
     useEffect(() => {
         layerBaseCardRef.current = layerBaseCard;
-        console.log('layerBaseCard updated:', JSON.stringify(
-            layerBaseCard?.flatMap(g => g.images?.map(img => ({
-                card_type: g.card_type,
-                name: img.name,
-                filename: img.filename,
-            })))
-        ));
     }, [layerBaseCard]);
     // ──────────────────────────────────────────────────────────────────
 

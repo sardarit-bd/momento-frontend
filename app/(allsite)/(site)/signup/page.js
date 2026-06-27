@@ -11,7 +11,6 @@ import logingandsignupmakepost from "../../../../utilis/requestrespose/logingand
 
 const SignUP = () => {
 
-
     const router = useRouter();
     const { isLoading, setLoading } = useLoadingStore();
     const [name, setName] = useState('');
@@ -19,17 +18,12 @@ const SignUP = () => {
     const [password, setPassword] = useState("");
     const [res, setres] = useState(false);
 
-
-
     const handleSubmit = async (e) => {
         e.preventDefault();
-
 
         if (name && email && password) {
             setLoading(true);
             const response = await logingandsignupmakepost("api/register", { name, email, password });
-
-            console.log(response);
 
             if (response) {
                 setres(response);
@@ -43,56 +37,83 @@ const SignUP = () => {
         } else {
             toast.warn("Required All Feilds");
         }
-
     };
 
-
-
-
     return (
-        <div className="w-screen h-[60vh] flex justify-center items-center bg-gray-100">
-            <div className="bg-white p-6 rounded-lg shadow-md w-80 text-center">
-                <h2 className="text-xl text-black font-bold mb-4">Sign Up</h2>
+        <div className="my-5 lg:my-10 flex justify-center items-center bg-gray-100 px-4 sm:px-6 lg:px-8">
+            <div className="bg-white p-8 sm:p-10 rounded-2xl shadow-xl border border-gray-100 w-full max-w-md">
+                
+                <div className="text-center mb-8">
+                    <h2 className="text-3xl text-gray-900 font-extrabold tracking-tight">Create an Account</h2>
+                    <p className="text-sm text-gray-500 mt-2">Join us today! Please enter your details below.</p>
+                </div>
 
-                <form onSubmit={handleSubmit} className="space-y-4 text-gray-600">
-                    <input
-                        type="text"
-                        placeholder="Name"
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md outline-none "
-                    />
-                    <input
-                        type="email"
-                        placeholder="Email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md outline-none "
-                    />
+                <form onSubmit={handleSubmit} className="space-y-5">
+                    
+                    {/* Name Input */}
+                    <div>
+                        <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
+                            Full Name
+                        </label>
+                        <input
+                            id="name"
+                            type="text"
+                            placeholder="John Doe"
+                            value={name}
+                            onChange={(e) => setName(e.target.value)}
+                            className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-transparent transition-all duration-300"
+                        />
+                    </div>
 
-                    <input
-                        type="password"
-                        placeholder="Password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md outline-none "
-                    />
+                    {/* Email Input */}
+                    <div>
+                        <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+                            Email
+                        </label>
+                        <input
+                            id="email"
+                            type="email"
+                            placeholder="you@example.com"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-transparent transition-all duration-300"
+                        />
+                    </div>
 
+                    {/* Password Input */}
+                    <div>
+                        <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+                            Password
+                        </label>
+                        <input
+                            id="password"
+                            type="password"
+                            placeholder="••••••••"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-transparent transition-all duration-300"
+                        />
+                    </div>
+
+                    {/* Submit Button */}
                     <button
                         disabled={isLoading}
-                        className="w-full bg-sky-400 text-white font-semibold py-2 rounded-md hover:bg-sky-600 transition cursor-pointer flex items-center justify-center gap-2"
+                        className="w-full mt-4 bg-sky-400 text-white font-semibold py-3 rounded-xl shadow-md hover:bg-sky-500 hover:shadow-lg disabled:opacity-70 disabled:cursor-not-allowed transition-all duration-300 active:scale-[0.98] flex items-center justify-center gap-2"
                     >
-                        {
-                            isLoading && <SpinLoader />
-                        }
-
-                        Sign Up
+                        {isLoading && <SpinLoader />}
+                        {isLoading ? "Signing up..." : "Sign Up"}
                     </button>
                 </form>
 
-                <span className="flex items-center text-gray-500 gap-1 pt-2 justify-center">Already have an Account ? <Link href="signin" className="text-sm hover:underline text-sky-500">
-                    Sign In
-                </Link></span>
+                {/* Footer Link */}
+                <div className="mt-8 text-center">
+                    <span className="text-sm text-gray-600">
+                        Already have an account?{' '}
+                        <Link href="signin" className="font-semibold text-sky-500 hover:text-sky-600 hover:underline transition-colors">
+                            Sign In
+                        </Link>
+                    </span>
+                </div>
             </div>
             <ToastContainer />
         </div>

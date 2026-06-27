@@ -37,12 +37,43 @@ export default function TradingCardPreview({
     backLegacyText,
     isblack,
     isMini = false,
-    /* mobile layout mode — set by the page when rendering in the mobile canvas area */
     isMobileCanvas = false,
 }) {
     const textOverlayRef = React.useRef(null);
 
-    /* ─── isMini: used for sidebar thumbnails (unchanged) ─── */
+    // ─── Dynamic mobile scaling ───────────────────────────────────────────────
+    // IMPORTANT: We measure the OUTER WRAPPER (containerRef), not the shell.
+    // The shell is sized BY mobileScale, so measuring it causes a feedback loop.
+    // The outer wrapper has the true available space from the layout.
+    const containerRef = React.useRef(null);
+    const [mobileScale, setMobileScale] = React.useState(0.56);
+
+    React.useEffect(() => {
+        if (!isMobileCanvas) return;
+
+        const computeScale = () => {
+            if (!containerRef.current) return;
+            const { offsetWidth: w, offsetHeight: h } = containerRef.current;
+            if (w > 0 && h > 0) {
+                // Fit 390x570 card into the available container space
+                // Use 0.95 padding factor so card doesn't touch edges
+                const scale = Math.min((w * 0.95) / 390, (h * 0.95) / 570);
+                setMobileScale(scale);
+            }
+        };
+
+        const observer = new ResizeObserver(computeScale);
+        if (containerRef.current) observer.observe(containerRef.current);
+
+        window.addEventListener("orientationchange", computeScale);
+
+        return () => {
+            observer.disconnect();
+            window.removeEventListener("orientationchange", computeScale);
+        };
+    }, [isMobileCanvas]);
+
+    // ─── isMini: sidebar thumbnail (unchanged) ────────────────────────────────
     if (isMini) {
         return (
             <div className="w-[390px] h-[570px] relative overflow-hidden bg-white">
@@ -107,18 +138,11 @@ export default function TradingCardPreview({
         );
     }
 
-    /* ─── Full interactive card (desktop + mobile canvas) ─── */
-
-    /*
-     * Desktop:  wrapper is a grid cell; card is 255×370 scaling to 390×570 via CSS var.
-     * Mobile:   wrapper is flex-centered; we use a fixed smaller display size (220×320)
-     *           and scale the 390×570 card down to fit inside it.
-     *
-     * The mobile scale = 220/390 ≈ 0.564
-     */
-
+    // ─── Full interactive card (desktop + mobile canvas) ─────────────────────
     return (
         <div
+            // containerRef goes on the OUTERMOST div — this has the true available space
+            ref={isMobileCanvas ? containerRef : undefined}
             className={
                 isMobileCanvas
                     ? "flex flex-col items-center justify-center w-full h-full overflow-hidden"
@@ -127,38 +151,73 @@ export default function TradingCardPreview({
         >
             <div className={isMobileCanvas ? "flex flex-col items-center gap-1" : "flex flex-col items-center gap-3"}>
 
-                {/* Card shell */}
+                {/*
+                 * CARD SHELL
+                 * Mobile:  sized exactly to 390×570 scaled by mobileScale.
+                 *          overflow:hidden clips anything that escapes the canvas.
+                 *          No ref here — we measure containerRef above instead.
+                 * Desktop: unchanged Tailwind classes.
+                 */}
                 <div
+                    data-card-shell 
                     className={
                         isMobileCanvas
-                            ? "overflow-hidden rounded-xl border border-gray-200 shadow-xl ring-1 ring-gray-100 relative bg-white"
-                            : "w-[255px] h-[370px] lg:w-[390px] lg:h-[570px] overflow-hidden rounded-xl border border-gray-200 shadow-xl ring-1 ring-gray-100 relative bg-white"
+                            ? "rounded-xl border border-gray-200 shadow-xl ring-1 ring-gray-100 relative bg-white"
+                            : "w-[255px] h-[373px] lg:w-[390px] lg:h-[570px] overflow-hidden rounded-xl border border-gray-200 shadow-xl ring-1 ring-gray-100 relative bg-white"
                     }
                     style={
                         isMobileCanvas
-                            ? { width: "min(270px, 68vw)", height: "min(393px, 99.1vw)" }
+                            ? {
+                                // Exact scaled dimensions — shell matches canvas, no gaps
+                                width: `${390 * mobileScale}px`,
+                                height: `${570 * mobileScale}px`,
+                                overflow: "hidden",  // clip BackOne text that escapes canvas
+                                flexShrink: 0,
+                            }
                             : undefined
                     }
                 >
-                    {/* Inner 390×570 canvas — scaled to fit the shell */}
-                    <div
+                    {/*
+                     * INNER 390×570 CANVAS
+                     * Always 390×570 in real pixels.
+                     * Scaled down via transform to fit the shell.
+                     * position:absolute removes it from flow so it never
+                     * pushes the shell to grow (fixes BackOne height bug).
+                     */}
+                    <div 
+                        data-card-canvas 
                         ref={isMobileCanvas ? null : previewCardNodeRef}
-                        className="w-[390px] h-[570px] relative overflow-hidden bg-white"
                         style={
                             isMobileCanvas
                                 ? {
-                                    transform: `scale(${Math.min(270, window.innerWidth * 0.68) / 390})`,
+                                    position: "absolute",
+                                    top: 0,
+                                    left: 0,
+                                    width: "390px",
+                                    height: "570px",
+                                    transform: `scale(${mobileScale})`,
                                     transformOrigin: "top left",
+                                    overflow: "hidden",
+                                    backgroundColor: "#ffffff",
                                 }
                                 : {
+                                    width: "390px",
+                                    height: "570px",
+                                    position: "relative",
+                                    overflow: "hidden",
+                                    backgroundColor: "#ffffff",
                                     transform: "scale(var(--card-scale))",
                                     transformOrigin: "top left",
                                 }
                         }
                     >
-                        {/* Capture ref overlay for mobile (invisible, keeps ref for html2canvas) */}
+                        {/* Capture ref overlay for mobile html2canvas */}
                         {isMobileCanvas && (
-                            <div ref={previewCardNodeRef} className="absolute inset-0 pointer-events-none" style={{ zIndex: -999 }} />
+                            <div
+                                ref={previewCardNodeRef}
+                                className="absolute inset-0 pointer-events-none"
+                                style={{ zIndex: -999 }}
+                            />
                         )}
 
                         {/* Uploaded images — draggable & resizable */}
@@ -178,9 +237,9 @@ export default function TradingCardPreview({
                                     setActiveText(null);
                                 }}
                                 resizeHandleStyles={{
-                                    topLeft: { border: "3px solid #3b82f6", width: "10px", height: "10px", background: "white" },
-                                    topRight: { border: "3px solid #3b82f6", width: "10px", height: "10px", background: "white" },
-                                    bottomLeft: { border: "3px solid #3b82f6", width: "10px", height: "10px", background: "white" },
+                                    topLeft:     { border: "3px solid #3b82f6", width: "10px", height: "10px", background: "white" },
+                                    topRight:    { border: "3px solid #3b82f6", width: "10px", height: "10px", background: "white" },
+                                    bottomLeft:  { border: "3px solid #3b82f6", width: "10px", height: "10px", background: "white" },
                                     bottomRight: { border: "3px solid #3b82f6", width: "10px", height: "10px", background: "white" },
                                 }}
                                 style={{
@@ -238,6 +297,7 @@ export default function TradingCardPreview({
                             )}
                         </div>
 
+                        {/* Empty state */}
                         {!uploads.length && !baseFront && !baseBack && (
                             <div className="absolute inset-0 flex items-center justify-center text-gray-300">
                                 Preview area
@@ -246,18 +306,16 @@ export default function TradingCardPreview({
                     </div>
                 </div>
 
-                {/* Flip button */}
-                {!isMobileCanvas && <button
-                    onClick={() => setworkingcard((prev) => (prev === "front" ? "back" : "front"))}
-                    className={
-                        isMobileCanvas
-                            ? "text-sm text-white flex items-center gap-2 px-4 py-2 rounded-lg justify-center cursor-pointer bg-sky-400 shadow-md hover:shadow-lg transition-all duration-200 w-[180px]"
-                            : "relative z-[60] text-base lg:text-lg text-semibold text-white flex items-center gap-2 px-4 py-2 rounded-lg justify-center cursor-pointer bg-sky-400 w-[255px] lg:w-[160px] shadow-md hover:shadow-lg transition-all duration-200"
-                    }
-                >
-                    <BsArrowRepeat className="text-xl" />
-                    <span>{workingcard === "front" ? "Flip to Back" : "Flip to Front"}</span>
-                </button>}
+                {/* Flip button — desktop only */}
+                {!isMobileCanvas && (
+                    <button
+                        onClick={() => setworkingcard((prev) => (prev === "front" ? "back" : "front"))}
+                        className="relative z-[60] text-base lg:text-lg text-semibold text-white flex items-center gap-2 px-4 py-2 rounded-lg justify-center cursor-pointer bg-sky-400 w-[255px] lg:w-[160px] shadow-md hover:shadow-lg transition-all duration-200"
+                    >
+                        <BsArrowRepeat className="text-xl" />
+                        <span>{workingcard === "front" ? "Flip to Back" : "Flip to Front"}</span>
+                    </button>
+                )}
             </div>
         </div>
     );

@@ -245,9 +245,9 @@ function OrderTable({ allorders, pagination, onPageChange, token, isPageLoading 
                                     <button onClick={() => { openOrderModal(order, "receipt"); }} className="text-blue-600 hover:underline text-sm mr-3 cursor-pointer">
                                         Receipt
                                     </button>
-                                    <button onClick={() => { openOrderModal(order, "png"); }} className="text-blue-600 hover:underline text-sm mr-3 cursor-pointer">
+                                    {/* <button onClick={() => { openOrderModal(order, "png"); }} className="text-blue-600 hover:underline text-sm mr-3 cursor-pointer">
                                         View PNG
-                                    </button>
+                                    </button> */}
                                 </td>
                             </tr>
                         ))}
@@ -431,12 +431,142 @@ function ImageDownloadInfo({ modalinfo, modaltype }) {
     );
 }
 
-
 function ReceiptView({ data }) {
 
-    console.log("Receipt data keys:", Object.keys(data ?? {}));
-    console.log("Shipping address:", data?.shipping_address);
-    console.log("Full receipt data:", JSON.stringify(data, null, 2));
+    const handleDownloadPDF = async () => {
+        const { default: jsPDF } = await import('jspdf');
+
+        const pdf = new jsPDF({ orientation: 'portrait', unit: 'pt', format: 'a4' });
+        const pageWidth = pdf.internal.pageSize.getWidth();
+        const marginL = 40;
+        const marginR = pageWidth - 40;
+        let y = 40;
+
+        // ── Column positions ──
+        const col = {
+            name:  marginL,
+            qty:   marginR - 180,
+            price: marginR - 100,
+            total: marginR,
+        };
+
+        // ── Helpers ──
+        const setStyle = (size = 11, bold = false) => {
+            pdf.setFontSize(size);
+            pdf.setFont('helvetica', bold ? 'bold' : 'normal');
+        };
+
+        const newLine = (gap = 16) => { y += gap; };
+
+        const drawDivider = () => {
+            pdf.setDrawColor(200, 200, 200);
+            pdf.line(marginL, y, marginR, y);
+        };
+
+        // ── Header ──
+        setStyle(18, true);
+        pdf.text('Thank You For Your Purchase!', marginL, y);
+        newLine(22);
+
+        setStyle(11, false);
+        pdf.text('We really appreciate your business. Please tell your friends about us.', marginL, y);
+        newLine(28);
+
+        // ── Table top border ──
+        drawDivider();
+        newLine(14);
+
+        // ── Table header row ──
+        setStyle(10, true);
+        pdf.text('Name',  col.name,  y);
+        pdf.text('Qty',   col.qty,   y, { align: 'right' });
+        pdf.text('Price', col.price, y, { align: 'right' });
+        pdf.text('Total', col.total, y, { align: 'right' });
+        newLine(10);
+
+        // ── Border below header ──
+        drawDivider();
+        newLine(14);
+
+        // ── Table rows ──
+        setStyle(10, false);
+        if (items.length > 0) {
+            items.forEach((item) => {
+                const name = pdf.splitTextToSize(
+                    String(item.name),
+                    col.qty - col.name - 10
+                )[0];
+                pdf.text(name,                       col.name,  y);
+                pdf.text(String(item.qty),           col.qty,   y, { align: 'right' });
+                pdf.text(fmt(subtotal),              col.price, y, { align: 'right' });
+                pdf.text(fmt(subtotal * item.qty),   col.total, y, { align: 'right' });
+                newLine(16);
+            });
+        } else {
+            const name = pdf.splitTextToSize(
+                String(data?.id ?? ''),
+                col.qty - col.name - 10
+            )[0];
+            pdf.text(name,           col.name,  y);
+            pdf.text('1',            col.qty,   y, { align: 'right' });
+            pdf.text(fmt(subtotal),  col.price, y, { align: 'right' });
+            pdf.text(fmt(subtotal),  col.total, y, { align: 'right' });
+            newLine(16);
+        }
+
+        // ── Table bottom border ──
+        drawDivider();
+        newLine(14);
+
+        // ── Totals section ──
+        const addRow = (label, value, bold = false) => {
+            setStyle(10, bold);
+            pdf.text(label, col.name,  y);
+            pdf.text(value, col.total, y, { align: 'right' });
+            newLine(16);
+        };
+
+        addRow('Subtotal', fmt(subtotal), true);
+        addRow(`Shipping: ${shippingMethod}`, fmt(shippingCost));
+        if (handlingFee > 0)   addRow('Handling Fee',        fmt(handlingFee));
+        if (insuranceCost > 0) addRow('Insurance',           fmt(insuranceCost));
+        addRow('Total', fmt(total), true);
+        if (shopCreditUsed > 0) addRow('Shop Credit',        `-${fmt(shopCreditUsed)}`);
+        addRow(
+            'Grand Total',
+            grandTotal < 0 ? `-${fmt(Math.abs(grandTotal))}` : fmt(grandTotal),
+            true
+        );
+
+        // ── Divider before Ship To ──
+        newLine(8);
+        drawDivider();
+        newLine(24);
+
+        // ── Ship To ──
+        setStyle(13, true);
+        pdf.text('Ship To', marginL, y);
+        newLine(20);
+
+        setStyle(10, false);
+        [
+            shipName,
+            shipCompany,
+            shipAddr1,
+            shipAddr2,
+            [shipCity, shipState, shipZip].filter(Boolean).join(', '),
+            shipCountry,
+            shipPhone,
+        ]
+            .filter(Boolean)
+            .forEach((line) => {
+                pdf.text(line, marginL, y);
+                newLine(16);
+            });
+
+        // ── Save ──
+        pdf.save(`receipt-${data?.id ?? Date.now()}.pdf`);
+    };
 
     if (!data || data?._error) {
         return (
@@ -473,111 +603,114 @@ function ReceiptView({ data }) {
     const fmt = (n) => `$${Math.abs(n).toFixed(2)}`;
 
     return (
-        <div className="w-full h-full overflow-y-auto bg-white p-8 font-sans text-sm text-gray-800">
+        <div className="w-full h-full overflow-y-auto bg-white font-sans text-sm text-gray-800">
 
-            {/* Header */}
-            <h1 className="text-2xl font-bold text-gray-900 mb-1">Thank You For Your Purchase!</h1>
-            <p className="text-gray-600 mb-6">We really appreciate your business. Please tell your friends about us.</p>
+            {/* ── Download button — hidden when printing ── */}
+            <div className="flex justify-end px-8 pt-6 pb-2 print:hidden">
+                <button
+                    onClick={handleDownloadPDF}
+                    className="flex items-center gap-2 bg-sky-500 hover:bg-sky-600 text-white text-sm font-medium px-4 py-2 rounded-lg shadow transition"
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                        <polyline points="7 10 12 15 17 10"/>
+                        <line x1="12" y1="15" x2="12" y2="3"/>
+                    </svg>
+                    Download PDF
+                </button>
+            </div>
 
-            {/* Items Table */}
-            <table className="w-full border border-gray-300 mb-6 text-sm">
-                <thead>
-                    <tr className="border-b border-gray-300">
-                        <th className="text-left px-3 py-2 font-semibold">Name</th>
-                        <th className="text-center px-3 py-2 font-semibold">Quantity</th>
-                        <th className="text-right px-3 py-2 font-semibold">Price Each</th>
-                        <th className="text-right px-3 py-2 font-semibold">Total</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {items.length > 0 ? items.map((item, i) => (
-                        <tr key={i} className="border-b border-gray-200">
-                            <td className="px-3 py-2 text-blue-600">{item.name}</td>
-                            <td className="px-3 py-2 text-center">{item.qty}</td>
-                            <td className="px-3 py-2 text-right">{fmt(subtotal)}</td>
-                            <td className="px-3 py-2 text-right">{fmt(subtotal * item.qty)}</td>
+            {/* ── Printable receipt area ── */}
+            <div id="receipt-print-area" className="px-8 pb-8">
+
+                {/* Header */}
+                <h1 className="text-2xl font-bold text-gray-900 mb-1">Thank You For Your Purchase!</h1>
+                <p className="text-gray-600 mb-6">We really appreciate your business. Please tell your friends about us.</p>
+
+                {/* Items Table */}
+                <table className="w-full border border-gray-300 mb-6 text-sm">
+                    <thead>
+                        <tr className="border-b border-gray-300">
+                            <th className="text-left px-3 py-2 font-semibold">Name</th>
+                            <th className="text-center px-3 py-2 font-semibold">Quantity</th>
+                            <th className="text-right px-3 py-2 font-semibold">Price Each</th>
+                            <th className="text-right px-3 py-2 font-semibold">Total</th>
                         </tr>
-                    )) : (
-                        <tr className="border-b border-gray-200">
-                            <td className="px-3 py-2 text-blue-600">{data?.id}</td>
-                            <td className="px-3 py-2 text-center">1</td>
-                            <td className="px-3 py-2 text-right">{fmt(subtotal)}</td>
-                            <td className="px-3 py-2 text-right">{fmt(subtotal)}</td>
+                    </thead>
+                    <tbody>
+                        {items.length > 0 ? items.map((item, i) => (
+                            <tr key={i} className="border-b border-gray-200">
+                                <td className="px-3 py-2 text-blue-600">{item.name}</td>
+                                <td className="px-3 py-2 text-center">{item.qty}</td>
+                                <td className="px-3 py-2 text-right">{fmt(subtotal)}</td>
+                                <td className="px-3 py-2 text-right">{fmt(subtotal * item.qty)}</td>
+                            </tr>
+                        )) : (
+                            <tr className="border-b border-gray-200">
+                                <td className="px-3 py-2 text-blue-600">{data?.id}</td>
+                                <td className="px-3 py-2 text-center">1</td>
+                                <td className="px-3 py-2 text-right">{fmt(subtotal)}</td>
+                                <td className="px-3 py-2 text-right">{fmt(subtotal)}</td>
+                            </tr>
+                        )}
+                        <tr className="border-b border-gray-300 bg-white">
+                            <td colSpan={3} className="px-3 py-2 font-bold">Subtotal</td>
+                            <td className="px-3 py-2 text-right font-bold">{fmt(subtotal)}</td>
                         </tr>
-                    )}
-
-                    {/* Subtotal */}
-                    <tr className="border-b border-gray-300 bg-white">
-                        <td colSpan={3} className="px-3 py-2 font-bold">Subtotal</td>
-                        <td className="px-3 py-2 text-right font-bold">{fmt(subtotal)}</td>
-                    </tr>
-
-                    {/* Shipping */}
-                    <tr className="border-b border-gray-200 bg-gray-50">
-                        <td colSpan={3} className="px-3 py-2">Shipping Method: {shippingMethod}</td>
-                        <td className="px-3 py-2 text-right">{fmt(shippingCost)}</td>
-                    </tr>
-
-                    {/* Handling */}
-                    {handlingFee > 0 && (
                         <tr className="border-b border-gray-200 bg-gray-50">
-                            <td colSpan={3} className="px-3 py-2">Handling Fee</td>
-                            <td className="px-3 py-2 text-right">{fmt(handlingFee)}</td>
+                            <td colSpan={3} className="px-3 py-2">Shipping Method: {shippingMethod}</td>
+                            <td className="px-3 py-2 text-right">{fmt(shippingCost)}</td>
                         </tr>
-                    )}
-
-                    {/* Insurance */}
-                    {insuranceCost > 0 && (
-                        <tr className="border-b border-gray-200 bg-gray-50">
-                            <td colSpan={3} className="px-3 py-2">Shipping Insurance</td>
-                            <td className="px-3 py-2 text-right">{fmt(insuranceCost)}</td>
+                        {handlingFee > 0 && (
+                            <tr className="border-b border-gray-200 bg-gray-50">
+                                <td colSpan={3} className="px-3 py-2">Handling Fee</td>
+                                <td className="px-3 py-2 text-right">{fmt(handlingFee)}</td>
+                            </tr>
+                        )}
+                        {insuranceCost > 0 && (
+                            <tr className="border-b border-gray-200 bg-gray-50">
+                                <td colSpan={3} className="px-3 py-2">Shipping Insurance</td>
+                                <td className="px-3 py-2 text-right">{fmt(insuranceCost)}</td>
+                            </tr>
+                        )}
+                        <tr className="border-b border-gray-300 bg-white">
+                            <td colSpan={3} className="px-3 py-2 font-bold">Total</td>
+                            <td className="px-3 py-2 text-right font-bold">{fmt(total)}</td>
                         </tr>
-                    )}
-
-                    {/* Total */}
-                    <tr className="border-b border-gray-300 bg-white">
-                        <td colSpan={3} className="px-3 py-2 font-bold">Total</td>
-                        <td className="px-3 py-2 text-right font-bold">{fmt(total)}</td>
-                    </tr>
-
-                    {/* Shop Credit */}
-                    {shopCreditUsed > 0 && (
-                        <tr className="border-b border-gray-200 bg-gray-50">
-                            <td colSpan={3} className="px-3 py-2">Shop Credit</td>
-                            <td className="px-3 py-2 text-right text-gray-800">-{fmt(shopCreditUsed)}</td>
+                        {shopCreditUsed > 0 && (
+                            <tr className="border-b border-gray-200 bg-gray-50">
+                                <td colSpan={3} className="px-3 py-2">Shop Credit</td>
+                                <td className="px-3 py-2 text-right text-gray-800">-{fmt(shopCreditUsed)}</td>
+                            </tr>
+                        )}
+                        {grandTotal < 0 && (
+                            <tr className="border-b border-gray-200 bg-gray-50">
+                                <td colSpan={3} className="px-3 py-2">Refunds Applied</td>
+                                <td className="px-3 py-2 text-right">-{fmt(Math.abs(grandTotal))}</td>
+                            </tr>
+                        )}
+                        <tr className="bg-white">
+                            <td colSpan={3} className="px-3 py-2 font-bold">Grand Total</td>
+                            <td className="px-3 py-2 text-right font-bold">
+                                {grandTotal < 0 ? `-${fmt(grandTotal)}` : fmt(grandTotal)}
+                            </td>
                         </tr>
+                    </tbody>
+                </table>
+
+                {/* Ship To */}
+                <h2 className="text-xl font-bold text-gray-900 mb-2">Ship To</h2>
+                <div className="text-gray-700 leading-6">
+                    {shipName    && <p>{shipName}</p>}
+                    {shipCompany && <p>{shipCompany}</p>}
+                    {shipAddr1   && <p>{shipAddr1}</p>}
+                    {shipAddr2   && <p>{shipAddr2}</p>}
+                    {(shipCity || shipState || shipZip) && (
+                        <p>{[shipCity, shipState, shipZip].filter(Boolean).join(", ")}</p>
                     )}
-
-                    {/* Refunds */}
-                    {grandTotal < 0 && (
-                        <tr className="border-b border-gray-200 bg-gray-50">
-                            <td colSpan={3} className="px-3 py-2">Refunds Applied</td>
-                            <td className="px-3 py-2 text-right">-{fmt(Math.abs(grandTotal))}</td>
-                        </tr>
-                    )}
-
-                    {/* Grand Total */}
-                    <tr className="bg-white">
-                        <td colSpan={3} className="px-3 py-2 font-bold">Grand Total</td>
-                        <td className="px-3 py-2 text-right font-bold">
-                            {grandTotal < 0 ? `-${fmt(grandTotal)}` : fmt(grandTotal)}
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-
-            {/* Ship To */}
-            <h2 className="text-xl font-bold text-gray-900 mb-2">Ship To</h2>
-            <div className="text-gray-700 leading-6">
-                {shipName    && <p>{shipName}</p>}
-                {shipCompany && <p>{shipCompany}</p>}
-                {shipAddr1   && <p>{shipAddr1}</p>}
-                {shipAddr2   && <p>{shipAddr2}</p>}
-                {(shipCity || shipState || shipZip) && (
-                    <p>{[shipCity, shipState, shipZip].filter(Boolean).join(", ")}</p>
-                )}
-                {shipCountry && <p>{shipCountry}</p>}
-                {shipPhone   && <p>{shipPhone}</p>}
+                    {shipCountry && <p>{shipCountry}</p>}
+                    {shipPhone   && <p>{shipPhone}</p>}
+                </div>
             </div>
         </div>
     );

@@ -87,12 +87,6 @@ const Three = () => {
                 }))
             ) ?? [];
 
-            console.log('flattenedBaseCards:', JSON.stringify(flattenedBaseCards.map(c => ({
-                card_type: c.card_type,
-                filename: c.filename,
-                name: c.name,
-            })), null, 2));
-
 
             const productStateCustomizable = {
                 name: productName,
@@ -133,7 +127,6 @@ const Three = () => {
             };
 
             if (Object.values(clientValidation).includes(false)) {
-                console.error("[Card Product Debug] Payload validation failed before API call", clientValidation);
                 toast.error("Validation failed. Check browser console for exact invalid fields.");
                 return;
             }

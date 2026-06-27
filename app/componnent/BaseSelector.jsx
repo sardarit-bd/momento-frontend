@@ -52,11 +52,6 @@ const BaseSelector = ({ product, cards, activeCard, selectBase, editedCard, sete
 
     const allcard = product?.customizations?.base_cards || [];
 
-     console.log("=== BaseSelector Debug ===");
-     console.log("1. Raw base_cards from API:", allcard);
-     console.log("2. Current editedCard:", editedCard);
-     console.log("3. allowedCardTypes:", allowedCardTypes);
-
     const safeEditedCard = allowedCardTypes.includes(editedCard)
         ? editedCard
         : (allowedCardTypes.find((type) =>

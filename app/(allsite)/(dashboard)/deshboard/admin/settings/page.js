@@ -56,33 +56,63 @@ export default function SiteSettings() {
 
 
     /************** handle profile update function here` ******************/
-    const handleSubmit = async (e) => {
-        e.preventDefault();
+    // const handleSubmit = async (e) => {
+    //     e.preventDefault();
 
-        setLoading(true);
+    //     setLoading(true);
 
-        const passdata = {
-            stripe_publishable_key: key,
-            stripe_secret_key: secret,
-            stripe_webhook_key: webhooksecret,
-        }
+    //     const passdata = {
+    //         stripe_publishable_key: key,
+    //         stripe_secret_key: secret,
+    //         stripe_webhook_key: webhooksecret,
+    //     }
 
 
-        const response = await MakePut(`api/secrets/${credientialsID}`, passdata, token);
+    //     const response = await MakePut(`api/secrets/${credientialsID}`, passdata, token);
 
-        if (response) {
-            toast.success(response?.message);
-            setisedit(false);
-            fetching(id, token);
-        } else {
-            toast.error('Something went Wrong');
-        }
+    //     if (response) {
+    //         toast.success(response?.message);
+    //         setisedit(false);
+    //         fetching(id, token);
+    //     } else {
+    //         toast.error('Something went Wrong');
+    //     }
 
-        setLoading(false);
+    //     setLoading(false);
 
+    // };
+
+
+
+    // ✅ 1. Guard against null ID before firing the PUT
+const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!credientialsID) {
+        toast.error('Credentials not loaded yet. Please wait and try again.');
+        return;
+    }
+
+    setLoading(true);
+
+    const passdata = {
+        stripe_publishable_key: key,
+        stripe_secret_key: secret,
+        stripe_webhook_key: webhooksecret,
     };
 
+    const response = await MakePut(`api/secrets/${credientialsID}`, passdata, token);
 
+    if (response) {
+        toast.success(response?.message);
+        setisedit(false);
+        fetching(token);
+    } else {
+        toast.error('Something went Wrong');
+    }
+
+    setLoading(false);
+};
 
     return (
         <div className="flex justify-center items-center">
@@ -156,7 +186,8 @@ export default function SiteSettings() {
                             {/* Update Button */}
                             <div className="w-full flex justify-end">
                                 <button
-                                    type="submit"
+                                    type="submit" 
+                                    disabled={isLoading || fetchloading} 
                                     className="w-fit px-3 bg-sky-400 text-white py-2 rounded-lg hover:bg-sky-600 transition flex items-center justify-center gap-2 cursor-pointer"
                                 >
 
@@ -166,7 +197,7 @@ export default function SiteSettings() {
                                     }
 
                                     {
-                                        isLoading ? 'Saveing...' : 'Save Changes'
+                                        isLoading ? 'Saving...' : 'Save Changes'
                                     }
                                 </button>
                             </div>

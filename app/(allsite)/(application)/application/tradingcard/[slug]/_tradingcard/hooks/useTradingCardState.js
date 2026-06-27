@@ -367,7 +367,6 @@ export function useTradingCardState() {
     }, [customizationStorageKey, templateConfig, selectedPackage, packageConfig.designs]);
 
     const hanldeInputUpdater = useCallback(() => {
-        console.log("[DEBUG] hanldeInputUpdater fired, workingcard:", workingcard, "getBaseTradingDone:", getBaseTradingDone.current);
 
         if (workingcard == 'front') {
             setcardti('Title');
@@ -607,8 +606,6 @@ export function useTradingCardState() {
             });
             const backPreview = backCanvas.toDataURL("image/png");
 
-            console.log('backPreview:', backPreview?.substring(0, 50));
-
             const FinalProduct = [];
 
             for (const slot of slots) {
@@ -655,18 +652,13 @@ export function useTradingCardState() {
                 bfor: "trading",
             }]);
 
-            console.log('FinalProduct here:', JSON.stringify(FinalProduct, null, 2));
             await new Promise(r => setTimeout(r, 5000));
 
             // addToCart(product);
             // router.push("/my-cart/checkout");
             addToCart(product);
             const { saveCartImagesToIDB } = await import("@/store/useCartStore");
-            console.log("Saving to IDB, product.id:", product.id);
-            console.log("FinalProduct count:", product.FinalProduct?.length);
-            console.log("First image prefix:", product.FinalProduct?.[0]?.image?.substring(0, 50));
             await saveCartImagesToIDB([product]);
-            console.log("IDB save complete");
             router.push("/my-cart/checkout");
 
         } catch (err) {
@@ -737,13 +729,6 @@ export function useTradingCardState() {
             });
 
             const previewDataUrl = capturedCanvas.toDataURL("image/png");
-
-            console.log("previewDataUrl preview:", previewDataUrl?.substring(0, 50));
-
-            // const a = document.createElement('a');
-            // a.href = previewDataUrl;
-            // a.download = 'sidebar-capture.png';
-            // a.click();
 
             const snapshot = {
                 baseFront, uploads, texts,

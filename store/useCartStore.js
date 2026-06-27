@@ -69,9 +69,7 @@ export const saveCartImagesToIDB = async (cartItems) => {
     if (!item?.id || !Array.isArray(item?.FinalProduct)) continue;
     if (item?.customization_mode !== "trading") continue;
     const key = idbCartKey(item.id);
-    console.log("IDB saving key:", key, "images:", item.FinalProduct.length);
     const result = await idbPut(key, { FinalProduct: item.FinalProduct });
-    console.log("IDB put result:", result);
   }
 };
 
@@ -83,11 +81,8 @@ export const restoreCartImagesFromIDB = async (cartItems) => {
       if (item?.customization_mode !== "trading") return item;
       try {
         const key = idbCartKey(item.id);
-        console.log("IDB restoring key:", key, "item.id:", item.id);
         const saved = await idbGet(key);
-        console.log("IDB get result:", saved);
         if (saved?.FinalProduct) {
-          console.log("Restored images count:", saved.FinalProduct.length);
           return { ...item, FinalProduct: saved.FinalProduct };
         } else {
           console.warn("No FinalProduct found in IDB for key:", key);
@@ -117,7 +112,7 @@ export const saveDeckCartImagesToIDB = async (cartItems) => {
     if (!item?.id) continue;
     if (item?.customization_mode !== "deck") continue;
     const key = idbDeckCartKey(item.id);
-    console.log("IDB saving deck key:", key);
+
     await idbPut(key, {
       FinalProduct:       item.FinalProduct       ?? [],
       FinalProductImages: item.FinalProductImages ?? [],
@@ -138,10 +133,9 @@ export const restoreDeckCartImagesFromIDB = async (cartItems) => {
       if (item?.customization_mode !== "deck") return item;
       try {
         const key = idbDeckCartKey(item.id);
-        console.log("IDB restoring deck key:", key);
+
         const saved = await idbGet(key);
         if (saved?.FinalProduct?.length) {
-          console.log("Restored deck FinalProduct count:", saved.FinalProduct.length);
           return {
             ...item,
             FinalProduct:       saved.FinalProduct,

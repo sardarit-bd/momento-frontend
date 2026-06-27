@@ -1,4 +1,3 @@
-
 'use client'
 
 import SpinLoader from "@/app/componnent/SpingLoader";
@@ -9,8 +8,6 @@ import logingandsignupmakepost from "@/utilis/requestrespose/logingandsignupmake
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast, ToastContainer } from "react-toastify";
-
-
 
 const { useState, use } = require("react");
 
@@ -24,9 +21,6 @@ const CheckoutAuth = () => {
     const [password, setPassword] = useState("");
     const [name, setName] = useState('');
     const [res, setres] = useState(false);
-
-
-
 
     const handleLogin = async (e) => {
         e.preventDefault();
@@ -56,16 +50,10 @@ const CheckoutAuth = () => {
         } else {
             toast.warn("Required All Feilds");
         }
-
     };
-
-
-
-
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
 
         if (name && email && password) {
             setLoading(true);
@@ -81,116 +69,168 @@ const CheckoutAuth = () => {
         } else {
             alert("Required All Feilds");
         }
-
     };
 
-
-
-
-
     return (
-        <div>
+        /* 
+           Added: fixed inset-0, z-50, backdrop-blur-md, and bg-gray-900/50 
+           This locks it to the screen and blurs everything behind it 
+        */
+        <div className="fixed inset-0 z-50 flex justify-center items-center bg-gray-900/50 backdrop-blur-md p-4">
+            
+            <div className="w-full max-w-md mx-auto relative">
+                {state === 'login' ? (
+                    <div className="bg-white p-8 sm:p-10 rounded-2xl shadow-2xl border border-gray-100 w-full transition-all duration-300">
+                        <div className="text-center mb-8">
+                            <h2 className="text-3xl text-gray-900 font-extrabold tracking-tight">Sign In</h2>
+                            <p className="text-sm text-gray-500 mt-2">Log in to complete your checkout securely.</p>
+                        </div>
 
-            {
-                state === 'login' ? (
+                        <form onSubmit={handleLogin} className="space-y-5">
+                            
+                            {/* Email Input */}
+                            <div>
+                                <label htmlFor="login-email" className="block text-sm font-medium text-gray-700 mb-1">
+                                    Email
+                                </label>
+                                <input
+                                    id="login-email"
+                                    type="email"
+                                    placeholder="you@example.com"
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                    className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-transparent transition-all duration-300"
+                                />
+                            </div>
 
-                    <div className="bg-white p-6 rounded-lg shadow-md w-80 text-center">
-                        <h2 className="text-xl text-black font-bold mb-4">Sign IN</h2>
+                            {/* Password Input */}
+                            <div>
+                                <div className="flex justify-between items-center mb-1">
+                                    <label htmlFor="login-password" className="block text-sm font-medium text-gray-700">
+                                        Password
+                                    </label>
+                                    <Link href="/forgotpass" className="text-sm font-medium text-sky-500 hover:text-sky-600 hover:underline transition-colors">
+                                        Forgot Password?
+                                    </Link>
+                                </div>
+                                <input
+                                    id="login-password"
+                                    type="password"
+                                    placeholder="••••••••"
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-transparent transition-all duration-300"
+                                />
+                            </div>
 
-                        <form onSubmit={handleLogin} className="space-y-4 text-gray-600">
-                            <input
-                                type="email"
-                                placeholder="Email"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-md outline-none "
-                            />
-
-                            <input
-                                type="password"
-                                placeholder="Password"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-md outline-none "
-                            />
-
-
+                            {/* Submit Button */}
                             <button
                                 disabled={isLoading}
-                                className="w-full bg-sky-400 text-white font-semibold py-2 rounded-md hover:bg-sky-600 transition cursor-pointer flex items-center justify-center gap-2"
+                                className="w-full mt-4 bg-sky-400 text-white font-semibold py-3 rounded-xl shadow-md hover:bg-sky-500 hover:shadow-lg disabled:opacity-70 disabled:cursor-not-allowed transition-all duration-300 active:scale-[0.98] flex items-center justify-center gap-2"
                             >
-
-                                {
-                                    isLoading && <SpinLoader />
-                                }
-
-
-                                Login
+                                {isLoading && <SpinLoader />}
+                                {isLoading ? "Signing in..." : "Sign In"}
                             </button>
                         </form>
 
-                        <Link href="/forgotpass" className="block mt-3 text-sm text-gray-600 hover:underline">
-                            Forget Password
-                        </Link>
-
-                        <span className="flex text-gray-600 items-center gap-1 pt-2 justify-center">Did not have an account ? <span onClick={() => setstate('signup')} className="text-sm text-gray-600 curosr-pointer hover:underline text-sky-500">
-                            sign Up
-                        </span></span>
+                        {/* Toggle to Sign Up */}
+                        <div className="mt-8 text-center">
+                            <span className="text-sm text-gray-600">
+                                Don't have an account?{' '}
+                                <button 
+                                    type="button"
+                                    onClick={() => setstate('signup')} 
+                                    className="font-semibold text-sky-500 hover:text-sky-600 hover:underline transition-colors cursor-pointer focus:outline-none"
+                                >
+                                    Sign Up
+                                </button>
+                            </span>
+                        </div>
                     </div>
-
-
                 ) : (
+                    <div className="bg-white p-8 sm:p-10 rounded-2xl shadow-2xl border border-gray-100 w-full transition-all duration-300">
+                        <div className="text-center mb-8">
+                            <h2 className="text-3xl text-gray-900 font-extrabold tracking-tight">Sign Up</h2>
+                            <p className="text-sm text-gray-500 mt-2">Create an account for a faster checkout.</p>
+                        </div>
 
-                    <div className="bg-white p-6 rounded-lg shadow-md w-80 text-center">
-                        <h2 className="text-xl text-black font-bold mb-4">Sign Up</h2>
+                        <form onSubmit={handleSubmit} className="space-y-5">
+                            
+                            {/* Name Input */}
+                            <div>
+                                <label htmlFor="signup-name" className="block text-sm font-medium text-gray-700 mb-1">
+                                    Full Name
+                                </label>
+                                <input
+                                    id="signup-name"
+                                    type="text"
+                                    placeholder="John Doe"
+                                    value={name}
+                                    onChange={(e) => setName(e.target.value)}
+                                    className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-transparent transition-all duration-300"
+                                />
+                            </div>
 
-                        <form onSubmit={handleSubmit} className="space-y-4 text-gray-600">
-                            <input
-                                type="text"
-                                placeholder="Name"
-                                value={name}
-                                onChange={(e) => setName(e.target.value)}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-md outline-none "
-                            />
-                            <input
-                                type="email"
-                                placeholder="Email"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-md outline-none "
-                            />
+                            {/* Email Input */}
+                            <div>
+                                <label htmlFor="signup-email" className="block text-sm font-medium text-gray-700 mb-1">
+                                    Email
+                                </label>
+                                <input
+                                    id="signup-email"
+                                    type="email"
+                                    placeholder="you@example.com"
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                    className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-transparent transition-all duration-300"
+                                />
+                            </div>
 
-                            <input
-                                type="password"
-                                placeholder="Password"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-md outline-none "
-                            />
+                            {/* Password Input */}
+                            <div>
+                                <label htmlFor="signup-password" className="block text-sm font-medium text-gray-700 mb-1">
+                                    Password
+                                </label>
+                                <input
+                                    id="signup-password"
+                                    type="password"
+                                    placeholder="••••••••"
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-transparent transition-all duration-300"
+                                />
+                            </div>
 
+                            {/* Submit Button */}
                             <button
                                 disabled={isLoading}
-                                className="w-full bg-sky-400 text-white font-semibold py-2 rounded-md hover:bg-sky-600 transition cursor-pointer flex items-center justify-center gap-2"
+                                className="w-full mt-4 bg-sky-400 text-white font-semibold py-3 rounded-xl shadow-md hover:bg-sky-500 hover:shadow-lg disabled:opacity-70 disabled:cursor-not-allowed transition-all duration-300 active:scale-[0.98] flex items-center justify-center gap-2"
                             >
-                                {
-                                    isLoading && <SpinLoader />
-                                }
-
-                                Sign Up
+                                {isLoading && <SpinLoader />}
+                                {isLoading ? "Signing up..." : "Sign Up"}
                             </button>
                         </form>
 
-                        <span className="flex items-center text-gray-500 gap-1 pt-2 justify-center">Already have an Account ? <span onClick={() => setstate('login')} className="text-sm hover:underline curosr-pointer text-sky-500">
-                            sign In
-                        </span></span>
+                        {/* Toggle to Sign In */}
+                        <div className="mt-8 text-center">
+                            <span className="text-sm text-gray-600">
+                                Already have an account?{' '}
+                                <button 
+                                    type="button"
+                                    onClick={() => setstate('login')} 
+                                    className="font-semibold text-sky-500 hover:text-sky-600 hover:underline transition-colors cursor-pointer focus:outline-none"
+                                >
+                                    Sign In
+                                </button>
+                            </span>
+                        </div>
                     </div>
-                )
-            }
+                )}
+            </div>
+            
             <ToastContainer position="bottom-right" />
         </div>
-    )
-}
-
-
+    );
+};
 
 export default CheckoutAuth;

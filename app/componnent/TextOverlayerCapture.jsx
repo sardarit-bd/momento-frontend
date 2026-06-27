@@ -111,11 +111,6 @@ const GradientTitle = ({ cardti }) => {
     useEffect(() => {
         const canvas = canvasRef.current;
 
-        document.fonts.ready.then(() => {
-            console.log("All loaded fonts:");
-            document.fonts.forEach(f => console.log(f.family, f.weight, f.status));
-        });
-
         if (!canvas) return;
 
         const W = 390;

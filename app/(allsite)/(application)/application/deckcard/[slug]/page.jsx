@@ -84,8 +84,6 @@ const ProductCustomizer = () => {
 
     useEffect(() => {
         const fetchProduct = async () => {
-            console.log('savedCards raw:', localStorage.getItem(customCardsStorageKey));
-            console.log('legacy savedCards:', localStorage.getItem("customCards"));
             const res = await MakeGet(`api/shop/${slug}`);
 
             if (!res.success) {
@@ -385,9 +383,7 @@ const ProductCustomizer = () => {
 
         try {
             compositeImages = await Promise.all(cards.map(card => compositeCardToBase64(card)));
-            console.log('Composite done:', compositeImages.length);
         } catch (err) {
-            console.error('Composite failed:', err);
             setspinloading(false);
             return;
         }
@@ -431,7 +427,6 @@ const ProductCustomizer = () => {
         try {
             const { saveDeckCartImagesToIDB } = await import("@/store/useCartStore");
             await saveDeckCartImagesToIDB([cartItem]);
-            console.log('Deck images saved to IDB');
         } catch (err) {
             // Non-fatal: cart will still work if navigated directly
             console.warn('Failed to save deck images to IDB:', err);

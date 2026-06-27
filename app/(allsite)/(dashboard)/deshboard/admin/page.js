@@ -46,8 +46,6 @@ export default function AdminDashboard() {
                 const res = await fetch("/api/admin-dashboard");
                 const data = await res.json();
 
-                console.log(data);
-
                 setStats({
                     totalUsers: data.totalUsers,
                     totalOrders: data.totalOrders,
@@ -60,7 +58,6 @@ export default function AdminDashboard() {
                 ]);
 
             } catch (error) {
-
                 console.error("Error fetching dashboard data:", error);
             } finally {
                 setLoading(false);

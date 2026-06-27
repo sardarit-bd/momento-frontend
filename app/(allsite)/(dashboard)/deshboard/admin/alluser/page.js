@@ -8,10 +8,7 @@ import { useCallback, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
 const AllUser = () => {
-
-
-
-
+    
     const [loading, setloading] = useState(false);
     const [AllUser, setAlluser] = useState(null);
     const token = getCookie();
@@ -75,8 +72,8 @@ const AllUser = () => {
                                                 <tr key={index} className="border-b border-gray-200 hover:bg-gray-50">
                                                     <td className="py-3 px-6">{index + 1}</td>
                                                     <td className="py-3 px-6 font-medium">{item?.name ? item?.name : "-"}</td>
-                                                    <td className="py-3 px-6">{item?.email}</td>
                                                     <td className="py-3 px-6">{item?.type}</td>
+                                                    <td className="py-3 px-6">{item?.email}</td>
                                                     <td className="py-3 px-6">{getDateFromTimestamp(item?.created_at
                                                     )}</td>
                                                 </tr>

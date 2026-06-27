@@ -16,22 +16,26 @@ export default function Testimonial() {
     const settings = {
         dots: true,
         infinite: true,
-        speed: 800, // Slightly faster, smoother transition
-        cssEase: "cubic-bezier(0.87, 0, 0.13, 1)", // Premium custom easing
+        speed: 800,
+        cssEase: "cubic-bezier(0.87, 0, 0.13, 1)",
         slidesToShow: 3,
         slidesToScroll: 1,
         autoplay: true,
-        autoplaySpeed: 4000, // Give users time to read
+        autoplaySpeed: 4000,
         arrows: false,
         pauseOnHover: true,
         responsive: [
             {
                 breakpoint: 1024,
-                settings: { slidesToShow: 2 },
+                settings: { slidesToShow: 2, slidesToScroll: 1 },
             },
             {
                 breakpoint: 768,
-                settings: { slidesToShow: 1 },
+                settings: { slidesToShow: 1, slidesToScroll: 1 }, // ✅ one card at a time
+            },
+            {
+                breakpoint: 480,
+                settings: { slidesToShow: 1, slidesToScroll: 1 }, // ✅ small phones too
             },
         ],
     };
@@ -68,7 +72,7 @@ export default function Testimonial() {
                 <div className="w-full pb-10">
                     <Slider {...settings} className="testimonial-slider">
                         {testimonials.map((t) => (
-                            <div key={t.id} className="p-3 md:p-4 h-full">
+                            <div key={t.id} className="px-2 h-full">
                                 <div className="bg-white rounded-3xl p-8 border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] transition-all duration-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] hover:-translate-y-1 h-full flex flex-col group relative">
                                     
                                     {/* Quote Icon Background */}

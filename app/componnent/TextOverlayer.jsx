@@ -156,8 +156,7 @@ const AttributeMetricHorizontal = ({
                 display: "flex",
                 alignItems: "center",
                 gap: "4px",
-                width: "60%",
-                flexShrink: 0,
+                flex: "0 0 55%",        // ← was width: "60%", flexShrink: 0
             }}
         >
             <img
@@ -170,7 +169,6 @@ const AttributeMetricHorizontal = ({
                     flexShrink: 0,
                 }}
             />
-
             <span
                 className={textClass}
                 style={{
@@ -189,15 +187,15 @@ const AttributeMetricHorizontal = ({
             </span>
         </div>
 
-        {/* Right Column */}
+        {/* Right Column — progress bar */}
         <div
             style={{
-                width: "90px",
+                flex: "1 1 0",          // ← was width: "90px", flexShrink: 0
+                minWidth: 0,
                 height: "8px",
                 borderRadius: "999px",
                 backgroundColor: trackColor,
                 overflow: "hidden",
-                flexShrink: 0,
             }}
         >
             <div
@@ -211,6 +209,7 @@ const AttributeMetricHorizontal = ({
         </div>
     </div>
 );
+
 
 export const FrontOne = ({ cardti, carddes, name, name2, name3, acarddate, labelone, labeltwo, labelthree, iconOne, iconTwo, iconThree }) => {
     const currentYear = new Date().getFullYear();
@@ -262,15 +261,14 @@ export const FrontOne = ({ cardti, carddes, name, name2, name3, acarddate, label
                 />
             </div>
 
-            <div className="absolute right-[10%] bottom-[16%] z-50 w-[115px] lg:w-[180px] text-right" style={{ backgroundColor: 'transparent', background: 'transparent' }}>
+            <div className="absolute right-[10%] bottom-[16%] z-50 w-[180px] text-right" style={{ backgroundColor: 'transparent', background: 'transparent' }}>
                 <span
                     id="card-title"
                     className="
                         block
                         w-full
                         text-right
-                        text-[30px]
-                        lg:text-4xl
+                        text-4xl
                         font-bold
                         leading-[0.9]
                         text-transparent
@@ -305,8 +303,13 @@ export const FrontTwo = ({ cardti, carddes, name, name2, name3, acarddate, label
             <span id="card-description" className="text-gray-50 text-[10px] lg:text-xs AileronFont tracking-wider font-thin absolute top-70 left-[24px] lg:top-108.5 lg:left-8 text-center w-[205px] lg:w-[320px] z-50">{carddes}</span>
 
             <div
-                className="absolute left-1/2 -translate-x-1/2 bottom-[13%] z-50 w-[170px] lg:w-[290px]"
-                style={{ backgroundColor: "transparent" }}
+                className="absolute bottom-[13%] z-50"
+                style={{
+                    backgroundColor: "transparent",
+                    left: "13%",
+                    right: "13%",
+                    width: "auto",
+                }}
             >
                 <AttributeMetricHorizontal
                     id="metric-row-1"
@@ -346,8 +349,7 @@ export const FrontTwo = ({ cardti, carddes, name, name2, name3, acarddate, label
                 w-full
                 bottom-[28%]
                 text-center
-                text-sm
-                lg:text-4xl
+                text-4xl
                 font-bold
                 leading-tight
                 whitespace-nowrap
@@ -372,9 +374,8 @@ export const FrontTwo = ({ cardti, carddes, name, name2, name3, acarddate, label
                     -translate-x-1/2
                     bottom-[4%]
                     text-center
-                    lg:font-extrabold
-                    text-[11px]
-                    lg:text-[0.9rem]
+                    font-extrabold
+                    text-[0.9rem]
                     tracking-tighter
                     leading-tight
                     FrontTwoCopy

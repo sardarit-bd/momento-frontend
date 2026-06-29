@@ -10,41 +10,19 @@ import { toast } from "react-toastify";
 import SpinLoader from "./SpingLoader";
 
 const Three = () => {
-
     const router = useRouter();
     const token = getCookie();
     const [isLoading, setLoading] = useState(false);
 
     const {
-        rander, setrander,
-        productType,
-        productName,
-        productPrice,
-        productDescription,
-        productShortDescription,
-        productofferPrice,
-        productCategory,
-        productTags,
-        productStatus,
-        productThumbnail,
-        productSingleImage,
-        productImages,
-        layerBaseCard,
-        layerSkinTone,
-        layerHair,
-        layerNose,
-        layerEyes,
-        layerMouth,
-        layerDress,
-        layerCrown,
-        layerBeard,
-        tredingFrontBase,
-        tredingBackBase
+        setrander, productType, productName, productPrice,
+        productDescription, productShortDescription, productofferPrice,
+        productCategory, productStatus, productThumbnail, productImages,
+        layerBaseCard, layerSkinTone, layerHair, layerNose, layerEyes,
+        layerMouth, layerDress, layerCrown, layerBeard,
+        tredingFrontBase, tredingBackBase,
     } = useProductUploadStore();
 
-
-
-    /************* add new Product functionality *************/
     const onConfirm = async (e) => {
         e.preventDefault();
         setLoading(true);
@@ -54,130 +32,94 @@ const Three = () => {
                 parsedCategory = typeof productCategory === "string"
                     ? JSON.parse(productCategory)
                     : (productCategory || {});
-            } catch (parseError) {
-                parsedCategory = {};
-            }
+            } catch { parsedCategory = {}; }
 
-            const categoryId = Number(parsedCategory?.id);
-            const price = Number(productPrice);
-            const offerPrice = productofferPrice ? Number(productofferPrice) : null;
-            const status = String(productStatus) === "true" ? 1 : 0;
+            const categoryId  = Number(parsedCategory?.id);
+            const price       = Number(productPrice);
+            const offerPrice  = productofferPrice ? Number(productofferPrice) : null;
+            const status      = String(productStatus) === "true" ? 1 : 0;
 
-            const productStateSimple = {
-                name: productName,
-                slug: null,
-                type: productType,
-                price,
-                status,
-                offer_price: offerPrice,
+            const base = {
+                name: productName, slug: null, type: productType,
+                price, status, offer_price: offerPrice,
                 category_id: categoryId,
                 short_description: productShortDescription,
                 description: productDescription,
-                image: productThumbnail,
-                images: productImages,
+                image: productThumbnail, images: productImages,
             };
 
-            // SENDS BASE64 AND FILENAME
             const flattenedBaseCards = layerBaseCard?.flatMap(group =>
                 group?.images?.map(imgObj => ({
-                    image: imgObj.base64,
-                    filename: imgObj.filename,
-                    card_type: group?.card_type,
-                    name: imgObj.name,
+                    image: imgObj.base64, filename: imgObj.filename,
+                    card_type: group?.card_type, name: imgObj.name,
                 }))
             ) ?? [];
 
-
-            const productStateCustomizable = {
-                name: productName,
-                slug: null,
-                type: productType,
-                price,
-                status,
-                offer_price: offerPrice,
-                category_id: categoryId,
-                short_description: productShortDescription,
-                description: productDescription,
-                image: productThumbnail,
-                images: productImages,
+            const payload = productType === "simple" ? base : {
+                ...base,
                 base_cards: flattenedBaseCards,
-                skin_tones: layerSkinTone,
-                hairs: layerHair,
-                noses: layerNose,
-                eyes: layerEyes,
-                mouths: layerMouth,
-                dresses: layerDress,
-                crowns: layerCrown,
-                custom_sets: layerBaseCard,
-                beards: layerBeard,
-                trading_fronts: tredingFrontBase,
-                trading_backs: tredingBackBase
+                skin_tones: layerSkinTone, hairs: layerHair,
+                noses: layerNose, eyes: layerEyes, mouths: layerMouth,
+                dresses: layerDress, crowns: layerCrown,
+                custom_sets: layerBaseCard, beards: layerBeard,
+                trading_fronts: tredingFrontBase, trading_backs: tredingBackBase,
             };
 
-            const payload = productType === "simple" ? productStateSimple : productStateCustomizable;
-            const payloadSizeInKB = (new Blob([JSON.stringify(payload)]).size / 1024).toFixed(2);
-            const clientValidation = {
-                name: Boolean(payload?.name),
-                type: Boolean(payload?.type),
-                price_is_number: Number.isFinite(payload?.price),
-                offer_price_is_number: payload?.offer_price === null || Number.isFinite(payload?.offer_price),
-                category_id_is_number: Number.isFinite(payload?.category_id),
-                image_exists: Boolean(payload?.image),
-                images_is_non_empty_array: Array.isArray(payload?.images) && payload?.images.length > 0
-            };
-
-            if (Object.values(clientValidation).includes(false)) {
-                toast.error("Validation failed. Check browser console for exact invalid fields.");
-                return;
-            }
-
-
-            // api/products
             const response = await MakePost(`api/cardproduct`, payload, token);
-
-
-
             if (response?.success) {
                 toast.success(response?.message);
-
-                setTimeout(() => {
-                    router.push('/deshboard/admin/allproducts');
-                }, 1000);
-
-
+                setTimeout(() => router.push('/deshboard/admin/allproducts'), 1000);
             } else {
-                console.error("[Card Product Debug] API error response", response);
-                console.error("[Card Product Debug] API error JSON", JSON.stringify(response?.error || {}, null, 2));
                 toast.error("Something went wrong");
             }
         } catch (error) {
-            console.error("Error fetching profile:", error);
+            console.error("Error:", error);
         } finally {
             setLoading(false);
         }
-    }
-
-    const handlePreview = (e) => {
-        e.preventDefault();
-        // Note: setShowPreview is not defined in this component, 
-        // this function will throw an error if called.
     };
 
+    const parsedCategory = (() => {
+        try { return JSON.parse(productCategory); } catch { return {}; }
+    })();
+
+    const ImageGrid = ({ images, getKey }) => (
+        <div className="flex flex-wrap gap-2">
+            {images.map((img, idx) => (
+                <Image
+                    key={idx}
+                    src={getKey ? getKey(img) : img}
+                    alt={`img-${idx}`}
+                    width={80} height={80}
+                    className="rounded-md border h-[60px] w-[60px] sm:w-[80px] sm:h-[80px] object-cover"
+                />
+            ))}
+        </div>
+    );
+
+    const Section = ({ title, children }) => (
+        <div className="bg-white border border-gray-100 rounded-xl shadow-sm p-4">
+            <h3 className="font-bold text-gray-800 mb-3">{title}</h3>
+            {children}
+        </div>
+    );
 
     return (
-        <div className="">
-            <div className="mb-7 items-center flex justify-between sticky top-[70px] bg-white py-4 pt-0">
-                <span className="text-2xl font-bold ">Product Preview</span>
-                <div className="flex justify-end gap-4 mt-6">
+        <div className="px-4 pb-10">
+
+            {/* ── Header ── */}
+            <div className="flex flex-col gap-2 sticky top-0 md:top-[70px] z-30 bg-white border-b border-gray-100 shadow-sm px-0 py-3 mb-6">
+                <span className="text-lg font-bold text-gray-800">Product Preview</span>
+                <div className="flex items-center gap-2">
                     <button
-                        onClick={() => { setrander(2) }}
-                        className="bg-sky-200 px-4 py-2 rounded-lg hover:bg-sky-300 transition cursor-pointer"
+                        onClick={() => setrander(2)}
+                        className="bg-sky-100 hover:bg-sky-200 text-sky-700 font-semibold text-xs px-3 py-2 rounded-lg transition cursor-pointer"
                     >
                         Back
                     </button>
                     <button
                         onClick={onConfirm}
-                        className="bg-sky-400 text-white px-4 py-2 rounded-lg hover:bg-sky-600 transition flex items-center gap-2 justify-center cursor-pointer"
+                        className="bg-sky-400 hover:bg-sky-500 text-white font-semibold text-xs px-3 py-2 rounded-lg transition flex items-center gap-2 cursor-pointer"
                     >
                         {isLoading && <SpinLoader />}
                         Confirm & Submit
@@ -185,328 +127,101 @@ const Three = () => {
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-                <div className="space-y-4 col-span-3">
-                    <p><strong>Name:</strong> {productName}</p>
-                    <p><strong>Type:</strong> {productType}</p>
-                    <p><strong>Price:</strong> ${productPrice}</p>
-                    <p><strong>Offer Price:</strong> ${productofferPrice}</p>
-                    <p><strong>Status:</strong> {productStatus === "true" ? "Published" : "Draft"}</p>
-                    <p><strong>Category:</strong> {JSON.parse(productCategory)?.name}</p>
-                    <p><strong>Short Description:</strong> {productShortDescription}</p>
-                    <p><strong>Description:</strong> {productDescription}</p>
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
 
+                {/* ── Details ── */}
+                <div className="col-span-1 md:col-span-3 space-y-4">
 
-                    <h3 className="font-bold mt-4 mb-2">Gallery Images</h3>
-                    {productImages?.length > 0 ? (
-                        <div className="flex flex-wrap gap-2">
-                            {/* USES img because it's a flat string */}
-                            {productImages.map((img, idx) => (
-                                <Image
-                                    key={idx}
-                                    src={img}
-                                    alt={`Gallery ${idx}`}
-                                    width={80}
-                                    height={80}
-                                    className="rounded-md border h-[60px] w-[80px]"
-                                />
+                    {/* Thumbnail on mobile */}
+                    <div className="block md:hidden">
+                        <Section title="Thumbnail">
+                            {productThumbnail ? (
+                                <Image src={productThumbnail} alt="Thumbnail" width={1000} height={1000}
+                                    className="w-full rounded-lg object-cover max-h-[220px]" />
+                            ) : <p className="text-gray-400 text-sm">No Thumbnail</p>}
+                        </Section>
+                    </div>
+
+                    <Section title="Product Info">
+                        {[
+                            { label: "Name",              value: productName },
+                            { label: "Type",              value: productType },
+                            { label: "Price",             value: `$${productPrice}` },
+                            { label: "Offer Price",       value: productofferPrice ? `$${productofferPrice}` : "—" },
+                            { label: "Status",            value: String(productStatus) === "true" ? "Published" : "Draft" },
+                            { label: "Category",          value: parsedCategory?.name },
+                            { label: "Short Description", value: productShortDescription },
+                            { label: "Description",       value: productDescription },
+                        ].map(({ label, value }) => (
+                            <div key={label} className="flex flex-col sm:flex-row sm:gap-2 py-1 border-b border-gray-50 last:border-0">
+                                <span className="font-semibold text-gray-700 text-sm min-w-[130px]">{label}:</span>
+                                <span className="text-gray-600 text-sm">{value ?? "—"}</span>
+                            </div>
+                        ))}
+                    </Section>
+
+                    <Section title="Gallery Images">
+                        {productImages?.length > 0
+                            ? <ImageGrid images={productImages} />
+                            : <p className="text-gray-400 text-sm">No gallery images</p>}
+                    </Section>
+
+                    {productType === "customizable" && (
+                        <>
+                            <Section title="Base Cards">
+                                {layerBaseCard?.length > 0
+                                    ? <ImageGrid images={layerBaseCard.flatMap(g => g?.images ?? [])} getKey={i => i.base64} />
+                                    : <p className="text-gray-400 text-sm">None</p>}
+                            </Section>
+                            {[
+                                { title: "Skin Tone",   data: layerSkinTone },
+                                { title: "Hair Layer",  data: layerHair },
+                                { title: "Nose Layer",  data: layerNose },
+                                { title: "Eyes Layer",  data: layerEyes },
+                                { title: "Mouth Layer", data: layerMouth },
+                                { title: "Dress Layer", data: layerDress },
+                                { title: "Crown Layer", data: layerCrown },
+                                { title: "Beard Layer", data: layerBeard },
+                            ].map(({ title, data }) => (
+                                <Section key={title} title={title}>
+                                    {data?.length > 0
+                                        ? <ImageGrid images={data} />
+                                        : <p className="text-gray-400 text-sm">None</p>}
+                                </Section>
                             ))}
-                        </div>
-                    ) : (
-                        <p>No Gallery Images</p>
+                        </>
                     )}
 
-
-
-                </div>
-
-                <div className="w-full col-span-1">
-
-
-                    <h3 className="font-bold mb-2">Thumbnail</h3>
-                    {productThumbnail ? (
-                        <Image
-                            src={productThumbnail}
-                            alt="Thumbnail"
-                            width={1000}
-                            height={1000}
-                            className="w-full rounded-md border border-gray-200 h-[150px] object-cover"
-                        />
-                    ) : (
-                        <p>No Thumbnail</p>
+                    {productType === "trading" && (
+                        <>
+                            <Section title="Trading Card Front Base">
+                                {tredingFrontBase?.length > 0
+                                    ? <ImageGrid images={tredingFrontBase} />
+                                    : <p className="text-gray-400 text-sm">None</p>}
+                            </Section>
+                            <Section title="Trading Card Back Base">
+                                {tredingBackBase?.length > 0
+                                    ? <ImageGrid images={tredingBackBase} />
+                                    : <p className="text-gray-400 text-sm">None</p>}
+                            </Section>
+                        </>
                     )}
-
-
                 </div>
 
-
-                {
-                    productType === "customizable" && (
-                        <>
-
-
-                            <div className="w-full col-span-4">
-                                <h3 className="font-bold mt-4 mb-2">Base Cards</h3>
-                                {layerBaseCard?.length > 0 ? (
-                                    <div className="flex flex-wrap gap-2">
-                                        {/* USES im.base64 because it's an object */}
-                                        {layerBaseCard.map((group) => (
-                                            group?.images?.map((im, idx) => {
-                                                return (
-                                                    <Image
-                                                        key={idx}
-                                                        src={im.base64}
-                                                        alt={`Gallery ${idx}`}
-                                                        width={80}
-                                                        height={80}
-                                                        className="rounded-md border h-[60px] w-[80px]"
-                                                    />
-                                                )
-                                            })
-                                        ))}
-                                    </div>
-                                ) : (
-                                    <p>No Gallery Images</p>
-                                )}
-                            </div>
-
-
-
-                            <div className="w-full col-span-4">
-                                <h3 className="font-bold mt-4 mb-2">Skin Tone</h3>
-                                {layerSkinTone?.length > 0 ? (
-                                    <div className="flex flex-wrap gap-2">
-                                        {/* USES img because it's a flat string */}
-                                        {layerSkinTone.map((img, idx) => (
-                                            <Image
-                                                key={idx}
-                                                src={img}
-                                                alt={`Gallery ${idx}`}
-                                                width={80}
-                                                height={80}
-                                                className="rounded-md border h-[60px] w-[80px]"
-                                            />
-                                        ))}
-                                    </div>
-                                ) : (
-                                    <p>No Gallery Images</p>
-                                )}
-                            </div>
-
-
-
-                            <div className="w-full col-span-4">
-                                <h3 className="font-bold mt-4 mb-2">Hair Layer</h3>
-                                {layerHair?.length > 0 ? (
-                                    <div className="flex flex-wrap gap-2">
-                                        {/* USES img because it's a flat string */}
-                                        {layerHair.map((img, idx) => (
-                                            <Image
-                                                key={idx}
-                                                src={img}
-                                                alt={`Gallery ${idx}`}
-                                                width={80}
-                                                height={80}
-                                                className="rounded-md border h-[60px] w-[80px]"
-                                            />
-                                        ))}
-                                    </div>
-                                ) : (
-                                    <p>No Gallery Images</p>
-                                )}
-                            </div>
-
-
-
-                            <div className="w-full col-span-4">
-                                <h3 className="font-bold mt-4 mb-2">Nose Layer</h3>
-                                {layerNose?.length > 0 ? (
-                                    <div className="flex flex-wrap gap-2">
-                                        {/* USES img because it's a flat string */}
-                                        {layerNose.map((img, idx) => (
-                                            <Image
-                                                key={idx}
-                                                src={img}
-                                                alt={`Gallery ${idx}`}
-                                                width={80}
-                                                height={80}
-                                                className="rounded-md border h-[60px] w-[80px]"
-                                            />
-                                        ))}
-                                    </div>
-                                ) : (
-                                    <p>No Gallery Images</p>
-                                )}
-                            </div>
-
-                            <div className="w-full col-span-4">
-                                <h3 className="font-bold mt-4 mb-2">Eyes Layer</h3>
-                                {layerEyes?.length > 0 ? (
-                                    <div className="flex flex-wrap gap-2">
-                                        {/* USES img because it's a flat string */}
-                                        {layerEyes.map((img, idx) => (
-                                            <Image
-                                                key={idx}
-                                                src={img}
-                                                alt={`Gallery ${idx}`}
-                                                width={80}
-                                                height={80}
-                                                className="rounded-md border h-[60px] w-[80px]"
-                                            />
-                                        ))}
-                                    </div>
-                                ) : (
-                                    <p>No Gallery Images</p>
-                                )}
-                            </div>
-
-                            <div className="w-full col-span-4">
-                                <h3 className="font-bold mt-4 mb-2">Mouth Layer</h3>
-                                {layerMouth?.length > 0 ? (
-                                    <div className="flex flex-wrap gap-2">
-                                        {/* USES img because it's a flat string */}
-                                        {layerMouth.map((img, idx) => (
-                                            <Image
-                                                key={idx}
-                                                src={img}
-                                                alt={`Gallery ${idx}`}
-                                                width={80}
-                                                height={80}
-                                                className="rounded-md border h-[60px] w-[80px]"
-                                            />
-                                        ))}
-                                    </div>
-                                ) : (
-                                    <p>No Gallery Images</p>
-                                )}
-                            </div>
-
-                            <div className="w-full col-span-4">
-                                <h3 className="font-bold mt-4 mb-2">Dress Layer</h3>
-                                {layerDress?.length > 0 ? (
-                                    <div className="flex flex-wrap gap-2">
-                                        {/* USES img because it's a flat string */}
-                                        {layerDress.map((img, idx) => (
-                                            <Image
-                                                key={idx}
-                                                src={img}
-                                                alt={`Gallery ${idx}`}
-                                                width={80}
-                                                height={80}
-                                                className="rounded-md border h-[60px] w-[80px]"
-                                            />
-                                        ))}
-                                    </div>
-                                ) : (
-                                    <p>No Gallery Images</p>
-                                )}
-                            </div>
-
-                            <div className="w-full col-span-4">
-                                <h3 className="font-bold mt-4 mb-2">Crown Layer</h3>
-                                {layerCrown?.length > 0 ? (
-                                    <div className="flex flex-wrap gap-2">
-                                        {/* USES img because it's a flat string */}
-                                        {layerCrown.map((img, idx) => (
-                                            <Image
-                                                key={idx}
-                                                src={img}
-                                                alt={`Gallery ${idx}`}
-                                                width={80}
-                                                height={80}
-                                                className="rounded-md border h-[60px] w-[80px]"
-                                            />
-                                        ))}
-                                    </div>
-                                ) : (
-                                    <p>No Gallery Images</p>
-                                )}
-                            </div>
-
-                            <div className="w-full col-span-4">
-                                <h3 className="font-bold mt-4 mb-2">Beard Layer</h3>
-                                {/* FIX: Changed layerHair?.length to layerBeard?.length */}
-                                {layerBeard?.length > 0 ? (
-                                    <div className="flex flex-wrap gap-2">
-                                        {/* USES img because it's a flat string */}
-                                        {layerBeard.map((img, idx) => (
-                                            <Image
-                                                key={idx}
-                                                src={img}
-                                                alt={`Gallery ${idx}`}
-                                                width={80}
-                                                height={80}
-                                                className="rounded-md border h-[60px] w-[80px]"
-                                            />
-                                        ))}
-                                    </div>
-                                ) : (
-                                    <p>No Gallery Images</p>
-                                )}
-                            </div>
-
-
-
-                        </>
-                    )
-                }
-
-
-
-                {
-                    productType === "trading" && (
-                        <>
-
-                            <div className="w-full col-span-4">
-                                <h3 className="font-bold mt-4 mb-2">Treding Card Front Base Card</h3>
-                                {tredingFrontBase?.length > 0 ? (
-                                    <div className="flex flex-wrap gap-2">
-                                        {/* USES img because it's a flat string */}
-                                        {tredingFrontBase.map((img, idx) => (
-                                            <Image
-                                                key={idx}
-                                                src={img}
-                                                alt={`Gallery ${idx}`}
-                                                width={80}
-                                                height={80}
-                                                className="rounded-md border h-[60px] w-[80px]"
-                                            />
-                                        ))}
-                                    </div>
-                                ) : (
-                                    <p>No Gallery Images</p>
-                                )}
-                            </div>
-
-                            <div className="w-full col-span-4">
-                                <h3 className="font-bold mt-4 mb-2">Treding Card Back Base Card</h3>
-                                {tredingBackBase?.length > 0 ? (
-                                    <div className="flex flex-wrap gap-2">
-                                        {/* USES img because it's a flat string */}
-                                        {tredingBackBase.map((img, idx) => (
-                                            <Image
-                                                key={idx}
-                                                src={img}
-                                                alt={`Gallery ${idx}`}
-                                                width={80}
-                                                height={80}
-                                                className="rounded-md border h-[60px] w-[80px]"
-                                            />
-                                        ))}
-                                    </div>
-                                ) : (
-                                    <p>No Gallery Images</p>
-                                )}
-                            </div>
-
-                        </>
-                    )
-                }
-
-
+                {/* ── Thumbnail desktop ── */}
+                <div className="hidden md:block col-span-1">
+                    <div className="sticky top-[140px]">
+                        <Section title="Thumbnail">
+                            {productThumbnail ? (
+                                <Image src={productThumbnail} alt="Thumbnail" width={1000} height={1000}
+                                    className="w-full rounded-lg object-cover" />
+                            ) : <p className="text-gray-400 text-sm">No Thumbnail</p>}
+                        </Section>
+                    </div>
+                </div>
             </div>
         </div>
-    )
-}
+    );
+};
 
 export default Three;

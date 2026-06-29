@@ -13,13 +13,15 @@ import { useEffect, useRef, useState } from "react";
 import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
 import SideController from "./SideController";
 
-const PEEK_HEIGHT = 80;   // px — just the handle + card label
-const HALF_RATIO  = 0.48; // 48 vh
-const FULL_RATIO  = 0.90; // 90 vh
 
-const snapTo = (vh) => {
-    if (vh < 0.28) return "peek";
-    if (vh < 0.70) return "half";
+const PEEK_HEIGHT = 80;
+const NAV_HEIGHT  = 68;
+const HALF_RATIO  = 0.48;
+
+
+const snapTo = (ratio) => {
+    if (ratio < 0.15) return "peek";
+    if (ratio < 0.70) return "half";
     return "full";
 };
 
@@ -38,7 +40,7 @@ export default function MobileCustomizerSheet({
     doneloading,
     doneButtonLabel,
 }) {
-    const [snap, setSnap] = useState("peek"); // "peek" | "half" | "full"
+    const [snap, setSnap] = useState("half"); // "peek" | "half" | "full"
     const sheetRef  = useRef(null);
     const dragRef   = useRef({ startY: 0, startH: 0, dragging: false });
     const contentRef = useRef(null);
@@ -47,10 +49,11 @@ export default function MobileCustomizerSheet({
     // Derived height
     // ------------------------------------------------------------------
     const vh = typeof window !== "undefined" ? window.innerHeight : 800;
+
     const HEIGHT = {
         peek: PEEK_HEIGHT,
         half: Math.round(vh * HALF_RATIO),
-        full: Math.round(vh * FULL_RATIO),
+        full: vh - NAV_HEIGHT, 
     };
 
     // ------------------------------------------------------------------
@@ -67,7 +70,7 @@ export default function MobileCustomizerSheet({
     const onDragMove = (clientY) => {
         if (!dragRef.current.dragging || !sheetRef.current) return;
         const delta = dragRef.current.startY - clientY;
-        const newH  = Math.max(PEEK_HEIGHT, Math.min(HEIGHT.full, dragRef.current.startH + delta));
+        const newH = Math.max(PEEK_HEIGHT, Math.min(vh - NAV_HEIGHT, dragRef.current.startH + delta));
         sheetRef.current.style.height = `${newH}px`;
     };
 
@@ -78,7 +81,8 @@ export default function MobileCustomizerSheet({
         const newH    = dragRef.current.startH + delta;
         const ratio   = newH / vh;
         const newSnap = snapTo(ratio);
-        setSnap(newSnap);
+        // Never go below peek — snap back to peek at minimum
+        setSnap(newSnap === "peek" ? "peek" : newSnap);
         if (sheetRef.current) sheetRef.current.style.height = "";
     };
 
@@ -114,7 +118,12 @@ export default function MobileCustomizerSheet({
         /* Only visible below xl breakpoint */
         <div
             className="xl:hidden fixed inset-x-0 bottom-0 z-50"
-            style={{ height: HEIGHT[snap], transition: dragRef.current.dragging ? "none" : "height 0.32s cubic-bezier(0.32,0.72,0,1)" }}
+            style={{
+                height: HEIGHT[snap],
+                maxHeight: `calc(100dvh - ${NAV_HEIGHT}px)`,
+                minHeight: PEEK_HEIGHT,
+                transition: dragRef.current.dragging ? "none" : "height 0.32s cubic-bezier(0.32,0.72,0,1)"
+            }}
             ref={sheetRef}
         >
             {/* Backdrop — subtle, only when open */}

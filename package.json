@@ -12,6 +12,8 @@
     "apexcharts": "^5.3.5",
     "country-list": "^2.4.1",
     "dom-to-image-more": "^3.7.2",
+    "embla-carousel-autoplay": "^8.6.0",
+    "embla-carousel-react": "^8.6.0",
     "html-to-image": "^1.11.13",
     "html2canvas": "^1.4.1",
     "jose": "^6.1.0",

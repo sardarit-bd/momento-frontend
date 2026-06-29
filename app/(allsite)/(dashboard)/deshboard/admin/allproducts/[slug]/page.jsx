@@ -13,435 +13,236 @@ import { FaArrowLeft } from "react-icons/fa6";
 import { MdDelete } from "react-icons/md";
 import { toast, ToastContainer } from "react-toastify";
 
-
-
 const SingleProduct = () => {
-
-
-
     const { slug } = useParams();
     const router = useRouter();
     const token = getCookie();
     const [fetchloading, setfetchloading] = useState(true);
-    const [isedit, setisedit] = useState(false);
-    const [name, setname] = useState('');
-    const [image, setimage] = useState('');
-    const [des, setdes] = useState('');
     const [data, setdata] = useState(null);
-
-
-
 
     const fetching = useCallback(async (slug, token) => {
         try {
             const response = await MakeGet(`api/cardproduct/${slug}`, token);
-
             setdata(response?.data);
-
             setfetchloading(false);
         } catch (error) {
-            console.error("Error fetching All Products:", error);
+            console.error("Error fetching product:", error);
             setfetchloading(false);
         }
     }, [slug, token]);
 
-
-    // Simulate fetching user data
     useEffect(() => {
         fetching(slug, token);
     }, []);
 
-
-    /************** handle profile update function here` ******************/
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-
-        setLoading(true);
-
-        const passdata = {
-            name,
-            description: des,
-            image,
-        }
-
-
-        const response = await MakePost(`api/categories`, passdata, token);
-
-        if (response?.success) {
-            toast.success(response?.message);
-            setname('');
-            setimage('');
-            setdes('');
-            fetching(slug, token);
-        } else {
-            toast.error('Something went Wrong');
-        }
-
-        setLoading(false);
-
-    };
-
-
-
-    /*************** handle delete  **************/
     const handleDelect = async (e, id) => {
-
         e.preventDefault();
-
         try {
             setfetchloading(true);
             const response = await MakeDelete(`api/products/${id}`, token);
-
-
             if (response?.success) {
                 router.push('/deshboard/admin/allproducts');
                 toast.success(response?.message);
             } else {
                 toast.error("Something Went Wrong");
             }
-
             setfetchloading(false);
         } catch (error) {
-            console.error("Error fetching profile:", error);
+            console.error("Error deleting product:", error);
             setfetchloading(false);
         }
-    }
-
-
+    };
 
     const handleStatusUpdater = async (e, id, status) => {
-
-
         e.preventDefault();
-
-
         try {
             setfetchloading(true);
             const response = await MakePost(`api/updateproduct`, {
-                id: id,
-                status: status ? 0 : 1
+                id,
+                status: status ? 0 : 1,
             }, token);
-  
             if (response?.success) {
                 toast.success(response?.message);
                 fetching(slug, token);
             } else {
                 toast.error("Something Went Wrong");
             }
-
             setfetchloading(false);
         } catch (error) {
-            console.error("Error fetching profile:", error);
+            console.error("Error updating status:", error);
             setfetchloading(false);
         }
-    }
+    };
 
+    if (fetchloading) return <SingleProductSkeleton />;
 
-
-    if (fetchloading) return <SingleProductSkeleton />
-
+    const layerSections = [
+        { label: "Base Cards",  items: data?.customizations?.custom_sets },
+        { label: "Skin Tone",   items: data?.customizations?.skin_tones },
+        { label: "Hair Layer",  items: data?.customizations?.hairs },
+        { label: "Nose Layer",  items: data?.customizations?.noses },
+        { label: "Eyes Layer",  items: data?.customizations?.eyes },
+        { label: "Mouth Layer", items: data?.customizations?.mouths },
+        { label: "Dress Layer", items: data?.customizations?.dresses },
+        { label: "Crown Layer", items: data?.customizations?.crowns },
+        { label: "Beard Layer", items: data?.customizations?.beards },
+    ];
 
     return (
-        <div className="">
-            <div className="mb-7 items-center flex flex-col md:flex-row justify-between sticky top-[-200px] md:top-[70px] bg-white py-4 pt-0">
-                <span className="text-2xl font-bold ">Product Overview</span>
-                <div className="flex flex-col md:flex-row justify-end gap-4 mt-6">
+        <div className="pb-10">
 
+            {/* ── Header ── */}
+            <div className="sticky top-0 md:top-[70px] z-30 bg-white border-b border-gray-100 shadow-sm px-4 py-3 mb-6">
+                <div className="flex flex-col gap-2">
+                    <span className="text-lg font-bold text-gray-800">Product Overview</span>
 
+                    {/* Action buttons */}
+                    <div className="flex items-center gap-2">
+                        <Link
+                            href="/deshboard/admin/allproducts"
+                            className="flex items-center gap-1 bg-sky-100 hover:bg-sky-200 text-sky-700 font-semibold text-xs px-3 py-2 rounded-lg transition"
+                        >
+                            <FaArrowLeft className="text-xs" />
+                            <span className="hidden sm:inline">Back</span>
+                        </Link>
 
-                    <Link href={'/deshboard/admin/allproducts'}
-                        className="bg-sky-200 px-4 py-2 rounded-lg hover:bg-sky-300 transition cursor-pointer flex items-center gap-1 justify-center"
-                    >
-                        <FaArrowLeft />
-                        Back
-                    </Link>
-                    <button onClick={(e) => { handleStatusUpdater(e, data?.id, data?.status) }} className="bg-blue-900 px-2 text-white rounded-md cursor-pointer">Mark as {data?.status ? "Draft" : "Published"}</button>
-                    <button
-                        onClick={(e) => { handleDelect(e, data?.id) }}
-                        className="bg-red-300 text-black px-4 py-2 rounded-lg hover:bg-red-400 transition flex items-center gap-2 justify-center cursor-pointer flex items-center gap-0 justify-center"
-                    >
+                        <button
+                            onClick={(e) => handleStatusUpdater(e, data?.id, data?.status)}
+                            className="bg-blue-900 hover:bg-blue-800 text-white font-semibold text-xs px-3 py-2 rounded-lg transition cursor-pointer whitespace-nowrap"
+                        >
+                            {data?.status ? "Draft" : "Publish"}
+                        </button>
 
-                        Delete
-                        <MdDelete className="text-lg" />
-                    </button>
+                        <button
+                            onClick={(e) => handleDelect(e, data?.id)}
+                            className="flex items-center gap-1 bg-red-100 hover:bg-red-200 text-red-600 font-semibold text-xs px-3 py-2 rounded-lg transition cursor-pointer"
+                        >
+                            <MdDelete className="text-sm" />
+                            <span className="hidden sm:inline">Delete</span>
+                        </button>
+                    </div>
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-                <div className="space-y-4 col-span-3">
-                    <p><strong>Name:</strong> {data?.name}</p>
-                    <p className="capitalize"><strong>Type:</strong> {data?.type}</p>
-                    <p><strong>Price:</strong> ${data?.price}</p>
-                    <p><strong>Offer Price:</strong> ${data?.offer_price}</p>
-                    <p><strong>Status:</strong> {data?.status ? "Published" : "Draft"}</p>
-                    <p><strong>Category:</strong> {data?.category?.name}</p>
-                    <p><strong>Short Description:</strong> {data?.short_description}</p>
-                    <p><strong>Description:</strong> {data?.description}</p>
+            <div className="px-4">
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
 
+                    {/* ── Left: Details ── */}
+                    <div className="col-span-1 md:col-span-3 space-y-3">
 
-                    <h3 className="font-bold mt-4 mb-2">Gallery Images</h3>
-                    {data?.gallery_images?.length > 0 ? (
-                        <div className="flex flex-wrap gap-2">
-                            {data?.gallery_images?.map((img, idx) => (
+                        {/* Thumbnail — show on mobile at top, hidden on md+ (shown in sidebar) */}
+                        <div className="block md:hidden rounded-xl overflow-hidden border border-gray-100 shadow-sm mb-4">
+                            {data?.image ? (
                                 <Image
-                                    key={idx}
-                                    src={img?.url}
-                                    alt={`Gallery ${idx}`}
-                                    width={80}
-                                    height={80}
-                                    className="rounded-md bg-gray-200"
+                                    src={data?.image}
+                                    alt="Thumbnail"
+                                    width={800}
+                                    height={800}
+                                    className="w-full object-cover"
                                 />
+                            ) : (
+                                <div className="w-full h-40 bg-gray-100 flex items-center justify-center text-gray-400 text-sm">
+                                    No Thumbnail
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Info card */}
+                        <div className="bg-white border border-gray-100 rounded-xl shadow-sm p-4 space-y-2.5">
+                            {[
+                                { label: "Name",              value: data?.name },
+                                { label: "Type",              value: data?.type,                    capitalize: true },
+                                { label: "Price",             value: `$${data?.price}` },
+                                { label: "Offer Price",       value: data?.offer_price ? `$${data?.offer_price}` : "—" },
+                                { label: "Status",            value: data?.status ? "Published" : "Draft" },
+                                { label: "Category",          value: data?.category?.name },
+                                { label: "Short Description", value: data?.short_description },
+                                { label: "Description",       value: data?.description },
+                            ].map(({ label, value, capitalize }) => (
+                                <div key={label} className="flex flex-col sm:flex-row sm:gap-2">
+                                    <span className="font-semibold text-gray-700 text-sm min-w-[130px]">{label}:</span>
+                                    <span className={`text-gray-600 text-sm ${capitalize ? "capitalize" : ""}`}>
+                                        {value ?? "—"}
+                                    </span>
+                                </div>
                             ))}
                         </div>
-                    ) : (
-                        <p>No Gallery Images</p>
-                    )}
 
-
-
-                    {
-                        data?.type == 'customizable' && (
-
-                            <>
-
-
-                                <div className="w-full col-span-4">
-                                    <h3 className="font-bold mt-4 mb-2">Base Cards</h3>
-                                    {data?.customizations?.custom_sets?.length > 0 ? (
-                                        <div className="flex flex-wrap gap-2">
-                                            {data?.customizations?.custom_sets.map((img, idx) => (
-                                                <Image
-                                                    key={idx}
-                                                    src={img?.image}
-                                                    alt={`Gallery ${idx}`}
-                                                    width={80}
-                                                    height={80}
-                                                    className="rounded-md w-[80px]"
-                                                />
-                                            ))}
-                                        </div>
-                                    ) : (
-                                        <p>No Gallery Images</p>
-                                    )}
+                        {/* Gallery Images */}
+                        <div className="bg-white border border-gray-100 rounded-xl shadow-sm p-4">
+                            <h3 className="font-bold text-gray-800 mb-3">Gallery Images</h3>
+                            {data?.gallery_images?.length > 0 ? (
+                                <div className="flex flex-wrap gap-2">
+                                    {data.gallery_images.map((img, idx) => (
+                                        <Image
+                                            key={idx}
+                                            src={img?.url}
+                                            alt={`Gallery ${idx}`}
+                                            width={80}
+                                            height={80}
+                                            className="rounded-lg object-cover w-16 h-16 sm:w-20 sm:h-20 border border-gray-100"
+                                        />
+                                    ))}
                                 </div>
+                            ) : (
+                                <p className="text-gray-400 text-sm">No gallery images</p>
+                            )}
+                        </div>
 
+                        {/* Customization layers — only for customizable type */}
+                        {data?.type === "customizable" && (
+                            <div className="space-y-4">
+                                {layerSections.map(({ label, items }) => (
+                                    <div key={label} className="bg-white border border-gray-100 rounded-xl shadow-sm p-4">
+                                        <h3 className="font-bold text-gray-800 mb-3">{label}</h3>
+                                        {items?.length > 0 ? (
+                                            <div className="flex flex-wrap gap-2">
+                                                {items.map((img, idx) => (
+                                                    <Image
+                                                        key={idx}
+                                                        src={img?.image}
+                                                        alt={`${label} ${idx}`}
+                                                        width={80}
+                                                        height={80}
+                                                        className="rounded-lg object-cover w-16 h-16 sm:w-20 sm:h-20 border border-gray-100"
+                                                    />
+                                                ))}
+                                            </div>
+                                        ) : (
+                                            <p className="text-gray-400 text-sm">No {label.toLowerCase()} available</p>
+                                        )}
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </div>
 
-
-                                <div className="w-full col-span-4">
-                                    <h3 className="font-bold mt-4 mb-2">Skin Tone</h3>
-                                    {data?.customizations?.skin_tones?.length > 0 ? (
-                                        <div className="flex flex-wrap gap-2">
-                                            {data?.customizations?.skin_tones.map((img, idx) => (
-                                                <Image
-                                                    key={idx}
-                                                    src={img?.image}
-                                                    alt={`Gallery ${idx}`}
-                                                    width={80}
-                                                    height={80}
-                                                    className="rounded-md w-[80px]"
-                                                />
-                                            ))}
-                                        </div>
-                                    ) : (
-                                        <p>No Gallery Images</p>
-                                    )}
+                    {/* ── Right: Thumbnail (desktop only) ── */}
+                    <div className="hidden md:block col-span-1">
+                        <div className="sticky top-[140px]">
+                            <h3 className="font-bold text-gray-800 mb-2">Thumbnail</h3>
+                            {data?.image ? (
+                                <Image
+                                    src={data?.image}
+                                    alt="Thumbnail"
+                                    width={1000}
+                                    height={1000}
+                                    className="w-full rounded-xl border border-gray-100 shadow-sm"
+                                />
+                            ) : (
+                                <div className="w-full h-48 bg-gray-100 rounded-xl flex items-center justify-center text-gray-400 text-sm">
+                                    No Thumbnail
                                 </div>
-
-
-
-                                <div className="w-full col-span-4">
-                                    <h3 className="font-bold mt-4 mb-2">Hair Layer</h3>
-                                    {data?.customizations?.hairs?.length > 0 ? (
-                                        <div className="flex flex-wrap gap-2">
-                                            {data?.customizations?.hairs.map((img, idx) => (
-                                                <Image
-                                                    key={idx}
-                                                    src={img?.image}
-                                                    alt={`Gallery ${idx}`}
-                                                    width={80}
-                                                    height={80}
-                                                    className="rounded-md w-[80px]"
-                                                />
-                                            ))}
-                                        </div>
-                                    ) : (
-                                        <p>No Gallery Images</p>
-                                    )}
-                                </div>
-
-
-
-                                <div className="w-full col-span-4">
-                                    <h3 className="font-bold mt-4 mb-2">Nose Layer</h3>
-                                    {data?.customizations?.noses?.length > 0 ? (
-                                        <div className="flex flex-wrap gap-2">
-                                            {data?.customizations?.noses?.map((img, idx) => (
-                                                <Image
-                                                    key={idx}
-                                                    src={img?.image}
-                                                    alt={`Gallery ${idx}`}
-                                                    width={80}
-                                                    height={80}
-                                                    className="rounded-md w-[80px]"
-                                                />
-                                            ))}
-                                        </div>
-                                    ) : (
-                                        <p>No Gallery Images</p>
-                                    )}
-                                </div>
-
-
-
-
-                                <div className="w-full col-span-4">
-                                    <h3 className="font-bold mt-4 mb-2">Eyes Layer</h3>
-                                    {data?.customizations?.eyes?.length > 0 ? (
-                                        <div className="flex flex-wrap gap-2">
-                                            {data?.customizations?.eyes?.map((img, idx) => (
-                                                <Image
-                                                    key={idx}
-                                                    src={img?.image}
-                                                    alt={`Gallery ${idx}`}
-                                                    width={80}
-                                                    height={80}
-                                                    className="rounded-md w-[80px]"
-                                                />
-                                            ))}
-                                        </div>
-                                    ) : (
-                                        <p>No Gallery Images</p>
-                                    )}
-                                </div>
-
-
-
-
-                                <div className="w-full col-span-4">
-                                    <h3 className="font-bold mt-4 mb-2">Mouth Layer</h3>
-                                    {data?.customizations?.mouths?.length > 0 ? (
-                                        <div className="flex flex-wrap gap-2">
-                                            {data?.customizations?.mouths?.map((img, idx) => (
-                                                <Image
-                                                    key={idx}
-                                                    src={img?.image}
-                                                    alt={`Gallery ${idx}`}
-                                                    width={80}
-                                                    height={80}
-                                                    className="rounded-md w-[80px]"
-                                                />
-                                            ))}
-                                        </div>
-                                    ) : (
-                                        <p>No Gallery Images</p>
-                                    )}
-                                </div>
-
-
-
-
-                                <div className="w-full col-span-4">
-                                    <h3 className="font-bold mt-4 mb-2">Dress Layer</h3>
-                                    {data?.customizations?.dresses?.length > 0 ? (
-                                        <div className="flex flex-wrap gap-2">
-                                            {data?.customizations?.dresses?.map((img, idx) => (
-                                                <Image
-                                                    key={idx}
-                                                    src={img?.image}
-                                                    alt={`Gallery ${idx}`}
-                                                    width={80}
-                                                    height={80}
-                                                    className="rounded-md w-[80px]"
-                                                />
-                                            ))}
-                                        </div>
-                                    ) : (
-                                        <p>No Gallery Images</p>
-                                    )}
-                                </div>
-
-
-
-
-
-                                <div className="w-full col-span-4">
-                                    <h3 className="font-bold mt-4 mb-2">Crown Layer</h3>
-                                    {data?.customizations?.crowns?.length > 0 ? (
-                                        <div className="flex flex-wrap gap-2">
-                                            {data?.customizations?.crowns?.map((img, idx) => (
-                                                <Image
-                                                    key={idx}
-                                                    src={img?.image}
-                                                    alt={`Gallery ${idx}`}
-                                                    width={80}
-                                                    height={80}
-                                                    className="rounded-md w-[80px]"
-                                                />
-                                            ))}
-                                        </div>
-                                    ) : (
-                                        <p>No Gallery Images</p>
-                                    )}
-                                </div>
-
-
-
-
-
-                                <div className="w-full col-span-4">
-                                    <h3 className="font-bold mt-4 mb-2">Beard Layer</h3>
-                                    {data?.customizations?.beards?.length > 0 ? (
-                                        <div className="flex flex-wrap gap-2">
-                                            {data?.customizations?.beards?.map((img, idx) => (
-                                                <Image
-                                                    key={idx}
-                                                    src={img?.image}
-                                                    alt={`Gallery ${idx}`}
-                                                    width={80}
-                                                    height={80}
-                                                    className="rounded-md w-[80px]"
-                                                />
-                                            ))}
-                                        </div>
-                                    ) : (
-                                        <p>No Gallery Images</p>
-                                    )}
-                                </div>
-
-
-
-                            </>
-
-                        )
-
-                    }
-
-
-
-                </div>
-
-                <div className="w-full col-span-1">
-
-
-                    <h3 className="font-bold mb-2">Thumbnail</h3>
-                    {data?.image ? (
-                        <Image
-                            src={data?.image}
-                            alt="Thumbnail"
-                            width={1000}
-                            height={1000}
-                            className="w-full rounded-md bg-gray-200"
-                        />
-                    ) : (
-                        <p>No Thumbnail</p>
-                    )}
-
+                            )}
+                        </div>
+                    </div>
 
                 </div>
             </div>
+
             <ToastContainer />
         </div>
-    )
-}
+    );
+};
 
 export default SingleProduct;

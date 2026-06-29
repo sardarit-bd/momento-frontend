@@ -198,6 +198,7 @@ export default function ProductCustomizer() {
                         overflow: "hidden",
                     }}
                 >
+                    <MobileCardScaler>
                     <TradingCardPreview
                         isMobileCanvas={true}
                         previewCardNodeRef={state.previewCardNodeRef}
@@ -233,6 +234,7 @@ export default function ProductCustomizer() {
                         backLegacyText={state.backLegacyText}
                         isblack={state.isblack}
                     />
+                    </MobileCardScaler>
 
                     {/* Right-side vertical tab strip */}
                     <MobileTabStrip
@@ -753,11 +755,13 @@ function MobileSavedSlotCard({ isEditing, label, state, snapshot, onDelete, onCl
                 {previewProps ? (
                     <div
                         style={{
+                            position: "absolute",
                             width: 390,
                             height: 570,
                             transform: "scale(0.154)",
                             transformOrigin: "top left",
                             pointerEvents: "none",
+                            overflow: "hidden",
                         }}
                     >
                         <TradingCardPreview
@@ -816,6 +820,61 @@ function MobileSavedSlotCard({ isEditing, label, state, snapshot, onDelete, onCl
                     </svg>
                 </button>
             )}
+        </div>
+    );
+}
+
+function MobileCardScaler({ children }) {
+    const containerRef = React.useRef(null);
+    const [scale, setScale] = React.useState(1);
+
+    React.useLayoutEffect(() => {
+        const update = () => {
+            if (!containerRef.current) return;
+            const { width, height } = containerRef.current.getBoundingClientRect();
+            const CARD_W = 390;
+            const CARD_H = 570;
+            const scaleX = (width - 56) / CARD_W;
+            const scaleY = height / CARD_H;
+            setScale(Math.min(scaleX, scaleY, 1));
+        };
+        update();
+        const ro = new ResizeObserver(update);
+        if (containerRef.current) ro.observe(containerRef.current);
+        return () => ro.disconnect();
+    }, []);
+
+    return (
+        <div
+            ref={containerRef}
+            style={{
+                width: "100%",
+                height: "100%",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+            }}
+        >
+            {/* 
+                This div is 1024px wide — wide enough to trigger Tailwind's `lg:` 
+                breakpoint inside the card components, so lg:text-4xl, lg:left-8 
+                etc. all apply correctly. Then we scale it down to fit the screen.
+            */}
+            <div
+                style={{
+                    width: 1024,        // ← forces lg: breakpoint
+                    height: 570,
+                    transform: `scale(${scale})`,
+                    transformOrigin: "center center",
+                    flexShrink: 0,
+                    position: "relative",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                }}
+            >
+                {children}
+            </div>
         </div>
     );
 }

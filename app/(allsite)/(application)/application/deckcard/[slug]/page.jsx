@@ -639,7 +639,15 @@ const ProductCustomizer = () => {
 
                             <section className="relative flex self-start items-center justify-center overflow-hidden px-3 pt-0 pb-2 md:px-6 md:pt-0 md:pb-4 xl:pt-0 xl:pb-4">
                                 {/* Mobile: push card above bottom sheet peek */}
-                                <div className="xl:hidden" style={{ paddingBottom: `${MOBILE_SHEET_PEEK + 8}px`, width: "100%" }}>
+                                <div 
+                                    className="xl:hidden" 
+                                    style={{ 
+                                        paddingBottom: `${MOBILE_SHEET_PEEK + 8}px`, 
+                                        width: "100%",
+                                        minHeight: `calc(100dvh - 68px)`, 
+                                        background: "#f2f4f8",
+                                    }}
+                                >
                                     <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_35%_30%,rgba(255,255,255,0.92),rgba(242,244,248,0.7)_60%,rgba(242,244,248,1))]" />
                                     <div className="relative z-10 flex w-full max-w-[980px] flex-col items-center mx-auto">
                                         <div className="relative flex min-h-[420px] w-full items-center justify-center">

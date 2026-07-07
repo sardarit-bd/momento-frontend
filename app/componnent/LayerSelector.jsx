@@ -13,7 +13,7 @@ const layerTitles = {
   eyes: "Eyes",
   mouths: "Mouth",
   noses: "Nose",
-  dresses: "Head Shape",
+  dresses: "Outfits",
   crowns: "Hats / Crowns",
   beards: "Beard"
 };

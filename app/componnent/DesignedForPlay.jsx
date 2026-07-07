@@ -67,7 +67,8 @@ export default function DesignedForPlay() {
                     <div className="order-1 lg:order-2 w-full flex justify-center lg:justify-end">
                         <div className="group relative w-full max-w-md lg:max-w-full aspect-[4/5] lg:aspect-square rounded-3xl overflow-hidden shadow-2xl shadow-slate-200/50 border border-white/60 bg-white">
                             <Image
-                                src="https://res.cloudinary.com/dg83pvgls/image/upload/v1771908530/05_jujjpj.png"
+                                // src="https://res.cloudinary.com/dg83pvgls/image/upload/v1771908530/05_jujjpj.png"
+                                src="/about/graduate3.png"
                                 alt="Stacked Momento Cards"
                                 fill
                                 sizes="(max-width: 1024px) 100vw, 50vw"

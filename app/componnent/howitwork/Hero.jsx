@@ -21,35 +21,35 @@ export default function Hero() {
 
 
     const cardExamples = [
+        // {
+        //     name: "Sarah",
+        //     trait: "The Adventurer",
+        //     color: "from-amber-400 to-orange-500",
+        //     image: "hero1.png",
+        // },
+        // {
+        //     name: "Mike",
+        //     trait: "Comedy King",
+        //     color: "from-blue-400 to-indigo-500",
+        //     image: "hero2.png",
+        // },
         {
-            name: "Sarah",
-            trait: "The Adventurer",
-            color: "from-amber-400 to-orange-500",
-            image: "hero1.png",
+            name: "Luna",
+            trait: "Night Owl",
+            color: "from-purple-400 to-pink-500",
+            image: "hero7.png",
         },
         {
             name: "Mike",
             trait: "Comedy King",
             color: "from-blue-400 to-indigo-500",
-            image: "hero2.png",
+            image: "hero8.png",
         },
         {
             name: "Luna",
             trait: "Night Owl",
             color: "from-purple-400 to-pink-500",
-            image: "hero3.png",
-        },
-        {
-            name: "Mike",
-            trait: "Comedy King",
-            color: "from-blue-400 to-indigo-500",
-            image: "hero4.png",
-        },
-        {
-            name: "Luna",
-            trait: "Night Owl",
-            color: "from-purple-400 to-pink-500",
-            image: "hero5.png",
+            image: "hero6.png",
         },
     ];
 

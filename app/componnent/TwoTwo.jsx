@@ -40,9 +40,6 @@ export default function OriginStory() {
                                     That moment sparked a simple realization:
                                 </strong> If trading cards can celebrate athletes and celebrities, why not the people who matter most to us?
                             </p>
-                            <p>
-                                Momento began in a pediatric waiting room in New York City.
-                            </p>
                         </div>
 
                         <div className="mt-12">

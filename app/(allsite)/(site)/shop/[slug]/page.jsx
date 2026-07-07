@@ -20,6 +20,19 @@ import { RxCross2 } from "react-icons/rx";
 import { toast, ToastContainer } from "react-toastify";
 
 
+const DESIRED_ORDER = [
+    2, 3, 1, 0, 4, 5, 6, 7, 8, 9, 10, 11, 12,
+    15, 16, 14, 13, 17, 18, 19, 20, 21, 22, 23, 24, 25,
+    28, 29, 27, 26, 30, 31, 32, 33, 34, 35, 36, 37, 38,
+    43, 44, 42, 41, 45, 46, 47, 48, 49, 50, 51, 52, 53,
+    39, 40
+];
+
+const getSortedGalleryImages = (images = []) => {
+    if (images.length !== DESIRED_ORDER.length) return images;
+    return DESIRED_ORDER.map(i => images[i]);
+};
+
 
 const SingleProduct = () => {
     const { slug } = useParams();
@@ -105,7 +118,7 @@ const SingleProduct = () => {
                 if (type == "customizable") {
                     router.push(`/application/deckcard/${slug}`);
                 } else {
-                    router.push(`/shop/${slug}/package`);
+                    router.push(`/shop/${slug}/select`);
                 }
 
             } else {
@@ -206,8 +219,8 @@ const SingleProduct = () => {
 
                 </div>
                 <div className="bg-white py-2 pb-6 px-5 rounded-b-lg">
-                    <div className="flex flex-wrap gap-4 mt-4">
-                        {data?.gallery_images?.map((img, idx) => (
+                    <div className="flex flex-wrap gap-6 mt-4">
+                        {getSortedGalleryImages(data?.gallery_images)?.map((img, idx) => (
                             <Image
                                 onClick={() => { setmodelopen(true), setCurrentIndex(idx + 1) }}
                                 key={idx}
@@ -237,7 +250,7 @@ const SingleProduct = () => {
                         <RiArrowLeftFill className="text-xl" />
                     </div>
                     <div className="w-full h-full rounded-lg flex items-center justify-center">
-                        {data?.gallery_images?.map((img, idx) =>
+                        {getSortedGalleryImages(data?.gallery_images)?.map((img, idx) =>
                             currentIndex - 1 === idx && (
                                 <Image
                                     key={idx}

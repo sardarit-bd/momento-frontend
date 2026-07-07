@@ -22,6 +22,30 @@ const FinalCardsPage = () => {
     const router = useRouter();
     const boxPreviewRef = useRef(null);
 
+    // ── Cursor-following zoom, e-commerce style ──
+    const zoomStageRef = useRef(null);
+    const [isZooming, setIsZooming] = useState(false);
+    const [zoomOrigin, setZoomOrigin] = useState({ x: 50, y: 50 });
+    const ZOOM_SCALE = 2.4; // bump to 3+ for a more aggressive zoom
+
+    const handleZoomMove = (e) => {
+        const stage = zoomStageRef.current;
+        if (!stage) return;
+        const rect = stage.getBoundingClientRect();
+        const x = ((e.clientX - rect.left) / rect.width) * 100;
+        const y = ((e.clientY - rect.top) / rect.height) * 100;
+        setZoomOrigin({
+            x: Math.min(100, Math.max(0, x)),
+            y: Math.min(100, Math.max(0, y)),
+        });
+    };
+
+    const handleZoomEnter = () => setIsZooming(true);
+    const handleZoomLeave = () => {
+        setIsZooming(false);
+        setZoomOrigin({ x: 50, y: 50 });
+    };
+
     const ensureDeckInCart = () => {
         const deckItem = deckcart?.[0];
         if (!deckItem) return false;
@@ -31,44 +55,44 @@ const FinalCardsPage = () => {
     };
 
     const captureAndResizeBox = async () => {
-    if (!boxPreviewRef.current) return null;
+        if (!boxPreviewRef.current) return null;
 
-    try {
-        const domToImageModule = await import("dom-to-image-more");
-        const domtoimage = domToImageModule.default ?? domToImageModule;
+        try {
+            const domToImageModule = await import("dom-to-image-more");
+            const domtoimage = domToImageModule.default ?? domToImageModule;
 
-        if (typeof domtoimage.toPng !== "function") {
-            console.error("toPng is not a function. Module shape:", domToImageModule);
+            if (typeof domtoimage.toPng !== "function") {
+                console.error("toPng is not a function. Module shape:", domToImageModule);
+                return null;
+            }
+
+            const dataUrl = await domtoimage.toPng(boxPreviewRef.current, {
+                width: boxPreviewRef.current.offsetWidth,
+                height: boxPreviewRef.current.offsetHeight,
+                style: { transform: "scale(1)" },
+            });
+
+            const img = new window.Image();
+            await new Promise((resolve) => {
+                img.onload = resolve;
+                img.src = dataUrl;
+            });
+
+            const resized = document.createElement("canvas");
+            resized.width = 2325;
+            resized.height = 1950;
+
+            const ctx = resized.getContext("2d");
+            if (!ctx) return null;
+
+            ctx.drawImage(img, 0, 0, 2325, 1950);
+            return resized.toDataURL("image/png");
+
+        } catch (err) {
+            console.error("Box capture failed:", err);
             return null;
         }
-
-        const dataUrl = await domtoimage.toPng(boxPreviewRef.current, {
-            width: boxPreviewRef.current.offsetWidth,
-            height: boxPreviewRef.current.offsetHeight,
-            style: { transform: "scale(1)" },
-        });
-
-        const img = new window.Image();
-        await new Promise((resolve) => {
-            img.onload = resolve;
-            img.src = dataUrl;
-        });
-
-        const resized = document.createElement("canvas");
-        resized.width = 2325;
-        resized.height = 1950;
-
-        const ctx = resized.getContext("2d");
-        if (!ctx) return null;
-
-        ctx.drawImage(img, 0, 0, 2325, 1950);
-        return resized.toDataURL("image/png");
-
-    } catch (err) {
-        console.error("Box capture failed:", err);
-        return null;
-    }
-};
+    };
 
     const handleCheckout = async (e) => {
         e.preventDefault();
@@ -153,8 +177,26 @@ const FinalCardsPage = () => {
             <div className="pb-8">
                 <h2 className="py-4 font-semibold text-gray-600">Box Preview</h2>
                 <div className="flex flex-wrap gap-6">
-                    <div ref={boxPreviewRef} className="inline-block">
-                        <DeckBoxPreview characterImages={characterImages} />
+                    <div
+                        ref={zoomStageRef}
+                        onMouseEnter={handleZoomEnter}
+                        onMouseLeave={handleZoomLeave}
+                        onMouseMove={handleZoomMove}
+                        className="relative inline-block overflow-hidden cursor-zoom-in"
+                    >
+                        <div
+                            ref={boxPreviewRef}
+                            className="inline-block"
+                            style={{
+                                transform: isZooming ? `scale(${ZOOM_SCALE})` : "scale(1)",
+                                transformOrigin: `${zoomOrigin.x}% ${zoomOrigin.y}%`,
+                                transition: isZooming
+                                    ? "transform 0.1s ease-out"
+                                    : "transform 0.3s ease-out",
+                            }}
+                        >
+                            <DeckBoxPreview characterImages={characterImages} />
+                        </div>
                     </div>
                 </div>
             </div>

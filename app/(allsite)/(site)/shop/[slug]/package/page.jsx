@@ -2,54 +2,88 @@
 
 import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
-import { FaArrowLeft, FaCheck } from "react-icons/fa6";
+import Image from "next/image";
+import { Fraunces, Inter } from "next/font/google";
+import {
+  FaArrowLeft,
+  FaArrowRight,
+  FaCheck,
+  FaStar,
+  FaBox,
+  FaLayerGroup,
+  FaTableCells,
+  FaTruck,
+  FaShieldHalved,
+  FaGem,
+  FaImage,
+} from "react-icons/fa6";
 import Link from "next/link";
+
+const fraunces = Fraunces({
+  subsets: ["latin"],
+  weight: ["500", "600", "700"],
+  style: ["normal", "italic"],
+});
+
+const inter = Inter({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+});
+
+// Brand palette — sampled from the Momento logo (#3CA9FF)
+const BRAND = "#3CA9FF";
+const BRAND_DARK = "#1C8CE0";
+const BRAND_TINT = "#EAF6FF";
 
 const PACKAGES = [
   {
     slug: "single",
-    name: "Single Pack",
-    tag: "Simple Start",
-    subtitle: "For trying out your first design",
-    features: [
-      "1 unique design",
-      "18 printed cards",
-      "Standard layout system",
-    ],
-    recommended: false,
+    name: "Single",
+    badge: "Most Popular",
+    subtitle: "1 design · 18 copies",
+    description:
+      "18 copies of 1 design — great for trying out your first design.",
+    price: 29.00,
+    originalPrice: 34.99,
+    icon: FaBox,
   },
   {
     slug: "trio",
-    name: "Trio Pack",
-    tag: "Recommended",
-    subtitle: "Balanced choice for most users",
-    features: [
-      "3 unique designs",
-      "18 total cards",
-      "Balanced variation",
-      // "Optimized for gifting",
-    ],
-    recommended: true,
+    name: "Trio",
+    badge: "Best Value",
+    subtitle: "3 designs · 6 each",
+    description:
+      "6 copies each of 3 different designs — ideal for a small circle.",
+    price: 39.00,
+    originalPrice: 59.99,
+    icon: FaLayerGroup,
   },
   {
     slug: "collection",
-    name: "Collector Pack",
-    tag: "Maximum Variety",
-    subtitle: "For full creative expression",
-    features: [
-      "6 unique designs",
-      "18 total cards",
-      "Maximum variation",
-      // "Collector-style presentation",
-    ],
-    recommended: false,
+    name: "Collection",
+    badge: "Full Set",
+    subtitle: "6 designs · 3 each",
+    description:
+      "3 copies each of 6 different designs — for full creative expression.",
+    price: 54.00,
+    originalPrice: 84.99,
+    icon: FaTableCells,
   },
 ];
+
+const TRUST_CHIPS = [
+  { icon: FaGem, label: "Premium print quality" },
+  { icon: FaShieldHalved, label: "Damage-free guarantee" },
+  { icon: FaTruck, label: "Ships in 7–12 days" },
+];
+
+const THUMBNAILS = [0, 1, 2, 3];
 
 export default function PackageSelectionPage() {
   const { slug } = useParams();
   const router = useRouter();
-  const [selected, setSelected] = useState(null);
+  const [selected, setSelected] = useState(PACKAGES[1]);
+  const [activeThumb, setActiveThumb] = useState(0);
 
   const handleContinue = () => {
     if (!selected) return;
@@ -57,157 +91,296 @@ export default function PackageSelectionPage() {
   };
 
   return (
-    <main className="min-h-screen bg-[#f7f9fc] px-4 sm:px-6 py-8 md:py-16 flex justify-center">
+    <main
+      className={`${inter.className} min-h-screen bg-[#F7F9FC] px-4 sm:px-6 lg:px-10 py-6 md:py-12`}
+    >
+      <style jsx global>{`
+        @property --angle {
+          syntax: "<angle>";
+          inherits: false;
+          initial-value: 0deg;
+        }
+        @keyframes spin-foil {
+          to {
+            --angle: 360deg;
+          }
+        }
+        .foil-ring {
+          position: relative;
+          isolation: isolate;
+        }
+        .foil-ring::before {
+          content: "";
+          position: absolute;
+          inset: -1.5px;
+          border-radius: inherit;
+          padding: 1.5px;
+          background: conic-gradient(
+            from var(--angle),
+            #3ca9ff,
+            #b98ee8,
+            #6ec8e0,
+            #63bbff,
+            #3ca9ff
+          );
+          -webkit-mask: linear-gradient(#fff 0 0) content-box,
+            linear-gradient(#fff 0 0);
+          -webkit-mask-composite: xor;
+          mask-composite: exclude;
+          animation: spin-foil 7s linear infinite;
+          z-index: 0;
+        }
+        .btn-sheen {
+          position: relative;
+          overflow: hidden;
+        }
+        .btn-sheen::after {
+          content: "";
+          position: absolute;
+          top: 0;
+          left: -60%;
+          width: 40%;
+          height: 100%;
+          background: linear-gradient(
+            120deg,
+            transparent,
+            rgba(255, 255, 255, 0.55),
+            transparent
+          );
+          transform: skewX(-20deg);
+          transition: left 0.7s ease;
+        }
+        .btn-sheen:hover::after {
+          left: 130%;
+        }
+      `}</style>
 
-      <div className="max-w-6xl w-full">
+      <div className="max-w-6xl w-full mx-auto">
+        {/* Header: logo + back */}
+        <div className="flex items-center justify-between mb-6 md:mb-10">
 
-        {/* Header */}
-        <div className="text-center mb-8 md:mb-14">
-          <h1 className="text-2xl sm:text-3xl md:text-5xl font-semibold text-[#0b1320] tracking-tight">
-            Choose your package
-          </h1>
-
-          <p className="mt-2 md:mt-3 text-slate-500 text-xs sm:text-sm md:text-base">
-            Select how you want to structure your Momento Cards
-          </p>
-        </div>
-
-        {/* Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-8">
-
-          {PACKAGES.map((pkg) => {
-            const isSelected = selected?.slug === pkg.slug;
-
-            return (
-              <div
-                key={pkg.slug}
-                onClick={() => setSelected(pkg)}
-                className={`
-                  relative cursor-pointer rounded-2xl transition-all duration-300
-                  bg-white border
-                  hover:-translate-y-1 hover:shadow-xl
-                  p-4 md:p-7
-                  flex flex-row md:flex-col items-center md:items-stretch
-                  gap-4 md:gap-0
-                  ${
-                    isSelected
-                      ? "border-[#0b1320] shadow-lg md:scale-[1.02]"
-                      : "border-slate-200"
-                  }
-                `}
-              >
-
-                {/* Recommended badge — desktop floating badge stays as-is */}
-                {pkg.recommended && (
-                  <div className="hidden md:block absolute -top-3 left-1/2 -translate-x-1/2 bg-[#0b1320] text-white text-xs px-3 py-1 rounded-full whitespace-nowrap">
-                    Recommended
-                  </div>
-                )}
-
-                {/* Selection indicator dot, mobile only */}
-                <div
-                  className={`
-                    md:hidden shrink-0 w-5 h-5 rounded-full border-2 flex items-center justify-center
-                    ${isSelected ? "bg-[#0b1320] border-[#0b1320]" : "border-slate-300"}
-                  `}
-                >
-                  {isSelected && <FaCheck className="text-white text-[10px]" />}
-                </div>
-
-                {/* Content */}
-                <div className="flex-1 min-w-0 md:flex-none">
-
-                  {/* Header */}
-                  <div className="text-left md:text-center md:mt-3 flex items-center justify-between md:block">
-                    <div className="flex items-center gap-2 md:block">
-                      <h2 className="text-base md:text-2xl font-semibold text-[#0b1320] md:mt-2">
-                        {pkg.name}
-                      </h2>
-                      {pkg.recommended && (
-                        <span className="md:hidden text-[10px] uppercase tracking-wide bg-[#0b1320] text-white px-2 py-0.5 rounded-full">
-                          Recommended
-                        </span>
-                      )}
-                    </div>
-                    <div className="hidden md:block text-xs uppercase tracking-wider text-slate-400 order-first">
-                      {pkg.tag}
-                    </div>
-
-                    <p className="hidden md:block text-sm text-slate-500 mt-2">
-                      {pkg.subtitle}
-                    </p>
-                  </div>
-
-                  {/* Feature list — collapses to single line on mobile */}
-                  <div className="mt-1 md:mt-7 hidden md:block space-y-3">
-                    {pkg.features.map((f, i) => (
-                      <div key={i} className="flex items-start gap-2 text-sm text-slate-600">
-                        <FaCheck className="text-emerald-500 mt-0.5 text-xs shrink-0" />
-                        <span>{f}</span>
-                      </div>
-                    ))}
-                  </div>
-                  <p className="md:hidden text-xs text-slate-500 mt-0.5 truncate">
-                    {pkg.features.join(" · ")}
-                  </p>
-                </div>
-
-                {/* Action — desktop only, mobile selects via row tap */}
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setSelected(pkg);
-                  }}
-                  className={`
-                    hidden md:block mt-8 w-full py-3 rounded-xl font-medium transition-all
-                    ${
-                      isSelected
-                        ? "bg-[#0b1320] text-white"
-                        : "bg-slate-100 text-slate-800 hover:bg-slate-200"
-                    }
-                  `}
-                >
-                  {isSelected ? "Selected" : "Select package"}
-                </button>
-              </div>
-            );
-          })}
-        </div>
-
-        {/* Bottom CTA — desktop only, unchanged from original */}
-        <div className="hidden md:block mt-14 text-center">
-          <button
-            onClick={handleContinue}
-            disabled={!selected}
-            className={`
-              px-12 py-3 rounded-xl font-medium transition
-              ${
-                selected
-                  ? "bg-[#0b1320] text-white hover:opacity-90"
-                  : "bg-slate-300 text-slate-500 cursor-not-allowed"
-              }
-            `}
+          <Link
+            href="/shop"
+            className="inline-flex items-center gap-2 text-sm text-slate-500 hover:text-[#12141F] transition-colors"
           >
-            Continue with selection
-          </button>
+            <span className="w-7 h-7 rounded-full border border-slate-200 bg-white flex items-center justify-center">
+              <FaArrowLeft className="text-[10px]" />
+            </span>
+            <span className="hidden sm:inline">Back</span>
+          </Link>
         </div>
 
-        {/* Mobile spacer so fixed bar never overlaps the last card */}
-        {selected && <div className="md:hidden h-24" />}
+        <div className="grid grid-cols-1 lg:grid-cols-[1.05fr_1fr] gap-8 lg:gap-16">
+          {/* ---------------- Left: media ---------------- */}
+          <div>
+            <div className="relative aspect-[4/5] sm:aspect-[5/6] w-full rounded-[1.75rem] overflow-hidden shadow-[0_20px_50px_-25px_rgba(18,20,40,0.25)]">
+              <Image
+                src="/mockup7.png"
+                alt="Momento Trading Cards mockup"
+                fill
+                priority
+                sizes="(min-width: 1024px) 45vw, 100vw"
+                className="object-cover"
+              />
 
+              <div className="absolute bottom-4 left-4 bg-white/90 backdrop-blur border border-slate-200 text-[#12141F] text-[11px] font-semibold uppercase tracking-wide px-3 py-1.5 rounded-full shadow-sm">
+                Premium Print
+              </div>
+            </div>
+
+            {/* Thumbnails */}
+            {/* <div className="grid grid-cols-4 gap-2.5 sm:gap-3 mt-3">
+              {THUMBNAILS.map((i) => (
+                <button
+                  key={i}
+                  onClick={() => setActiveThumb(i)}
+                  className={`aspect-square rounded-xl border bg-white flex items-center justify-center transition-all ${
+                    activeThumb === i
+                      ? "border-[#3CA9FF] ring-1 ring-[#3CA9FF]"
+                      : "border-slate-200 hover:border-slate-300 hover:-translate-y-0.5"
+                  }`}
+                >
+                  <FaImage className="text-slate-300 text-base sm:text-lg" />
+                </button>
+              ))}
+            </div> */}
+          </div>
+
+          {/* ---------------- Right: product info ---------------- */}
+          <div>
+            <h1
+              className={`${fraunces.className} text-[2.1rem] sm:text-4xl lg:text-[2.9rem] font-semibold text-[#12141F] tracking-tight leading-[1.1]`}
+            >
+              Momento Trading Cards
+            </h1>
+
+            <p className="mt-5 text-slate-500 text-[0.95rem] leading-relaxed max-w-md">
+              Transform your favourite photos into collectible trading cards —
+              printed on premium stock with holographic shimmer, sharp
+              detail, and a finish that feels like the real thing. Designed
+              for gifting, celebrating, and keeping forever.
+            </p>
+
+            {/* Package selection */}
+            <p className="text-xs font-semibold tracking-[0.2em] uppercase text-slate-400 mt-8 mb-3">
+              Choose your package
+            </p>
+
+            <div className="space-y-3">
+              {PACKAGES.map((pkg) => {
+                const isSelected = selected?.slug === pkg.slug;
+                const Icon = pkg.icon;
+
+                const row = (
+                  <button
+                    type="button"
+                    onClick={() => setSelected(pkg)}
+                    className={`
+                      relative z-10 w-full text-left rounded-2xl bg-white transition-all
+                      px-4 sm:px-5 py-4 flex items-center gap-3 sm:gap-4
+                      ${
+                        isSelected
+                          ? "shadow-[0_12px_30px_-16px_rgba(18,20,40,0.35)]"
+                          : "border border-slate-200 hover:border-slate-300 hover:shadow-[0_8px_20px_-14px_rgba(18,20,40,0.25)]"
+                      }
+                    `}
+                  >
+                    {/* Badge */}
+                    <span
+                      className={`absolute -top-2.5 right-4 text-[10px] font-bold uppercase tracking-wide px-2.5 py-1 rounded-full shadow-sm ${
+                        isSelected
+                          ? "bg-gradient-to-r from-[#3CA9FF] to-[#63BBFF] text-white"
+                          : "bg-[#EAF6FF] text-[#1C8CE0]"
+                      }`}
+                    >
+                      {pkg.badge}
+                    </span>
+
+                    {/* Icon */}
+                    <div
+                      className={`shrink-0 w-11 h-11 rounded-xl flex items-center justify-center transition-colors ${
+                        isSelected
+                          ? "bg-[#12141F] text-white"
+                          : "bg-slate-100 text-slate-500"
+                      }`}
+                    >
+                      <Icon className="text-[15px]" />
+                    </div>
+
+                    {/* Name + subtitle */}
+                    <div className="flex-1 min-w-0">
+                      <p className="font-semibold text-[#12141F] text-sm sm:text-base">
+                        {pkg.name}
+                      </p>
+                      <p className="text-xs sm:text-sm text-slate-500 truncate">
+                        {pkg.subtitle}
+                      </p>
+                    </div>
+
+                    {/* Price */}
+                    <div className="text-right shrink-0">
+                      <div className="flex items-center gap-2 justify-end">
+                        <span className="font-semibold text-[#12141F] text-sm sm:text-base tabular-nums">
+                          ${pkg.price.toFixed(2)}
+                        </span>
+                        {isSelected && (
+                          <span className="w-5 h-5 rounded-full bg-[#3CA9FF] flex items-center justify-center shrink-0">
+                            <FaCheck className="text-white text-[10px]" />
+                          </span>
+                        )}
+                      </div>
+                      <span className="text-xs text-slate-400 line-through tabular-nums">
+                        ${pkg.originalPrice.toFixed(2)}
+                      </span>
+                    </div>
+                  </button>
+                );
+
+                return isSelected ? (
+                  <div key={pkg.slug} className="foil-ring rounded-2xl">
+                    {row}
+                  </div>
+                ) : (
+                  <div key={pkg.slug}>{row}</div>
+                );
+              })}
+            </div>
+
+            {/* Selected package summary */}
+            {selected && (
+              <div className="mt-4 rounded-xl bg-white border border-slate-200 px-4 py-3.5 text-sm text-slate-600 leading-relaxed">
+                <span
+                  className={`${fraunces.className} font-semibold text-[#12141F]`}
+                >
+                  {selected.name} Package —{" "}
+                </span>
+                {selected.description}
+              </div>
+            )}
+
+            {/* Trust chips */}
+            <div className="hidden sm:flex flex-wrap items-center gap-x-5 gap-y-2 mt-5">
+              {TRUST_CHIPS.map(({ icon: ChipIcon, label }) => (
+                <span
+                  key={label}
+                  className="flex items-center gap-1.5 text-xs text-slate-500"
+                >
+                  <ChipIcon className="text-[#3CA9FF] text-[13px]" />
+                  {label}
+                </span>
+              ))}
+            </div>
+
+            {/* CTA — desktop / tablet inline */}
+            <button
+              onClick={handleContinue}
+              disabled={!selected}
+              className={`
+                btn-sheen hidden md:flex mt-6 w-full py-3.5 rounded-xl font-semibold transition items-center justify-center gap-2
+                ${
+                  selected
+                    ? "bg-gradient-to-r from-[#3CA9FF] to-[#1C8CE0] text-white hover:shadow-[0_14px_30px_-14px_rgba(28,140,224,0.55)]"
+                    : "bg-slate-200 text-slate-400 cursor-not-allowed"
+                }
+              `}
+            >
+              Customize Your Cards
+              <FaArrowRight className="text-xs" />
+            </button>
+
+            {/* Mobile spacer so fixed bar never overlaps content */}
+            <div className="md:hidden h-24" />
+          </div>
+        </div>
       </div>
 
-      {/* Mobile fixed bottom CTA — appears only once a package is selected */}
-      {selected && (
-        <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-[#f7f9fc] border-t border-slate-200 px-4 pt-3 pb-[max(1rem,env(safe-area-inset-bottom))]">
-          <button
-            onClick={handleContinue}
-            className="w-full py-3 rounded-xl font-medium bg-[#0b1320] text-white transition active:opacity-80"
-          >
-            Continue with selection
-          </button>
+      {/* CTA — mobile fixed bar */}
+      <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white/90 backdrop-blur border-t border-slate-200 px-4 pt-3 pb-[max(1rem,env(safe-area-inset-bottom))]">
+        <div className="flex items-center justify-between mb-2">
+          <div>
+            <p className="text-[11px] text-slate-400">
+              {selected ? selected.name : "Select a package"}
+            </p>
+            {selected && (
+              <p className="text-base font-semibold text-[#12141F] tabular-nums">
+                ${selected.price.toFixed(2)}
+              </p>
+            )}
+          </div>
         </div>
-      )}
+        <button
+          onClick={handleContinue}
+          disabled={!selected}
+          className={`btn-sheen w-full py-3.5 rounded-xl font-semibold transition flex items-center justify-center gap-2 ${
+            selected
+              ? "bg-gradient-to-r from-[#3CA9FF] to-[#1C8CE0] text-white"
+              : "bg-slate-200 text-slate-400 cursor-not-allowed"
+          }`}
+        >
+          Customize Your Cards
+          <FaArrowRight className="text-xs" />
+        </button>
+      </div>
     </main>
   );
 }

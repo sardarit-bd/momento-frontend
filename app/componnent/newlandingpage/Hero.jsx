@@ -3,14 +3,14 @@ import useFilterStore from "@/store/useFilterStore";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import hero1 from "../../../public/hero1.png";
-import hero2 from "../../../public/hero2.png";
-import hero3 from "../../../public/hero3.png";
-import hero4 from "../../../public/hero4.png";
-import hero5 from "../../../public/hero5.png";
+import hero1 from "../../../public/hero6.png";
+import hero2 from "../../../public/hero7.png";
+import hero3 from "../../../public/hero8.png";
+// import hero4 from "../../../public/hero4.png";
+// import hero5 from "../../../public/hero5.png";
 const cards = [
-    hero5,
-    hero4,
+    // hero5,
+    // hero4,
     hero3,
     hero2,
     hero1,

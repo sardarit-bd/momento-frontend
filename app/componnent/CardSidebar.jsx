@@ -3,16 +3,11 @@ import { RxCross2 } from "react-icons/rx";
 import AddNewCardBtn from "./AddNewCardBtn";
 import CardThumbnail from "./CardThumbnail";
 
-const CardSidebar = ({ activeIndex, Done, setActiveIndex, addCard, removeCard, doneloading, cards }) => {
-
+const CardSidebar = ({ activeIndex, Done, setActiveIndex, addCard, removeCard, doneloading, cards, lockedCardType }) => {
 
   function handleReactiveFunction(finalCard, indx) {
-
     setActiveIndex(indx);
-
   }
-
-
 
   return (
     <div className="w-full bg-white h-full shawow-md px-0 py-2 z-20 flex flex-col">
@@ -36,7 +31,7 @@ const CardSidebar = ({ activeIndex, Done, setActiveIndex, addCard, removeCard, d
               finalCard={finalCard}
             />
 
-            {cards?.length > 1 && finalCard?.editedCard !== "Ace_Card" && (
+            {cards?.length > 1 && finalCard?.editedCard !== lockedCardType && (
               <button className="bg-sky-600 absolute top-[-3px] right-[-3px] border-3 border-white tranlate-y-full text-white rounded-full w-fit h-fit cursor-pointer flex items-center justify-center" onClick={(e) => { e.stopPropagation(); removeCard(idx); }}>
                 <RxCross2 className="text-md" />
               </button>
@@ -53,6 +48,5 @@ const CardSidebar = ({ activeIndex, Done, setActiveIndex, addCard, removeCard, d
     </div >
   )
 };
-
 
 export default CardSidebar;

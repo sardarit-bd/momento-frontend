@@ -18,11 +18,12 @@ import MobileCustomizerSheet from "../../../../../componnent/MobileCustomizerShe
 const layers = ["dresses", "skin_tones", "hairs", "crowns", "beards", "eyes", "mouths", "noses"];
 
 const CARD_STEPS = [
-    { type: "Ace_Card", label: "Ace", icon: GiCardAceClubs },
     { type: "king_Card", label: "King", icon: GiCardKingClubs },
     { type: "Queen_Card", label: "Queen", icon: GiCardQueenClubs },
     { type: "Jeck_Card", label: "Jack", icon: GiCardJackClubs },
+    { type: "Ace_Card", label: "Ace", icon: GiCardAceClubs },
 ];
+
 const JOKER_STEP = { type: "Joker_Card", label: "Joker", icon: GiCardJoker };
 
 const getSortedInsertIndex = (currentCards, cardType) => {
@@ -44,6 +45,27 @@ const CARD_TYPE_LABELS = {
     Joker_Card: "Joker",
 };
 
+// Wayfinding copy, keyed the same way as CARD_TYPE_LABELS so the two stay in sync.
+// Kept as a plain object (not derived from the API) for now since it's presentational
+// copy for a single deck product — see note below if a second deck type ships later.
+const STEP_COPY = {
+    king_Card: {
+        heading: "Create Your King",
+    },
+    Queen_Card: {
+        heading: "Create Your Queen",  
+    },
+    Jeck_Card: {
+        heading: "Create Your Jack",  
+    },
+    Ace_Card: {
+        heading: "Create Your Ace",
+    },
+    Joker_Card: {
+        heading: "Create Your Joker",
+    },
+};
+
 const normalizeCardType = (value = "") => String(value).toLowerCase();
 const getCanonicalCardType = (value = "") => {
     const normalized = normalizeCardType(value);
@@ -63,6 +85,22 @@ const DECK_RANK_MAP = {
     Joker_Card: 'joker',
 };
 
+// Renders the "Create Your King" style heading above the card canvas.
+const StepHeading = ({ activeType, activeIndex, totalSteps }) => {
+    const copy = STEP_COPY[activeType] ?? { heading: "Customize Your Card", subtext: "" };
+
+    return (
+        <div className="relative z-10 w-full max-w-[980px] mx-auto text-center px-4 mb-4" aria-live="polite">
+            <h1 className="text-2xl md:text-3xl font-bold text-black mt-1">
+                {copy.heading}
+            </h1>
+            {copy.subtext && (
+                <p className="text-sm text-gray-500 mt-1">{copy.subtext}</p>
+            )}
+        </div>
+    );
+};
+
 const ProductCustomizer = () => {
     const { slug } = useParams();
     const customCardsStorageKey = `customCards:${slug}`;
@@ -76,7 +114,7 @@ const ProductCustomizer = () => {
     const [spinloading, setspinloading] = useState(false);
     const [doneloading, setdoneloading] = useState(false);
     const { addToCart, clearCart } = useDeckFinalPreview();
-    const [editedCard, seteditedCard] = useState("Ace_Card");
+    const [editedCard, seteditedCard] = useState(CARD_FLOW[0]);
     const [activebaseEditCard, setactivebaseEditCard] = useState([]);
     const [showJokerUpsell, setshowJokerUpsell] = useState(false);
     const { setfinalCards } = usefinalCardsStore();
@@ -143,6 +181,13 @@ const ProductCustomizer = () => {
                         slotName: card?.slotName || firstBaseNameByType[canonicalType] || null,
                     };
                 });
+
+                // Re-sort against the current King → Queen → Jack → Ace → Joker order,
+                // since previously-saved sessions may have been persisted under the old order.
+                const flowOrder = [...CARD_FLOW, "Joker_Card"];
+                sanitizedCards.sort(
+                    (a, b) => flowOrder.indexOf(a.editedCard) - flowOrder.indexOf(b.editedCard)
+                );
 
                 if (sanitizedCards.length > 0) {
                     localStorage.setItem(customCardsStorageKey, JSON.stringify(sanitizedCards));
@@ -236,11 +281,41 @@ const ProductCustomizer = () => {
 
     const selectBaseImage = (url, type, slotName = null) => {
         const indexAtClick = activeCardIndex;
-        setCards((prev) => prev.map((card, i) =>
-            i === indexAtClick
-                ? { ...card, editedCard: type, baseImage: url, slotName }
-                : card
-        ));
+        const currentCard = cards[indexAtClick];
+
+        // Same type, just swapping the base art -> no duplication risk
+        if (currentCard?.editedCard === type) {
+            setCards((prev) => prev.map((card, i) =>
+                i === indexAtClick ? { ...card, baseImage: url, slotName } : card
+            ));
+            return;
+        }
+
+        // Block switching to a type that's already used by another slot
+        const isDuplicate = cards.some((card, i) => i !== indexAtClick && card.editedCard === type);
+        if (isDuplicate) {
+            toast.warn(`${CARD_TYPE_LABELS[type] || "This card"} is already added. Remove it first if you want to change this slot to ${CARD_TYPE_LABELS[type] || "this type"}.`);
+            return;
+        }
+
+        setCards((prev) => {
+            const updated = prev.map((card, i) =>
+                i === indexAtClick
+                    ? { ...card, editedCard: type, baseImage: url, slotName }
+                    : card
+            );
+
+            // Keep deck ordered King -> Queen -> Jack -> Ace -> Joker
+            const order = [...CARD_FLOW, "Joker_Card"];
+            const changedCard = updated[indexAtClick];
+            const sorted = [...updated].sort(
+                (a, b) => order.indexOf(a.editedCard) - order.indexOf(b.editedCard)
+            );
+            const newActiveIndex = sorted.indexOf(changedCard);
+            setActiveCardIndex(newActiveIndex);
+            seteditedCard(type);
+            return sorted;
+        });
     };
 
     const addNewCard = (cardType = editedCard, shouldSetActive = true) => {
@@ -279,7 +354,7 @@ const ProductCustomizer = () => {
 
     const removeCard = (index) => {
         if (cards.length <= 1) return;
-        if (cards[index]?.editedCard === "Ace_Card") return;
+        if (cards[index]?.editedCard === CARD_FLOW[0]) return;
 
         const updatedCards = cards.filter((_, i) => i !== index);
         setCards(updatedCards);
@@ -368,11 +443,10 @@ const ProductCustomizer = () => {
     };
 
     const goToFinalView = async ({ redirectToCheckout = false } = {}) => {
-        const requiredCards = ["Ace_Card", "Queen_Card", "king_Card", "Jeck_Card"];
-        const hasAllCards = requiredCards.every((req) => cards.some((item) => item.editedCard === req));
+        const hasAllCards = CARD_FLOW.every((req) => cards.some((item) => item.editedCard === req));
 
         if (!hasAllCards) {
-            toast.warn("Must Be Design at Least Ace Card, Queen Card, King Card, Jeck Card Cards");
+            toast.warn("Must Design at Least King, Queen, Jack, and Ace Cards");
             return;
         }
 
@@ -478,7 +552,7 @@ const ProductCustomizer = () => {
             return;
         }
 
-  
+
         const hasJokerCardNow = cards.some((card) => card?.editedCard === "Joker_Card");
         if (hasJokerCardNow) {
             await goToFinalView();
@@ -534,6 +608,14 @@ const ProductCustomizer = () => {
     const visibleSteps = hasJokerCard ? [...CARD_STEPS, JOKER_STEP] : CARD_STEPS;
     const doneButtonLabel = doneloading || spinloading ? "Loading..." : "Next Card";
     const activeCardLabel = CARD_TYPE_LABELS[activeType] || "Card";
+
+    // Drives both the step counter text ("Step X of Y") and, indirectly, the
+    // StepHeading fallback. CARD_FLOW.indexOf covers the 4 required cards;
+    // falling back to visibleSteps covers the Joker, which only exists in
+    // that array once it's been added.
+    const activeStepIndex = CARD_FLOW.indexOf(activeType) >= 0
+        ? CARD_FLOW.indexOf(activeType)
+        : visibleSteps.findIndex((s) => s.type === activeType);
 
     const handleStepClick = (stepType) => {
         const targetCardIndex = cards.findIndex((card) => card?.editedCard === stepType);
@@ -634,10 +716,17 @@ const ProductCustomizer = () => {
                                     removeCard={removeCard}
                                     Done={Done}
                                     doneloading={doneloading || spinloading}
+                                    lockedCardType={CARD_FLOW[0]}
                                 />
                             </aside>
 
-                            <section className="relative flex self-start items-center justify-center overflow-hidden px-3 pt-0 pb-2 md:px-6 md:pt-0 md:pb-4 xl:pt-0 xl:pb-4">
+                            <section className="relative flex flex-col self-start items-center justify-center overflow-hidden px-3 pt-4 pb-2 md:px-6 md:pt-6 md:pb-4 xl:pt-6 xl:pb-4">
+                                <StepHeading
+                                    activeType={activeType}
+                                    activeIndex={activeStepIndex}
+                                    totalSteps={visibleSteps.length}
+                                />
+
                                 {/* Mobile: push card above bottom sheet peek */}
                                 <div 
                                     className="xl:hidden" 

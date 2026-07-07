@@ -5,17 +5,25 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import hero1 from "../../public/hero1.png";
 
-import hero3 from "../../public/hero3.png";
-import hero4 from "../../public/hero4.png";
-import hero5 from "../../public/hero5.png";
+import hero3 from "../../public/hero8.png";
+import hero4 from "../../public/hero7.png";
+import hero5 from "../../public/hero6.png";
 const cards = [
+    // hero1,
+    hero3,
     hero5,
     hero4,
-    hero3,
-    hero1,
 ];
 
 const tickerItems = ["Easy to Customize", "Premium Quality", "Delivered to Your Door",];
+
+const FAN_CONFIG = {
+    anglePerCard: 26,
+    arcRadius: 85,
+    verticalDrop: 28,
+    scaleStep: 0.07,
+    entranceDelayMs: 90,
+};
 
 
 const Hero = () => {
@@ -94,33 +102,57 @@ const Hero = () => {
                             Create Your Cards
                         </Link>
                     </div>
+
                     {/* Right Cards */}
-                    <div className="w-full lg:w-1/2 flex justify-center items-center relative h-[40vw] md:h-[25vw] lg:h-[420px]">
+                    <div
+                        className="w-full lg:w-1/2 flex justify-center items-center relative h-[40vw] md:h-[25vw] lg:h-[420px]"
+                        style={{ perspective: "1200px" }}
+                    >
                         {cards.map((src, index) => {
-                            const isLast = index === cards.length - 1;
-                            const targetRotate = isLast ? 0 : -(cards.length - 1 - index) * 13;
-                            const step = typeof window !== "undefined" && window.innerWidth < 640 ? 0.03 : 0.05;
-                            // const scale = 1 - ((cards.length - 1 - index) * step);
-                            const scale = 1 - ((cards.length - 1 + index) * .2 * step);
+                            const total = cards.length;
+                            const middle = (total - 1) / 2;
+                            const distanceFromMiddle = index - middle;
+                            const isCenter = distanceFromMiddle === 0;
+
+                            const targetRotate = distanceFromMiddle * FAN_CONFIG.anglePerCard;
+                            const xArc = distanceFromMiddle * FAN_CONFIG.arcRadius;
+                            const yArc = Math.abs(distanceFromMiddle) * FAN_CONFIG.verticalDrop;
+                            const scale = 1 - Math.abs(distanceFromMiddle) * FAN_CONFIG.scaleStep;
+                            const depth = total - Math.abs(distanceFromMiddle);
+
                             return (
                                 <div
                                     key={index}
-                                    className="absolute bottom-5 left-[65%] lg:left-[70%] xl:left-[75%] lg:bottom-0 transition-transform duration-700 ease-out"
+                                    className="absolute bottom-5 left-1/2 lg:bottom-0 transition-all ease-[cubic-bezier(0.16,1,0.3,1)] group"
                                     style={{
-                                        transformOrigin: "bottom left",
+                                        transformOrigin: "bottom center",
+                                        transitionDuration: "900ms",
+                                        transitionDelay: mounted ? `${index * FAN_CONFIG.entranceDelayMs}ms` : "0ms",
                                         transform: mounted
-                                            ? `translateX(-50%) rotate(${targetRotate}deg) scale(${scale})`
-                                            : `translateX(-50%) rotate(0deg) scale(1)`,
-                                        zIndex: index,
+                                            ? `translateX(calc(-50% + ${xArc}px)) translateY(${yArc}px) rotate(${targetRotate}deg) scale(${scale})`
+                                            : `translateX(-50%) translateY(40px) rotate(0deg) scale(0.85)`,
+                                        opacity: mounted ? 1 : 0,
+                                        zIndex: depth,
+                                        willChange: "transform, opacity",
                                     }}
                                 >
-                                    <div className="relative w-[35vw] sm:w-[25vw] lg:w-[300px] aspect-[3/4]">
+                                    <div
+                                        className={`relative w-[35vw] sm:w-[25vw] lg:w-[300px] aspect-[3/4] transition-transform duration-500 ease-out
+                                            ${isCenter ? "hover:scale-[1.04] hover:-translate-y-2" : "hover:scale-[1.03]"}
+                                        `}
+                                        style={{
+                                            filter: isCenter
+                                                ? "drop-shadow(0 20px 35px rgba(0,0,0,0.25))"
+                                                : "drop-shadow(0 12px 20px rgba(0,0,0,0.18))",
+                                        }}
+                                    >
                                         <Image
                                             src={src}
-                                            alt={`Card ${index + 1}`}
+                                            alt={`Personalized trading card example ${index + 1}`}
                                             fill
                                             className="rounded-xl object-contain"
                                             unoptimized
+                                            priority={isCenter}
                                         />
                                     </div>
                                 </div>

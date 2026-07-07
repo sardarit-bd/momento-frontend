@@ -38,7 +38,7 @@ export default function AboutPage() {
                 <div className="flex-1 w-full flex justify-center lg:justify-end items-center">
                     <div className="group relative w-full max-w-md lg:max-w-lg xl:max-w-xl aspect-[5/4] rounded-3xl overflow-hidden shadow-2xl shadow-slate-200/50 border border-white/50 bg-white">
                         <Image
-                            src="https://res.cloudinary.com/dg83pvgls/image/upload/v1771828530/1_dhekyy.png"
+                            src="/about/graduate2.png"
                             alt="Diamond"
                             fill
                             priority

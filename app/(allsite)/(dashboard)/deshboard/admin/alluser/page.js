@@ -56,7 +56,7 @@ const AllUser = () => {
                                 <tr>
                                     <th className="py-3 px-6 text-left">SL</th>
                                     <th className="py-3 px-6 text-left">Name</th>
-                                    <th className="py-3 px-6 text-left">Type</th>
+                                    <th className="py-3 px-6 text-left">Role</th>
                                     <th className="py-3 px-6 text-left">Email</th>
                                     <th className="py-3 px-6 text-left">Joined</th>
                                 </tr>

@@ -57,7 +57,7 @@ const Footer = () => {
                                     <MdEmail className="text-sky-500" />
                                     <span>123 Main Street New York, NY 10001</span>
                                 </Link> */}
-                                <Link href={'/about'} className="text-gray-500 text-md z-30 flex gap-2 flex items-center">
+                                <Link href={'#'} className="text-gray-500 text-md z-30 flex gap-2 flex items-center">
                                     <MdEmail className="text-sky-500" />
                                     <span>contact@momentocardgames.com</span>
                                 </Link>

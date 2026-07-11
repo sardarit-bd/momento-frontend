@@ -58,6 +58,26 @@
   font-weight: 800;
 }
 
+@font-face {
+  font-family: 'DinBold';
+  src: url('/font/DIN-Bold.otf');
+  font-weight: 700 800 900;
+}
+
+@font-face {
+  font-family: 'Hermona';
+  src: url('/font/Hermona.otf');
+  font-weight: 400;
+}
+
+.HermonaFont {
+  font-family: 'Hermona' !important;
+}
+
+.DinBoldFont {
+  font-family: 'DinBold' !important;
+}
+
 
 @layer utilities {
 
@@ -314,6 +334,15 @@ input[type=number] {
   -webkit-text-fill-color: transparent;
   -webkit-text-stroke: 0.6px rgba(0, 0, 0, 0.78);
   text-shadow: 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.TradingCardBadgeOrangeText {
+  color: #f5731f;
+  -webkit-text-stroke: 1.5px #ffffff;
+  paint-order: stroke fill;
+  text-shadow: 2px 3px 3px rgba(0, 0, 0, 0.55);
+  transform: skewX(-6deg);
+  display: inline-block;
 }
 
 .FrontTwoCopy {

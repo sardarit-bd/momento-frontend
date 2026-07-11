@@ -229,6 +229,189 @@ const GradientDateLabel = ({ dateLabel }) => {
     );
 };
 
+const getTitleFontSizePx = (text = "") => {
+    const len = text.length;
+    if (len <= 8)  return 28;
+    if (len <= 12) return 22;
+    if (len <= 16) return 18;
+    if (len <= 20) return 14;
+    return 12;
+};
+
+const GradientTitleThree = ({ cardti }) => {
+    const canvasRef = useRef(null);
+
+    useEffect(() => {
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+
+        const W = 340;
+        const H = 50;
+
+        const draw = () => {
+            const ctx = canvas.getContext("2d");
+            canvas.width  = W * 2;
+            canvas.height = H * 2;
+            ctx.scale(2, 2);
+            ctx.clearRect(0, 0, W, H);
+
+            const fontSize = getTitleFontSizePx(cardti);
+            ctx.font         = `700 ${fontSize}px DinBold`;
+            ctx.textAlign    = "center";
+            ctx.textBaseline = "middle";
+
+            // Black outline (approximates the 4-directional text-shadow)
+            ctx.strokeStyle = "black";
+            ctx.lineWidth   = 4;
+            ctx.lineJoin    = "round";
+            ctx.strokeText(cardti.toUpperCase(), W / 2, H / 2);
+
+            // Solid blue fill on top
+            ctx.fillStyle = "#00BCFF";
+            ctx.fillText(cardti.toUpperCase(), W / 2, H / 2);
+        };
+
+        document.fonts.load(`700 ${getTitleFontSizePx(cardti)}px DinBold`).then(draw);
+    }, [cardti]);
+
+    return (
+        <canvas
+            ref={canvasRef}
+            style={{ position: "absolute", top: "32px", left: "25px", width: "340px", height: "50px", zIndex: 50 }}
+        />
+    );
+};
+
+const AttributeLabelMetallicCapture = ({ text, top, left, width = 140, height = 22 }) => {
+    const canvasRef = useRef(null);
+
+    useEffect(() => {
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+
+        const draw = () => {
+            const ctx = canvas.getContext("2d");
+            canvas.width  = width * 2;
+            canvas.height = height * 2;
+            ctx.scale(2, 2);
+            ctx.clearRect(0, 0, width, height);
+
+            ctx.font         = `900 16px GustanBlackCanvas`;
+            ctx.textAlign    = "left";
+            ctx.textBaseline = "middle";
+
+            const x = 0;
+            const y = height / 2;
+
+            // Thin stroke first (paint-order: stroke fill)
+            ctx.strokeStyle = "black";
+            ctx.lineWidth   = 0.75;
+            ctx.lineJoin    = "round";
+            ctx.strokeText(text, x, y);
+
+            // Vertical metallic gradient fill, matches metallicGradientClass stops
+            const grad = ctx.createLinearGradient(0, 0, 0, height);
+            grad.addColorStop(0.00, "#3a3a3a");
+            grad.addColorStop(0.20, "#787878");
+            grad.addColorStop(0.60, "#ffffff");
+            grad.addColorStop(0.90, "#787878");
+            grad.addColorStop(1.00, "#3a3a3a");
+            ctx.fillStyle = grad;
+            ctx.fillText(text, x, y);
+        };
+
+        document.fonts.load(`900 16px GustanBlackCanvas`).then(draw);
+    }, [text, width, height]);
+
+    return (
+        <canvas
+            ref={canvasRef}
+            style={{ position: "absolute", top: `${top}px`, left: `${left}px`, width: `${width}px`, height: `${height}px`, zIndex: 50 }}
+        />
+    );
+};
+
+const GradientBadgeThree = ({ acarddate }) => {
+    const canvasRef = useRef(null);
+
+    useEffect(() => {
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+
+        const W = 220;
+        const H = 60;
+
+        // Character-based split: first 6 chars on line 1, remainder on line 2
+        const dateLine1 = acarddate.length > 6 ? acarddate.slice(0, 6) : acarddate;
+        const dateLine2 = acarddate.length > 6 ? acarddate.slice(6) : null;
+        const lines = dateLine2 ? [dateLine1, dateLine2] : [dateLine1];
+
+        const draw = () => {
+            const ctx = canvas.getContext("2d");
+
+            canvas.width  = W * 2;
+            canvas.height = H * 2;
+            ctx.scale(2, 2);
+
+            ctx.clearRect(0, 0, W, H);
+            ctx.font         = `700 18px DinBold`;
+            ctx.textAlign    = "center";
+            ctx.textBaseline = "middle";
+
+            const lineHeight  = 22;
+            const totalHeight = lines.length * lineHeight;
+            const startY      = (H / 2) - (totalHeight / 2) + (lineHeight / 2);
+
+            const skew = Math.tan(-6 * Math.PI / 180);
+
+            lines.forEach((line, i) => {
+                const text = line.toUpperCase();
+                const y = startY + i * lineHeight;
+
+                ctx.save();
+
+                ctx.translate(W / 2, y);
+                ctx.transform(1, 0, skew, 1, 0, 0);
+                ctx.translate(-(W / 2), -y);
+
+                ctx.shadowColor = "transparent";
+                ctx.lineWidth   = 3;
+                ctx.lineJoin    = "round";
+                ctx.strokeStyle = "#ffffff";
+                ctx.strokeText(text, W / 2, y);
+
+                ctx.shadowColor   = "rgba(0,0,0,0.55)";
+                ctx.shadowBlur    = 3;
+                ctx.shadowOffsetX = 2;
+                ctx.shadowOffsetY = 3;
+                ctx.fillStyle = "#f5731f";
+                ctx.fillText(text, W / 2, y);
+
+                ctx.restore();
+            });
+        };
+
+        document.fonts.load(`700 18px DinBold`).then(() => {
+            draw();
+        });
+
+    }, [acarddate]);
+
+    return (
+        <canvas
+            ref={canvasRef}
+            style={{
+                position : "absolute",
+                left     : "85px",
+                top      : "500px",
+                width    : "220px",
+                height   : "60px",
+                zIndex   : 50,
+            }}
+        />
+    );
+};
+
 
 // const AttrRowCapture = ({ icon, text, value, top, left, fillColor }) => (
 //     <div style={{ position: "absolute", top: `${top}px`, left: `${left}px`, width: "176px", height: "44px" }}>
@@ -378,6 +561,55 @@ const AttrRowCapture2 = ({
     );
 };
 
+const AttrRowCapture3 = ({ icon, text, value, top, left, fillColor = "#f56f41", trackColor = "#000000" }) => {
+    const rowHeight = 26;
+    const iconSize  = 20;
+    const gap       = 6;
+    const barWidth  = 100;
+    const barHeight = 8;
+    const totalWidth = 260;
+
+    const textLeft  = iconSize + gap;
+    const textWidth = totalWidth - barWidth - textLeft - gap;
+    const barLeft   = totalWidth - barWidth;
+
+    const exportOffset = 2; // ← was 100 (debug value), now a small tuned offset
+
+    const iconTop = ((rowHeight - iconSize) / 2) - exportOffset;
+    const barTop  = ((rowHeight - barHeight) / 2) - exportOffset;
+
+    return (
+        <div style={{ position: "absolute", top: `${top}px`, left: `${left}px`, width: `${totalWidth}px`, height: `${rowHeight}px` }}>
+            {/* ↑ outline: "4px solid magenta" removed */}
+            {icon && (
+                <img
+                    src={icon}
+                    alt=""
+                    style={{ position: "absolute", top: `${iconTop}px`, left: "0px", width: `${iconSize}px`, height: `${iconSize}px`, objectFit: "contain" }}
+                />
+            )}
+
+            <AttributeLabelMetallicCapture
+                text={text}
+                top={0}
+                left={textLeft}
+                width={textWidth}
+                height={rowHeight}
+            />
+
+            <div
+                style={{
+                    position: "absolute", top: `${barTop}px`, left: `${barLeft}px`,
+                    width: `${barWidth}px`, height: `${barHeight}px`,
+                    borderRadius: "999px", backgroundColor: trackColor, overflow: "hidden",
+                }}
+            >
+                <div style={{ width: `${value}%`, height: "100%", borderRadius: "999px", backgroundColor: fillColor }} />
+            </div>
+        </div>
+    );
+};
+
 export const FrontOneCapture = ({ cardti, carddes, name, name2, name3, acarddate, labelone, labeltwo, labelthree, iconOne, iconTwo, iconThree }) => {
     const currentYear = new Date().getFullYear();
     return (
@@ -498,6 +730,49 @@ export const FrontTwoCapture = ({ cardti, carddes, name, name2, name3, acarddate
                     zIndex: 50,
                 }}
                 >
+                © {currentYear} MOMENTO TRADING CARDS
+            </span>
+        </div>
+    );
+};
+
+export const FrontThreeCapture = ({ cardti, carddes, name, name2, name3, acarddate, labelone, labeltwo, labelthree, iconOne, iconTwo, iconThree }) => {
+    const currentYear = new Date().getFullYear();
+
+    return (
+        <div style={{ position: "relative", width: "390px", height: "570px" }}>
+
+            <GradientTitleThree cardti={cardti} />
+
+            {/* Description — plain span, no gradient/stroke, captures fine as-is */}
+            <span style={{
+                position: "absolute", top: "99px", left: "28px", width: "265px",
+                fontFamily: "Hermona", fontSize: "11.5px", letterSpacing: "0.02em",
+                color: "#ffffff", lineHeight: 1.2,
+            }}>
+                {carddes}
+            </span>
+
+            {/* Attributes label — plain, no gradient */}
+            <span style={{
+                position: "absolute", top: "383px", left: "0px", width: "390px", textAlign: "center",
+                fontFamily: "DinBold", fontWeight: 700, fontSize: "14px",
+                color: "#000000", letterSpacing: "0.15em", textTransform: "uppercase",
+            }}>
+                Attributes
+            </span>
+
+            <AttrRowCapture3 icon={iconOne}   text={name}  value={labelone}   top={417} left={65} />
+            <AttrRowCapture3 icon={iconTwo}   text={name2} value={labeltwo}   top={441} left={65} />
+            <AttrRowCapture3 icon={iconThree} text={name3} value={labelthree} top={465} left={65} />
+
+            <GradientBadgeThree acarddate={acarddate} />
+
+            <span style={{
+                position: "absolute", bottom: "8px", left: "50%", transform: "translateX(-50%)",
+                fontFamily: "DinBold", fontWeight: 700, fontSize: "8px",
+                color: "#1f1f1f", letterSpacing: "0.05em", textAlign: "center", whiteSpace: "nowrap",
+            }}>
                 © {currentYear} MOMENTO TRADING CARDS
             </span>
         </div>

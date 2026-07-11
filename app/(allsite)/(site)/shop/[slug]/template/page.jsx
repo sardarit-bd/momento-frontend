@@ -36,6 +36,12 @@ const TEMPLATES = [
     description: "Contemporary card design",
     image: "/trading-cards/trading-front2.png",
   },
+  {
+    id: "3",
+    name: "Premium",
+    description: "Sleek transparent finish",
+    image: "/trading-cards/trading-front3.png",
+  },
 ];
 
 // Display info for the package chip in the header — the page only gets the
@@ -130,7 +136,7 @@ export default function TemplateSelectionPage() {
         </header>
 
         {/* Templates */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 max-w-3xl mx-auto">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 max-w-5xl mx-auto">
           {TEMPLATES.map((tpl) => {
             const isSelected = selected?.id === tpl.id;
             return (

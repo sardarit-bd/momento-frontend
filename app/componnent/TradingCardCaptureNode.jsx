@@ -1,5 +1,5 @@
 import React from "react";
-import { FrontOneCapture, FrontTwoCapture, BackOneCapture } from "@/app/componnent/TextOverlayerCapture";
+import { FrontOneCapture, FrontTwoCapture, FrontThreeCapture, BackOneCapture } from "@/app/componnent/TextOverlayerCapture";
 
 /**
  * Hidden, always-mounted 390x570 node used ONLY for html2canvas capture.
@@ -66,7 +66,15 @@ const TradingCardCaptureNode = React.forwardRef(({
             {/* Text overlay */}
             <div style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", zIndex: 50 }}>
                 {workingcard === "front" ? (
-                    cardfinder === 1 ? (
+                    cardfinder === 2 ? (
+                        <FrontThreeCapture
+                            cardti={cardti} carddes={carddes}
+                            name={displayAttributeOne} name2={displayAttributeTwo} name3={displayAttributeThree}
+                            acarddate={acarddate}
+                            labelone={labelone} labeltwo={labeltwo} labelthree={labelthree}
+                            iconOne={attrIconOne} iconTwo={attrIconTwo} iconThree={attrIconThree}
+                        />
+                    ) : cardfinder === 1 ? (
                         <FrontTwoCapture
                             cardti={cardti} carddes={carddes}
                             name={displayAttributeOne} name2={displayAttributeTwo} name3={displayAttributeThree}

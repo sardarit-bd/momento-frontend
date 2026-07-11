@@ -43,4 +43,5 @@ export const PACKAGE_CONFIG = {
 export const TEMPLATE_MAP = {
     "1": { image: "/trading-cards/trading-front1-transparent.png", cardfinder: 0 },
     "2": { image: "/trading-cards/trading-front2-transparent.png", cardfinder: 1 },
+    "3": { image: "/trading-cards/trading-front3-transparent.png", cardfinder: 2 },
 };

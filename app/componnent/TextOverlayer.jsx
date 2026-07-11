@@ -22,6 +22,17 @@ const AttributeLabel = ({ icon, text, className = "" }) => (
     </div>
 );
 
+
+const getTitleFontSize = (text = "") => {
+    const len = text.length;
+    if (len <= 8)  return "1.75rem";
+    if (len <= 12) return "1.4rem";
+    if (len <= 16) return "1.1rem";
+    if (len <= 20) return "0.9rem";
+    return "0.75rem";
+};
+
+
 const AttributeMetric = ({
     icon,
     text,
@@ -156,7 +167,7 @@ const AttributeMetricHorizontal = ({
                 display: "flex",
                 alignItems: "center",
                 gap: "4px",
-                flex: "0 0 55%",        // ← was width: "60%", flexShrink: 0
+                flex: "0 0 55%",
             }}
         >
             <img
@@ -206,6 +217,93 @@ const AttributeMetricHorizontal = ({
                     borderRadius: "999px",
                 }}
             />
+        </div>
+    </div>
+);
+
+const fauxBoldShadow = `
+    0 0 0 black,
+    0.5px 0 0 black,
+    -0.5px 0 0 black,
+    0 0.5px 0 black,
+    0 -0.5px 0 black,
+    0.5px 0.5px 0 black,
+    -0.5px -0.5px 0 black,
+    0.5px -0.5px 0 black,
+    -0.5px 0.5px 0 black
+`;
+
+const metallicGradientClass = `
+    text-transparent
+    bg-clip-text
+    bg-[linear-gradient(180deg,_#3a3a3a_0%,_#787878_20%,_#ffffff_60%,_#787878_90%,_#3a3a3a_100%)]
+    bg-[length:100%_100%]
+`;
+
+const AttributeMetricHorizontal2 = ({
+    icon,
+    text,
+    value,
+    wrapperClass = "",
+    textClass = "",
+    trackColor = "#000000",
+    fillColor = "#5ba2d8",
+    metallic = false,
+    id,
+}) => (
+    <div
+        id={id}
+        className={wrapperClass}
+        style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: "6px",
+            backgroundColor: "transparent",
+            width: "100%",
+        }}
+    >
+        <div style={{ display: "flex", alignItems: "center", gap: "4px", flex: "0 0 62%" }}>
+            <img
+                src={icon}
+                alt="attribute-icon"
+                style={{ width: "20px", height: "20px", objectFit: "contain", flexShrink: 0 }}
+            />
+            <span
+                className={`${textClass} ${metallic ? metallicGradientClass : ""}`}
+                style={{
+                    whiteSpace: "nowrap",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    display: "inline-block",
+                    lineHeight: 1,
+                    ...(metallic
+                        ? { WebkitTextStroke: "0.5px black", paintOrder: "stroke fill" }
+                        : {
+                            textShadow: `
+                                -1px -1px 0 #000,
+                                1px -1px 0 #000,
+                                -1px  1px 0 #000,
+                                1px  1px 0 #000
+                            `,
+                        }),
+                }}
+            >
+                {text}
+            </span>
+        </div>
+
+        <div
+            style={{
+                flex: "1 1 0",
+                minWidth: 0,
+                height: "10px",
+                borderRadius: "999px",
+                backgroundColor: trackColor,
+                overflow: "hidden",
+            }}
+        >
+            <div style={{ width: `${value}%`, height: "100%", backgroundColor: fillColor, borderRadius: "999px" }} />
         </div>
     </div>
 );
@@ -401,62 +499,105 @@ export const FrontTwo = ({ cardti, carddes, name, name2, name3, acarddate, label
 };
 
 export const FrontThree = ({ cardti, carddes, name, name2, name3, acarddate, labelone, labeltwo, labelthree, iconOne, iconTwo, iconThree }) => {
+    
     const currentYear = new Date().getFullYear();
+    const dateLine1 = acarddate.length > 6 ? acarddate.slice(0, 6) : acarddate;
+    const dateLine2 = acarddate.length > 6 ? acarddate.slice(6) : null;
+
     return (
         <div className="w-full h-full relative" style={{ backgroundColor: 'transparent' }}>
-            <span className="text-white text-[10px] lg:text-[11.5px] AileronFont tracking-wider font-thin absolute left-5 lg:left-7 top-63 lg:top-97 w-[160px] lg:w-[265px] z-50">{carddes}</span>
 
-            <div className="absolute left-[25px] right-[25px] bottom-[33px] h-1/3 z-40 pointer-events-none rounded-bl-2xl rounded-br-2xl overflow-hidden">
-                <div
-                    className="absolute left-0 top-0 bottom-0 w-1/2"
-                    style={{ background: "linear-gradient(180deg, rgba(252,211,77,0) 0%, rgba(255, 117, 4, 0.34) 18%, rgba(234,88,12,0.62) 100%)" }}
-                />
-                <div
-                    className="absolute right-0 top-0 bottom-0 w-1/2"
-                    style={{ background: "linear-gradient(180deg, rgba(252,211,77,0) 0%, rgba(255, 117, 4, 0.34) 18%, rgba(234,88,12,0.58) 100%)" }}
-                />
+            {/* Name — centered banner at the top */}
+            <span
+                id="card-title"
+                className="absolute top-[7%] left-[38%] -translate-x-1/2 z-50 text-[#00BCFF] uppercase tracking-wide text-center"
+                style={{
+                    fontFamily: 'DinBold',
+                    fontSize: getTitleFontSize(cardti),
+                    textShadow: '-2px -1px 0 #000, 1px -1px 0 #000, -2px 1px 0 #000, 2px 1px 0 #000',
+                    width: '85%',     
+                    maxWidth: '340px',
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                }}
+            >
+                {cardti}
+            </span>
+
+            {/* Description */}
+            <span
+                className="text-white text-[10px] lg:text-[11.5px] tracking-wider font-thin absolute left-5 lg:left-7 top-63 lg:top-97 w-[160px] lg:w-[265px] z-50"
+                style={{ fontFamily: 'Hermona' }}
+            >
+                {carddes}
+            </span>
+
+            {/* Fixed "ATTRIBUTES" header pill */}
+            <div className="absolute left-[52%] -translate-x-1/2 bottom-[28.5%] z-50">
+                <span
+                    className="block text-black text-[14px] font-bold uppercase tracking-widest px-4 py-1 rounded-full whitespace-nowrap"
+                    style={{ fontFamily: 'DinBold'}}
+                >
+                    Attributes
+                </span>
             </div>
 
-            <div className="absolute left-[25px] bottom-[33px] z-50 w-[102px] lg:w-[118px]" style={{ backgroundColor: 'transparent' }}>
-                <AttributeMetric
+            {/* Attribute rows — full width, icon + label + bar on one line */}
+            <div className="absolute left-[10%] right-[10%] bottom-[15%]  z-50 flex flex-col gap-1">
+                <AttributeMetricHorizontal2
                     icon={iconOne}
                     text={name}
                     value={labelone}
-                    textClass="text-white text-[10px] lg:text-[14px] AileronFont tracking-wider font-medium italic text-left"
-                    trackClass="bg-white"
-                    fillClass="bg-[#f56f41]"
-                    trackColor="#ffffff"
+                    metallic
+                    textClass="text-[16px] tracking-wider GustanBlackFont"
+                    trackColor="#000000"
                     fillColor="#f56f41"
                 />
-                <AttributeMetric
-                    icon={iconTwo}
+                <AttributeMetricHorizontal2
+                    icon={iconOne}
                     text={name2}
                     value={labeltwo}
-                    wrapperClass="mt-1.5 lg:mt-2"
-                    textClass="text-white text-[10px] lg:text-[14px] AileronFont tracking-wider font-medium italic text-left"
-                    trackClass="bg-white"
-                    fillClass="bg-[#f56f41]"
-                    trackColor="#ffffff"
+                    metallic
+                    textClass="text-[16px] tracking-wider GustanBlackFont"
+                    trackColor="#000000"
                     fillColor="#f56f41"
                 />
-                <AttributeMetric
-                    icon={iconThree}
+                <AttributeMetricHorizontal2
+                    icon={iconOne}
                     text={name3}
                     value={labelthree}
-                    wrapperClass="mt-1.5 lg:mt-2"
-                    textClass="text-white text-[10px] lg:text-[14px] AileronFont tracking-wider font-medium italic text-left"
-                    trackClass="bg-white"
-                    fillClass="bg-[#f56f41]"
-                    trackColor="#ffffff"
+                    metallic
+                    textClass="text-[16px] tracking-wider GustanBlackFont"
+                    trackColor="#000000"
                     fillColor="#f56f41"
                 />
             </div>
 
-            <div className="absolute right-[25px] bottom-[33px] z-50 w-[130px] lg:w-[200px] text-right" style={{ backgroundColor: 'transparent' }}>
-                <span className="block uppercase text-white font-extrabold text-xs lg:text-xl BrunsonFont leading-tight">{cardti}</span>
-                <span className="block font-semibold BrunsonFont tracking-widest lg:font-medium text-[11px] lg:text-[2.2rem] tracking-tighter leading-tight mt-0 TradingCardDateGrayGradient">{acarddate}</span>
+            {/* Date — bottom right */}
+            <div className="absolute left-1/2 -translate-x-1/2 top-[90%] z-50 text-center">
+                <div className="TradingCardBadgeOrange">
+                    <span
+                        className="block TradingCardBadgeOrangeText font-bold uppercase text-[1rem] tracking-wider leading-tight"
+                        style={{ fontFamily: 'DinBold' }}
+                    >
+                        {dateLine2 ? (
+                            <>
+                                {dateLine1}
+                                <br />
+                                {dateLine2}
+                            </>
+                        ) : (
+                            dateLine1
+                        )}
+                    </span>
+                </div>
             </div>
-            <span className="absolute bottom-[8px] left-1/2 -translate-x-1/2 z-50 text-[8px] lg:text-[12px] text-[#1f1f1f] font-semibold tracking-wide text-center whitespace-nowrap">
+
+            <span
+                className="absolute bottom-[8px] left-1/2 -translate-x-1/2 z-50 text-[0.5rem] text-[#1f1f1f] font-semibold tracking-wide text-center whitespace-nowrap"
+                style={{ fontFamily: 'DinBold' }}
+            >
                 &copy; {currentYear} MOMENTO TRADING CARDS
             </span>
         </div>

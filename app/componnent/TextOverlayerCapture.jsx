@@ -331,7 +331,7 @@ const AttributeLabelMetallicCapture = ({ text, top, left, width = 140, height = 
     );
 };
 
-const GradientBadgeThree = ({ acarddate }) => {
+const GradientBadgeThree = ({ acarddate, offsetY = 0 }) => {
     const canvasRef = useRef(null);
 
     useEffect(() => {
@@ -341,7 +341,6 @@ const GradientBadgeThree = ({ acarddate }) => {
         const W = 220;
         const H = 60;
 
-        // Character-based split: first 6 chars on line 1, remainder on line 2
         const dateLine1 = acarddate.length > 6 ? acarddate.slice(0, 6) : acarddate;
         const dateLine2 = acarddate.length > 6 ? acarddate.slice(6) : null;
         const lines = dateLine2 ? [dateLine1, dateLine2] : [dateLine1];
@@ -360,7 +359,7 @@ const GradientBadgeThree = ({ acarddate }) => {
 
             const lineHeight  = 22;
             const totalHeight = lines.length * lineHeight;
-            const startY      = (H / 2) - (totalHeight / 2) + (lineHeight / 2);
+            const startY      = (H / 2) - (totalHeight / 2) + (lineHeight / 2) + offsetY; // ← shift down
 
             const skew = Math.tan(-6 * Math.PI / 180);
 
@@ -395,7 +394,7 @@ const GradientBadgeThree = ({ acarddate }) => {
             draw();
         });
 
-    }, [acarddate]);
+    }, [acarddate, offsetY]);
 
     return (
         <canvas
@@ -403,7 +402,7 @@ const GradientBadgeThree = ({ acarddate }) => {
             style={{
                 position : "absolute",
                 left     : "85px",
-                top      : "500px",
+                top      : "505px",
                 width    : "220px",
                 height   : "60px",
                 zIndex   : 50,
@@ -580,7 +579,6 @@ const AttrRowCapture3 = ({ icon, text, value, top, left, fillColor = "#f56f41", 
 
     return (
         <div style={{ position: "absolute", top: `${top}px`, left: `${left}px`, width: `${totalWidth}px`, height: `${rowHeight}px` }}>
-            {/* ↑ outline: "4px solid magenta" removed */}
             {icon && (
                 <img
                     src={icon}
@@ -614,6 +612,15 @@ export const FrontOneCapture = ({ cardti, carddes, name, name2, name3, acarddate
     const currentYear = new Date().getFullYear();
     return (
         <div style={{ position: "relative", width: "390px", height: "570px" }}>
+
+            {/* Description — top area, matches live FrontOne preview */}
+            <span style={{
+                position: "absolute", top: "88px", left: "24px", width: "320px",
+                fontFamily: "AileronCanvas", fontWeight: 300, fontSize: "11px",
+                letterSpacing: "0.05em", lineHeight: 1.2, color: "#ffffff", textAlign: "center",
+            }}>
+                {carddes}
+            </span>
 
             {/* Attribute rows */}
             <AttrRowCapture icon={iconOne}   text={name}  value={labelone}   top={384} left={40} fillColor="#f56f41" />
@@ -652,6 +659,15 @@ export const FrontTwoCapture = ({ cardti, carddes, name, name2, name3, acarddate
         <div style={{ position: "relative", width: "390px", height: "570px" }}>
             {/* Layer 1: stroke only */}
             <GradientTitle cardti={cardti} />
+
+            {/* Description — top area, matches live FrontTwo preview */}
+            <span style={{
+                position: "absolute", top: "85px", left: "24px", width: "320px",
+                fontFamily: "AileronCanvas", fontWeight: 300, fontSize: "11px",
+                letterSpacing: "0.05em", lineHeight: 1.2, color: "#ffffff", textAlign: "center",
+            }}>
+                {carddes}
+            </span>
 
             {/* ── Attribute Rows ── */}
             <AttrRowCapture2
@@ -742,22 +758,19 @@ export const FrontThreeCapture = ({ cardti, carddes, name, name2, name3, acardda
     return (
         <div style={{ position: "relative", width: "390px", height: "570px" }}>
 
-            <GradientTitleThree cardti={cardti} />
-
-            {/* Description — plain span, no gradient/stroke, captures fine as-is */}
-            <span style={{
-                position: "absolute", top: "99px", left: "28px", width: "265px",
-                fontFamily: "Hermona", fontSize: "11.5px", letterSpacing: "0.02em",
-                color: "#ffffff", lineHeight: 1.2,
+            <div style={{
+                position: "absolute",
+                top: "6px",
+                left: "-30px",
             }}>
-                {carddes}
-            </span>
+                <GradientTitleThree cardti={cardti} offsetX={-6} />
+            </div>
 
             {/* Attributes label — plain, no gradient */}
             <span style={{
-                position: "absolute", top: "383px", left: "0px", width: "390px", textAlign: "center",
+                position: "absolute", top: "375px", left: "10px", width: "390px", textAlign: "center",
                 fontFamily: "DinBold", fontWeight: 700, fontSize: "14px",
-                color: "#000000", letterSpacing: "0.15em", textTransform: "uppercase",
+                color: "#000000", textTransform: "uppercase",
             }}>
                 Attributes
             </span>
@@ -769,7 +782,7 @@ export const FrontThreeCapture = ({ cardti, carddes, name, name2, name3, acardda
             <GradientBadgeThree acarddate={acarddate} />
 
             <span style={{
-                position: "absolute", bottom: "8px", left: "50%", transform: "translateX(-50%)",
+                position: "absolute", bottom: "6px", left: "50%", transform: "translateX(-50%)",
                 fontFamily: "DinBold", fontWeight: 700, fontSize: "8px",
                 color: "#1f1f1f", letterSpacing: "0.05em", textAlign: "center", whiteSpace: "nowrap",
             }}>

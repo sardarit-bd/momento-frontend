@@ -595,7 +595,7 @@ export const FrontThree = ({ cardti, carddes, name, name2, name3, acarddate, lab
             </div>
 
             <span
-                className="absolute bottom-[8px] left-1/2 -translate-x-1/2 z-50 text-[0.5rem] text-[#1f1f1f] font-semibold tracking-wide text-center whitespace-nowrap"
+                className="absolute bottom-[6px] left-1/2 -translate-x-1/2 z-50 text-[0.5rem] text-[#1f1f1f] font-semibold tracking-wide text-center whitespace-nowrap"
                 style={{ fontFamily: 'DinBold' }}
             >
                 &copy; {currentYear} MOMENTO TRADING CARDS

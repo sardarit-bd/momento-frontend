@@ -38,7 +38,7 @@ const TEMPLATES = [
   },
   {
     id: "3",
-    name: "Premium",
+    name: "New Template",
     description: "Sleek transparent finish",
     image: "/trading-cards/trading-front3.png",
   },

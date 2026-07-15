@@ -8,6 +8,7 @@ const One = () => {
     const options = [
         { type: "simple",       label: "Simple Product" },
         { type: "customizable", label: "Customizable Deck Product" },
+        { type: "photo",        label: "Photo Portrait Product" },
         { type: "trading",      label: "Customizable Trading Product" },
     ];
 

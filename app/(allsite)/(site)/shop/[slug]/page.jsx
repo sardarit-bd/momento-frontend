@@ -117,6 +117,8 @@ const SingleProduct = () => {
 
                 if (type == "customizable") {
                     router.push(`/application/deckcard/${slug}`);
+                } else if (type == "photo") {
+                    router.push(`/application/photoportrait/${slug}`);
                 } else {
                     router.push(`/shop/${slug}/select`);
                 }
@@ -128,6 +130,21 @@ const SingleProduct = () => {
 
         }, 1000);
     }
+
+    // Navigate to a customizer (deck or photo portrait) honouring the
+    // published/subscription gate used elsewhere.
+    const handleCustomizerNav = (e, path) => {
+        e.preventDefault();
+        setbtnLoading(true);
+        setTimeout(() => {
+            setbtnLoading(false);
+            if (data?.status) {
+                router.push(path);
+            } else {
+                setSubcriptionModal(true);
+            }
+        }, 1000);
+    };
 
 
     // handle subscribes function
@@ -187,7 +204,7 @@ const SingleProduct = () => {
 
                     <div className="space-y-4 col-span-3">
                         <p><strong>Name:</strong> {data?.name}</p>
-                        <p><strong>Type:</strong> {data?.type === "trading" && "Trading Card"} {data?.type === "customizable" && "Customizable Card"} {data?.type === "simple" && "Simple Card"}</p>
+                        <p><strong>Type:</strong> {data?.type === "trading" && "Trading Card"} {data?.type === "customizable" && "Customizable Card"} {data?.type === "photo" && "Photo Portrait"} {data?.type === "simple" && "Simple Card"}</p>
                         <p><strong>Price:</strong> ${data?.price}</p>
                         <p><strong>Offer Price:</strong> ${data?.offer_price}</p>
                         <p><strong>Status:</strong> {data?.status ? "Published" : "Draft"}</p>
@@ -196,20 +213,32 @@ const SingleProduct = () => {
 
                         <div className="space-y-2">
                             <p className="text-sm text-gray-600">Create yours in under 2 minutes</p>
-                            <button
-                                onClick={(e) => { { data?.type === "customizable" || data?.type === "trading" ? handleaddToCustomizable(e, data?.type, data?.slug) : handleaddToCart(e) } }}
-                                disabled={btnLoading}
-                                className="flex-1 inline-flex justify-center items-center gap-2 rounded-md bg-sky-500 text-white py-2.5 px-4 text-md font-semibold shadow-lg hover:brightness-105 transition cursor-pointer flex items-center justify-center gap-2"
-                            >
-                                {
-                                    btnLoading ? <SpinLoader /> : data?.type === "customizable" ? <BsStars className="text-white text-xl" /> : <FiShoppingCart className="text-xl text-white" />
-                                }
-                                {data?.type === "customizable" ? "Create Your Deck" : data?.type === "trading" ? "Create Your Momento" : "Add to Cart"}
-                            </button>
+
+                            {data?.type === "photo" ? (
+                                <button
+                                    onClick={(e) => handleCustomizerNav(e, `/application/photoportrait/${data?.slug}`)}
+                                    disabled={btnLoading}
+                                    className="flex-1 inline-flex justify-center items-center gap-2 rounded-md bg-sky-500 text-white py-2.5 px-4 text-md font-semibold shadow-lg hover:brightness-105 transition cursor-pointer"
+                                >
+                                    {btnLoading ? <SpinLoader /> : <BsStars className="text-white text-xl" />}
+                                    Create Your Photo Portrait
+                                </button>
+                            ) : (
+                                <button
+                                    onClick={(e) => { { data?.type === "customizable" || data?.type === "trading" ? handleaddToCustomizable(e, data?.type, data?.slug) : handleaddToCart(e) } }}
+                                    disabled={btnLoading}
+                                    className="flex-1 inline-flex justify-center items-center gap-2 rounded-md bg-sky-500 text-white py-2.5 px-4 text-md font-semibold shadow-lg hover:brightness-105 transition cursor-pointer flex items-center justify-center gap-2"
+                                >
+                                    {
+                                        btnLoading ? <SpinLoader /> : data?.type === "customizable" || data?.type === "trading" ? <BsStars className="text-white text-xl" /> : <FiShoppingCart className="text-xl text-white" />
+                                    }
+                                    {data?.type === "customizable" ? "Create Your Deck" : data?.type === "trading" ? "Create Your Momento" : "Add to Cart"}
+                                </button>
+                            )}
                             <p className="text-sm text-gray-600">
                                 {data?.type === "trading"
                                     ? "Perfect for gifting • Fully customizable • Made to be shared"
-                                    : data?.type === "customizable"
+                                    : data?.type === "customizable" || data?.type === "photo"
                                         ? "Preview before you order • Premium quality • Made on demand"
                                         : "Simple"}
                             </p>
@@ -299,5 +328,3 @@ const SingleProduct = () => {
 }
 
 export default SingleProduct;
-
-

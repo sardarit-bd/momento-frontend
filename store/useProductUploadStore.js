@@ -55,7 +55,6 @@ const useProductUploadStore = create((set) => ({
     tredingBackBase: [],
     settredingBackBase: (product) => set({ tredingBackBase: product }),
 
-
 }));
 
 export default useProductUploadStore;

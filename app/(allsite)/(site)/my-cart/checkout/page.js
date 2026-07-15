@@ -297,13 +297,16 @@ export default function CheckoutPage() {
 
     const restore = async () => {
       try {
-        const { restoreCartImagesFromIDB, restoreDeckCartImagesFromIDB } = await import("@/store/useCartStore");
+        const { restoreCartImagesFromIDB, restoreDeckCartImagesFromIDB, restorePhotoCartImagesFromIDB } = await import("@/store/useCartStore");
 
         // Step 1: restore trading card images (existing logic — unchanged)
         const tradingRestored = await restoreCartImagesFromIDB(cart);
 
         // Step 2: restore deck card images on top
-        const fullyRestored = await restoreDeckCartImagesFromIDB(tradingRestored);
+        const deckRestored = await restoreDeckCartImagesFromIDB(tradingRestored);
+
+        // Step 3: restore photo portrait images on top
+        const fullyRestored = await restorePhotoCartImagesFromIDB(deckRestored);
 
         setHydratedCart(fullyRestored);
       } catch (e) {
@@ -491,6 +494,21 @@ export default function CheckoutPage() {
         }));
     }
 
+    // ── Photo Portrait card restored from IDB: same rank + image shape as deck ──
+    if (
+      item?.customization_mode === "photo" &&
+      Array.isArray(item?.FinalProduct) &&
+      item.FinalProduct.some(isDeckCustomizedCard)
+    ) {
+      return item.FinalProduct
+        .filter(isDeckCustomizedCard)
+        .map((card) => ({
+          type: "image",
+          src: card.image,
+          isJoker: isJokerRankValue(card.rank),
+        }));
+    }
+
     // ── Deck card in-memory (not refreshed): has baseImage + selectedLayers ──
     if (Array.isArray(item?.FinalProduct) && item.FinalProduct.some(isDeckLayeredCard)) {
       return item.FinalProduct
@@ -525,7 +543,7 @@ export default function CheckoutPage() {
     const editableItem = cart.find(
       (item) =>
         item?.productSlug &&
-        (item?.productType === "trading" || item?.productType === "customizable")
+        (item?.productType === "trading" || item?.productType === "customizable" || item?.productType === "photo")
     );
 
     if (!editableItem?.productSlug) {
@@ -535,6 +553,11 @@ export default function CheckoutPage() {
 
     if (editableItem?.productType === "trading") {
       router.push(`/application/tradingcard/${editableItem.productSlug}`);
+      return;
+    }
+
+    if (editableItem?.productType === "photo") {
+      router.push(`/application/photoportrait/${editableItem.productSlug}`);
       return;
     }
 
@@ -631,6 +654,7 @@ export default function CheckoutPage() {
     const type = String(item?.productType || "").toLowerCase();
     if (type === "trading") return "trading";
     if (type === "customizable") return "deck";
+    if (type === "photo") return "photo";
     if (Array.isArray(item?.FinalProduct) && item.FinalProduct.some((card) => card?.editedCard)) {
       return "deck";
     }
@@ -704,7 +728,7 @@ export default function CheckoutPage() {
 
           const customization_mode = deriveCustomizationMode(item);
           const FinalProduct =
-            customization_mode === "deck"
+            customization_mode === "deck" || customization_mode === "photo"
               ? await normalizeDeckFinalProduct(item)
               : await normalizeTradingFinalProduct(item);
 
@@ -733,7 +757,9 @@ export default function CheckoutPage() {
         ? localStorage.getItem("persistent_packageTitle") ?? tradingItem?.packTitle ?? null
         : tradingItem?.packTitle ?? null;
 
-      const deckItem = hydratedCart.find(item => item.customization_mode === 'deck');
+      const deckItem = hydratedCart.find(
+        (item) => item.customization_mode === "deck" || item.customization_mode === "photo"
+      );
       const characterImages = deckItem?.CharacterImages ?? deckcart?.[0]?.CharacterImages ?? [];
 
       const checkoutData = {
@@ -805,10 +831,16 @@ export default function CheckoutPage() {
   const deckBoxCharacterImages =
     deckcart?.[0]?.CharacterImages?.length > 0
       ? deckcart[0].CharacterImages
-      : hydratedCart.find((item) => item.customization_mode === "deck")?.CharacterImages ?? [];
+      : hydratedCart.find(
+          (item) => item.customization_mode === "deck" || item.customization_mode === "photo"
+        )?.CharacterImages ?? [];
 
   const hasDeckItemForBoxPreview = cart.some(
-    (item) => item.productType === "customizable" || item.customization_mode === "deck"
+    (item) =>
+      item.productType === "customizable" ||
+      item.productType === "photo" ||
+      item.customization_mode === "deck" ||
+      item.customization_mode === "photo"
   );
 
   const showDeckBoxPreview = hasDeckItemForBoxPreview && deckBoxCharacterImages.length > 0;
@@ -832,7 +864,11 @@ export default function CheckoutPage() {
                 className="text-xl sm:text-2xl font-semibold"
                 style={{ fontFamily: "var(--font-display)" }}
               >
-                {cart.some(item => item?.productType === "trading") ? "Your Trading Card" : "Your Deck Card"}
+                {cart.some(item => item?.productType === "trading")
+                  ? "Your Trading Card"
+                  : cart.some(item => item?.productType === "photo")
+                    ? "Your Photo Portrait"
+                    : "Your Deck Card"}
               </h2>
             </div>
 
@@ -858,7 +894,9 @@ export default function CheckoutPage() {
                   const packagePrice = Number(pricedLine?.base_unit_price ?? 0);
                   // Price breakdown is deck-only — trading cards just
                   // show their card art, no per-line price panel.
-                  const isDeckItem = deriveCustomizationMode(item) === "deck";
+                  const isDeckItem =
+                    deriveCustomizationMode(item) === "deck" ||
+                    deriveCustomizationMode(item) === "photo";
 
                   return (
                     <div

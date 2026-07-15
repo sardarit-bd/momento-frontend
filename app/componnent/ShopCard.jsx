@@ -41,7 +41,7 @@ export default function ShopCard({ product }) {
                 {/* Other badges */}
                 <div className="absolute top-3 left-3 flex gap-2">
                     {(() => {
-                        const displayBadge = product?.type === "customizable" || product?.type === "trading" ? "Customizable" : "Simple";
+                        const displayBadge = product?.type === "customizable" || product?.type === "trading" || product?.type === "photo" ? "Customizable" : "Simple";
                         return (
                             <span
                                 className="text-xs font-semibold px-3 py-1 rounded-full bg-white/90 text-gray-800 shadow-md flex items-center gap-1"

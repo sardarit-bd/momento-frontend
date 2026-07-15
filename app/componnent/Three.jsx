@@ -166,7 +166,7 @@ const Three = () => {
                             : <p className="text-gray-400 text-sm">No gallery images</p>}
                     </Section>
 
-                    {productType === "customizable" && (
+                    {productType === "customizable" || productType === "photo" && (
                         <>
                             <Section title="Base Cards">
                                 {layerBaseCard?.length > 0

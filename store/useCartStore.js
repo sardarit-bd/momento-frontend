@@ -56,6 +56,53 @@ const sanitizeForStorage = (item) => {
   };
 };
 
+// ── Photo Portrait card (new, mirrors deck) ───────────────────────────────────
+
+const idbPhotoCartKey = (cartId) => `cart-photo-images:${cartId}`;
+
+export const savePhotoCartImagesToIDB = async (cartItems) => {
+  const { idbPut } = await import("@/app/(allsite)/(application)/application/tradingcard/[slug]/_tradingcard/lib/idb");
+  for (const item of cartItems) {
+    if (!item?.id) continue;
+    if (item?.customization_mode !== "photo") continue;
+    const key = idbPhotoCartKey(item.id);
+
+    await idbPut(key, {
+      FinalProduct:       item.FinalProduct       ?? [],
+      FinalProductImages: item.FinalProductImages ?? [],
+      CharacterImages:    item.CharacterImages    ?? [],
+    });
+  }
+};
+
+export const restorePhotoCartImagesFromIDB = async (cartItems) => {
+  const { idbGet } = await import("@/app/(allsite)/(application)/application/tradingcard/[slug]/_tradingcard/lib/idb");
+  return Promise.all(
+    cartItems.map(async (item) => {
+      if (!item?.id) return item;
+      if (item?.customization_mode !== "photo") return item;
+      try {
+        const key = idbPhotoCartKey(item.id);
+
+        const saved = await idbGet(key);
+        if (saved?.FinalProduct?.length) {
+          return {
+            ...item,
+            FinalProduct:       saved.FinalProduct,
+            FinalProductImages: saved.FinalProductImages ?? [],
+            CharacterImages:    saved.CharacterImages    ?? [],
+          };
+        } else {
+          console.warn("No photo FinalProduct found in IDB for key:", key);
+        }
+      } catch (e) {
+        console.error("IDB photo get error:", e);
+      }
+      return item;
+    })
+  );
+};
+
 // ─── Safe localStorage wrapper ────────────────────────────────────────────────
 
 const idbCartKey      = (cartId) => `cart-images:${cartId}`;

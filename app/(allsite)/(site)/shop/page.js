@@ -37,6 +37,7 @@ const About = () => {
 
     const filteredProducts = products?.data?.filter((p) => {
         if (type === "all") return true;
+        if (type === "photo") return p?.type === "photo";
         return p.type === type;
     });
 
@@ -48,11 +49,12 @@ const About = () => {
     return (
         <div>
             <div className="text-gray-900 px-8 max-w-7xl mx-auto pt-9 lg:pt-16 flex items-center justify-between">
-                <h3 className="text-gray-700 text-lg lg:text-3xl font-bold">{type === "trading" ? "Trading Cards" : type === "customizable" ? "Deck Cards" : type === "simple" ? "Simple Cards" : "All Products"}</h3>
+                <h3 className="text-gray-700 text-lg lg:text-3xl font-bold">{type === "trading" ? "Trading Cards" : type === "customizable" ? "Deck Cards" : type === "photo" ? "Photo Portrait" : type === "simple" ? "Simple Cards" : "All Products"}</h3>
                 <select value={type} onChange={(e) => { settype(e.target.value) }} className="border border-gray-400 w-fit  px-1 lg:px-3 py-1 font-medium text-md lg:text-lg rounded-lg cursor-pointer outline-none focus:outline-none bg-gray-50">
                     <option value={"all"}>Select Card Type</option>
                     <option value={"trading"}>Trading Cards</option>
                     <option value={"customizable"}>Deck Cards</option>
+                    <option value={"photo"}>Photo Portrait</option>
                     {/* <option value={"simple"}>Simple Cards</option> */}
                 </select>
             </div>

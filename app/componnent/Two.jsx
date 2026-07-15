@@ -220,7 +220,7 @@ const Two = () => {
 
     /* ── next step validation ── */
     const handleNext = () => {
-        if (productType === "customizable") {
+        if (productType === "customizable" || productType === "photo") {
             if (productName && productPrice > 0 && productShortDescription && productCategory && productThumbnail && productImages?.length > 0 && layerBaseCard?.length > 0 && layerSkinTone?.length > 0) {
                 setLoading(true);
                 setTimeout(() => { setLoading(false); setrander(3); }, 900);
@@ -321,7 +321,7 @@ const Two = () => {
                         </div>
 
                         {/* ══ CUSTOMIZABLE LAYERS ══ */}
-                        {productType === 'customizable' && (
+                        {productType === 'customizable' || productType === 'photo' && (
                             <>
                                 {/* Base Cards */}
                                 <div className="mt-6">

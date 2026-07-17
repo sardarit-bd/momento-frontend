@@ -14,6 +14,9 @@ import PhotoCardPreview from "../../../../../componnent/PhotoCardPreview";
 import PhotoCardSidebar from "../../../../../componnent/PhotoCardSidebar";
 import PhotoSideController from "../../../../../componnent/PhotoSideController";
 import PhotoMobileCustomizerSheet from "../../../../../componnent/PhotoMobileCustomizerSheet";
+import PhotoPortraitBoxPreview from "../../../../../componnent/PhotoPortraitBoxPreview";
+import PhotoPortraitBoxCustomizer from "../../../../../componnent/PhotoPortraitBoxCustomizer";
+import { GiCardboardBox } from "react-icons/gi";
 
 const layers = ["dresses", "skin_tones", "hairs", "crowns", "beards", "eyes", "mouths", "noses"];
 
@@ -25,6 +28,7 @@ const CARD_STEPS = [
 ];
 
 const JOKER_STEP = { type: "Joker_Card", label: "Joker", icon: GiCardJoker };
+const BOX_STEP = { type: "Box_Customization", label: "Box", icon: GiCardboardBox };
 
 const getSortedInsertIndex = (currentCards, cardType) => {
     const order = [...CARD_FLOW, "Joker_Card"];
@@ -61,6 +65,9 @@ const STEP_COPY = {
     },
     Joker_Card: {
         heading: "Create Your Joker",
+    },
+    Box_Customization: {
+        heading: "Customize Your Box",
     },
 };
 
@@ -103,7 +110,9 @@ const ProductCustomizer = () => {
     const { slug } = useParams();
     const customCardsStorageKey = `photoCustomCards:${slug}`;
     const customCardsActiveIndexStorageKey = `photoCustomCardsActiveIndex:${slug}`;
+    const boxImagesStorageKey = `photoBoxImages:${slug}`;
     const previewCardNodeRef = useRef(null);
+    const boxPreviewRef = useRef(null);
 
     const [product, setProduct] = useState(null);
     const [cards, setCards] = useState([]);
@@ -115,6 +124,17 @@ const ProductCustomizer = () => {
     const [editedCard, seteditedCard] = useState(CARD_FLOW[0]);
     const [activebaseEditCard, setactivebaseEditCard] = useState([]);
     const [showJokerUpsell, setshowJokerUpsell] = useState(false);
+    const [activeStep, setActiveStep] = useState("card");
+    const [boxImages, setBoxImages] = useState(() => {
+        if (typeof window === "undefined") return [];
+        try {
+            const saved = localStorage.getItem(`photoBoxImages:${slug}`);
+            const parsed = saved ? JSON.parse(saved) : null;
+            return Array.isArray(parsed) ? parsed : [];
+        } catch {
+            return [];
+        }
+    });
     const { setfinalCards } = usefinalCardsStore();
     const { setboxs } = useboxcartstore();
 
@@ -249,6 +269,11 @@ const ProductCustomizer = () => {
         localStorage.setItem("photoCustomCards", JSON.stringify(cards));
         localStorage.setItem(customCardsActiveIndexStorageKey, String(activeCardIndex));
     }, [cards, activeCardIndex, slug, customCardsStorageKey, customCardsActiveIndexStorageKey]);
+
+    useEffect(() => {
+        if (!slug) return;
+        localStorage.setItem(boxImagesStorageKey, JSON.stringify(boxImages));
+    }, [boxImages, slug, boxImagesStorageKey]);
 
     useEffect(() => {
         const currentCardType = cards?.[activeCardIndex]?.editedCard;
@@ -505,7 +530,7 @@ const ProductCustomizer = () => {
         return canvas.toDataURL('image/png');
     };
 
-    const goToFinalView = async ({ redirectToCheckout = false } = {}) => {
+    const goToFinalView = async ({ redirectToCheckout = false, boxImages: passedBoxImages = [] } = {}) => {
         const hasAllCards = CARD_FLOW.every((req) => cards.some((item) => item.editedCard === req));
 
         if (!hasAllCards) {
@@ -543,6 +568,24 @@ const ProductCustomizer = () => {
 
         clearCart();
 
+        // Capture the browser-resolved frame/image geometry for each photo so
+        // the backend composites from real rendered rects instead of replaying
+        // a drag-delta transform. Attached to whatever boxImages we already have.
+        let resolvedBoxImages = passedBoxImages || [];
+        try {
+            const captured = boxPreviewRef.current?.captureResolvedRects?.() ?? [];
+            if (captured.length) {
+                const byId = Object.fromEntries(captured.map((c) => [String(c.id), c]));
+                resolvedBoxImages = resolvedBoxImages.map((img) =>
+                    byId[String(img.id)]
+                        ? { ...img, frame: byId[String(img.id)].frame, image: byId[String(img.id)].image }
+                        : img
+                );
+            }
+        } catch (err) {
+            console.warn('Failed to capture resolved box rects:', err);
+        }
+
         const cartItem = {
             id: generateUserId(),
             productId: product?.id,
@@ -556,6 +599,7 @@ const ProductCustomizer = () => {
             FinalProductImages: compositeImages,
             CharacterImages: characterOnlyImages,
             BoxImage: null,
+            boxImages: resolvedBoxImages,
             jokerAdded: hasJokerCard,
             customization_mode: 'photo',
         };
@@ -619,7 +663,7 @@ const ProductCustomizer = () => {
 
         const hasJokerCardNow = cards.some((card) => card?.editedCard === "Joker_Card");
         if (hasJokerCardNow) {
-            await goToFinalView();
+            setActiveStep("box");
             setTimeout(() => setdoneloading(false), 500);
             return;
         }
@@ -630,7 +674,19 @@ const ProductCustomizer = () => {
 
     const handleSkipJokerUpsell = async () => {
         setshowJokerUpsell(false);
-        await goToFinalView();
+        setActiveStep("box");
+    };
+
+    const handleFinishBox = async () => {
+        setdoneloading(true);
+        await goToFinalView({ boxImages });
+        setTimeout(() => setdoneloading(false), 500);
+    };
+
+    const updateBoxImagePosition = (id, dxFraction, dyFraction) => {
+        setBoxImages((prev) => prev.map((img) =>
+            img.id === id ? { ...img, xFraction: (img.xFraction || 0) + dxFraction, yFraction: (img.yFraction || 0) + dyFraction } : img
+        ));
     };
 
     const handleAddJokerCard = () => {
@@ -669,17 +725,26 @@ const ProductCustomizer = () => {
     };
 
     const hasJokerCard = cards.some((card) => card?.editedCard === "Joker_Card");
+    const allCardsDone = CARD_FLOW.every((req) => cards.some((item) => item.editedCard === req));
     const visibleSteps = hasJokerCard ? [...CARD_STEPS, JOKER_STEP] : CARD_STEPS;
-    const doneButtonLabel = doneloading || spinloading ? "Loading..." : "Next Card";
+    const stepFlow = allCardsDone ? [...visibleSteps, BOX_STEP] : visibleSteps;
+    const doneButtonLabel = doneloading || spinloading ? "Loading..." : (activeStep === "box" ? "Finish" : "Next Card");
     const activeCardLabel = CARD_TYPE_LABELS[activeType] || "Card";
 
-    const activeStepIndex = CARD_FLOW.indexOf(activeType) >= 0
-        ? CARD_FLOW.indexOf(activeType)
-        : visibleSteps.findIndex((s) => s.type === activeType);
+    const activeStepIndex = activeStep === "box"
+        ? stepFlow.length - 1
+        : (CARD_FLOW.indexOf(activeType) >= 0
+            ? CARD_FLOW.indexOf(activeType)
+            : visibleSteps.findIndex((s) => s.type === activeType));
 
     const handleStepClick = (stepType) => {
+        if (stepType === "Box_Customization") {
+            if (allCardsDone) setActiveStep("box");
+            return;
+        }
         const targetCardIndex = cards.findIndex((card) => card?.editedCard === stepType);
         if (targetCardIndex < 0) return;
+        setActiveStep("card");
         setActiveCardIndex(targetCardIndex);
         seteditedCard(stepType);
     };
@@ -739,11 +804,14 @@ const ProductCustomizer = () => {
                                 <div className="w-full px-3 py-2 md:px-6 md:py-2.5">
                                     <div className="mx-auto w-full max-w-[980px]">
                                         <div className="flex w-full items-start justify-between">
-                                            {visibleSteps.map((step, index) => {
+                                            {stepFlow.map((step, index) => {
                                                 const Icon = step.icon;
-                                                const isActive = activeType === step.type;
-                                                const isCompleted = cards.some((card) => card?.editedCard === step.type) && !isActive;
-                                                const isSelectable = cards.some((card) => card?.editedCard === step.type);
+                                                const isBoxStep = step.type === "Box_Customization";
+                                                const isActive = isBoxStep ? activeStep === "box" : activeType === step.type;
+                                                const isCompleted = isBoxStep
+                                                    ? activeStep === "box"
+                                                    : cards.some((card) => card?.editedCard === step.type) && !isActive;
+                                                const isSelectable = isBoxStep ? allCardsDone : cards.some((card) => card?.editedCard === step.type);
                                                 return (
                                                     <Fragment key={step.type}>
                                                         <button type="button" onClick={() => handleStepClick(step.type)} disabled={!isSelectable} className={`relative z-10 flex flex-col items-center gap-1.5 ${isSelectable ? "cursor-pointer" : "cursor-not-allowed"}`}>
@@ -752,7 +820,7 @@ const ProductCustomizer = () => {
                                                             </div>
                                                             <p className={`text-xs font-semibold md:text-sm ${isActive ? "text-[#3CA9FF]" : "text-gray-500"}`}>{step.label}</p>
                                                         </button>
-                                                        {index !== visibleSteps.length - 1 && (
+                                                        {index !== stepFlow.length - 1 && (
                                                             <div className={`mt-5 h-[2px] flex-1 mx-2 md:mx-3 md:mt-6 ${isCompleted ? "bg-[#3CA9FF]" : "bg-[#B8E6FE]"}`} />
                                                         )}
                                                     </Fragment>
@@ -777,16 +845,39 @@ const ProductCustomizer = () => {
                                     Done={Done}
                                     doneloading={doneloading || spinloading}
                                     lockedCardType={CARD_FLOW[0]}
+                                    onSelectCard={() => setActiveStep("card")}
                                 />
                             </aside>
 
                             <section className="relative flex flex-col self-start items-center justify-center overflow-hidden px-3 pt-4 pb-2 md:px-6 md:pt-6 md:pb-4 xl:pt-6 xl:pb-4">
                                 <StepHeading
-                                    activeType={activeType}
+                                    activeType={activeStep === "box" ? "Box_Customization" : activeType}
                                     activeIndex={activeStepIndex}
-                                    totalSteps={visibleSteps.length}
+                                    totalSteps={stepFlow.length}
                                 />
 
+                                {activeStep === "box" ? (
+                                    <>
+                                        {/* Box customization center */}
+                                        <div className="xl:hidden w-full" style={{ paddingBottom: `${MOBILE_SHEET_PEEK + 8}px`, minHeight: `calc(100dvh - 68px)`, background: "#f2f4f8" }}>
+                                            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_35%_30%,rgba(255,255,255,0.92),rgba(242,244,248,0.7)_60%,rgba(242,244,248,1))]" />
+                                            <div className="relative z-10 flex w-full max-w-[980px] flex-col items-center mx-auto">
+                                                <div className="relative flex min-h-[420px] w-full items-center justify-center">
+                                                    <PhotoPortraitBoxPreview ref={boxPreviewRef} boxImages={boxImages} onImagePositionChange={updateBoxImagePosition} />
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="hidden xl:block w-full">
+                                            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_35%_30%,rgba(255,255,255,0.92),rgba(242,244,248,0.7)_60%,rgba(242,244,248,1))]" />
+                                            <div className="relative z-10 flex w-full max-w-[980px] flex-col items-center mx-auto">
+                                                <div className="relative flex min-h-[650px] w-full items-center justify-center">
+                                                    <PhotoPortraitBoxPreview ref={boxPreviewRef} boxImages={boxImages} onImagePositionChange={updateBoxImagePosition} />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </>
+                                ) : (
+                                    <>
                                 {/* Mobile: push card above bottom sheet peek */}
                                 <div
                                     className="xl:hidden"
@@ -813,9 +904,20 @@ const ProductCustomizer = () => {
                                         </div>
                                     </div>
                                 </div>
+                                </>
+                                )}
                             </section>
 
                             <aside className="hidden border-l border-gray-200 bg-white xl:sticky xl:top-[148px] xl:flex xl:flex-col xl:h-[calc(100dvh-148px)] xl:overflow-hidden">
+                                {activeStep === "box" ? (
+                                    <div className="min-h-0 flex-1 overflow-y-auto px-5">
+                                        <h2 className="py-4 font-semibold text-gray-700">Upload Image</h2>
+                                        <PhotoPortraitBoxCustomizer
+                                            boxImages={boxImages}
+                                            onBoxImagesChange={setBoxImages}
+                                        />
+                                    </div>
+                                ) : (
                                 <div className="min-h-0 flex-1 overflow-y-auto px-5">
                                 <PhotoSideController
                                     product={product}
@@ -832,9 +934,10 @@ const ProductCustomizer = () => {
                                     setUserPhotoZoom={setUserPhotoZoom}
                                 />
                                 </div>
+                                )}
                                 <div className="border-t border-gray-200 p-5">
                                     <button
-                                        onClick={Done}
+                                        onClick={activeStep === "box" ? handleFinishBox : Done}
                                         className="flex h-14 w-full items-center justify-center rounded-2xl bg-[#3CA9FF] px-4 text-lg font-semibold text-white shadow-lg shadow-indigo-200 transition cursor-pointer disabled:cursor-not-allowed disabled:opacity-75"
                                         disabled={doneloading || spinloading}
                                     >
@@ -844,6 +947,21 @@ const ProductCustomizer = () => {
                             </aside>
                         </main>
 
+                        {activeStep === "box" ? (
+                            <div className="xl:hidden fixed inset-x-0 bottom-0 z-50 border-t border-gray-200 bg-white p-4" style={{ paddingBottom: "max(1rem, env(safe-area-inset-bottom))" }}>
+                                <PhotoPortraitBoxCustomizer
+                                    boxImages={boxImages}
+                                    onBoxImagesChange={setBoxImages}
+                                />
+                                <button
+                                    onClick={handleFinishBox}
+                                    className="mt-3 flex h-14 w-full items-center justify-center rounded-2xl bg-[#3CA9FF] px-4 text-lg font-semibold text-white shadow-lg shadow-indigo-200 transition cursor-pointer disabled:cursor-not-allowed disabled:opacity-75"
+                                    disabled={doneloading || spinloading}
+                                >
+                                    {doneButtonLabel}
+                                </button>
+                            </div>
+                        ) : (
                         <PhotoMobileCustomizerSheet
                             product={product}
                             cards={cards}
@@ -862,6 +980,7 @@ const ProductCustomizer = () => {
                             userPhotoZoom={activeCard?.userPhotoZoom || 1}
                             setUserPhotoZoom={setUserPhotoZoom}
                         />
+                        )}
                     </>
                 )}
 

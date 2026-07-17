@@ -3,10 +3,11 @@ import { RxCross2 } from "react-icons/rx";
 import AddNewCardBtn from "./AddNewCardBtn";
 import PhotoCardThumbnail from "./PhotoCardThumbnail";
 
-const PhotoCardSidebar = ({ activeIndex, Done, setActiveIndex, addCard, removeCard, doneloading, cards, lockedCardType }) => {
+const PhotoCardSidebar = ({ activeIndex, Done, setActiveIndex, addCard, removeCard, doneloading, cards, lockedCardType, onSelectCard }) => {
 
   function handleReactiveFunction(finalCard, indx) {
     setActiveIndex(indx);
+    onSelectCard?.(indx);
   }
 
   return (

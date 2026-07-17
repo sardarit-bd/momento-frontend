@@ -1,7 +1,9 @@
 "use client";
 
 import DeckBoxPreview from "@/app/componnent/DeckBoxPreview";
+import PhotoPortraitBoxPreview from "@/app/componnent/PhotoPortraitBoxPreview";
 import useCartStore from "@/store/useCartStore";
+import usePhotoFinalPreview from "@/store/usePhotoFinalPreview";
 import useDeckFinalPreview from "@/store/useDeckFinalPreview";
 import useboxcartstore from "@/store/useboxcartstore";
 import getId from "@/utilis/helper/cookie/getid";
@@ -286,6 +288,11 @@ export default function CheckoutPage() {
   const { deckcart } = useDeckFinalPreview();
 
   const { cart } = useCartStore();
+  // Photo portrait box data lives in its own preview store (it persists the
+  // full base64 + user positions without the size-stripping the real cart
+  // store applies). Read it directly here so the checkout payload carries the
+  // exact box the user composed, including drag/zoom positions.
+  const { photocart } = usePhotoFinalPreview();
   const [hydratedCart, setHydratedCart] = useState([]);
   const [hydrating, setHydrating] = useState(true);
 
@@ -745,6 +752,8 @@ export default function CheckoutPage() {
             customization_mode,
             FinalProduct,
             FinalPDF: pdfData ? { data: pdfData } : null,
+            boxImages: item.boxImages ?? [],
+            photo_box_images: item.boxImages ?? [],
           };
         })
       );
@@ -762,6 +771,23 @@ export default function CheckoutPage() {
       );
       const characterImages = deckItem?.CharacterImages ?? deckcart?.[0]?.CharacterImages ?? [];
 
+      // ── Photo portrait box ──────────────────────────────────────────────
+      // The photo preview store holds the user-composed box: `BoxImage` is the
+      // already-composited PNG (positions baked in) and `boxImages` are the
+      // source photos with their drag/zoom positions. We send both so the
+      // backend can either display the composite directly or regenerate the
+      // box from source images + positions.
+      const photoPreviewItem = photocart?.[0];
+      const photoBoxImage = photoPreviewItem?.BoxImage ?? null;
+      const photoBoxImages = Array.isArray(photoPreviewItem?.boxImages)
+        ? photoPreviewItem.boxImages.map((img) => ({
+            id: img?.id ?? null,
+            src: img?.src ?? null,
+            frame: img?.frame ?? null,
+            image: img?.image ?? null,
+          }))
+        : [];
+
       const checkoutData = {
         first_name: firstName,
         last_name: lastName,
@@ -776,9 +802,13 @@ export default function CheckoutPage() {
         gateway: "stripe",
         items: cartItems,
         userID: id,
-        tuckbox_image: null,
+        // Composited box PNG (positions baked in) — used directly by the
+        // backend for display and as the TGC tuckbox outside face.
+        tuckbox_image: photoBoxImage,
         tuckbox_characters: characterImages,
-        // tuckbox_image: deckcart?.[0]?.BoxImage || null,
+        // Source box photos + their drag/zoom positions, so the backend can
+        // regenerate the photo portrait box on its template if desired.
+        photo_box_images: photoBoxImages,
         trading_box_pack_title: persistedPackageTitle,
         trading_box_created_for: localStorage.getItem("persistent_carddes") ?? tradingItem?.createdFor ?? null,
       };
@@ -953,19 +983,33 @@ export default function CheckoutPage() {
                           )}
                         </div>
 
-                        {isDeckItem && showDeckBoxPreview && (
-                        <div className="mt-4">
-                          <h3
-                            className="text-sm font-semibold text-[#1B2420]/80 mb-3"
-                            style={{ fontFamily: "var(--font-display)" }}
-                          >
-                            Box Preview
-                          </h3>
-                          <div className="flex flex-wrap gap-3">
-                            <DeckBoxPreview characterImages={deckBoxCharacterImages} />
+                        {isDeckItem && (deriveCustomizationMode(item) === "photo" ? (
+                          <div className="mt-4">
+                            <h3
+                              className="text-sm font-semibold text-[#1B2420]/80 mb-3"
+                              style={{ fontFamily: "var(--font-display)" }}
+                            >
+                              Box Preview
+                            </h3>
+                            <div className="flex flex-wrap gap-3">
+                              <PhotoPortraitBoxPreview boxImages={item?.boxImages ?? []} />
+                            </div>
                           </div>
-                        </div>
-                      )}
+                        ) : (
+                          showDeckBoxPreview && (
+                            <div className="mt-4">
+                              <h3
+                                className="text-sm font-semibold text-[#1B2420]/80 mb-3"
+                                style={{ fontFamily: "var(--font-display)" }}
+                              >
+                                Box Preview
+                              </h3>
+                              <div className="flex flex-wrap gap-3">
+                                <DeckBoxPreview characterImages={deckBoxCharacterImages} />
+                              </div>
+                            </div>
+                          )
+                        ))}
 
                         {/* Price breakdown — horizontal strip, full width, directly
                             under the card art. Same markup on every breakpoint. */}

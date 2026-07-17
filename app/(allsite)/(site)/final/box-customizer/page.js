@@ -7,9 +7,10 @@ import { BiLeftArrowAlt } from "react-icons/bi";
 import { IoCartOutline } from "react-icons/io5";
 import { MdOutlineShoppingBag } from "react-icons/md";
 import PhotoPortraitBoxPreview from "@/app/componnent/PhotoPortraitBoxPreview";
+import PhotoPortraitBoxCustomizer from "@/app/componnent/PhotoPortraitBoxCustomizer";
 import useCartStore from "@/store/useCartStore";
 
-const FinalCardsPage = () => {
+const BoxCustomizerPage = () => {
     const router = useRouter();
     const photocart = usePhotoFinalPreview((state) => state.photocart);
     const updateCart = usePhotoFinalPreview((state) => state.updateCart);
@@ -19,50 +20,18 @@ const FinalCardsPage = () => {
 
     const [loading, setLoading] = useState(false);
     const [checkoutLoading, setCheckoutLoading] = useState(false);
+    const [boxImages, setBoxImages] = useState([]);
     const boxPreviewRef = useRef(null);
     const boxPreviewCaptureRef = useRef(null);
 
-    const [isZooming, setIsZooming] = useState(false);
-    const [zoomOrigin, setZoomOrigin] = useState({ x: 50, y: 50 });
-    const ZOOM_SCALE = 2.4;
-
-    const zoomStageRef = useRef(null);
-
-    const handleZoomMove = (e) => {
-        const stage = zoomStageRef.current;
-        if (!stage) return;
-        const rect = stage.getBoundingClientRect();
-        const x = ((e.clientX - rect.left) / rect.width) * 100;
-        const y = ((e.clientY - rect.top) / rect.height) * 100;
-        setZoomOrigin({
-            x: Math.min(100, Math.max(0, x)),
-            y: Math.min(100, Math.max(0, y)),
-        });
-    };
-
-    const handleZoomEnter = () => setIsZooming(true);
-    const handleZoomLeave = () => {
-        setIsZooming(false);
-        setZoomOrigin({ x: 50, y: 50 });
-    };
-
-    const finalProductCards = photocart[0]?.FinalProduct || [];
-    const boxImages = photocart[0]?.boxImages || [];
-
-    const ensurePhotoInCart = () => {
-        const photoItem = photocart?.[0];
-        if (!photoItem) return false;
-
-        // Keep the photo-preview store in sync (used by the preview/box flow)
-        const alreadyInPhotoCart = photocart.some((item) => item?.id === photoItem?.id);
-        if (!alreadyInPhotoCart) addToPhotoCart(photoItem);
-
-        // Also push into the real cart store — the checkout page reads from it
-        const alreadyInCart = cart.some((item) => item?.id === photoItem?.id);
-        if (!alreadyInCart) addToCart(photoItem);
-
-        return true;
-    };
+    useEffect(() => {
+        if (photocart && photocart[0]) {
+            const savedBoxImages = photocart[0].boxImages;
+            if (savedBoxImages && Array.isArray(savedBoxImages)) {
+                setBoxImages(savedBoxImages);
+            }
+        }
+    }, [photocart]);
 
     const captureBoxImage = async () => {
         if (!boxPreviewRef.current) return null;
@@ -88,17 +57,29 @@ const FinalCardsPage = () => {
         }
     };
 
-    const handleBoxCustomization = () => {
-        router.push("/final/box-customizer");
+    const ensureInCart = () => {
+        const photoItem = photocart?.[0];
+        if (!photoItem) return false;
+
+        // Keep the photo-preview store in sync (used by the preview/box flow)
+        const alreadyInPhotoCart = photocart.some((item) => item?.id === photoItem?.id);
+        if (!alreadyInPhotoCart) addToPhotoCart(photoItem);
+
+        // Also push into the real cart store — the checkout page reads from it
+        const alreadyInCart = cart.some((item) => item?.id === photoItem?.id);
+        if (!alreadyInCart) addToCart(photoItem);
+
+        return true;
     };
 
     const handleCheckout = async (e) => {
         e.preventDefault();
-        if (!ensurePhotoInCart()) return;
+        if (!ensureInCart()) return;
         setCheckoutLoading(true);
 
         const boxImage = await captureBoxImage();
 
+        // Capture browser-resolved frame/image geometry for each photo.
         const captured = boxPreviewCaptureRef.current?.captureResolvedRects?.() ?? [];
         let resolvedBoxImages = boxImages;
         if (captured.length) {
@@ -114,7 +95,6 @@ const FinalCardsPage = () => {
             updateCart({
                 ...photocart[0],
                 BoxImage: boxImage,
-                boxPreviewWidth: boxPreviewRef.current?.offsetWidth ?? null,
                 boxImages: resolvedBoxImages,
             });
         }
@@ -125,7 +105,7 @@ const FinalCardsPage = () => {
 
     const handleAddToCart = async (e) => {
         e.preventDefault();
-        if (!ensurePhotoInCart()) return;
+        if (!ensureInCart()) return;
         setLoading(true);
 
         const boxImage = await captureBoxImage();
@@ -145,12 +125,17 @@ const FinalCardsPage = () => {
             updateCart({
                 ...photocart[0],
                 BoxImage: boxImage,
-                boxPreviewWidth: boxPreviewRef.current?.offsetWidth ?? null,
                 boxImages: resolvedBoxImages,
             });
         }
 
         setTimeout(() => setLoading(false), 900);
+    };
+
+    const updatePosition = (id, dxFraction, dyFraction) => {
+        setBoxImages(prev => prev.map(img =>
+            img.id === id ? { ...img, xFraction: (img.xFraction || 0) + dxFraction, yFraction: (img.yFraction || 0) + dyFraction } : img
+        ));
     };
 
     return (
@@ -163,27 +148,27 @@ const FinalCardsPage = () => {
                     >
                         <BiLeftArrowAlt className="text-2xl" />
                     </button>
-                    <h1 className="text-xl text-gray-600 hidden md:block">Your Customized Cards</h1>
+                    <h1 className="text-xl text-gray-600">Customize Your Box</h1>
                 </div>
                 <div className="flex items-center gap-2">
-                    {/* <button
-                        onClick={handleBoxCustomization}
+                    <button
+                        onClick={() => router.push("/my-cart/checkout")}
                         className="border border-gray-200 bg-white hover:bg-gray-50 text-gray-700 p-2 rounded-md shadow-md cursor-pointer transition duration-100 flex items-center gap-2"
                     >
-                        Customize Box
-                    </button> */}
+                        Skip
+                    </button>
                     <button
-                        onClick={(e) => handleAddToCart(e)}
+                        onClick={handleAddToCart}
                         className="border border-gray-200 bg-sky-400 hover:bg-sky-500 text-white p-2 rounded-md shadow-md cursor-pointer transition duration-100 flex items-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed"
-                        disabled={loading || checkoutLoading || !photocart?.[0]}
+                        disabled={loading || checkoutLoading}
                     >
                         {loading ? <SpinLoader /> : <IoCartOutline className="text-xl" />}
                         Add to Cart
                     </button>
                     <button
-                        onClick={(e) => handleCheckout(e)}
+                        onClick={handleCheckout}
                         className="border border-gray-200 bg-emerald-500 hover:bg-emerald-600 text-white p-2 rounded-md shadow-md cursor-pointer transition duration-100 flex items-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed"
-                        disabled={loading || checkoutLoading || !photocart?.[0]}
+                        disabled={loading || checkoutLoading}
                     >
                         {checkoutLoading ? <SpinLoader /> : <MdOutlineShoppingBag className="text-xl" />}
                         Checkout
@@ -191,46 +176,27 @@ const FinalCardsPage = () => {
                 </div>
             </div>
 
-            <div className="grid grid-cols-2 justify-items-center gap-3 py-6 my-6 sm:grid-cols-3 md:grid-cols-5 md:gap-4">
-                {finalProductCards.map((card, idx) => (
-                    <div key={idx} className="relative mx-auto w-full max-w-[170px] sm:max-w-[190px] md:max-w-[200px] lg:max-w-[220px] aspect-[5/7] overflow-hidden rounded-3xl border border-gray-100 bg-white/60 shadow-md">
-                        <img
-                            src={card.image}
-                            alt={`Card ${card.rank || idx}`}
-                            className="absolute inset-0 w-full h-full object-contain"
-                        />
-                    </div>
-                ))}
-            </div>
-
-            <div className="pb-8">
-                <h2 className="py-4 font-semibold text-gray-600">Box Preview</h2>
-                <div className="flex flex-wrap gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 py-6">
+                <div className="relative flex items-center justify-center rounded-xl border border-gray-200 bg-gray-50 p-6 overflow-hidden">
                     <div
-                        ref={zoomStageRef}
-                        onMouseEnter={handleZoomEnter}
-                        onMouseLeave={handleZoomLeave}
-                        onMouseMove={handleZoomMove}
-                        className="relative inline-block overflow-hidden cursor-zoom-in"
+                        ref={boxPreviewRef}
+                        className="inline-block"
+                        style={{ transform: "scale(1.35)", transformOrigin: "center center" }}
                     >
-                        <div
-                            ref={boxPreviewRef}
-                            className="inline-block"
-                            style={{
-                                transform: isZooming ? `scale(${ZOOM_SCALE})` : "scale(1)",
-                                transformOrigin: `${zoomOrigin.x}% ${zoomOrigin.y}%`,
-                                transition: isZooming
-                                    ? "transform 0.1s ease-out"
-                                    : "transform 0.3s ease-out",
-                            }}
-                        >
-                            <PhotoPortraitBoxPreview ref={boxPreviewCaptureRef} boxImages={boxImages} />
-                        </div>
+                        <PhotoPortraitBoxPreview ref={boxPreviewCaptureRef} boxImages={boxImages} onImagePositionChange={updatePosition} />
                     </div>
+                </div>
+
+                <div className="bg-white rounded-xl border border-gray-200 p-4">
+                    <h2 className="text-lg font-semibold text-gray-800 mb-4">Photo Upload</h2>
+                    <PhotoPortraitBoxCustomizer
+                        boxImages={boxImages}
+                        onBoxImagesChange={setBoxImages}
+                    />
                 </div>
             </div>
         </div>
     );
 };
 
-export default FinalCardsPage;
+export default BoxCustomizerPage;

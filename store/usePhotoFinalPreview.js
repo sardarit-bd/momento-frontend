@@ -32,6 +32,13 @@ const usePhotoFinalPreview = create(
           productType: item.productType,
           CharacterImages: item.CharacterImages ?? [],
           BoxImage: item.BoxImage ?? null,
+          boxImages: (item.boxImages ?? []).map((img) => ({
+            id: img.id,
+            src: img.src ?? null,
+            zoom: img.zoom ?? 1,
+            frame: img.frame ?? null,
+            image: img.image ?? null,
+          })),
         })),
       }),
     }

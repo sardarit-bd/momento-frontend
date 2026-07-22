@@ -300,7 +300,8 @@ const MyCart = () => {
                                                                     className="text-xs text-[#C9A227]"
                                                                     style={{ fontFamily: 'var(--font-mono)' }}
                                                                 >
-                                                                    + ${Number(pricedLine.joker_addon).toFixed(2)} joker
+                                                                    {/* + ${Number(pricedLine.joker_addon).toFixed(2)} joker */}
+                                                                    (Including joker card)
                                                                 </p>
                                                             )}
                                                             <p

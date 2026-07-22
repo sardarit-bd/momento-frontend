@@ -981,22 +981,9 @@ export default function CheckoutPage() {
                               <span className="text-[11px] text-[#1B2420]/50">Joker card</span>
                             </div>
                           )}
-                        </div>
+</div>
 
-                        {isDeckItem && (deriveCustomizationMode(item) === "photo" ? (
-                          <div className="mt-4">
-                            <h3
-                              className="text-sm font-semibold text-[#1B2420]/80 mb-3"
-                              style={{ fontFamily: "var(--font-display)" }}
-                            >
-                              Box Preview
-                            </h3>
-                            <div className="flex flex-wrap gap-3">
-                              <PhotoPortraitBoxPreview boxImages={item?.boxImages ?? []} />
-                            </div>
-                          </div>
-                        ) : (
-                          showDeckBoxPreview && (
+                          {isDeckItem && (deriveCustomizationMode(item) === "photo" ? (
                             <div className="mt-4">
                               <h3
                                 className="text-sm font-semibold text-[#1B2420]/80 mb-3"
@@ -1005,47 +992,68 @@ export default function CheckoutPage() {
                                 Box Preview
                               </h3>
                               <div className="flex flex-wrap gap-3">
-                                <DeckBoxPreview characterImages={deckBoxCharacterImages} />
+                                <PhotoPortraitBoxPreview 
+                                  boxImages={photocart?.[0]?.boxImages?.map((img) => ({
+                                    id: img?.id ?? null,
+                                    src: img?.src ?? null,
+                                    zoom: img?.zoom ?? 1,
+                                    xFraction: img?.xFraction ?? 0,
+                                    yFraction: img?.yFraction ?? 0,   
+                                  })) ?? []} 
+                                />
                               </div>
                             </div>
-                          )
-                        ))}
-
-                        {/* Price breakdown — horizontal strip, full width, directly
-                            under the card art. Same markup on every breakpoint. */}
-                        {isDeckItem && (
-                          <div className="mt-4 pt-4 pb-1 border-t border-dashed border-[#1B2420]/10 space-y-2 text-sm" style={{ fontFamily: "var(--font-mono)" }}>
-                            {pricedLine ? (
-                              <>
-                                <div className="flex justify-between text-[#1B2420]/60">
-                                  <span style={{ fontFamily: "var(--font-body)" }}>Package</span>
-                                  <span>${packagePrice.toFixed(2)}</span>
+                          ) : (
+                            showDeckBoxPreview && (
+                              <div className="mt-4">
+                                <h3
+                                  className="text-sm font-semibold text-[#1B2420]/80 mb-3"
+                                  style={{ fontFamily: "var(--font-display)" }}
+                                >
+                                  Box Preview
+                                </h3>
+                                <div className="flex flex-wrap gap-3">
+                                  <DeckBoxPreview characterImages={deckBoxCharacterImages} />
                                 </div>
-                                {jokerCard && jokerPrice > 0 && (
-                                  <div className="flex justify-between text-[#C9A227]">
-                                    <span style={{ fontFamily: "var(--font-body)" }}>Joker add-on</span>
-                                    <span>${jokerPrice.toFixed(2)}</span>
+                              </div>
+                            )
+                          ))}
+
+                          {/* Price breakdown — horizontal strip, full width, directly
+                              under the card art. Same markup on every breakpoint. */}
+                          {isDeckItem && (
+                            <div className="mt-4 pt-4 pb-1 border-t border-dashed border-[#1B2420]/10 space-y-2 text-sm" style={{ fontFamily: "var(--font-mono)" }}>
+                              {pricedLine ? (
+                                <>
+                                  <div className="flex justify-between text-[#1B2420]/60">
+                                    <span style={{ fontFamily: "var(--font-body)" }}>Package</span>
+                                    <span>${packagePrice.toFixed(2)}</span>
                                   </div>
-                                )}
-                                <div className="flex justify-between font-semibold pt-2 border-t border-[#1B2420]/10">
-                                  <span style={{ fontFamily: "var(--font-body)" }}>Item total</span>
-                                  <span>${Number(pricedLine.line_total ?? 0).toFixed(2)}</span>
-                                </div>
-                              </>
-                            ) : pricingLoading ? (
-                              <p className="text-xs text-[#1B2420]/40 animate-pulse">Calculating price…</p>
-                            ) : pricingError ? (
-                              <p className="text-xs text-[#B65C4D]">Price unavailable</p>
-                            ) : null}
-                          </div>
-                        )}
-                      </div>
+                                  {jokerCard && jokerPrice > 0 && (
+                                    <div className="flex justify-between text-[#C9A227]">
+                                      <span style={{ fontFamily: "var(--font-body)" }}>Joker add-on</span>
+                                      <span>${jokerPrice.toFixed(2)}</span>
+                                    </div>
+                                  )}
+                                  <div className="flex justify-between font-semibold pt-2 border-t border-[#1B2420]/10">
+                                    <span style={{ fontFamily: "var(--font-body)" }}>Item total</span>
+                                    <span>${Number(pricedLine.line_total ?? 0).toFixed(2)}</span>
+                                  </div>
+                                </>
+                              ) : pricingLoading ? (
+                                <p className="text-xs text-[#1B2420]/40 animate-pulse">Calculating price…</p>
+                              ) : pricingError ? (
+                                <p className="text-xs text-[#B65C4D]">Price unavailable</p>
+                              ) : null}
+                            </div>
+                          )}
+                        </div>
 
-                      {/* Mobile-only Box Preview — sits between the price strip and
-                          the next item on narrow screens. Hidden at lg: and up,
-                          where the full-width Box Preview below the cart-item
-                          list (see the IIFE block further down) takes over. */}
-                      
+                        {/* Mobile-only Box Preview — sits between the price strip and
+                            the next item on narrow screens. Hidden at lg: and up,
+                            where the full-width Box Preview below the cart-item
+                            list (see the IIFE block further down) takes over. */}
+                        
                     </div>
                   );
                 })

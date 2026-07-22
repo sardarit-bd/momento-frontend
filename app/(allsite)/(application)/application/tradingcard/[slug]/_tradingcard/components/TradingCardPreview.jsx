@@ -29,6 +29,7 @@ export default function TradingCardPreview({
     attrIconOne,
     attrIconTwo,
     attrIconThree,
+    attributeName,
     backDateDisplay,
     backDescription,
     backHighlightsTitle,
@@ -95,8 +96,13 @@ export default function TradingCardPreview({
                             src={img.url}
                             alt="upload"
                             className="w-full h-full object-cover"
-                            style={{ display: "block", backgroundColor: "transparent" }}
-                        />
+                                 style={{
+                                     display: "block",
+                                     backgroundColor: "transparent",
+                                     transform: `scale(${img.scale ?? 1})`,
+                                     transformOrigin: "center center",
+                                 }}
+                             />
                     </div>
                 ))}
 
@@ -127,7 +133,7 @@ export default function TradingCardPreview({
                         <>
                             {cardfinder == 0 && <FrontOne cardti={cardti} name={displayAttributeOne} name2={displayAttributeTwo} name3={displayAttributeThree} acarddate={acarddate} labelone={labelone} labeltwo={labeltwo} labelthree={labelthree} iconOne={attrIconOne} iconTwo={attrIconTwo} iconThree={attrIconThree} />}
                             {cardfinder == 1 && <FrontTwo cardti={cardti} name={displayAttributeOne} name2={displayAttributeTwo} name3={displayAttributeThree} acarddate={acarddate} labelone={labelone} labeltwo={labeltwo} labelthree={labelthree} iconOne={attrIconOne} iconTwo={attrIconTwo} iconThree={attrIconThree} />}
-                            {cardfinder == 2 && <FrontThree cardti={cardti} name={displayAttributeOne} name2={displayAttributeTwo} name3={displayAttributeThree} acarddate={acarddate} labelone={labelone} labeltwo={labeltwo} labelthree={labelthree} iconOne={attrIconOne} iconTwo={attrIconTwo} iconThree={attrIconThree} />}
+                            {cardfinder == 2 && <FrontThree cardti={cardti} name={displayAttributeOne} name2={displayAttributeTwo} name3={displayAttributeThree} acarddate={acarddate} labelone={labelone} labeltwo={labeltwo} labelthree={labelthree} iconOne={attrIconOne} iconTwo={attrIconTwo} iconThree={attrIconThree} attributeName={attributeName} />}
                             {cardfinder == 3 && <FrontFour cardti={cardti} name={displayAttributeOne} name2={displayAttributeTwo} name3={displayAttributeThree} acarddate={acarddate} labelone={labelone} labeltwo={labeltwo} labelthree={labelthree} iconOne={attrIconOne} iconTwo={attrIconTwo} iconThree={attrIconThree} />}
                         </>
                     ) : (
@@ -255,7 +261,12 @@ export default function TradingCardPreview({
                                     alt="upload"
                                     className="w-full h-full object-cover"
                                     draggable={false}
-                                    style={{ display: "block", backgroundColor: "transparent" }}
+                                    style={{
+                                        display: "block",
+                                        backgroundColor: "transparent",
+                                        transform: `scale(${img.scale ?? 1})`,
+                                        transformOrigin: "center center",
+                                    }}
                                 />
                             </Rnd>
                         ))}
@@ -289,7 +300,7 @@ export default function TradingCardPreview({
                                 <>
                                     {cardfinder == 0 && <FrontOne cardti={cardti} name={displayAttributeOne} name2={displayAttributeTwo} name3={displayAttributeThree} acarddate={acarddate} labelone={labelone} labeltwo={labeltwo} labelthree={labelthree} iconOne={attrIconOne} iconTwo={attrIconTwo} iconThree={attrIconThree} />}
                                     {cardfinder == 1 && <FrontTwo cardti={cardti} name={displayAttributeOne} name2={displayAttributeTwo} name3={displayAttributeThree} acarddate={acarddate} labelone={labelone} labeltwo={labeltwo} labelthree={labelthree} iconOne={attrIconOne} iconTwo={attrIconTwo} iconThree={attrIconThree} />}
-                                    {cardfinder == 2 && <FrontThree cardti={cardti} name={displayAttributeOne} name2={displayAttributeTwo} name3={displayAttributeThree} acarddate={acarddate} labelone={labelone} labeltwo={labeltwo} labelthree={labelthree} iconOne={attrIconOne} iconTwo={attrIconTwo} iconThree={attrIconThree} />}
+                                    {cardfinder == 2 && <FrontThree cardti={cardti} name={displayAttributeOne} name2={displayAttributeTwo} name3={displayAttributeThree} acarddate={acarddate} labelone={labelone} labeltwo={labeltwo} labelthree={labelthree} iconOne={attrIconOne} iconTwo={attrIconTwo} iconThree={attrIconThree} attributeName={attributeName} />}
                                     {cardfinder == 3 && <FrontFour cardti={cardti} name={displayAttributeOne} name2={displayAttributeTwo} name3={displayAttributeThree} acarddate={acarddate} labelone={labelone} labeltwo={labeltwo} labelthree={labelthree} iconOne={attrIconOne} iconTwo={attrIconTwo} iconThree={attrIconThree} />}
                                 </>
                             ) : (

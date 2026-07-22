@@ -184,6 +184,7 @@ export function useTradingCardState() {
     const [name, setname] = useState('Attribute One');
     const [name2, setname2] = useState('Attribute Two');
     const [name3, setname3] = useState('Attribute Three');
+    const [attributeName, setAttributeName] = useState('');
     const [labelone, setlabelone] = useState(69);
     const [labeltwo, setlabeltwo] = useState(55);
     const [labelthree, setlabelthree] = useState(78);
@@ -499,6 +500,7 @@ export function useTradingCardState() {
             y: 20,
             width: 120,
             height: 120,
+            scale: 1,
         };
         setUploads((s) => [...s, item]);
         setActiveImage(item.id);
@@ -510,6 +512,10 @@ export function useTradingCardState() {
     }
     function updateUploadSize(id, width, height) {
         setUploads((prev) => prev.map((u) => (u.id === id ? { ...u, width, height } : u)));
+    }
+    function updateUploadScale(id, scale) {
+        const clamped = Math.min(3, Math.max(0.2, scale));
+        setUploads((prev) => prev.map((u) => (u.id === id ? { ...u, scale: clamped } : u)));
     }
     function updateTextPosition(id, x, y) {
         setTexts((prev) => prev.map((t) => (t.id === id ? { ...t, x, y } : t)));
@@ -735,6 +741,7 @@ export function useTradingCardState() {
                 cardfinder,
                 cardti, carddes, packageTitle,
                 name, name2, name3,
+                attributeName,
                 labelone, labeltwo, labelthree,
                 acarddate, cardType,
                 attrIconOne, attrIconTwo, attrIconThree,
@@ -953,6 +960,7 @@ export function useTradingCardState() {
         name, setname,
         name2, setname2,
         name3, setname3,
+        attributeName, setAttributeName,
         labelone, setlabelone,
         labeltwo, setlabeltwo,
         labelthree, setlabelthree,
@@ -994,6 +1002,7 @@ export function useTradingCardState() {
         handleUpload,
         updateUploadPosition,
         updateUploadSize,
+        updateUploadScale,
         updateTextPosition,
         updateTextSize,
         captureCardSide,

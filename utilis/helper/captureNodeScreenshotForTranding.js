@@ -23,7 +23,22 @@ function loadImage(src) {
     });
 }
 
-function drawCover(ctx, img, x, y, w, h) {
+function drawCover(ctx, img, x, y, w, h, scale = 1) {
+    ctx.save();
+    // Clip to the card bounds so a zoomed upload never bleeds outside it
+    // (mirrors the live preview, where the canvas div has overflow:hidden).
+    ctx.beginPath();
+    ctx.rect(x, y, w, h);
+    ctx.clip();
+
+    // A centered transform:scale() about the card centre — identical to the
+    // live preview's `transform: scale(img.scale)` on the <img>.
+    const cx = x + w / 2;
+    const cy = y + h / 2;
+    ctx.translate(cx, cy);
+    ctx.scale(scale, scale);
+    ctx.translate(-cx, -cy);
+
     const imgRatio = img.naturalWidth / img.naturalHeight;
     const boxRatio = w / h;
     let sx, sy, sw, sh;
@@ -35,6 +50,7 @@ function drawCover(ctx, img, x, y, w, h) {
         sx = 0; sy = (img.naturalHeight - sh) / 2;
     }
     ctx.drawImage(img, sx, sy, sw, sh, x, y, w, h);
+    ctx.restore();
 }
 
 function drawGradientText(ctx, text, x, y, font, gradStops, textHeight, strokeColor, strokeWidth, align = "left") {
@@ -196,7 +212,7 @@ async function drawFrontOne(ctx, props, W, H) {
 
     // ── Title
     // bottom-[16%] → baseline at H - H*0.16
-    const titleSize = Math.round(33.6 * sy);  // text-[2.1rem]
+    const titleSize = Math.round(33.6 * sy);
     const titleY    = H - H * 0.16;
     drawGradientText(
         ctx,
@@ -503,11 +519,11 @@ async function captureNodeScreenshotForTranding(domNode, baseImageSrc, uploads =
     ctx.scale(SCALE, SCALE);
     ctx.clearRect(0, 0, CARD_W, CARD_H);
 
-    // Pass 1 — uploaded photo
+    // Pass 1 — uploaded photo (honour per-upload zoom = live preview scale)
     for (const upload of uploads) {
         try {
             const img = await loadImage(upload.url);
-            drawCover(ctx, img, 0, 0, CARD_W, CARD_H);
+            drawCover(ctx, img, 0, 0, CARD_W, CARD_H, upload.scale ?? 1);
         } catch (e) { console.warn("upload draw failed:", e.message); }
     }
 

@@ -498,7 +498,7 @@ export const FrontTwo = ({ cardti, carddes, name, name2, name3, acarddate, label
     )
 };
 
-export const FrontThree = ({ cardti, carddes, name, name2, name3, acarddate, labelone, labeltwo, labelthree, iconOne, iconTwo, iconThree }) => {
+export const FrontThree = ({ cardti, carddes, name, name2, name3, acarddate, labelone, labeltwo, labelthree, iconOne, iconTwo, iconThree, attributeName }) => {
     
     const currentYear = new Date().getFullYear();
     const dateLine1 = acarddate.length > 6 ? acarddate.slice(0, 6) : acarddate;
@@ -539,7 +539,7 @@ export const FrontThree = ({ cardti, carddes, name, name2, name3, acarddate, lab
                     className="block text-black text-[14px] font-bold uppercase tracking-widest px-4 py-1 rounded-full whitespace-nowrap"
                     style={{ fontFamily: 'DinBold'}}
                 >
-                    Attributes
+                    {attributeName || "Attributes"}
                 </span>
             </div>
 

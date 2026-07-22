@@ -40,6 +40,7 @@ export default function TradingCardControls({
     uploads,
     handleUpload,
     activeImage,
+    updateUploadScale,
     cardti,
     setcardti,
     packageTitle,
@@ -58,6 +59,8 @@ export default function TradingCardControls({
     name3,
     setname3,
     name3limite,
+    attributeName,
+    setAttributeName,
     labelone,
     setlabelone,
     labeltwo,
@@ -106,6 +109,7 @@ export default function TradingCardControls({
                 <div className="flex-1 overflow-y-auto px-4 py-3 pb-28 space-y-4">
                     <PanelContent
                         sidebarTab={sidebarTab}
+                        selectedTemplate={selectedTemplate}
                         filteredTemplates={filteredTemplates}
                         baseFront={baseFront}
                         setBaseFront={setBaseFront}
@@ -129,9 +133,10 @@ export default function TradingCardControls({
                         backLegacyText={backLegacyText}
                         setBackLegacyText={setBackLegacyText}
                         uploads={uploads}
-                        handleUpload={handleUpload}
-                        activeImage={activeImage}
-                        cardti={cardti}
+                         handleUpload={handleUpload}
+                         activeImage={activeImage}
+                         updateUploadScale={updateUploadScale}
+                         cardti={cardti}
                         setcardti={setcardti}
                         packageTitle={packageTitle}
                         setPackageTitle={setPackageTitle}
@@ -149,6 +154,8 @@ export default function TradingCardControls({
                         name3={name3}
                         setname3={setname3}
                         name3limite={name3limite}
+                        attributeName={attributeName}
+                        setAttributeName={setAttributeName}
                         labelone={labelone}
                         setlabelone={setlabelone}
                         labeltwo={labeltwo}
@@ -249,6 +256,7 @@ export default function TradingCardControls({
                 <div className="space-y-4 pt-4">
                     <PanelContent
                         sidebarTab={sidebarTab}
+                        selectedTemplate={selectedTemplate}
                         filteredTemplates={filteredTemplates}
                         baseFront={baseFront}
                         setBaseFront={setBaseFront}
@@ -272,9 +280,10 @@ export default function TradingCardControls({
                         backLegacyText={backLegacyText}
                         setBackLegacyText={setBackLegacyText}
                         uploads={uploads}
-                        handleUpload={handleUpload}
-                        activeImage={activeImage}
-                        cardti={cardti}
+                         handleUpload={handleUpload}
+                         activeImage={activeImage}
+                         updateUploadScale={updateUploadScale}
+                         cardti={cardti}
                         setcardti={setcardti}
                         packageTitle={packageTitle}
                         setPackageTitle={setPackageTitle}
@@ -292,6 +301,8 @@ export default function TradingCardControls({
                         name3={name3}
                         setname3={setname3}
                         name3limite={name3limite}
+                        attributeName={attributeName}
+                        setAttributeName={setAttributeName}
                         labelone={labelone}
                         setlabelone={setlabelone}
                         labeltwo={labeltwo}
@@ -357,13 +368,14 @@ function PanelContent({
     activeBackHighlightPicker, setActiveBackHighlightPicker,
     backLegacyTagline, setBackLegacyTagline,
     backLegacyText, setBackLegacyText,
-    uploads, handleUpload, activeImage,
+    uploads, handleUpload, activeImage, updateUploadScale,
     cardti, setcardti, cardtiltelimite,
     packageTitle, setPackageTitle, packageTitlelimite,
     carddes, setcarddes, carddeslimite,
     name, setname, namelimite,
     name2, setname2, name2limite,
     name3, setname3, name3limite,
+    attributeName, setAttributeName,
     labelone, setlabelone,
     labeltwo, setlabeltwo,
     labelthree, setlabelthree,
@@ -372,6 +384,7 @@ function PanelContent({
     attrIconTwo, setAttrIconTwo,
     attrIconThree, setAttrIconThree,
     activeIconPicker, setActiveIconPicker,
+    selectedTemplate,
     getSliderTrackStyle, renderIconPreview,
 }) {
     return (
@@ -441,6 +454,33 @@ function PanelContent({
                     </div>
                     {activeImage && (
                         <div className="mt-2 text-xs text-emerald-700 font-medium">Image selected. You can drag and resize directly on canvas.</div>
+                    )}
+                    {activeImage && uploads?.length > 0 && (
+                        <div className="mt-3">
+                            <div className="mb-1 flex items-center justify-between">
+                                <span className="text-xs font-medium text-slate-600">Zoom</span>
+                                <span className="text-xs font-semibold text-slate-600">
+                                    {Math.round((uploads.find(u => u.id === activeImage)?.scale ?? 1) * 100)}%
+                                </span>
+                            </div>
+                            <input
+                                type="range"
+                                min={0.2}
+                                max={3}
+                                step={0.05}
+                                value={uploads.find(u => u.id === activeImage)?.scale ?? 1}
+                                onChange={(e) => {
+                                    const activeImg = uploads.find(u => u.id === activeImage);
+                                    if (activeImg) updateUploadScale(activeImg.id, parseFloat(e.target.value));
+                                }}
+                                className="h-2 w-full cursor-pointer appearance-none rounded-full bg-slate-200 accent-emerald-600"
+                                aria-label="Zoom image"
+                            />
+                            <div className="mt-1 flex justify-between text-[10px] text-slate-400">
+                                <span>20%</span>
+                                <span>300%</span>
+                            </div>
+                        </div>
                     )}
                     <input onChange={handleUpload} id="uploadImage" type="file" className="hidden" accept="image/*" />
                 </div>
@@ -642,6 +682,21 @@ function PanelContent({
                             </div>
                         </div>
                     </div>
+
+                    {/* Attribute Name — only for 3rd template */}
+                    {selectedTemplate === "3" && (
+                        <div className="border border-gray-200 p-4 md:p-5 mb-4 rounded-xl bg-white shadow-sm ring-1 ring-gray-100">
+                            <label className="block text-xl text-gray-700 mb-3 mt-4 font-semibold">Attribute Name</label>
+                                <input
+                                    value={attributeName}
+                                    maxLength={10}
+                                    onChange={(e) => setAttributeName(e.target.value)}
+                                    type="text"
+                                    placeholder="Attribute Name"
+                                className="border border-slate-200 px-3 py-2 rounded-lg text-slate-700 outline-none w-full transition-all duration-200 focus:border-sky-300 focus:ring-2 focus:ring-sky-100"
+                            />
+                        </div>
+                    )}
 
                     {/* Card Attributes */}
                     <div className="border border-gray-200 p-4 md:p-5 mb-4 rounded-xl bg-white shadow-sm ring-1 ring-gray-100">

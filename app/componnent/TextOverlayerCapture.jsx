@@ -752,7 +752,7 @@ export const FrontTwoCapture = ({ cardti, carddes, name, name2, name3, acarddate
     );
 };
 
-export const FrontThreeCapture = ({ cardti, carddes, name, name2, name3, acarddate, labelone, labeltwo, labelthree, iconOne, iconTwo, iconThree }) => {
+export const FrontThreeCapture = ({ cardti, carddes, name, name2, name3, acarddate, labelone, labeltwo, labelthree, iconOne, iconTwo, iconThree, attributeName }) => {
     const currentYear = new Date().getFullYear();
 
     return (
@@ -772,7 +772,7 @@ export const FrontThreeCapture = ({ cardti, carddes, name, name2, name3, acardda
                 fontFamily: "DinBold", fontWeight: 700, fontSize: "14px",
                 color: "#000000", textTransform: "uppercase",
             }}>
-                Attributes
+                {attributeName || "Attributes"}
             </span>
 
             <AttrRowCapture3 icon={iconOne}   text={name}  value={labelone}   top={417} left={65} />

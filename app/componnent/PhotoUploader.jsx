@@ -60,7 +60,7 @@ const PhotoUploader = ({ activeCard, selectPhoto, userPhotoZoom = 1, setUserPhot
   const openPicker = () => inputRef.current?.click();
 
   return (
-    <div className="rounded-2xl border border-gray-200 bg-white p-3">
+    <div className="rounded-2xl border border-gray-200 bg-white p-3 mb-3">
       <div className="flex items-center justify-between gap-3 pb-1">
         <h3 className="text-xl font-semibold text-gray-800">Your Photo</h3>
         {photo ? (

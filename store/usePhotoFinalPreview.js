@@ -36,6 +36,8 @@ const usePhotoFinalPreview = create(
             id: img.id,
             src: img.src ?? null,
             zoom: img.zoom ?? 1,
+            xFraction: img.xFraction ?? 0,   
+            yFraction: img.yFraction ?? 0,
             frame: img.frame ?? null,
             image: img.image ?? null,
           })),

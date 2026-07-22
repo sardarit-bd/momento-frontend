@@ -9,6 +9,7 @@ import { useParams, useRouter } from "next/navigation";
 import { Fragment, useEffect, useRef, useState } from "react";
 import { GiCardAceClubs, GiCardJackClubs, GiCardJoker, GiCardKingClubs, GiCardQueenClubs } from "react-icons/gi";
 import { IoMdCheckmark } from "react-icons/io";
+import { JOKER_SLOT_RECT } from "@/app/componnent/jokerSlotGeometry";
 import { toast, ToastContainer } from "react-toastify";
 import PhotoCardPreview from "../../../../../componnent/PhotoCardPreview";
 import PhotoCardSidebar from "../../../../../componnent/PhotoCardSidebar";
@@ -434,28 +435,42 @@ const ProductCustomizer = () => {
         // User photo overrides the layered character when present.
         if (card.userPhoto) {
             const img = await loadImage(card.userPhoto);
+            const isJoker = card.editedCard === "Joker_Card";
 
-            const boxX = 750 * 0.07, boxY = 1050 * 0.07;
-            const boxW = 750 * 0.88, boxH = 1050 * 0.86;
+            if (isJoker) {
+                const { x: boxX, y: boxY, w: boxW, h: boxH } = JOKER_SLOT_RECT;
+                const zoom = card.userPhotoZoom || 1;
+                const ratio = Math.min(boxW / img.width, boxH / img.height);
+                const dw = img.width * ratio * zoom, dh = img.height * ratio * zoom;
+                ctx.save();
+                ctx.beginPath();
+                ctx.rect(boxX, boxY, boxW, boxH);
+                ctx.clip();
+                ctx.drawImage(img, boxX + (boxW - dw) / 2, boxY + (boxH - dh) / 2, dw, dh);
+                ctx.restore();
+            } else {
+                const boxX = 750 * 0.07, boxY = 1050 * 0.07;
+                const boxW = 750 * 0.88, boxH = 1050 * 0.86;
 
-            const pts = [
-                [0.38, 0], [0.96, 0], [0.96, 0.746],
-                [0.578, 1], [0.01, 1], [0.01, 0.274],
-            ];
-            ctx.save();
-            ctx.beginPath();
-            pts.forEach(([fx, fy], i) => {
-                const x = boxX + fx * boxW, y = boxY + fy * boxH;
-                i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
-            });
-            ctx.closePath();
-            ctx.clip();
+                const pts = [
+                    [0.38, 0], [0.96, 0], [0.96, 0.746],
+                    [0.578, 1], [0.01, 1], [0.01, 0.274],
+                ];
+                ctx.save();
+                ctx.beginPath();
+                pts.forEach(([fx, fy], i) => {
+                    const x = boxX + fx * boxW, y = boxY + fy * boxH;
+                    i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+                });
+                ctx.closePath();
+                ctx.clip();
 
-            const zoom = card.userPhotoZoom || 1;
-            const ratio = Math.max(boxW / img.width, boxH / img.height);
-            const dw = img.width * ratio * zoom, dh = img.height * ratio * zoom;
-            ctx.drawImage(img, boxX + (boxW - dw) / 2, boxY + (boxH - dh) / 2, dw, dh);
-            ctx.restore();
+                const zoom = card.userPhotoZoom || 1;
+                const ratio = Math.max(boxW / img.width, boxH / img.height);
+                const dw = img.width * ratio * zoom, dh = img.height * ratio * zoom;
+                ctx.drawImage(img, boxX + (boxW - dw) / 2, boxY + (boxH - dh) / 2, dw, dh);
+                ctx.restore();
+            }
         } else {
             const layerOrder = ["dresses", "skin_tones", "hairs", "crowns", "beards", "eyes", "mouths", "noses"];
             for (const layer of layerOrder) {

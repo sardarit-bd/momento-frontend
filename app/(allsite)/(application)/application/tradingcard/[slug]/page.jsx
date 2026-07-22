@@ -59,6 +59,7 @@ export default function ProductCustomizer() {
                             setActiveImage={state.setActiveImage}
                             updateUploadPosition={state.updateUploadPosition}
                             updateUploadSize={state.updateUploadSize}
+                            updateUploadScale={state.updateUploadScale}
                             workingcard={state.workingcard}
                             setworkingcard={state.setworkingcard}
                             baseFront={state.baseFront}
@@ -76,6 +77,7 @@ export default function ProductCustomizer() {
                             attrIconOne={state.attrIconOne}
                             attrIconTwo={state.attrIconTwo}
                             attrIconThree={state.attrIconThree}
+                            attributeName={state.attributeName}
                             backDateDisplay={state.backDateDisplay}
                             backDescription={state.backDescription}
                             backHighlightsTitle={state.backHighlightsTitle}
@@ -114,12 +116,15 @@ export default function ProductCustomizer() {
                             uploads={state.uploads}
                             handleUpload={state.handleUpload}
                             activeImage={state.activeImage}
+                            updateUploadScale={state.updateUploadScale}
                             cardti={state.cardti}
                             setcardti={state.setcardti}
                             packageTitle={state.packageTitle}
                             setPackageTitle={state.setPackageTitle}
                             packageTitlelimite={state.packageTitlelimite}
                             cardtiltelimite={state.cardtiltelimite}
+                            attributeName={state.attributeName}
+                            setAttributeName={state.setAttributeName}
                             carddes={state.carddes}
                             setcarddes={state.setcarddes}
                             carddeslimite={state.carddeslimite}
@@ -389,12 +394,15 @@ export default function ProductCustomizer() {
                                 uploads={state.uploads}
                                 handleUpload={state.handleUpload}
                                 activeImage={state.activeImage}
+                                updateUploadScale={state.updateUploadScale}
                                 cardti={state.cardti}
                                 setcardti={state.setcardti}
                                 packageTitle={state.packageTitle}
                                 setPackageTitle={state.setPackageTitle}
                                 packageTitlelimite={state.packageTitlelimite}
                                 cardtiltelimite={state.cardtiltelimite}
+                            attributeName={state.attributeName}
+                            setAttributeName={state.setAttributeName}
                                 carddes={state.carddes}
                                 setcarddes={state.setcarddes}
                                 carddeslimite={state.carddeslimite}
@@ -468,6 +476,7 @@ export default function ProductCustomizer() {
                 attrIconOne={state.attrIconOne}
                 attrIconTwo={state.attrIconTwo}
                 attrIconThree={state.attrIconThree}
+                attributeName={state.attributeName}
                 backDateDisplay={state.backDateDisplay}
                 backDescription={state.backDescription}
                 backHighlightsTitle={state.backHighlightsTitle}

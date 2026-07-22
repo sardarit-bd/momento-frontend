@@ -151,7 +151,7 @@ const PhotoPortraitBoxPreview = forwardRef(function PhotoPortraitBoxPreview(
                                         src={img.src}
                                         alt={`Box photo ${slot.i + 1}`}
                                         className="absolute w-full object-cover cursor-move"
-                                        style={{ top: '0%', height: '100%', objectPosition: 'top center', transform: `scale(${img.zoom})` }}
+                                        style={{ top: '0%', height: '100%', objectPosition: 'top center', transform: `scale(${img.zoom ?? 1})` }}
                                         onMouseDown={(e) => handleDragStart(e, img.id)}
                                     />
                                 </div>

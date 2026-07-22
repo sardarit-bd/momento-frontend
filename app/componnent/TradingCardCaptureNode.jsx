@@ -24,6 +24,7 @@ const TradingCardCaptureNode = React.forwardRef(({
     attrIconOne,
     attrIconTwo,
     attrIconThree,
+    attributeName,
     backDateDisplay,
     backDescription,
     backHighlightsTitle,
@@ -50,7 +51,7 @@ const TradingCardCaptureNode = React.forwardRef(({
             {/* Uploaded images */}
             {uploads.map((img) => (
                 <div key={img.id} style={{ position: "absolute", left: img.x, top: img.y, width: "100%", height: "100%", zIndex: 1 }}>
-                    <img src={img.url} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+                    <img src={img.url} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block", transform: `scale(${img.scale ?? 1})`, transformOrigin: "center center" }} />
                 </div>
             ))}
 
@@ -73,6 +74,7 @@ const TradingCardCaptureNode = React.forwardRef(({
                             acarddate={acarddate}
                             labelone={labelone} labeltwo={labeltwo} labelthree={labelthree}
                             iconOne={attrIconOne} iconTwo={attrIconTwo} iconThree={attrIconThree}
+                            attributeName={attributeName}
                         />
                     ) : cardfinder === 1 ? (
                         <FrontTwoCapture

@@ -71,6 +71,7 @@ export const savePhotoCartImagesToIDB = async (cartItems) => {
       FinalProduct:       item.FinalProduct       ?? [],
       FinalProductImages: item.FinalProductImages ?? [],
       CharacterImages:    item.CharacterImages    ?? [],
+      boxImages:          item.boxImages          ?? [],
     });
   }
 };
@@ -85,12 +86,13 @@ export const restorePhotoCartImagesFromIDB = async (cartItems) => {
         const key = idbPhotoCartKey(item.id);
 
         const saved = await idbGet(key);
-        if (saved?.FinalProduct?.length) {
+        if (saved?.FinalProduct?.length || saved?.boxImages?.length) {
           return {
             ...item,
-            FinalProduct:       saved.FinalProduct,
-            FinalProductImages: saved.FinalProductImages ?? [],
-            CharacterImages:    saved.CharacterImages    ?? [],
+            FinalProduct:       saved.FinalProduct       ?? item.FinalProduct       ?? [],
+            FinalProductImages: saved.FinalProductImages ?? item.FinalProductImages ?? [],
+            CharacterImages:    saved.CharacterImages    ?? item.CharacterImages    ?? [],
+            boxImages:          saved.boxImages          ?? item.boxImages          ?? [],
           };
         } else {
           console.warn("No photo FinalProduct found in IDB for key:", key);

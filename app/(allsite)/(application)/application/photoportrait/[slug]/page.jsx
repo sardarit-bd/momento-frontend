@@ -17,6 +17,7 @@ import PhotoSideController from "../../../../../componnent/PhotoSideController";
 import PhotoMobileCustomizerSheet from "../../../../../componnent/PhotoMobileCustomizerSheet";
 import PhotoPortraitBoxPreview from "../../../../../componnent/PhotoPortraitBoxPreview";
 import PhotoPortraitBoxCustomizer from "../../../../../componnent/PhotoPortraitBoxCustomizer";
+import PhotoBoxMobileCustomizerSheet from "../../../../../componnent/PhotoBoxMobileCustomizerSheet";
 import { GiCardboardBox } from "react-icons/gi";
 
 const layers = ["dresses", "skin_tones", "hairs", "crowns", "beards", "eyes", "mouths", "noses"];
@@ -963,38 +964,32 @@ const ProductCustomizer = () => {
                         </main>
 
                         {activeStep === "box" ? (
-                            <div className="xl:hidden fixed inset-x-0 bottom-0 z-50 border-t border-gray-200 bg-white p-4" style={{ paddingBottom: "max(1rem, env(safe-area-inset-bottom))" }}>
-                                <PhotoPortraitBoxCustomizer
-                                    boxImages={boxImages}
-                                    onBoxImagesChange={setBoxImages}
-                                />
-                                <button
-                                    onClick={handleFinishBox}
-                                    className="mt-3 flex h-14 w-full items-center justify-center rounded-2xl bg-[#3CA9FF] px-4 text-lg font-semibold text-white shadow-lg shadow-indigo-200 transition cursor-pointer disabled:cursor-not-allowed disabled:opacity-75"
-                                    disabled={doneloading || spinloading}
-                                >
-                                    {doneButtonLabel}
-                                </button>
-                            </div>
+                            <PhotoBoxMobileCustomizerSheet
+                                boxImages={boxImages}
+                                onBoxImagesChange={setBoxImages}
+                                handleFinishBox={handleFinishBox}
+                                doneloading={doneloading || spinloading}
+                                doneButtonLabel={doneButtonLabel}
+                            />
                         ) : (
-                        <PhotoMobileCustomizerSheet
-                            product={product}
-                            cards={cards}
-                            activeCard={activeCard}
-                            activeCardLabel={activeCardLabel}
-                            selectBase={selectBaseImage}
-                            selectLayer={selectLayerImage}
-                            selectPhoto={selectPhotoImage}
-                            editedCard={editedCard}
-                            seteditedCard={seteditedCard}
-                            activebaseEditCard={activebaseEditCard}
-                            setactivebaseEditCard={setactivebaseEditCard}
-                            Done={Done}
-                            doneloading={doneloading || spinloading}
-                            doneButtonLabel={doneButtonLabel}
-                            userPhotoZoom={activeCard?.userPhotoZoom || 1}
-                            setUserPhotoZoom={setUserPhotoZoom}
-                        />
+                            <PhotoMobileCustomizerSheet
+                                product={product}
+                                cards={cards}
+                                activeCard={activeCard}
+                                activeCardLabel={activeCardLabel}
+                                selectBase={selectBaseImage}
+                                selectLayer={selectLayerImage}
+                                selectPhoto={selectPhotoImage}
+                                editedCard={editedCard}
+                                seteditedCard={seteditedCard}
+                                activebaseEditCard={activebaseEditCard}
+                                setactivebaseEditCard={setactivebaseEditCard}
+                                Done={Done}
+                                doneloading={doneloading || spinloading}
+                                doneButtonLabel={doneButtonLabel}
+                                userPhotoZoom={activeCard?.userPhotoZoom || 1}
+                                setUserPhotoZoom={setUserPhotoZoom}
+                            />
                         )}
                     </>
                 )}

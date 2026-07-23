@@ -658,17 +658,19 @@ export default function CheckoutPage() {
   };
 
   const deriveCustomizationMode = (item) => {
+    // customization_mode is set explicitly at cart-item creation time and
+    // survives sanitizeForStorage/IDB restoration — trust it first.
+    if (item?.customization_mode === "deck") return "deck";
+    if (item?.customization_mode === "photo") return "photo";
+    if (item?.customization_mode === "trading") return "trading";
+
+    // Fallback heuristics only for legacy/unlabeled items.
     const type = String(item?.productType || "").toLowerCase();
     if (type === "trading") return "trading";
     if (type === "customizable") return "deck";
     if (type === "photo") return "photo";
-    if (Array.isArray(item?.FinalProduct) && item.FinalProduct.some((card) => card?.editedCard)) {
-      return "deck";
-    }
-    // Also detect deck from IDB-restored structure
-    if (Array.isArray(item?.FinalProduct) && item.FinalProduct.some((card) => card?.rank && card?.image)) {
-      return "deck";
-    }
+    if (Array.isArray(item?.FinalProduct) && item.FinalProduct.some((card) => card?.editedCard)) return "deck";
+    if (Array.isArray(item?.FinalProduct) && item.FinalProduct.some((card) => card?.rank && card?.image)) return "deck";
     return "trading";
   };
 

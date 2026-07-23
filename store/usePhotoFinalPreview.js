@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
+import { createHybridStorage } from "./createHybridStorage";
 
 const usePhotoFinalPreview = create(
   persist(
@@ -24,7 +25,7 @@ const usePhotoFinalPreview = create(
     }),
     {
       name: "momento-photo-preview-storage",
-      storage: createJSONStorage(() => localStorage),
+      storage: createJSONStorage(() => createHybridStorage("photo-preview")),
       partialize: (state) => ({
         photocart: state.photocart.map((item) => ({
           id: item.id,

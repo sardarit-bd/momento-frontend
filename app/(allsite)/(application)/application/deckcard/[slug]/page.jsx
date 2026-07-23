@@ -2,6 +2,7 @@
 import ApplicationSkeleton from "@/app/componnent/ApplicationSkeleton";
 import useboxcartstore from "@/store/useboxcartstore";
 import useDeckFinalPreview from "@/store/useDeckFinalPreview";
+import useCartStore from "@/store/useCartStore";
 import usefinalCardsStore from "@/store/usefinalCardsStore";
 import generateUserId from "@/utilis/helper/generateUserId";
 import MakeGet from "@/utilis/requestrespose/get";
@@ -507,6 +508,15 @@ const ProductCustomizer = () => {
         }
 
         addToCart(cartItem);
+
+        const realCartState = useCartStore.getState();
+
+        const staleDeckItems = realCartState.cart.filter(
+        (item) => item?.customization_mode === "deck" && item.id !== cartItem.id
+        );
+        staleDeckItems.forEach((item) => realCartState.removeFromCart(item.id));
+        realCartState.addToCart(cartItem);
+
         setspinloading(false);
         router.push(redirectToCheckout ? '/my-cart/checkout' : '/final/customization');
     };

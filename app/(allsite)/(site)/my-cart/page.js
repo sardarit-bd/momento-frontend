@@ -138,7 +138,6 @@ const MyCart = () => {
 
     const checkoutDisabled = isLoading || cart.length === 0 || pricingLoading || pricingError;
 
-    // ✅ Checkout Function (Demo)
     const handleCheckout = async () => {
         if (!cart.length) {
             toast.warn('Cart is empty!');

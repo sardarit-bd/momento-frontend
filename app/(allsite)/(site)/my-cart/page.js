@@ -226,9 +226,9 @@ const MyCart = () => {
                                     return (
                                         <div
                                             key={item.id ?? index}
-                                            className="flex flex-col sm:flex-row sm:items-center gap-4 py-5 first:pt-0 last:pb-0"
+                                            className="relative flex flex-col sm:flex-row sm:items-center gap-4 py-5 first:pt-0 last:pb-0"
                                         >
-                                            {/* Thumbnail + identity */}
+                                            {/* Thumbnail + identity (+ price on mobile) */}
                                             <div className="flex items-start gap-3 sm:gap-4 flex-1 min-w-0">
                                                 <div className="relative shrink-0">
                                                     <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-xl overflow-hidden border-2 border-[#F7F3EC] ring-1 ring-[#1B2420]/10 bg-[#EDE7DA]">
@@ -244,7 +244,7 @@ const MyCart = () => {
                                                     </div>
                                                 </div>
 
-                                                <div className="min-w-0 flex-1 pt-0.5">
+                                                <div className="min-w-0 flex-1 pt-0.5 pr-10 sm:pr-0">
                                                     <p
                                                         className="text-[#1B2420] font-semibold text-sm sm:text-base leading-snug"
                                                         style={{ fontFamily: 'var(--font-display)' }}
@@ -254,11 +254,45 @@ const MyCart = () => {
                                                     <span className="inline-block mt-1.5 text-xs bg-[#2F6F5E]/10 text-[#2F6F5E] border border-[#2F6F5E]/20 rounded-full px-2.5 py-0.5 capitalize">
                                                         {item?.productType}
                                                     </span>
+
+                                                    {/* Price — mobile only. Lives in the same column as
+                                                        the title/badge so it lines up instead of floating
+                                                        in a separate indented row. */}
+                                                    <div
+                                                        className="sm:hidden mt-2"
+                                                        style={{ fontFamily: 'var(--font-mono)' }}
+                                                    >
+                                                        {unitPrice !== null ? (
+                                                            <>
+                                                                {item.productQuantity > 1 && (
+                                                                    <p className="text-xs text-[#1B2420]/45">
+                                                                        {item.productQuantity} × $
+                                                                        {unitPrice.toFixed(2)}
+                                                                    </p>
+                                                                )}
+                                                                
+                                                                <p className="text-[#1B2420] font-semibold text-base">
+                                                                    ${lineTotal.toFixed(2)}
+                                                                </p>
+                                                                {Number(pricedLine?.joker_addon ?? 0) > 0 && (
+                                                                    <p className="text-xs text-[#C9A227]">
+                                                                        (Including joker card)
+                                                                    </p>
+                                                                )}
+                                                            </>
+                                                        ) : pricingLoading ? (
+                                                            <p className="text-[#1B2420]/35 text-sm animate-pulse">
+                                                                Calculating…
+                                                            </p>
+                                                        ) : (
+                                                            <p className="text-[#B65C4D] text-sm">Unavailable</p>
+                                                        )}
+                                                    </div>
                                                 </div>
                                             </div>
 
-                                            {/* Qty + price + remove */}
-                                            <div className="flex items-center justify-between sm:justify-end gap-4 sm:gap-6 pl-[5.5rem] sm:pl-0">
+                                            {/* Qty + price + remove — desktop only, right-aligned column */}
+                                            <div className="hidden sm:flex items-center justify-end gap-6">
                                                 {/* {showStepper && (
                                                     <div className="flex items-center gap-1 bg-[#F7F3EC] border border-[#1B2420]/10 rounded-lg p-1">
                                                         <button
@@ -284,30 +318,24 @@ const MyCart = () => {
                                                     </div>
                                                 )} */}
 
-                                                <div className="text-right min-w-[5.5rem]">
+                                                <div
+                                                    className="text-right min-w-[5.5rem]"
+                                                    style={{ fontFamily: 'var(--font-mono)' }}
+                                                >
                                                     {unitPrice !== null ? (
                                                         <>
                                                             {item.productQuantity > 1 && (
-                                                                <p
-                                                                    className="text-xs text-[#1B2420]/45"
-                                                                    style={{ fontFamily: 'var(--font-mono)' }}
-                                                                >
+                                                                <p className="text-xs text-[#1B2420]/45">
                                                                     {item.productQuantity} × ${unitPrice.toFixed(2)}
                                                                 </p>
                                                             )}
                                                             {Number(pricedLine?.joker_addon ?? 0) > 0 && (
-                                                                <p
-                                                                    className="text-xs text-[#C9A227]"
-                                                                    style={{ fontFamily: 'var(--font-mono)' }}
-                                                                >
+                                                                <p className="text-xs text-[#C9A227]">
                                                                     {/* + ${Number(pricedLine.joker_addon).toFixed(2)} joker */}
                                                                     (Including joker card)
                                                                 </p>
                                                             )}
-                                                            <p
-                                                                className="text-[#1B2420] font-semibold text-base"
-                                                                style={{ fontFamily: 'var(--font-mono)' }}
-                                                            >
+                                                            <p className="text-[#1B2420] font-semibold text-base">
                                                                 ${lineTotal.toFixed(2)}
                                                             </p>
                                                         </>
@@ -326,6 +354,15 @@ const MyCart = () => {
                                                     <RxCross2 className="text-base" />
                                                 </button>
                                             </div>
+
+                                            {/* Remove button — mobile only, pinned to top-right corner */}
+                                            <button
+                                                onClick={() => removeFromCart(item?.id)}
+                                                aria-label="Remove item"
+                                                className="sm:hidden absolute top-5 right-4 shrink-0 w-9 h-9 flex items-center justify-center rounded-full border border-[#1B2420]/10 text-[#1B2420]/40 hover:text-[#B65C4D] hover:border-[#B65C4D]/30 hover:bg-[#B65C4D]/5 cursor-pointer transition"
+                                            >
+                                                <RxCross2 className="text-base" />
+                                            </button>
                                         </div>
                                     );
                                 })}
@@ -455,7 +492,7 @@ const MyCart = () => {
                         <button
                             onClick={handleCheckout}
                             disabled={checkoutDisabled}
-                            className="flex items-center justify-center gap-2 bg-[#2F6F5E] hover:bg-[#28604F] text-[#F7F3EC] font-semibold px-6 py-3 rounded-xl transition cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="flex items-center justify-center gap-2 bg-[#3CA9FF] text-[#F7F3EC] font-semibold px-6 py-3 rounded-xl transition cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             {isLoading && <SpinLoader />}
                             Checkout

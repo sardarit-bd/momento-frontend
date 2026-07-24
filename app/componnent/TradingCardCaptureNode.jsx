@@ -13,7 +13,6 @@ const TradingCardCaptureNode = React.forwardRef(({
     cardfinder,
     uploads = [],
     cardti,
-    carddes,
     displayAttributeOne,
     displayAttributeTwo,
     displayAttributeThree,
@@ -69,7 +68,6 @@ const TradingCardCaptureNode = React.forwardRef(({
                 {workingcard === "front" ? (
                     cardfinder === 2 ? (
                         <FrontThreeCapture
-                            cardti={cardti} carddes={carddes}
                             name={displayAttributeOne} name2={displayAttributeTwo} name3={displayAttributeThree}
                             acarddate={acarddate}
                             labelone={labelone} labeltwo={labeltwo} labelthree={labelthree}
@@ -78,7 +76,7 @@ const TradingCardCaptureNode = React.forwardRef(({
                         />
                     ) : cardfinder === 1 ? (
                         <FrontTwoCapture
-                            cardti={cardti} carddes={carddes}
+                            cardti={cardti}
                             name={displayAttributeOne} name2={displayAttributeTwo} name3={displayAttributeThree}
                             acarddate={acarddate}
                             labelone={labelone} labeltwo={labeltwo} labelthree={labelthree}
@@ -86,7 +84,7 @@ const TradingCardCaptureNode = React.forwardRef(({
                         />
                     ) : (
                         <FrontOneCapture
-                            cardti={cardti} carddes={carddes}
+                            cardti={cardti}
                             name={displayAttributeOne} name2={displayAttributeTwo} name3={displayAttributeThree}
                             acarddate={acarddate}
                             labelone={labelone} labeltwo={labeltwo} labelthree={labelthree}

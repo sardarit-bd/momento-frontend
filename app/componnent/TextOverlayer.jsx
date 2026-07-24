@@ -309,11 +309,10 @@ const AttributeMetricHorizontal2 = ({
 );
 
 
-export const FrontOne = ({ cardti, carddes, name, name2, name3, acarddate, labelone, labeltwo, labelthree, iconOne, iconTwo, iconThree }) => {
+export const FrontOne = ({ cardti, name, name2, name3, acarddate, labelone, labeltwo, labelthree, iconOne, iconTwo, iconThree }) => {
     const currentYear = new Date().getFullYear();
     return (
         <div className="w-full h-full relative" style={{ backgroundColor: 'transparent' }}>
-            <span id="card-description" className="text-white text-[10px] lg:text-xs AileronFont tracking-wider font-thin absolute top-71 left-[24px] lg:top-111 lg:left-8 text-center w-[205px] lg:w-[320px] z-50">{carddes}</span>
 
             <div className="absolute left-[25px] right-[25px] bottom-[33px] h-1/3 z-40 pointer-events-none rounded-bl-2xl rounded-br-2xl overflow-hidden">
                 <div
@@ -393,12 +392,11 @@ export const FrontOne = ({ cardti, carddes, name, name2, name3, acarddate, label
     )
 };
 
-export const FrontTwo = ({ cardti, carddes, name, name2, name3, acarddate, labelone, labeltwo, labelthree, iconOne, iconTwo, iconThree }) => {
+export const FrontTwo = ({ cardti, name, name2, name3, acarddate, labelone, labeltwo, labelthree, iconOne, iconTwo, iconThree }) => {
     const dateParts = acarddate.match(/^(.*?)\s+(OF\s+.*)$/i);
     const currentYear = new Date().getFullYear();
     return (
         <div className="w-full h-full relative" style={{ backgroundColor: 'transparent' }}>
-            <span id="card-description" className="text-gray-50 text-[10px] lg:text-xs AileronFont tracking-wider font-thin absolute top-70 left-[24px] lg:top-108.5 lg:left-8 text-center w-[205px] lg:w-[320px] z-50">{carddes}</span>
 
             <div
                 className="absolute bottom-[13%] z-50"
@@ -498,7 +496,7 @@ export const FrontTwo = ({ cardti, carddes, name, name2, name3, acarddate, label
     )
 };
 
-export const FrontThree = ({ cardti, carddes, name, name2, name3, acarddate, labelone, labeltwo, labelthree, iconOne, iconTwo, iconThree, attributeName }) => {
+export const FrontThree = ({ cardti, name, name2, name3, acarddate, labelone, labeltwo, labelthree, iconOne, iconTwo, iconThree, attributeName }) => {
     
     const currentYear = new Date().getFullYear();
     const dateLine1 = acarddate.length > 6 ? acarddate.slice(0, 6) : acarddate;
@@ -525,15 +523,7 @@ export const FrontThree = ({ cardti, carddes, name, name2, name3, acarddate, lab
                 {cardti}
             </span>
 
-            {/* Description */}
-            <span
-                className="text-white text-[10px] lg:text-[11.5px] tracking-wider font-thin absolute left-5 lg:left-7 top-63 lg:top-97 w-[160px] lg:w-[265px] z-50"
-                style={{ fontFamily: 'Hermona' }}
-            >
-                {carddes}
-            </span>
-
-            {/* Fixed "ATTRIBUTES" header pill */}
+            {/* Attributes label — plain, no gradient */}
             <div className="absolute left-[52%] -translate-x-1/2 bottom-[28.5%] z-50">
                 <span
                     className="block text-black text-[14px] font-bold uppercase tracking-widest px-4 py-1 rounded-full whitespace-nowrap"
@@ -604,11 +594,10 @@ export const FrontThree = ({ cardti, carddes, name, name2, name3, acarddate, lab
     )
 };
 
-export const FrontFour = ({ cardti, carddes, name, name2, name3, acarddate, iconOne, iconTwo, iconThree }) => {
+export const FrontFour = ({ cardti, name, name2, name3, acarddate, iconOne, iconTwo, iconThree }) => {
     const currentYear = new Date().getFullYear();
     return (
         <div className="w-full h-full relative" style={{ backgroundColor: 'transparent' }}>
-            <span className="text-white text-xs font-bold absolute top-108 text-center w-[265px] left-8 z-50">{carddes}</span>
 
             <div className="absolute left-[25px] right-[25px] bottom-[33px] h-1/3 z-40 pointer-events-none rounded-bl-2xl rounded-br-2xl overflow-hidden">
                 <div

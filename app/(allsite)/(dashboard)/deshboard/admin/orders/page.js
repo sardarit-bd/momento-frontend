@@ -5,7 +5,7 @@ import getCookie from "@/utilis/helper/cookie/gettooken";
 import formatDateTime from "@/utilis/helper/formatDateTime.js";
 //import pdfToPngDownload from "@/utilis/helper/pdfToPngDownload.js";
 import MakeGet from "@/utilis/requestrespose/get";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { ToastContainer } from "react-toastify";
 import RecentOrdersSkeleton from "../../../../../componnent/skelaton/RecentOrdersSkeleton.jsx";
 
@@ -286,21 +286,40 @@ function OrderTable({ allorders, pagination, onPageChange, token, isPageLoading 
 
 //******************* Modal Component is here *********************//
 const TableModal = ({ setismodalopen, modalinfo, modaltype, modalLoading }) => {
+    const modalRef = useRef(null);
+
+    useEffect(() => {
+        if (modalRef.current) {
+            modalRef.current.scrollTop = 0;
+        }
+    }, []);
+
     return (
-        <div className="bg-white border border-gray-300 shadow-xl rounded-xl p-0 absolute inset-0 w-full h-full">
-            <div onClick={() => { setismodalopen(false) }} className="text-white bg-sky-500 w-8 h-8 flex items-center justify-center p-4 rounded-full absolute hover:rotate-180 transition duration-300 -top-4 -right-4 cursor-pointer shadow-xl">
-                x
-            </div>
-
-
-            {modalLoading ? (
-                <div className="w-full h-full flex items-center justify-center text-gray-600 text-sm">
-                    Loading order details...
+        <div className="fixed inset-0 z-50 flex items-start sm:items-center justify-center overflow-y-auto px-4 sm:px-6 md:px-10">
+            <div onClick={() => { setismodalopen(false) }} className="absolute inset-0 bg-black/40 backdrop-blur-sm" />
+            <div ref={modalRef} className="relative bg-white border border-gray-200 shadow-2xl rounded-2xl w-full max-w-4xl max-h-[calc(100vh-180px)] sm:max-h-[85vh] md:max-h-[80vh] flex flex-col overflow-hidden mt-32 sm:mt-0">
+                <div className="sticky top-0 z-10 flex justify-between items-center p-4 bg-white/90 backdrop-blur-sm border-b border-gray-100 rounded-t-2xl">
+                    <h3 className="text-sm font-semibold text-gray-700 uppercase tracking-wider">
+                        {modaltype === "receipt" ? "Receipt Details" : modaltype === "pdf" ? "PDF Preview" : "Order Details"}
+                    </h3>
+                    <button onClick={() => { setismodalopen(false) }} className="text-gray-400 hover:text-gray-600 w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition" aria-label="Close">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                        </svg>
+                    </button>
                 </div>
-            ) : (
-                <ImageDownloadInfo modalinfo={modalinfo} modaltype={modaltype} />
-            )}
 
+                {modalLoading ? (
+                    <div className="flex items-center justify-center h-64 text-gray-600 text-sm">
+                        Loading order details...
+                    </div>
+                ) : (
+                    <div className="overflow-y-auto flex-1 p-4 sm:p-6">
+                        <ImageDownloadInfo modalinfo={modalinfo} modaltype={modaltype} />
+                    </div>
+                )}
+            </div>
         </div>
     )
 }
@@ -570,8 +589,13 @@ function ReceiptView({ data }) {
 
     if (!data || data?._error) {
         return (
-            <div className="flex items-center justify-center h-full text-red-500 text-sm">
-                {data?._error || "No receipt data available."}
+            <div className="flex flex-col items-center justify-center h-64 text-red-500">
+                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="mb-3 opacity-50">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="12" y1="8" x2="12" y2="12"></line>
+                    <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                </svg>
+                <p className="text-sm font-medium">{data?._error || "No receipt data available."}</p>
             </div>
         );
     }
@@ -606,7 +630,7 @@ function ReceiptView({ data }) {
         <div className="w-full h-full overflow-y-auto bg-white font-sans text-sm text-gray-800">
 
             {/* ── Download button — hidden when printing ── */}
-            <div className="flex justify-end px-8 pt-6 pb-2 print:hidden">
+            <div className="flex justify-center sm:justify-end px-8 pt-2 pb-4 print:hidden">
                 <button
                     onClick={handleDownloadPDF}
                     className="flex items-center gap-2 bg-sky-500 hover:bg-sky-600 text-white text-sm font-medium px-4 py-2 rounded-lg shadow transition"
@@ -616,7 +640,7 @@ function ReceiptView({ data }) {
                         <polyline points="7 10 12 15 17 10"/>
                         <line x1="12" y1="15" x2="12" y2="3"/>
                     </svg>
-                    Download PDF
+                    Download Receipt
                 </button>
             </div>
 

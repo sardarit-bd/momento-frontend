@@ -7,51 +7,47 @@ import MakeGet from "@/utilis/requestrespose/get";
 import { useCallback, useEffect, useState } from "react";
 import RecentOrdersSkeleton from "../../../../../componnent/skelaton/RecentOrdersSkeleton.jsx";
 
-
-
-
 //******************* Beage stles is here *********************//
 const statusStyles = {
     completed: "bg-green-100 text-green-700",
     Paid: "bg-green-100 text-green-700",
     pending: "bg-yellow-100 text-yellow-700",
     Pending: "bg-yellow-100 text-yellow-700",
-    Cancelled: "bg-red-100 text-red-700",
+    canceled: "bg-red-100 text-red-700",   
     Unpaid: "bg-yellow-100 text-yellow-700",
 };
 
-
-
-
-
+const statusLabels = {
+    completed: "Delivered",
+    pending: "Pending",
+    canceled: "Cancelled",
+};
 
 //******************* Order Table Component is here *********************//
 const AdminOrders = () => {
-
-
     const token = getCookie();
     const id = getId();
     const [fetchloading, setfetchloading] = useState(true);
     const [allorders, setallorders] = useState([]);
 
 
-
-
     const fetching = useCallback(async (token, id) => {
         try {
             const response = await MakeGet(`api/myorders/${id}`, token);
 
-            setallorders(response?.data);
-
-
+            if (response === false) {
+                setallorders([]);
+                setfetchloading(false);
+                return;
+            }
+            setallorders(response?.data?.orders ?? []);
             setfetchloading(false);
         } catch (error) {
             console.error("Error fetching profile:", error);
+            setallorders([]);
             setfetchloading(false);
         }
     }, [id, token]);
-
-
 
     // Simulate fetching user data
     useEffect(() => {
@@ -61,18 +57,15 @@ const AdminOrders = () => {
     }, [fetching, token, id]);
 
 
-
-
     if (fetchloading) {
         return <RecentOrdersSkeleton />
     }
 
-
     return (
         <div>
 
-            {allorders?.data?.length > 0 ? (
-                <OrderTable allorders={allorders?.data} />
+            {allorders?.length > 0 ? (
+                <OrderTable allorders={allorders} />
             ) : (
                 <div className="text-center py-10">
                     <p className="text-gray-600">No orders found.</p>
@@ -83,33 +76,10 @@ const AdminOrders = () => {
     )
 }
 
-
-
 export default AdminOrders;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 //******************* Order Table Component is here *********************//
 function OrderTable({ allorders }) {
-
-    console.log(allorders);
-
-
     return (
         <div className="w-full bg-white">
             <div className="border-b border-gray-200">
@@ -128,7 +98,7 @@ function OrderTable({ allorders }) {
                             <th className="px-4 py-3">Total</th>
                             <th className="px-4 py-3">Is Customized</th>
                             <th className="px-4 py-3">Payment Status</th>
-                            <th className="px-4 py-3">Delivery Status</th>
+                            {/* <th className="px-4 py-3">Delivery Status</th> */}
                         </tr>
                     </thead>
 
@@ -171,13 +141,11 @@ function OrderTable({ allorders }) {
                                     </span>
                                 </td>
 
-                                <td className="px-4 py-3">
-                                    <span
-                                        className={`px-3 py-1 rounded-full text-xs font-medium ${statusStyles[order.status]}`}
-                                    >
-                                        {order.status == 'completed' ? "Delivered" : order.status}
+                                {/* <td className="px-4 py-3">
+                                    <span className={`px-3 py-1 rounded-full text-xs font-medium ${statusStyles[order.status]}`}>
+                                        {statusLabels[order.status] ?? order.status}
                                     </span>
-                                </td>
+                                </td> */}
                             </tr>
                         ))}
                     </tbody>
@@ -186,4 +154,3 @@ function OrderTable({ allorders }) {
         </div>
     );
 }
-

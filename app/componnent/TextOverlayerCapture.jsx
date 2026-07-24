@@ -608,19 +608,10 @@ const AttrRowCapture3 = ({ icon, text, value, top, left, fillColor = "#f56f41", 
     );
 };
 
-export const FrontOneCapture = ({ cardti, carddes, name, name2, name3, acarddate, labelone, labeltwo, labelthree, iconOne, iconTwo, iconThree }) => {
+export const FrontOneCapture = ({ cardti, name, name2, name3, acarddate, labelone, labeltwo, labelthree, iconOne, iconTwo, iconThree }) => {
     const currentYear = new Date().getFullYear();
     return (
         <div style={{ position: "relative", width: "390px", height: "570px" }}>
-
-            {/* Description — top area, matches live FrontOne preview */}
-            <span style={{
-                position: "absolute", top: "88px", left: "24px", width: "320px",
-                fontFamily: "AileronCanvas", fontWeight: 300, fontSize: "11px",
-                letterSpacing: "0.05em", lineHeight: 1.2, color: "#ffffff", textAlign: "center",
-            }}>
-                {carddes}
-            </span>
 
             {/* Attribute rows */}
             <AttrRowCapture icon={iconOne}   text={name}  value={labelone}   top={384} left={40} fillColor="#f56f41" />
@@ -651,7 +642,7 @@ export const FrontOneCapture = ({ cardti, carddes, name, name2, name3, acarddate
     );
 };
 
-export const FrontTwoCapture = ({ cardti, carddes, name, name2, name3, acarddate, labelone, labeltwo, labelthree, iconOne, iconTwo, iconThree }) => {
+export const FrontTwoCapture = ({ cardti, name, name2, name3, acarddate, labelone, labeltwo, labelthree, iconOne, iconTwo, iconThree }) => {
     const currentYear = new Date().getFullYear();
     const dateParts = acarddate.match(/^(.*?)\s+(OF\s+.*)$/i);
 
@@ -659,15 +650,6 @@ export const FrontTwoCapture = ({ cardti, carddes, name, name2, name3, acarddate
         <div style={{ position: "relative", width: "390px", height: "570px" }}>
             {/* Layer 1: stroke only */}
             <GradientTitle cardti={cardti} />
-
-            {/* Description — top area, matches live FrontTwo preview */}
-            <span style={{
-                position: "absolute", top: "85px", left: "24px", width: "320px",
-                fontFamily: "AileronCanvas", fontWeight: 300, fontSize: "11px",
-                letterSpacing: "0.05em", lineHeight: 1.2, color: "#ffffff", textAlign: "center",
-            }}>
-                {carddes}
-            </span>
 
             {/* ── Attribute Rows ── */}
             <AttrRowCapture2
@@ -752,7 +734,7 @@ export const FrontTwoCapture = ({ cardti, carddes, name, name2, name3, acarddate
     );
 };
 
-export const FrontThreeCapture = ({ cardti, carddes, name, name2, name3, acarddate, labelone, labeltwo, labelthree, iconOne, iconTwo, iconThree, attributeName }) => {
+export const FrontThreeCapture = ({ cardti, name, name2, name3, acarddate, labelone, labeltwo, labelthree, iconOne, iconTwo, iconThree, attributeName }) => {
     const currentYear = new Date().getFullYear();
 
     return (

@@ -28,9 +28,9 @@ export default function Category() {
     ];
 
     return (
-        <section className="py-20 md:py-28 w-full bg-gradient-to-b from-gray-50 to-white">
+        <section className="py-16 md:py-20 lg:py-12 w-full bg-gradient-to-b from-gray-50 to-white">
             {/* Header Section */}
-            <div className="text-center px-4 mb-16 md:mb-20">
+            <div className="text-center px-4 mb-10 md:mb-12">
                 <h2 className="text-4xl md:text-5xl xl:text-6xl font-extrabold text-gray-900 tracking-tight leading-tight mb-5">
                     Turn Meaningful Moments  <br className="hidden sm:block" />
                     <span className="text-[#3CA9FF]">Into Custom Cards</span>
@@ -43,7 +43,7 @@ export default function Category() {
             {/* Centered 2-Card Grid */}
             {/* Reduced max-width to 5xl to keep the two cards beautifully proportioned and centered */}
             <div className="w-full max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
                     {categories.map((cat, idx) => (
                         <div
                             key={idx}
@@ -62,7 +62,7 @@ export default function Category() {
                             </div>
 
                             {/* Content & Action Area */}
-                            <div className="flex flex-col flex-grow p-8">
+                            <div className="flex flex-col flex-grow p-6 lg:p-8">
                                 <div className="flex-grow text-center md:text-left">
                                     <h3 className="text-2xl font-bold text-gray-900 mb-3">
                                         {cat.title}
@@ -72,7 +72,7 @@ export default function Category() {
                                     </p>
                                 </div>
                                 
-                                <div className="pt-8 mt-auto">
+                                <div className="pt-6 mt-auto">
                                     <Link
                                         onClick={() => { settype(cat.type) }}
                                         href={cat.href}

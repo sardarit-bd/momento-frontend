@@ -203,12 +203,18 @@ body {
 
 
 /* hero background pata image here */
-.heroBgPataImage {
-  background: url('../public/heroBg.webp');
-  background-repeat: no-repeat;
-  background-size: cover;
-  background-position: center -50px;
-}
+  .heroBgPataImage {
+    background: url('../public/heroBg.webp');
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center -50px;
+  }
+  
+  @media (max-width: 767px) {
+    .heroBgPataImage {
+      background-position: center center;
+    }
+  }
 
 .tooltipscostom::before {
   content: '';

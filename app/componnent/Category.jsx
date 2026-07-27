@@ -12,8 +12,15 @@ export default function Category() {
 
     const categories = [
         {
+            title: "Momento Photo Portrait Deck",
+            description: "Customize the classic cards with your personal images.",
+            image: TredingOne,
+            href: "/shop",
+            type: "customizable"
+        },
+        {
             title: "Momento Portrait Deck",
-            description: "Classic playing cards with personalized faces and immersive themes.",
+            description: "Classic playing cards with immersive themes.",
             image: TredingOne,
             href: "/shop",
             type: "customizable"
@@ -42,8 +49,8 @@ export default function Category() {
 
             {/* Centered 2-Card Grid */}
             {/* Reduced max-width to 5xl to keep the two cards beautifully proportioned and centered */}
-            <div className="w-full max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
+            <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
                     {categories.map((cat, idx) => (
                         <div
                             key={idx}

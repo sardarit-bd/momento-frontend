@@ -4,6 +4,7 @@ import Deckgame from "../../componnent/Deckgame";
 import Hero from "../../componnent/Hero";
 import Info from "../../componnent/Info";
 import Trading from "../../componnent/Trading";
+import PhotoPortrait from "../../componnent/PhotoPortrait";
 import Tradition from "../../componnent/Tradition";
 
 const Homepage = () => {
@@ -16,6 +17,7 @@ const Homepage = () => {
       {/* <Tradition /> */}
       <Trading />
       <Deckgame />
+      <PhotoPortrait />
       <Cta />
     </main>
   );

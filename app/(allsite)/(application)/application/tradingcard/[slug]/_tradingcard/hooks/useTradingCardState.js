@@ -653,12 +653,10 @@ export function useTradingCardState() {
             };
 
             const composedBoxImage = await captureTradingBox();
-            setboxs([{
+            await setboxs([{
                 BoxImage: composedBoxImage || "/tradingbox.png",
                 bfor: "trading",
             }]);
-
-            await new Promise(r => setTimeout(r, 5000));
 
             // addToCart(product);
             // router.push("/my-cart/checkout");

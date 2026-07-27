@@ -81,7 +81,8 @@ async function walkAndRestore(obj, prefix) {
 
 export async function saveBlobs(prefix, obj) {
   const ids = [];
-  const stripped = await walkAndExtract(obj, prefix, ids);
+  const clone = structuredClone(obj);
+  const stripped = await walkAndExtract(clone, prefix, ids);
   if (ids.length > 0) {
     await idbPut(`${prefix}:manifest`, ids);
   }

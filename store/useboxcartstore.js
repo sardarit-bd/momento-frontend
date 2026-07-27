@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { persist, createJSONStorage } from "zustand/middleware";
+import { persist } from "zustand/middleware";
 import { createHybridStorage } from "./createHybridStorage";
 
 const useboxcartstore = create(
@@ -10,7 +10,10 @@ const useboxcartstore = create(
     }),
     {
       name: "momento-box-storage",
-      storage: createJSONStorage(() => createHybridStorage("box-preview")),
+      storage: createHybridStorage("box-preview"),
+      partialize: (state) => ({
+        boxs: state.boxs,
+      }),
     }
   )
 );

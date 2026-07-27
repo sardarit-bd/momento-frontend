@@ -1,30 +1,31 @@
+// store/createHybridStorage.js
 import { saveBlobs, deleteBlobs, restoreBlobs } from "./idbBlobCache";
 
 export function createHybridStorage(prefix) {
   return {
+    // Zustand (without createJSONStorage) expects getItem to return the
+    // parsed StorageValue object directly — not a JSON string.
     getItem: async (name) => {
       try {
         const raw = localStorage.getItem(name);
         if (!raw) return null;
         const parsed = JSON.parse(raw);
-        await restoreBlobs(prefix, parsed);
+        await restoreBlobs(prefix, parsed); // mutates parsed in place
         return parsed;
-      } catch {
+      } catch (error) {
+        console.error(`[${prefix}] Failed to read/restore storage:`, error);
         return null;
       }
     },
 
+    // Zustand now hands us the raw object (already NOT stringified),
+    // since there's no createJSONStorage doing that for us anymore.
     setItem: async (name, value) => {
       try {
-        const parsed = JSON.parse(value);
-        const stripped = await saveBlobs(prefix, parsed);
+        const stripped = await saveBlobs(prefix, value);
         localStorage.setItem(name, JSON.stringify(stripped));
       } catch (error) {
-        if (error instanceof SyntaxError) {
-          localStorage.setItem(name, value);
-        } else {
-          console.error(`[${prefix}] Storage error:`, error);
-        }
+        console.error(`[${prefix}] Storage error:`, error);
       }
     },
 

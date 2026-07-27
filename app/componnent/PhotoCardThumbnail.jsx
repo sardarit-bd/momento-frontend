@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { JOKER_SLOT_BOX, EXPORT_WIDTH, EXPORT_HEIGHT } from "@/app/componnent/jokerSlotGeometry";
+import { JOKER_SLOT_BOX, JOKER_SLOT_CLIP_PATH, JOKER_NATIVE_WIDTH, JOKER_NATIVE_HEIGHT } from "@/app/componnent/jokerSlotGeometry";
 
 const layers = [
   "dresses", "skin_tones", "hairs", "crowns",
@@ -32,7 +32,10 @@ const PhotoCardThumbnail = ({ finalCard }) => {
 
   const photo = finalCard?.userPhoto || null;
   const zoom = finalCard?.userPhotoZoom || 1;
+  const offset = finalCard?.userPhotoOffset || { x: 0, y: 0 };
   const isJoker = finalCard?.editedCard === "Joker_Card";
+
+  const photoTransform = `translate(calc(-50% + ${offset.x * 100}%), calc(-50% + ${offset.y * 100}%)) scale(${zoom})`;
 
   return (
     <div
@@ -47,7 +50,7 @@ const PhotoCardThumbnail = ({ finalCard }) => {
           style={{
             position: "relative",
             width: "100%",
-            aspectRatio: `${EXPORT_WIDTH} / ${EXPORT_HEIGHT}`,
+            aspectRatio: `${JOKER_NATIVE_WIDTH} / ${JOKER_NATIVE_HEIGHT}`,
           }}
         >
           <Image
@@ -55,16 +58,17 @@ const PhotoCardThumbnail = ({ finalCard }) => {
           />
 
           {photo ? (
-            <div
-              style={{
-                position: "absolute",
-                top: JOKER_SLOT_BOX_STYLE.top,
-                left: JOKER_SLOT_BOX_STYLE.left,
-                width: JOKER_SLOT_BOX_STYLE.width,
-                height: JOKER_SLOT_BOX_STYLE.height,
-                overflow: "hidden",
-              }}
-            >
+              <div
+                style={{
+                  position: "absolute",
+                  top: JOKER_SLOT_BOX_STYLE.top,
+                  left: JOKER_SLOT_BOX_STYLE.left,
+                  width: JOKER_SLOT_BOX_STYLE.width,
+                  height: JOKER_SLOT_BOX_STYLE.height,
+                  overflow: "hidden",
+                  clipPath: JOKER_SLOT_CLIP_PATH,
+                }}
+              >
               <Image
                 width={1000}
                 height={1000}
@@ -78,7 +82,7 @@ const PhotoCardThumbnail = ({ finalCard }) => {
                   width: "100%",
                   height: "100%",
                   objectFit: "contain",
-                  transform: `translate(-50%, -50%) scale(${zoom})`,
+                  transform: photoTransform,
                   transformOrigin: "center center",
                 }}
               />
@@ -151,7 +155,7 @@ const PhotoCardThumbnail = ({ finalCard }) => {
                   width: "100%",
                   height: "100%",
                   objectFit: "cover",
-                  transform: `translate(-50%, -50%) scale(${zoom})`,
+                  transform: photoTransform,
                   transformOrigin: "center center",
                 }}
               />

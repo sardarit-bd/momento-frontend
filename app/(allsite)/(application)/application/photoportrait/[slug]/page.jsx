@@ -9,7 +9,6 @@ import { useParams, useRouter } from "next/navigation";
 import { Fragment, useEffect, useRef, useState } from "react";
 import { GiCardAceClubs, GiCardJackClubs, GiCardJoker, GiCardKingClubs, GiCardQueenClubs } from "react-icons/gi";
 import { IoMdCheckmark } from "react-icons/io";
-import { JOKER_SLOT_RECT } from "@/app/componnent/jokerSlotGeometry";
 import { toast, ToastContainer } from "react-toastify";
 import PhotoCardPreview from "../../../../../componnent/PhotoCardPreview";
 import PhotoCardSidebar from "../../../../../componnent/PhotoCardSidebar";
@@ -19,6 +18,7 @@ import PhotoPortraitBoxPreview from "../../../../../componnent/PhotoPortraitBoxP
 import PhotoPortraitBoxCustomizer from "../../../../../componnent/PhotoPortraitBoxCustomizer";
 import PhotoBoxMobileCustomizerSheet from "../../../../../componnent/PhotoBoxMobileCustomizerSheet";
 import { GiCardboardBox } from "react-icons/gi";
+import { JOKER_SLOT_RECT, JOKER_SLOT_CLIP_POLYGON } from "@/app/componnent/jokerSlotGeometry";
 
 const layers = ["dresses", "skin_tones", "hairs", "crowns", "beards", "eyes", "mouths", "noses"];
 
@@ -189,19 +189,12 @@ const ProductCustomizer = () => {
                     const canonicalType = getCanonicalCardType(card?.editedCard);
                     if (!canonicalType) return card;
                     const hasValidBase = validBaseByType[canonicalType]?.has(card?.baseImage);
-                    if (hasValidBase) return {
-                        ...card,
-                        editedCard: canonicalType,
-                        slotName: card?.slotName || firstBaseNameByType[canonicalType] || null,
+                    const shared = {
                         userPhotoZoom: card?.userPhotoZoom || 1,
+                        userPhotoOffset: card?.userPhotoOffset || { x: 0, y: 0 }, // ← add
                     };
-                    return {
-                        ...card,
-                        editedCard: canonicalType,
-                        baseImage: firstBaseImageByType[canonicalType] || card?.baseImage,
-                        slotName: card?.slotName || firstBaseNameByType[canonicalType] || null,
-                        userPhotoZoom: card?.userPhotoZoom || 1,
-                    };
+                    if (hasValidBase) return { ...card, editedCard: canonicalType, slotName: card?.slotName || firstBaseNameByType[canonicalType] || null, ...shared };
+                    return { ...card, editedCard: canonicalType, baseImage: firstBaseImageByType[canonicalType] || card?.baseImage, slotName: card?.slotName || firstBaseNameByType[canonicalType] || null, ...shared };
                 });
 
                 // Re-sort against the current King → Queen → Jack → Ace → Joker order.
@@ -257,6 +250,7 @@ const ProductCustomizer = () => {
                 selectedLayers: initialLayers,
                 userPhoto: null,
                 userPhotoZoom: 1,
+                userPhotoOffset: { x: 0, y: 0 },
             }]);
             setActiveCardIndex(0);
             seteditedCard(CARD_FLOW[0]);
@@ -310,7 +304,9 @@ const ProductCustomizer = () => {
     const selectPhotoImage = (dataUrl) => {
         setCards((prev) =>
             prev.map((card, i) =>
-                i !== activeCardIndex ? card : { ...card, userPhoto: dataUrl || null, userPhotoZoom: 1 }
+                i !== activeCardIndex
+                    ? card
+                    : { ...card, userPhoto: dataUrl || null, userPhotoZoom: 1, userPhotoOffset: { x: 0, y: 0 } }
             )
         );
     };
@@ -319,6 +315,14 @@ const ProductCustomizer = () => {
         setCards((prev) =>
             prev.map((card, i) =>
                 i !== activeCardIndex ? card : { ...card, userPhotoZoom: zoom }
+            )
+        );
+    };
+
+    const setUserPhotoOffset = (offset) => {
+        setCards((prev) =>
+            prev.map((card, i) =>
+                i !== activeCardIndex ? card : { ...card, userPhotoOffset: offset }
             )
         );
     };
@@ -390,6 +394,7 @@ const ProductCustomizer = () => {
                 selectedLayers: initialLayersTwo,
                 userPhoto: null,
                 userPhotoZoom: 1,
+                userPhotoOffset: { x: 0, y: 0 },
             };
             const insertAt = getSortedInsertIndex(prev, cardType);
             const newCards = [...prev.slice(0, insertAt), newCard, ...prev.slice(insertAt)];
@@ -441,13 +446,26 @@ const ProductCustomizer = () => {
             if (isJoker) {
                 const { x: boxX, y: boxY, w: boxW, h: boxH } = JOKER_SLOT_RECT;
                 const zoom = card.userPhotoZoom || 1;
+                const offset = card.userPhotoOffset || { x: 0, y: 0 };
                 const ratio = Math.min(boxW / img.width, boxH / img.height);
                 const dw = img.width * ratio * zoom, dh = img.height * ratio * zoom;
+
                 ctx.save();
                 ctx.beginPath();
-                ctx.rect(boxX, boxY, boxW, boxH);
+                JOKER_SLOT_CLIP_POLYGON.forEach((pt, i) => {
+                    const x = boxX + pt.x * boxW;
+                    const y = boxY + pt.y * boxH;
+                    i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+                });
+                ctx.closePath();
                 ctx.clip();
-                ctx.drawImage(img, boxX + (boxW - dw) / 2, boxY + (boxH - dh) / 2, dw, dh);
+
+                ctx.drawImage(
+                    img,
+                    boxX + (boxW - dw) / 2 + offset.x * boxW,
+                    boxY + (boxH - dh) / 2 + offset.y * boxH,
+                    dw, dh
+                );
                 ctx.restore();
             } else {
                 const boxX = 750 * 0.07, boxY = 1050 * 0.07;
@@ -467,10 +485,15 @@ const ProductCustomizer = () => {
                 ctx.clip();
 
                 const zoom = card.userPhotoZoom || 1;
+                const offset = card.userPhotoOffset || { x: 0, y: 0 };
                 const ratio = Math.max(boxW / img.width, boxH / img.height);
                 const dw = img.width * ratio * zoom, dh = img.height * ratio * zoom;
-                ctx.drawImage(img, boxX + (boxW - dw) / 2, boxY + (boxH - dh) / 2, dw, dh);
-                ctx.restore();
+                ctx.drawImage(
+                    img,
+                    boxX + (boxW - dw) / 2 + offset.x * boxW,
+                    boxY + (boxH - dh) / 2 + offset.y * boxH,
+                    dw, dh
+                );
             }
         } else {
             const layerOrder = ["dresses", "skin_tones", "hairs", "crowns", "beards", "eyes", "mouths", "noses"];
@@ -519,12 +542,18 @@ const ProductCustomizer = () => {
             const boxX = (750 - boxW) / 2, boxY = (1050 - boxH) / 2;
             const ratio = Math.min(boxW / img.width, boxH / img.height) || 1;
             const zoom = card.userPhotoZoom || 1;
+            const offset = card.userPhotoOffset || { x: 0, y: 0 };
             const dw = img.width * ratio * zoom, dh = img.height * ratio * zoom;
             ctx.save();
             ctx.beginPath();
             ctx.rect(boxX, boxY, boxW, boxH);
             ctx.clip();
-            ctx.drawImage(img, boxX + (boxW - dw) / 2, boxY + (boxH - dh) / 2, dw, dh);
+            ctx.drawImage(
+                img,
+                boxX + (boxW - dw) / 2 + offset.x * boxW,
+                boxY + (boxH - dh) / 2 + offset.y * boxH,
+                dw, dh
+            );
             ctx.restore();
             return canvas.toDataURL('image/png');
         }
@@ -907,7 +936,12 @@ const ProductCustomizer = () => {
                                     <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_35%_30%,rgba(255,255,255,0.92),rgba(242,244,248,0.7)_60%,rgba(242,244,248,1))]" />
                                     <div className="relative z-10 flex w-full max-w-[980px] flex-col items-center mx-auto">
                                         <div className="relative flex min-h-[420px] w-full items-center justify-center">
-                                            <PhotoCardPreview activeCard={activeCard} previewCardNodeRef={previewCardNodeRef} />
+                                            <PhotoCardPreview
+                                                activeCard={activeCard}
+                                                previewCardNodeRef={previewCardNodeRef}
+                                                onSelectPhoto={selectPhotoImage}
+                                                onPhotoOffsetChange={setUserPhotoOffset}
+                                            />
                                         </div>
                                     </div>
                                 </div>
@@ -916,7 +950,12 @@ const ProductCustomizer = () => {
                                     <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_35%_30%,rgba(255,255,255,0.92),rgba(242,244,248,0.7)_60%,rgba(242,244,248,1))]" />
                                     <div className="relative z-10 flex w-full max-w-[980px] flex-col items-center mx-auto">
                                         <div className="relative flex min-h-[650px] w-full items-center justify-center">
-                                            <PhotoCardPreview activeCard={activeCard} previewCardNodeRef={previewCardNodeRef} />
+                                            <PhotoCardPreview
+                                                activeCard={activeCard}
+                                                previewCardNodeRef={previewCardNodeRef}
+                                                onSelectPhoto={selectPhotoImage}
+                                                onPhotoOffsetChange={setUserPhotoOffset}
+                                            />
                                         </div>
                                     </div>
                                 </div>

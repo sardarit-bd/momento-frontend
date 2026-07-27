@@ -1,5 +1,4 @@
 import BaseSelector from "./BaseSelector";
-import LayerSelector from "./LayerSelector";
 import PhotoUploader from "./PhotoUploader";
 
 const PhotoSideController = ({
@@ -7,7 +6,6 @@ const PhotoSideController = ({
   cards,
   activeCard,
   selectBase,
-  selectLayer,
   selectPhoto,
   editedCard,
   seteditedCard,
@@ -35,7 +33,6 @@ const PhotoSideController = ({
         activebaseEditCard={activebaseEditCard}
         setactivebaseEditCard={setactivebaseEditCard}
       />
-      <LayerSelector product={product} activeCard={activeCard} selectLayer={selectLayer} />
     </div>
   );
 };

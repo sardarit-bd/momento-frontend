@@ -59,6 +59,15 @@ export default function Howwork() {
                                         <span className="text-white text-xs font-bold">✓</span>
                                     </div>
                                     <div>
+                                        <strong className="text-slate-900">Momento Photo Portrait Deck</strong>
+                                        <span className="text-slate-600"> – A full deck featuring your own personalized photos.</span>
+                                    </div>
+                                </li>
+                                <li className="flex items-start gap-3">
+                                    <div className="w-6 h-6 bg-blue-400 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                                        <span className="text-white text-xs font-bold">✓</span>
+                                    </div>
+                                    <div>
                                         <strong className="text-slate-900">Momento Trading Cards</strong>
                                         <span className="text-slate-600"> – Individual cards with stats and inside jokes</span>
                                     </div>

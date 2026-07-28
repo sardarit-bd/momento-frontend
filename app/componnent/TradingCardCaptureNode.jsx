@@ -68,6 +68,7 @@ const TradingCardCaptureNode = React.forwardRef(({
                 {workingcard === "front" ? (
                     cardfinder === 2 ? (
                         <FrontThreeCapture
+                            cardti={cardti}
                             name={displayAttributeOne} name2={displayAttributeTwo} name3={displayAttributeThree}
                             acarddate={acarddate}
                             labelone={labelone} labeltwo={labeltwo} labelthree={labelthree}

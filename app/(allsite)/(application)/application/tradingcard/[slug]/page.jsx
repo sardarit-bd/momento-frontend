@@ -176,6 +176,7 @@ export default function ProductCustomizer() {
                     />
                 </div>
             </div>
+            <ToastContainer position="bottom-center" />
 
             {/* ─────────────────────────────────────────────
                 MOBILE LAYOUT  (below lg)
@@ -448,6 +449,7 @@ export default function ProductCustomizer() {
                     </div>
                 )}
             </div>
+            <ToastContainer position="top-center" />
 
             {/* Hidden nodes — always mounted regardless of breakpoint */}
             <div className="absolute opacity-0 pointer-events-none" style={{ zIndex: -1 }}>
@@ -487,7 +489,6 @@ export default function ProductCustomizer() {
                 isblack={state.isblack}
             />
 
-            <ToastContainer position="bottom-center" />
         </>
     );
 }
@@ -700,6 +701,7 @@ function MobileSavedSlotCard({ isEditing, label, state, snapshot, onDelete, onCl
             backLegacyTagline: state.backLegacyTagline,
             backLegacyText: state.backLegacyText,
             isblack: state.isblack,
+            attributeName: state.attributeName,
           }
         : snapshot
         ? {
@@ -727,6 +729,7 @@ function MobileSavedSlotCard({ isEditing, label, state, snapshot, onDelete, onCl
             backLegacyTagline: "",
             backLegacyText: "",
             isblack: snapshot.isblack ?? false,
+            attributeName: snapshot.attributeName ?? "",
           }
         : null;
 

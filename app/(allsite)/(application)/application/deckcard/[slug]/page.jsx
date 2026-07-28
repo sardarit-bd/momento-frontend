@@ -390,24 +390,34 @@ const ProductCustomizer = () => {
 
         const layerOrder = ["dresses", "skin_tones", "hairs", "crowns", "beards", "eyes", "mouths", "noses"];
         for (const layer of layerOrder) {
-            const src = card.selectedLayers?.[layer];
-            if (!src) continue;
-            try {
-                const img = await loadImage(src);
-                const x = (750 - 750 * 0.64) / 2;
-                const w = 750 * 0.64;
-                const h = 1050 * 0.43;
-                const yTop = 1050 * 0.07;
-                const yBot = 1050 - yTop - h;
+    const src = card.selectedLayers?.[layer];
+    if (!src) continue;
+    try {
+        const img = await loadImage(src);
+        const w = 750 * 0.55;
+        const h = 1050 * 0.35; // still used as a max-fit box for scaling
+        const x = (750 - w) / 2;
+        const CENTER_Y = 1050 / 2; // 525 — the true card center, i.e. the seam
 
-                ctx.drawImage(img, x, yTop, w, h);
-                ctx.save();
-                ctx.translate(x + w / 2, yBot + h / 2);
-                ctx.scale(1, -1);
-                ctx.drawImage(img, -w / 2, -h / 2, w, h);
-                ctx.restore();
-            } catch { }
-        }
+        const ratio = Math.min(w / img.width, h / img.height);
+        const dw = img.width * ratio;
+        const dh = img.height * ratio;
+        const dx = x + (w - dw) / 2;
+
+        // Anchor the visible bottom edge of the top copy exactly to the seam,
+        // instead of centering it inside the box (which leaves a gap whenever
+        // dh < h due to the layer's own aspect ratio).
+        const dy = CENTER_Y - dh;
+        ctx.drawImage(img, dx, dy, dw, dh);
+
+        // Mirror copy: same edge-anchoring, reflected below the seam.
+        ctx.save();
+        ctx.translate(x + w / 2, CENTER_Y);
+        ctx.scale(1, -1);
+        ctx.drawImage(img, -dw / 2, -dh, dw, dh);
+        ctx.restore();
+    } catch { }
+}
 
         return canvas.toDataURL('image/png');
     };
@@ -432,11 +442,18 @@ const ProductCustomizer = () => {
             if (!src) continue;
             try {
                 const img = await loadImage(src);
-                const x = (750 - 750 * 0.64) / 2;
-                const w = 750 * 0.64;
-                const h = 1050 * 0.43;
-                const yTop = 1050 * 0.07;
-                ctx.drawImage(img, x, yTop, w, h);
+                const w = 750 * 0.55;
+                const h = 1050 * 0.35;
+                const x = (750 - w) / 2;
+                const yTop = 1050 * (89 / 600);
+
+                const ratio = Math.min(w / img.width, h / img.height);
+                const dw = img.width * ratio;
+                const dh = img.height * ratio;
+                const dx = x + (w - dw) / 2;
+                const dy = yTop + (h - dh) / 2;
+
+                ctx.drawImage(img, dx, dy, dw, dh);
             } catch { }
         }
 

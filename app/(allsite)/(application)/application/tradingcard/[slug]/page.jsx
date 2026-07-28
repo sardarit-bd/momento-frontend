@@ -228,10 +228,11 @@ export default function ProductCustomizer() {
                         labelone={state.labelone}
                         labeltwo={state.labeltwo}
                         labelthree={state.labelthree}
-                        attrIconOne={state.attrIconOne}
-                        attrIconTwo={state.attrIconTwo}
-                        attrIconThree={state.attrIconThree}
-                        backDateDisplay={state.backDateDisplay}
+                            attrIconOne={state.attrIconOne}
+                            attrIconTwo={state.attrIconTwo}
+                            attrIconThree={state.attrIconThree}
+                            attributeName={state.attributeName}
+                            backDateDisplay={state.backDateDisplay}
                         backDescription={state.backDescription}
                         backHighlightsTitle={state.backHighlightsTitle}
                         backHighlightsPreview={state.backHighlightsPreview}

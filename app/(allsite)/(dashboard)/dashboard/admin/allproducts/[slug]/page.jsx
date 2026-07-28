@@ -41,7 +41,7 @@ const SingleProduct = () => {
             setfetchloading(true);
             const response = await MakeDelete(`api/products/${id}`, token);
             if (response?.success) {
-                router.push('/deshboard/admin/allproducts');
+                router.push('/dashboard/admin/allproducts');
                 toast.success(response?.message);
             } else {
                 toast.error("Something Went Wrong");
@@ -99,7 +99,7 @@ const SingleProduct = () => {
                     {/* Action buttons */}
                     <div className="flex items-center gap-2">
                         <Link
-                            href="/deshboard/admin/allproducts"
+                            href="/dashboard/admin/allproducts"
                             className="flex items-center gap-1 bg-sky-100 hover:bg-sky-200 text-sky-700 font-semibold text-xs px-3 py-2 rounded-lg transition"
                         >
                             <FaArrowLeft className="text-xs" />

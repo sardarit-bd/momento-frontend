@@ -1,6 +1,6 @@
 'use client'
 
-import usedeshboardsidebercontroller from "@/store/deshboardsidebercontroller";
+import usedashboardsidebercontroller from "@/store/dashboardsidebercontroller";
 import useLoadingStore from "@/store/useLoadingStore";
 import useLogedUserStore from "@/store/useLogedUser";
 import getCookie from "@/utilis/helper/cookie/gettooken";
@@ -10,18 +10,18 @@ import { usePathname, useRouter } from "next/navigation";
 import { FaBars } from "react-icons/fa6";
 import { RxCross2 } from "react-icons/rx";
 import { toast, ToastContainer } from "react-toastify";
-import DeshboardNavigation from "../../componnent/Deshboardnavigation";
+import DashboardNavigation from "../../componnent/Dashboardnavigation";
 import SpinLoader from "../../componnent/SpingLoader";
 
-const Deshboardlayout = ({ children }) => {
+const Dashboardlayout = ({ children }) => {
 
     const token = getCookie();
     const pathName = usePathname();
     const router = useRouter();
     const { loginUser, setLoginUser } = useLogedUserStore();
-    const { isSideberOpen, setisSideberOpen } = usedeshboardsidebercontroller();
+    const { isSideberOpen, setisSideberOpen } = usedashboardsidebercontroller();
     const { isLoading, setLoading } = useLoadingStore();
-    const isDeshboard = pathName.startsWith("/deshboard");
+    const isDashboard = pathName.startsWith("/dashboard");
 
 
 
@@ -70,7 +70,7 @@ const Deshboardlayout = ({ children }) => {
                 <div className={`fixed bg-white border-r border-gray-200 w-[250px] h-screen px-3 py-4 z-50 ${isSideberOpen ? "block lg:block" : "hidden lg:block"}`}>
 
 
-                    <DeshboardNavigation loginUser={loginUser} />
+                    <DashboardNavigation loginUser={loginUser} />
 
 
                     <button onClick={() => { handlelogout() }} className="bg-sky-400 text-white w-[90%] text-center py-2 rounded-md absolute bottom-24 left-3 cursor-pointer flex items-center justify-center gap-2">
@@ -91,4 +91,4 @@ const Deshboardlayout = ({ children }) => {
     )
 }
 
-export default Deshboardlayout;
+export default Dashboardlayout;

@@ -9,7 +9,7 @@ export default function MyPurchases({ purchases = [] }) {
 
     const router = useRouter();
 
-    router.push('/deshboard/customer/orders');
+    router.push('/dashboard/customer/orders');
 
 
     return (

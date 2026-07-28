@@ -63,7 +63,7 @@ export default function AllProducts() {
                             <div className="container mx-auto px-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
                                 {data?.data?.map((cat, idx) => (
                                     <Link
-                                        href={`/deshboard/admin/allproducts/${cat?.slug}`}
+                                        href={`/dashboard/admin/allproducts/${cat?.slug}`}
                                         key={idx}
                                         className="text-center bg-gray-50 rounded-xl shadow-sm overflow-hidden hover:scale-102 transform transition duration-300 relative"
                                     >

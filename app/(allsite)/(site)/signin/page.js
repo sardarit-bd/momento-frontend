@@ -44,10 +44,10 @@ const Signin = () => {
 
                 switch (response?.data?.user?.role?.trim()) {
                     case "Admin":
-                        router.push('/deshboard/admin');
+                        router.push('/dashboard/admin');
                         break;
                     case "Customer":
-                        // router.push('/deshboard/customer');
+                        // router.push('/dashboard/customer');
                         router.push('/shop');
                         break;
                     default:

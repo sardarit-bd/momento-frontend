@@ -104,7 +104,7 @@ Do not change deck/trading branches.
   Add `'photo_box_images' => 'array'` cast.
 
 ### 5. Admin preview (optional, NON-breaking)
-`app/(allsite)/(dashboard)/deshboard/admin/orders/page.js` `extractTuckboxImages` currently reads
+`app/(allsite)/(dashboard)/dashboard/admin/orders/page.js` `extractTuckboxImages` currently reads
 `item.tuckbox_image`. Leave deck as-is; photo box can be shown later from `photo_box_image_blob`
 if desired — out of scope unless requested.
 

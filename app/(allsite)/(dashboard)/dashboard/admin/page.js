@@ -69,7 +69,7 @@ export default function AdminDashboard() {
 
 
     setTimeout(() => {
-        router.push("/deshboard/admin/alluser");
+        router.push("/dashboard/admin/alluser");
     }, 0);
 
 

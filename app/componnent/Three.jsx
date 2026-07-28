@@ -68,7 +68,7 @@ const Three = () => {
             const response = await MakePost(`api/cardproduct`, payload, token);
             if (response?.success) {
                 toast.success(response?.message);
-                setTimeout(() => router.push('/deshboard/admin/allproducts'), 1000);
+                setTimeout(() => router.push('/dashboard/admin/allproducts'), 1000);
             } else {
                 toast.error("Something went wrong");
             }

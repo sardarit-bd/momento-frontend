@@ -21,7 +21,7 @@ const HeaderAuth = ({ isOpen, setisOpen }) => {
     const router = useRouter();
     const pathName = usePathname();
     const { loginUser, setLoginUser } = useLogedUserStore();
-    const isDeshboard = pathName.startsWith("/deshboard");
+    const isDashboard = pathName.startsWith("/dashboard");
     const [dropdownOpen, setDropdownOpen] = useState(false);
 
     const token = getCookie();
@@ -102,7 +102,7 @@ const HeaderAuth = ({ isOpen, setisOpen }) => {
 
                                     {/* Dashboard */}
                                     <Link
-                                        href={loginUser?.role === "Admin" ? "/deshboard/admin" : "/deshboard/customer/orders"}
+                                        href={loginUser?.role === "Admin" ? "/dashboard/admin" : "/dashboard/customer/orders"}
                                         className="text-gray-600 text-md font-semibold hover:bg-gray-200 rounded-md p-2 flex items-center gap-2"
                                         onClick={() => setDropdownOpen(false)}
                                     >
@@ -112,7 +112,7 @@ const HeaderAuth = ({ isOpen, setisOpen }) => {
 
                                     {/* Profile */}
                                     <Link
-                                        href="/deshboard/profile"
+                                        href="/dashboard/profile"
                                         className="text-gray-600 text-md font-semibold hover:bg-gray-200 rounded-md p-2 flex items-center gap-2"
                                         onClick={() => setDropdownOpen(false)}
                                     >
@@ -152,7 +152,7 @@ const HeaderAuth = ({ isOpen, setisOpen }) => {
 
                                     {/* Dashboard */}
                                     <Link
-                                        href={loginUser?.role === "Admin" ? "/deshboard/admin" : "/deshboard/customer/orders"}
+                                        href={loginUser?.role === "Admin" ? "/dashboard/admin" : "/dashboard/customer/orders"}
                                         className="text-gray-600 text-md font-semibold hover:bg-gray-200 rounded-md p-2 flex items-center gap-2"
                                     >
                                         <MdDashboard className="text-xl" />
@@ -161,7 +161,7 @@ const HeaderAuth = ({ isOpen, setisOpen }) => {
 
                                     {/* Profile */}
                                     <Link
-                                        href="/deshboard/profile"
+                                        href="/dashboard/profile"
                                         className="text-gray-600 text-md font-semibold hover:bg-gray-200 rounded-md p-2 flex items-center gap-2"
                                     >
                                         <LuUser className="text-xl" />
@@ -183,7 +183,7 @@ const HeaderAuth = ({ isOpen, setisOpen }) => {
                     </div>
 
                     {/* Hamburger — only outside dashboard */}
-                    {!isDeshboard && (
+                    {!isDashboard && (
                         isOpen ? (
                             <ImCross
                                 onClick={() => setisOpen(false)}
@@ -208,7 +208,7 @@ const HeaderAuth = ({ isOpen, setisOpen }) => {
                             Login
                         </Link>
                     </div>
-                    {!isDeshboard && (
+                    {!isDashboard && (
                         isOpen ? (
                             <ImCross
                                 onClick={() => setisOpen(false)}

@@ -54,7 +54,7 @@ export default async function middleware(req) {
 
 
     // Protected routes
-    const protectedRoutes = ['/deshboard'];
+    const protectedRoutes = ['/dashboard'];
     const isProtected = protectedRoutes.some(route => path.startsWith(route));
 
 
@@ -95,7 +95,7 @@ export default async function middleware(req) {
     // goes stale the moment an admin changes this user's role in the DB. Always
     // resolve the live role from the backend. If the check fails for any reason
     // (network error, non-200, etc.), fail closed (deny), never fall back to the cookie.
-    if (decoded && path.startsWith("/deshboard/admin")) {
+    if (decoded && path.startsWith("/dashboard/admin")) {
         const currentRole = await fetchUserRole(token);
 
         if (currentRole !== "Admin") {
@@ -123,7 +123,7 @@ export default async function middleware(req) {
         const currentRole = await fetchUserRole(token);
 
         const redirects = {
-            "Admin": "/deshboard/admin",
+            "Admin": "/dashboard/admin",
             "Customer": "/application",
         };
 

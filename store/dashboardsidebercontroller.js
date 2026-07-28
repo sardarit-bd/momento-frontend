@@ -1,8 +1,8 @@
 import { create } from "zustand";
 
-const usedeshboardsidebercontroller = create((set) => ({
+const usedashboardsidebercontroller = create((set) => ({
     isSideberOpen: false,
     setisSideberOpen: (open) => set({ isSideberOpen: open }),
 }));
 
-export default usedeshboardsidebercontroller;
+export default usedashboardsidebercontroller;

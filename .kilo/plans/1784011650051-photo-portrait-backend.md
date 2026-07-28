@@ -27,7 +27,7 @@ Add `photo` as a first-class product type in the existing Laravel backend, with 
 ## Frontend Cleanup Tasks
 
 ### 4. Remove Toggle
-- Remove `photoPortraitEnabled` toggle from `deshboard/admin/product/page.js`
+- Remove `photoPortraitEnabled` toggle from `dashboard/admin/product/page.js`
 - Remove `photo_portrait_enabled` payload from `componnent/Three.jsx`
 
 ### 5. Admin Product Page

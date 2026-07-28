@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-const DeshboardNavigation = ({ loginUser }) => {
+const DashboardNavigation = ({ loginUser }) => {
 
     const pathName = usePathname();
 
@@ -14,55 +14,55 @@ const DeshboardNavigation = ({ loginUser }) => {
             name: "Dashboard",
             nested: false,
             sub: [],
-            link: "/deshboard/admin"
+            link: "/dashboard/admin"
         },
         {
             name: "All Users",
             nested: false,
             sub: [],
-            link: "/deshboard/admin/alluser"
+            link: "/dashboard/admin/alluser"
         },
         {
             name: "All Orders",
             nested: false,
             sub: [],
-            link: "/deshboard/admin/orders"
+            link: "/dashboard/admin/orders"
         },
         {
             name: "All Products",
             nested: false,
             sub: [],
-            link: "/deshboard/admin/allproducts"
+            link: "/dashboard/admin/allproducts"
         },
         {
             name: "Add Category",
             nested: false,
             sub: [],
-            link: "/deshboard/admin/category"
+            link: "/dashboard/admin/category"
         },
         {
             name: "Add Product",
             nested: false,
             sub: [],
-            link: "/deshboard/admin/product"
+            link: "/dashboard/admin/product"
         },
         {
             name: "Contact",
             nested: false,
             sub: [],
-            link: "/deshboard/admin/contact"
+            link: "/dashboard/admin/contact"
         },
         {
             name: "Profile",
             nested: false,
             sub: [],
-            link: "/deshboard/profile"
+            link: "/dashboard/profile"
         },
         {
             name: "Site Settings",
             nested: false,
             sub: [],
-            link: "/deshboard/admin/settings"
+            link: "/dashboard/admin/settings"
         },
     ]
 
@@ -71,28 +71,28 @@ const DeshboardNavigation = ({ loginUser }) => {
     /********** customer Nav items **********/
     const customerNavItems = [
         // {
-        //     name: "Deshboard",
+        //     name: "Dashboard",
         //     nested: false,
         //     sub: [],
-        //     link: "/deshboard/customer"
+        //     link: "/dashboard/customer"
         // },
         {
             name: "My Orders",
             nested: false,
             sub: [],
-            link: "/deshboard/customer/orders"
+            link: "/dashboard/customer/orders"
         },
         // {
         //     name: "Payment History",
         //     nested: false,
         //     sub: [],
-        //     link: "/deshboard/customer/payment"
+        //     link: "/dashboard/customer/payment"
         // },
         {
             name: "Profile",
             nested: false,
             sub: [],
-            link: "/deshboard/profile"
+            link: "/dashboard/profile"
         },
     ]
 
@@ -139,4 +139,4 @@ const DeshboardNavigation = ({ loginUser }) => {
     )
 }
 
-export default DeshboardNavigation;
+export default DashboardNavigation;

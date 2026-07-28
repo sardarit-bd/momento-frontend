@@ -145,6 +145,38 @@ const PhotoPortraitBoxCustomizer = ({ boxImages = [], onBoxImagesChange }) => {
                                         window.addEventListener('mousemove', handleMove);
                                         window.addEventListener('mouseup', handleUp);
                                     }}
+                                    onTouchStart={(e) => {
+                                        const touch = e.touches[0];
+                                        const startX = touch.clientX;
+                                        const startY = touch.clientY;
+                                        const startImgX = img.x;
+                                        const startImgY = img.y;
+
+                                        const handleMove = (moveEvent) => {
+                                            const isTouch = moveEvent.type === 'touchmove';
+                                            const moveX = isTouch ? moveEvent.touches[0].clientX : moveEvent.clientX;
+                                            const moveY = isTouch ? moveEvent.touches[0].clientY : moveEvent.clientY;
+                                            const dx = moveX - startX;
+                                            const dy = moveY - startY;
+                                            updatePosition(img.id, startImgX + dx, startImgY + dy);
+                                        };
+
+                                        const handleUp = (endEvent) => {
+                                            const isTouchEnd = endEvent.type === 'touchend';
+                                            const endX = isTouchEnd ? endEvent.changedTouches[0].clientX : endEvent.clientX;
+                                            const endY = isTouchEnd ? endEvent.changedTouches[0].clientY : endEvent.clientY;
+                                            const dx = endX - startX;
+                                            const dy = endY - startY;
+                                            if (dx !== 0 || dy !== 0) {
+                                                updatePosition(img.id, startImgX + dx, startImgY + dy);
+                                            }
+                                            window.removeEventListener('touchmove', handleMove);
+                                            window.removeEventListener('touchend', handleUp);
+                                        };
+
+                                        window.addEventListener('touchmove', handleMove, { passive: false });
+                                        window.addEventListener('touchend', handleUp);
+                                    }}
                                 />
                             </div>
 

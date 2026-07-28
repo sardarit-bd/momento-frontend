@@ -9,37 +9,48 @@ const PhotoPortraitBoxPreview = forwardRef(function PhotoPortraitBoxPreview(
     const handleDragStart = (e, imgId) => {
         if (!onImagePositionChange) return;
         e.preventDefault();
-        let lastX = e.clientX;
-        let lastY = e.clientY;
+        const isTouch = e.type === 'touchstart';
+        const clientX = isTouch ? e.touches[0].clientX : e.clientX;
+        const clientY = isTouch ? e.touches[0].clientY : e.clientY;
+        let lastX = clientX;
+        let lastY = clientY;
 
-        // Capture the SLOT element now — e.currentTarget is nullified by React
-        // once the mousedown handler returns, so it can't be read in handleMove.
         const slotEl = e.currentTarget?.parentElement;
         const slotRect = slotEl?.getBoundingClientRect();
         const slotWidth = slotRect?.width || 1;
         const slotHeight = slotRect?.height || 1;
 
         const handleMove = (moveEvent) => {
-            const dx = moveEvent.clientX - lastX;
-            const dy = moveEvent.clientY - lastY;
-            lastX = moveEvent.clientX;
-            lastY = moveEvent.clientY;
+            const isTouchMove = moveEvent.type === 'touchmove';
+            const moveX = isTouchMove ? moveEvent.touches[0].clientX : moveEvent.clientX;
+            const moveY = isTouchMove ? moveEvent.touches[0].clientY : moveEvent.clientY;
+            const dx = moveX - lastX;
+            const dy = moveY - lastY;
+            lastX = moveX;
+            lastY = moveY;
 
-            // Divide the raw drag delta by the SLOT element's own rendered size,
-            // matching how CSS translate(N%) resolves — resolution-independent.
             const dxFraction = dx / slotWidth;
             const dyFraction = dy / slotHeight;
 
             onImagePositionChange(imgId, dxFraction, dyFraction);
         };
 
-        const handleUp = () => {
+        const handleUp = (endEvent) => {
+            const isTouchEnd = endEvent.type === 'touchend';
+            const endX = isTouchEnd ? endEvent.changedTouches[0].clientX : endEvent.clientX;
+            const endY = isTouchEnd ? endEvent.changedTouches[0].clientY : endEvent.clientY;
+            lastX = endX;
+            lastY = endY;
             window.removeEventListener('mousemove', handleMove);
             window.removeEventListener('mouseup', handleUp);
+            window.removeEventListener('touchmove', handleMove);
+            window.removeEventListener('touchend', handleUp);
         };
 
         window.addEventListener('mousemove', handleMove);
         window.addEventListener('mouseup', handleUp);
+        window.addEventListener('touchmove', handleMove, { passive: false });
+        window.addEventListener('touchend', handleUp);
     };
 
     const rootContainerRef = useRef(null);
@@ -153,6 +164,7 @@ const PhotoPortraitBoxPreview = forwardRef(function PhotoPortraitBoxPreview(
                                         className="absolute w-full object-cover cursor-move"
                                         style={{ top: '0%', height: '100%', objectPosition: 'top center', transform: `scale(${img.zoom ?? 1})` }}
                                         onMouseDown={(e) => handleDragStart(e, img.id)}
+                                        onTouchStart={(e) => handleDragStart(e, img.id)}
                                     />
                                 </div>
                             );

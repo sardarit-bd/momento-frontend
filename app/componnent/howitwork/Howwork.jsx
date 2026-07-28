@@ -64,7 +64,7 @@ export default function Howwork() {
                                     </div>
                                 </li>
                                 <li className="flex items-start gap-3">
-                                    <div className="w-6 h-6 bg-blue-400 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                                    <div className="w-6 h-6 bg-[#FF8700] rounded-full flex items-center justify-center flex-shrink-0 mt-1">
                                         <span className="text-white text-xs font-bold">✓</span>
                                     </div>
                                     <div>

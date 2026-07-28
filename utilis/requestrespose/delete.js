@@ -1,3 +1,5 @@
+import handleUnauthorized from "@/utilis/helper/auth/handleUnauthorized";
+
 const MakeDelete = async (endpoint, token) => {
 
     try {
@@ -7,9 +9,13 @@ const MakeDelete = async (endpoint, token) => {
                 "Content-Type": "application/json",
                 "Authorization": `Bearer ${token}`,
                 "Accept": "application/json",
-
             }
         });
+
+        if (response.status === 401) {
+            handleUnauthorized();
+            return false;
+        }
 
         if (!response.ok) {
             console.error(`Delete request failed with status: ${response.status}`);

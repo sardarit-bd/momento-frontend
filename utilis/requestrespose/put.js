@@ -1,5 +1,6 @@
-const MakePut = async (endpoint, data, token) => {
+import handleUnauthorized from "@/utilis/helper/auth/handleUnauthorized";
 
+const MakePut = async (endpoint, data, token) => {
 
     try {
         const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/${endpoint}`, {
@@ -12,13 +13,18 @@ const MakePut = async (endpoint, data, token) => {
             body: JSON.stringify(data),
         });
 
-
-        if (!response.ok) {
-            console.error(`PUT request failed with status: ${response.status}`);
+        if (response.status === 401) {
+            handleUnauthorized();
             return false;
         }
 
         const res = await response.json();
+
+        if (!response.ok) {
+            console.error(`PUT request failed with status: ${response.status}`);
+            return res;
+        }
+
         return res;
 
     } catch (error) {

@@ -42,7 +42,7 @@ export default function Carousel() {
         // { id: 1, img: hero5, title: "Family Game Night Deck", desc: "\u201cCustom cards for every family member\u2014turned our gatherings into a tradition!\u201d" },
         { id: 2, img: hero4, title: "Memorable Trading card", desc: "\u201cCustom cards for every family member\u2014turned our gatherings into a tradition!\u201d" },
         // { id: 3, img: hero3, title: "Family Game Night Deck", desc: "\u201cCustom cards for every family member\u2014turned our gatherings into a tradition!\u201d" },
-        // { id: 4, img: hero2, title: "Family Game Night Deck", desc: "\u201cCustom cards for every family member\u2014turned our gatherings into a tradition!\u201d" },
+        { id: 4, img: hero1, title: "Family Game Night Deck", desc: "\u201cCustom cards for every family member\u2014turned our gatherings into a tradition!\u201d" },
         { id: 5, img: hero1, title: "Family Game Night Deck", desc: "\u201cCustom cards for every family member\u2014turned our gatherings into a tradition!\u201d" },
     ];
 

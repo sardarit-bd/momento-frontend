@@ -1,5 +1,6 @@
-const MakePost = async (endpoint, data, token) => {
+import handleUnauthorized from "@/utilis/helper/auth/handleUnauthorized";
 
+const MakePost = async (endpoint, data, token) => {
 
     try {
         const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/${endpoint}`, {
@@ -11,6 +12,11 @@ const MakePost = async (endpoint, data, token) => {
             },
             body: JSON.stringify(data),
         });
+
+        if (response.status === 401) {
+            handleUnauthorized();
+            return false;
+        }
 
         let payload = null;
         try {
@@ -45,4 +51,3 @@ const MakePost = async (endpoint, data, token) => {
 };
 
 export default MakePost;
-

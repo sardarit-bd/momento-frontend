@@ -55,9 +55,6 @@ export default function Page() {
 
             <Products />
 
-
-
-
             <div className='bg-sky-50'>
                 <div className='w-full max-w-6xl mx-auto'>
                     <Howwork />

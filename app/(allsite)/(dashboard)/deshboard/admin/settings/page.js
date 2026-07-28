@@ -60,7 +60,7 @@ export default function SiteSettings() {
 
         const response = await MakePut(`api/secrets/${credientialsID}`, passdata, token);
 
-        if (response) {
+        if (response?.success) {
             toast.success(response?.message);
             setisedit(false);
             fetching(token);

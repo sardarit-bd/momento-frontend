@@ -1,3 +1,5 @@
+import handleUnauthorized from "@/utilis/helper/auth/handleUnauthorized";
+
 const MakeGet = async (endpoint, token) => {
     try {
         const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/${endpoint}`, {
@@ -9,6 +11,10 @@ const MakeGet = async (endpoint, token) => {
             },
         });
 
+        if (response.status === 401) {
+            handleUnauthorized();
+            return false;
+        }
 
         if (!response.ok) {
             console.error(`GET request failed with status: ${response.status}`);

@@ -16,6 +16,16 @@ const products = [
         ]
     },
     {
+        img: '/mockup4.png',
+        title: 'Momento Photo Portrait Deck',
+        description: 'A full playing card deck — made uniquely yours.',
+        features: [
+            'Fully customizable',
+            'Perfect for every game night',
+            'Created from your favorite moments'
+        ]
+    },
+    {
         img: '/mockup5.png',
         title: 'Momento Trading Cards',
         description: 'Capture real moments — one card at a time.',
@@ -30,7 +40,7 @@ const products = [
 export default function Products() {
     return (
         <section className="py-24 px-4 bg-slate-50">
-            <div className="max-w-6xl mx-auto">
+            <div className="max-w-7xl mx-auto">
                 <div className="text-center mb-16 max-w-3xl mx-auto">
                     <h2 className="text-4xl md:text-5xl font-extrabold text-slate-900 mb-6 tracking-tight">
                         Experience Momento Game Night — Two Ways
@@ -40,7 +50,7 @@ export default function Products() {
                     </p>
                 </div>
 
-                <div className="grid md:grid-cols-2 gap-8 lg:gap-12 mb-16">
+                <div className="grid md:grid-cols-3 gap-8 lg:gap-12 mb-16">
                     {products.map((product, idx) => (
                         <div
                             key={idx}

@@ -44,6 +44,7 @@ const Footer = () => {
                         <h3 className="font-bold text-2xl text-gray-600">Shop</h3>
                         <div className="mt-5">
                             <ul className="flex flex-col gap-3">
+                                <Link href={'/shop'} className="text-gray-500 text-md z-30">Momento Photo Portrait Deck</Link>
                                 <Link href={'/shop'} className="text-gray-500 text-md z-30">Momento Portrait Deck</Link>
                                 <Link href={'/shop'} className="text-gray-500 text-md z-30">Momento Trading Cards</Link>
                             </ul>

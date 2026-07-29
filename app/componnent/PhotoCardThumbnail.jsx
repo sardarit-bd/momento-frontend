@@ -1,11 +1,6 @@
 import Image from "next/image";
 import { JOKER_SLOT_BOX, JOKER_SLOT_CLIP_PATH, JOKER_NATIVE_WIDTH, JOKER_NATIVE_HEIGHT } from "@/app/componnent/jokerSlotGeometry";
 
-const layers = [
-  "dresses", "skin_tones", "hairs", "crowns",
-  "beards", "eyes", "mouths", "noses"
-];
-
 // Kept in sync with PhotoCardPreview.jsx — same measured card geometry.
 const SLOT_BOX = { top: "7%", left: "7%", width: "88%", height: "86%" };
 const SLOT_CLIP_PATH =
@@ -17,15 +12,6 @@ const JOKER_SLOT_BOX_STYLE = {
   width: `${JOKER_SLOT_BOX.width}%`,
   height: `${JOKER_SLOT_BOX.height}%`,
 };
-
-// Must match PhotoCardPreview.jsx's Joker character constants exactly —
-// both are percentages of the same EXPORT_WIDTH/EXPORT_HEIGHT-locked box,
-// so keeping them identical here is what makes the thumbnail and the big
-// preview line up. If you tune the values in PhotoCardPreview, mirror the
-// change here too.
-const JOKER_CHARACTER_TOP_PERCENT = 10;
-const JOKER_CHARACTER_HEIGHT_PERCENT = 40;
-const JOKER_CHARACTER_WIDTH_PERCENT = 58;
 
 const PhotoCardThumbnail = ({ finalCard }) => {
   if (!finalCard?.baseImage) return null;
@@ -88,40 +74,7 @@ const PhotoCardThumbnail = ({ finalCard }) => {
               />
             </div>
           ) : (
-            // Character layers, mirrored top/bottom — same box math as
-            // PhotoCardPreview.jsx's Joker branch. This was previously
-            // missing entirely, which is why the thumbnail showed nothing
-            // when no photo was uploaded.
-            layers.map(layer =>
-              finalCard?.selectedLayers[layer] && (
-                <div key={layer}>
-                  <Image
-                    width={1000}
-                    height={1000}
-                    src={finalCard.selectedLayers[layer]}
-                    alt={layer}
-                    className="absolute left-1/2 -translate-x-1/2 object-contain"
-                    style={{
-                      top: `${JOKER_CHARACTER_TOP_PERCENT}%`,
-                      width: `${JOKER_CHARACTER_WIDTH_PERCENT}%`,
-                      height: `${JOKER_CHARACTER_HEIGHT_PERCENT}%`,
-                    }}
-                  />
-                  <Image
-                    width={1000}
-                    height={1000}
-                    src={finalCard.selectedLayers[layer]}
-                    alt={`${layer}-mirrored`}
-                    className="absolute left-1/2 -translate-x-1/2 scale-y-[-1] object-contain"
-                    style={{
-                      bottom: `${JOKER_CHARACTER_TOP_PERCENT}%`,
-                      width: `${JOKER_CHARACTER_WIDTH_PERCENT}%`,
-                      height: `${JOKER_CHARACTER_HEIGHT_PERCENT}%`,
-                    }}
-                  />
-                </div>
-              )
-            )
+            null
           )}
         </div>
       ) : (
@@ -161,24 +114,7 @@ const PhotoCardThumbnail = ({ finalCard }) => {
               />
             </div>
           ) : (
-            layers.map(layer =>
-              finalCard?.selectedLayers[layer] && (
-                <div key={layer}>
-                  <Image
-                    width={1000} height={1000}
-                    src={finalCard?.selectedLayers[layer]}
-                    alt={layer}
-                    className="absolute top-[49.8%] left-1/2 -translate-x-1/2 w-[55%] h-[35%] object-contain rotate-180"
-                  />
-                  <Image
-                    width={1000} height={1000}
-                    src={finalCard?.selectedLayers[layer]}
-                    alt={`${layer}-mirrored`}
-                    className="absolute bottom-[50.1%] left-1/2 -translate-x-1/2 w-[55%] h-[35%] object-contain"
-                  />
-                </div>
-              )
-            )
+            null
           )}
         </>
       )}

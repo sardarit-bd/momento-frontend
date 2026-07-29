@@ -4,10 +4,17 @@ import Image from "next/image";
 import { Upload } from "lucide-react";
 import { toast } from "react-toastify";
 import { JOKER_SLOT_BOX, JOKER_SLOT_CLIP_PATH, JOKER_NATIVE_WIDTH, JOKER_NATIVE_HEIGHT } from "@/app/componnent/jokerSlotGeometry";
+import { CARD_SLOT_BOX, CARD_SLOT_CLIP_PATH } from "@/app/componnent/cardSlotGeometry";
 
-const SLOT_BOX = { top: "7%", left: "7%", width: "88%", height: "86%" };
-const SLOT_CLIP_PATH =
-  "polygon(38% 0%, 96% 0%, 96% 74.6%, 57.8% 100%, 1% 100%, 1% 27.4%)";
+// King/Queen/Jack/Ace slot geometry — measured from the raw base card
+// asset (see cardSlotGeometry.js for how these numbers were derived).
+const SLOT_BOX = {
+  top: `${CARD_SLOT_BOX.top}%`,
+  left: `${CARD_SLOT_BOX.left}%`,
+  width: `${CARD_SLOT_BOX.width}%`,
+  height: `${CARD_SLOT_BOX.height}%`,
+};
+const SLOT_CLIP_PATH = CARD_SLOT_CLIP_PATH;
 
 const JOKER_SLOT_BOX_STYLE = {
   top: `${JOKER_SLOT_BOX.top}%`,
@@ -159,12 +166,8 @@ const PhotoCardPreview = ({ activeCard, previewCardNodeRef, onSelectPhoto, onPho
   return (
     <div
       ref={previewCardNodeRef}
-      className={
-        isJoker
-          ? "flex items-center justify-center relative w-[200px] md:w-[270px] lg:w-[400px] rounded-4xl border-2 border-transparent"
-          : "flex items-center justify-center relative w-[200px] h-auto md:w-[270px] md:h-[370px] lg:w-[400px] lg:h-[600px] rounded-4xl border-2 border-transparent"
-      }
-      style={isJoker ? { aspectRatio: `${JOKER_NATIVE_WIDTH} / ${JOKER_NATIVE_HEIGHT}` } : undefined}
+      className="flex items-center justify-center relative w-[200px] md:w-[270px] lg:w-[400px] rounded-4xl border-2 border-transparent"
+      style={{ aspectRatio: `${JOKER_NATIVE_WIDTH} / ${JOKER_NATIVE_HEIGHT}` }}
     >
       {activeCard?.baseImage && (
         <Image width={1000} height={1000} src={activeCard.baseImage} alt="Base Card" className="w-full h-full object-contain" />

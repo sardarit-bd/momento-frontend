@@ -1,10 +1,15 @@
 import Image from "next/image";
 import { JOKER_SLOT_BOX, JOKER_SLOT_CLIP_PATH, JOKER_NATIVE_WIDTH, JOKER_NATIVE_HEIGHT } from "@/app/componnent/jokerSlotGeometry";
+import { CARD_SLOT_BOX, CARD_SLOT_CLIP_PATH } from "@/app/componnent/cardSlotGeometry";
 
 // Kept in sync with PhotoCardPreview.jsx — same measured card geometry.
-const SLOT_BOX = { top: "7%", left: "7%", width: "88%", height: "86%" };
-const SLOT_CLIP_PATH =
-  "polygon(38% 0%, 96% 0%, 96% 74.6%, 57.8% 100%, 1% 100%, 1% 27.4%)";
+const SLOT_BOX = {
+  top: `${CARD_SLOT_BOX.top}%`,
+  left: `${CARD_SLOT_BOX.left}%`,
+  width: `${CARD_SLOT_BOX.width}%`,
+  height: `${CARD_SLOT_BOX.height}%`,
+};
+const SLOT_CLIP_PATH = CARD_SLOT_CLIP_PATH;
 
 const JOKER_SLOT_BOX_STYLE = {
   top: `${JOKER_SLOT_BOX.top}%`,
@@ -27,8 +32,8 @@ const PhotoCardThumbnail = ({ finalCard }) => {
     <div
       className={
         isJoker
-          ? "w-full h-full relative cursor-pointer overflow-hidden flex items-center justify-center"
-          : "w-full h-full relative cursor-pointer overflow-hidden"
+          ? "w-full h-full relative cursor-pointer overflow-hidden flex items-center justify-center bg-slate-50"
+          : "w-full h-full relative cursor-pointer overflow-hidden flex items-center justify-center bg-slate-50"
       }
     >
       {isJoker ? (

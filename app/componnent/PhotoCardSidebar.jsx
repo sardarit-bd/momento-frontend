@@ -26,7 +26,7 @@ const PhotoCardSidebar = ({ activeIndex, Done, setActiveIndex, addCard, removeCa
             <div
               onClick={() => { handleReactiveFunction(finalCard, idx) }}
               key={idx}
-              className="w-[62px] lg:w-full aspect-[9/13] shrink-0 relative flex items-cemter justify-center z-0 snap-start rounded-lg border border-gray-200 overflow-hidden"
+              className="w-[62px] lg:w-full aspect-[11/15] shrink-0 relative flex items-cemter justify-center z-0 snap-start rounded-lg border border-gray-200 overflow-hidden"
             >
             <PhotoCardThumbnail
               finalCard={finalCard}
@@ -41,7 +41,7 @@ const PhotoCardSidebar = ({ activeIndex, Done, setActiveIndex, addCard, removeCa
           </div>
         ))}
         {cards?.length < 5 && (
-          <div className="w-[62px] lg:w-full aspect-[9/13] shrink-0 relative flex items-cemter justify-center z-0 snap-start flex items-center justify-center">
+          <div className="w-[62px] lg:w-full aspect-[11/15] shrink-0 relative flex items-cemter justify-center z-0 snap-start flex items-center justify-center">
             <CiCirclePlus className="text-gray-300 text-xl lg:text-3xl" />
           </div>
         )}

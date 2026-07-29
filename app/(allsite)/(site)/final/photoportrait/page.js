@@ -193,7 +193,7 @@ const FinalCardsPage = () => {
 
             <div className="grid grid-cols-2 justify-items-center gap-3 py-6 my-6 sm:grid-cols-3 md:grid-cols-5 md:gap-4">
                 {finalProductCards.map((card, idx) => (
-                    <div key={idx} className="relative mx-auto w-full max-w-[170px] sm:max-w-[190px] md:max-w-[200px] lg:max-w-[220px] aspect-[5/7] overflow-hidden rounded-3xl border border-gray-100 bg-white/60 shadow-md">
+                    <div key={idx} className="relative mx-auto w-full max-w-[170px] sm:max-w-[190px] md:max-w-[200px] lg:max-w-[220px] aspect-[11/15] overflow-hidden rounded-3xl border border-gray-100 bg-white/60 shadow-md">
                         <img
                             src={card.image}
                             alt={`Card ${card.rank || idx}`}

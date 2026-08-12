@@ -43,7 +43,7 @@ const PACKAGES = [
     subtitle: "1 design · 18 copies",
     description:
       "18 copies of 1 design — great for trying out your first design.",
-    price: 29.00,
+    price: 29.0,
     originalPrice: 34.99,
     icon: FaBox,
   },
@@ -54,7 +54,7 @@ const PACKAGES = [
     subtitle: "3 designs · 6 each",
     description:
       "6 copies each of 3 different designs — ideal for a small circle.",
-    price: 39.00,
+    price: 39.0,
     originalPrice: 59.99,
     icon: FaLayerGroup,
   },
@@ -65,7 +65,7 @@ const PACKAGES = [
     subtitle: "6 designs · 3 each",
     description:
       "3 copies each of 6 different designs — for full creative expression.",
-    price: 54.00,
+    price: 54.0,
     originalPrice: 84.99,
     icon: FaTableCells,
   },
@@ -123,7 +123,8 @@ export default function PackageSelectionPage() {
             #63bbff,
             #3ca9ff
           );
-          -webkit-mask: linear-gradient(#fff 0 0) content-box,
+          -webkit-mask:
+            linear-gradient(#fff 0 0) content-box,
             linear-gradient(#fff 0 0);
           -webkit-mask-composite: xor;
           mask-composite: exclude;
@@ -158,7 +159,6 @@ export default function PackageSelectionPage() {
       <div className="max-w-6xl w-full mx-auto">
         {/* Header: logo + back */}
         <div className="flex items-center justify-between mb-6 md:mb-10">
-
           <Link
             href="/shop"
             className="inline-flex items-center gap-2 text-sm text-slate-500 hover:text-[#12141F] transition-colors"
@@ -173,7 +173,7 @@ export default function PackageSelectionPage() {
         <div className="grid grid-cols-1 lg:grid-cols-[1.05fr_1fr] gap-8 lg:gap-16">
           {/* ---------------- Left: media ---------------- */}
           <div>
-            <div className="relative aspect-[4/5] sm:aspect-[5/6] w-full rounded-[1.75rem] overflow-hidden shadow-[0_20px_50px_-25px_rgba(18,20,40,0.25)]">
+            <div className="relative aspect-4/5 sm:aspect-5/6 w-full rounded-[1.75rem] overflow-hidden shadow-[0_20px_50px_-25px_rgba(18,20,40,0.25)]">
               <Image
                 src="/mockup7.png"
                 alt="Momento Trading Cards mockup"
@@ -216,9 +216,9 @@ export default function PackageSelectionPage() {
 
             <p className="mt-5 text-slate-500 text-[0.95rem] leading-relaxed max-w-md">
               Transform your favourite photos into collectible trading cards —
-              printed on premium stock with holographic shimmer, sharp
-              detail, and a finish that feels like the real thing. Designed
-              for gifting, celebrating, and keeping forever.
+              printed on premium stock with holographic shimmer, sharp detail,
+              and a finish that feels like the real thing. Designed for gifting,
+              celebrating, and keeping forever.
             </p>
 
             {/* Package selection */}
@@ -249,7 +249,7 @@ export default function PackageSelectionPage() {
                     <span
                       className={`absolute -top-2.5 right-4 text-[10px] font-bold uppercase tracking-wide px-2.5 py-1 rounded-full shadow-sm ${
                         isSelected
-                          ? "bg-gradient-to-r from-[#3CA9FF] to-[#63BBFF] text-white"
+                          ? "bg-linear-to-r from-[#3CA9FF] to-[#63BBFF] text-white"
                           : "bg-[#EAF6FF] text-[#1C8CE0]"
                       }`}
                     >
@@ -339,7 +339,7 @@ export default function PackageSelectionPage() {
                 btn-sheen hidden md:flex mt-6 w-full py-3.5 rounded-xl font-semibold transition items-center justify-center gap-2
                 ${
                   selected
-                    ? "bg-gradient-to-r from-[#3CA9FF] to-[#1C8CE0] text-white hover:shadow-[0_14px_30px_-14px_rgba(28,140,224,0.55)]"
+                    ? "bg-linear-to-r from-[#3CA9FF] to-[#1C8CE0] text-white hover:shadow-[0_14px_30px_-14px_rgba(28,140,224,0.55)]"
                     : "bg-slate-200 text-slate-400 cursor-not-allowed"
                 }
               `}
@@ -373,7 +373,7 @@ export default function PackageSelectionPage() {
           disabled={!selected}
           className={`btn-sheen w-full py-3.5 rounded-xl font-semibold transition flex items-center justify-center gap-2 ${
             selected
-              ? "bg-gradient-to-r from-[#3CA9FF] to-[#1C8CE0] text-white"
+              ? "bg-linear-to-r from-[#3CA9FF] to-[#1C8CE0] text-white"
               : "bg-slate-200 text-slate-400 cursor-not-allowed"
           }`}
         >

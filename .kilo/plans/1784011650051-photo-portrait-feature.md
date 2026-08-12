@@ -1,6 +1,7 @@
 # Photo Portrait — Implementation Plan
 
 ## Goal
+
 Add a **separate, self-contained** feature **"Photo Portrait"** at `/application/photoportrait/[slug]`
 for products of `type: "photo"`. It mirrors the Momento Portrait Deck customizer **exactly**, with
 one addition: an optional **user‑uploaded photo** that, when provided, **replaces the layered
@@ -13,6 +14,7 @@ character** on the card. The character layers stay available as the default char
 > is reused **read‑only** — never edited.
 
 ## Resolved decisions
+
 - **Backend:** Reuse the existing external API. A `photo` product exists / will be created in the
   backend with `customizations.base_cards` **and the layer arrays** (dresses, skin_tones, hairs,
   crowns, beards, eyes, mouths, noses) — same shape as `customizable`. No new endpoint required.
@@ -26,14 +28,17 @@ character** on the card. The character layers stay available as the default char
   it **overrides** the layered character everywhere (preview, thumbnail, composite, box preview).
 
 ## Data model (per card slot)
+
 Photo card: `{ editedCard, baseImage, slotName, selectedLayers, userPhoto }`
+
 - `selectedLayers` — same as deck (default character).
 - `userPhoto` — `null` by default; a dataURL string once the user uploads a photo.
-`FinalProduct` item (to cart/backend): `{ rank, image (composite), name, character_image }`
-where `image`/`character_image` are built from `userPhoto` when present, else from layers.
-`customization_mode: "photo"`.
+  `FinalProduct` item (to cart/backend): `{ rank, image (composite), name, character_image }`
+  where `image`/`character_image` are built from `userPhoto` when present, else from layers.
+  `customization_mode: "photo"`.
 
 ## Files to create
+
 1. **Route page** — `app/(allsite)/(application)/application/photoportrait/[slug]/page.jsx`
    Copy of `app/(allsite)/(application)/application/deckcard/[slug]/page.jsx` with these changes
    ONLY (deck file untouched):
@@ -79,6 +84,7 @@ where `image`/`character_image` are built from `userPhoto` when present, else fr
    (`final/customization/page.js` is NOT edited.)
 
 ## Files to modify
+
 10. **`store/useCartStore.js`** — ADD (do not alter deck helpers) `savePhotoCartImagesToIDB` +
     `restorePhotoCartImagesFromIDB`, parallel to the deck helpers, key `cart-photo-images:${id}`,
     matching `item.customization_mode === "photo"`. Reuse the existing `idb.js` import.
@@ -86,7 +92,7 @@ where `image`/`character_image` are built from `userPhoto` when present, else fr
     - In the IDB restore step, also call `restorePhotoCartImagesFromIDB` (or extend
       `restoreDeckCartImagesFromIDB` to also accept `"photo"` — without changing deck behavior).
     - Treat `customization_mode === "photo"` exactly like `"deck"` for: box preview
-      (`DeckBoxPreview`), Joker +$7 pricing (`hasJokerCard`), and order payload building.
+      (`DeckBoxPreview`), Joker +$9 pricing (`hasJokerCard`), and order payload building.
     - The "edit" redirect at `checkout/page.js:541` must also branch: photo →
       `/application/photoportrait/${editableItem.productSlug}`.
 12. **`app/(allsite)/(site)/shop/page.js`** — add filter option `photo` → label "Photo Portrait"
@@ -96,11 +102,13 @@ where `image`/`character_image` are built from `userPhoto` when present, else fr
     - Button / type label: add `photo` → "Create Your Photo Portrait" / "Photo Portrait".
 
 ## Out of scope (optional)
+
 - Dedicated landing/marketing section for Photo Portrait (deck has one in
   `app/(newLandingPageUpdate)/newlanding/page.js`). Discovery via `/shop` is enough for v1.
 - Server‑side upload / persistent storage of the user photo (not needed; client‑side like deck).
 
 ## Validation
+
 - `npm run lint` and `npm run build` pass.
 - Manual: create a `photo` product in the backend with `base_cards` + layer arrays; open `/shop`,
   filter Photo Portrait, open product, "Create Your Photo Portrait" → `/application/photoportrait/[slug]`.
@@ -115,6 +123,7 @@ where `image`/`character_image` are built from `userPhoto` when present, else fr
   100% unchanged (separate stores, separate localStorage keys, separate component files).
 
 ## Risks / notes
+
 - Composite `canvas.toDataURL` requires the remote **base** image to allow CORS
   (`crossOrigin="anonymous"`) — already true for the deck; unchanged.
 - Large photo dataURLs live in IndexedDB (localStorage strips big images) — same safeguard as deck.

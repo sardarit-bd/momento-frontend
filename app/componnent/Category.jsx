@@ -51,7 +51,7 @@ export default function Category() {
 
       {/* Centered 2-Card Grid */}
       {/* Reduced max-width to 5xl to keep the two cards beautifully proportioned and centered */}
-      <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="w-full container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
           {categories.map((cat, idx) => (
             <div

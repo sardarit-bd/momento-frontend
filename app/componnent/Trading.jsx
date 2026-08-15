@@ -17,7 +17,7 @@ export default function Tradition() {
 
   return (
     <section className="relative w-full bg-linear-to-b md:bg-linear-to-r from-[#EBF6FF] to-white py-20 lg:py-32 overflow-hidden">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
           {/* Left: Image Showcase */}
           {/* order-first ensures the image is on top on mobile, and on the left on desktop */}

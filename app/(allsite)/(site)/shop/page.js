@@ -39,7 +39,7 @@ const About = () => {
 
   return (
     <div>
-      <div className="text-gray-900 px-8 max-w-7xl mx-auto pt-9 lg:pt-16 flex items-center justify-between">
+      <div className="text-gray-900 px-8 container mx-auto pt-9 lg:pt-16 flex items-center justify-between">
         <h3 className="text-gray-700 text-lg lg:text-3xl font-bold">
           {type === "trading"
             ? "Trading Cards"
@@ -65,7 +65,7 @@ const About = () => {
           {/* <option value={"simple"}>Simple Cards</option> */}
         </select>
       </div>
-      <div className="py-14 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 px-8 max-w-7xl mx-auto">
+      <div className="py-14 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 px-8 container mx-auto">
         {filteredProducts.map((product) => (
           <ShopCard key={product.id} product={product} />
         ))}

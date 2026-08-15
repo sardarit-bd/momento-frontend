@@ -3,17 +3,11 @@ import useFilterStore from "@/store/useFilterStore";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import hero1 from "../../public/hero1.png";
 
 import hero3 from "../../public/hero8.png";
 import hero4 from "../../public/hero7.png";
 import hero5 from "../../public/hero6.png";
-const cards = [
-  // hero1,
-  hero3,
-  hero5,
-  hero4,
-];
+const cards = [hero3, hero5, hero4];
 
 const tickerItems = [
   "Easy to Customize",
@@ -54,10 +48,10 @@ const Hero = () => {
     let animFrame;
     const animate = () => {
       if (tickerRef.current && !dragging.current) {
-        offset.current -= 1; // speed of the ticker
-        const width = tickerRef.current.scrollWidth / 2; // half of duplicated content
+        offset.current -= 1;
+        const width = tickerRef.current.scrollWidth / 2;
         if (Math.abs(offset.current) >= width) {
-          offset.current = 0; // reset smoothly
+          offset.current = 0;
         }
         tickerRef.current.style.transform = `translateX(${offset.current}px)`;
       }
@@ -90,16 +84,14 @@ const Hero = () => {
 
   return (
     <>
-      <section className="h-fit lg:h-[60vh] w-screen relative bg-gray-50 overflow-hidden pt-4 pb-6 lg:pt-8 lg:pb-0">
-        {/* Background */}
+      <section className="h-fit max-md:min-h-screen w-screen lg:h-[70vh] relative bg-gray-50 overflow-hidden pt-4 pb-6 lg:pt-8 lg:pb-10">
         <div className="absolute inset-0">
           <div className={`w-full h-full opacity-30 heroBgPataImage`} />
         </div>
-        {/* Content */}
-        <div className="relative max-w-7xl mx-auto px-4 flex flex-col-reverse lg:flex-row items-center justify-center gap-8 py-4 md:py-6">
-          {/* Left Text */}
+
+        <div className="relative container mx-auto px-4 flex flex-col-reverse lg:flex-row items-center justify-center gap-8 py-4 pb-40 md:py-6">
           <div className="w-full lg:w-1/2 flex flex-col items-center lg:items-start space-y-4 md:space-y-4 lg:space-y-4 text-center lg:text-left">
-            <h1 className="text-5xl sm:text-7xl lg:text-6xl font-extrabold leading-[60px] md:leading-[72px] lg:leading-[68px] uppercase text-[#333333]">
+            <h1 className="text-5xl sm:text-7xl lg:text-6xl font-extrabold leading-15 md:leading-18 lg:leading-17 uppercase text-[#333333]">
               Turn Your <br />
               <span className="text-[#3CA9FF]">
                 Favorite People
@@ -120,9 +112,8 @@ const Hero = () => {
             </Link>
           </div>
 
-          {/* Right Cards */}
           <div
-            className="w-full lg:w-1/2 flex justify-center items-center relative h-[55vw] sm:h-[45vw] md:h-[32vw] lg:h-[280px]"
+            className="w-full lg:w-1/2 flex justify-center items-center relative h-[55vw] sm:h-[45vw] md:h-[32vw] lg:h-70"
             style={{ perspective: "1200px" }}
           >
             {cards.map((src, index) => {
@@ -158,7 +149,7 @@ const Hero = () => {
                   }}
                 >
                   <div
-                    className={`relative w-[35vw] sm:w-[25vw] lg:w-[200px] aspect-[3/4] transition-transform duration-500 ease-out
+                    className={`relative w-[35vw] sm:w-[25vw] lg:w-50 aspect-3/4 transition-transform duration-500 ease-out
                                             ${isCenter ? "hover:scale-[1.04] hover:-translate-y-2" : "hover:scale-[1.03]"}
                                         `}
                     style={{
@@ -182,15 +173,9 @@ const Hero = () => {
           </div>
         </div>
 
-        {/* Smooth Infinite Ticker */}
         <div className="hidden lg:block absolute bottom-0 left-0 overflow-hidden w-screen">
           <div className="block lg:block bg-[#3CA9FF] text-white overflow-hidden  py-3 relative cursor-grab">
-            <div
-              //ref={tickerRef}
-              className="flex whitespace-nowrap select-none gap-2 lg:gap-18 justify-center items-center"
-              // style={{ transform: "translateX(0)" }}
-            >
-              {/* Duplicate content to enable smooth infinite scroll */}
+            <div className="flex whitespace-nowrap select-none gap-2 lg:gap-18 justify-center items-center">
               {[...tickerItems].map((text, i) => (
                 <span key={i} className="text-lg sm:text-xl lg:text-2xl">
                   {text}

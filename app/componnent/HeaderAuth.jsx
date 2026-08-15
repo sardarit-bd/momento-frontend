@@ -30,8 +30,6 @@ const HeaderAuth = ({ isOpen, setisOpen }) => {
   useEffect(() => {
     setLoginUser({ name, token, role });
   }, []);
-
-  // Close dropdown when clicking/touching outside
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (!e.target.closest(".user-dropdown")) {
@@ -67,27 +65,22 @@ const HeaderAuth = ({ isOpen, setisOpen }) => {
       {loginUser?.token ? (
         <div className="flex items-center gap-1 h-full text-gray-500 relative cursor-pointer">
           <div className="font-semibold text-md">{loginUser?.name}</div>
-
-          {/* User icon + dropdown */}
           <div className="group user-dropdown relative">
             <MdOutlineAccountCircle
               className="text-4xl"
               onClick={() => setDropdownOpen((prev) => !prev)}
             />
-
-            {/* Dropdown — hover on desktop, tap-toggle on mobile */}
             <div
               className={`
                                 flex flex-col absolute top-9.5 right-0 shadow-xl
-                                min-w-[220px] z-50
+                                min-w-55 z-50
                                 ${dropdownOpen ? "flex" : "hidden"}
                                 lg:hidden lg:group-hover:flex
                             `}
             >
-              <div className="bg-transparent h-[8px]" />
+              <div className="bg-transparent h-2" />
               <div className="p-4 bg-white border border-gray-200 rounded-lg">
                 <div className="flex flex-col gap-2">
-                  {/* User info */}
                   <div className="flex items-center gap-2 mb-3">
                     <MdOutlineAccountCircle className="text-5xl" />
                     <div className="flex flex-col gap-0">
@@ -99,8 +92,6 @@ const HeaderAuth = ({ isOpen, setisOpen }) => {
                       </span>
                     </div>
                   </div>
-
-                  {/* Dashboard */}
                   <Link
                     href={
                       loginUser?.role === "Admin"
@@ -113,8 +104,6 @@ const HeaderAuth = ({ isOpen, setisOpen }) => {
                     <MdDashboard className="text-xl" />
                     <span>Dashboard</span>
                   </Link>
-
-                  {/* Profile */}
                   <Link
                     href="/dashboard/profile"
                     className="text-gray-600 text-md font-semibold hover:bg-gray-200 rounded-md p-2 flex items-center gap-2"
@@ -124,7 +113,6 @@ const HeaderAuth = ({ isOpen, setisOpen }) => {
                     <span>Profile</span>
                   </Link>
 
-                  {/* Logout */}
                   <button
                     onClick={handlelogout}
                     className="text-gray-600 text-md font-semibold hover:bg-gray-200 rounded-md p-2 flex items-center gap-2 cursor-pointer"
@@ -136,12 +124,10 @@ const HeaderAuth = ({ isOpen, setisOpen }) => {
               </div>
             </div>
 
-            {/* Desktop-only hover dropdown (lg and above) */}
-            <div className="hidden lg:flex flex-col absolute top-[38px] right-0 shadow-xl min-w-[220px] z-50 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-150">
-              <div className="bg-transparent h-[8px]" />
+            <div className="hidden lg:flex flex-col absolute top-9.5 right-0 shadow-xl min-w-55 z-50 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-150">
+              <div className="bg-transparent h-2" />
               <div className="p-4 bg-white border border-gray-200 rounded-lg">
                 <div className="flex flex-col gap-2">
-                  {/* User info */}
                   <div className="flex items-center gap-2 mb-3">
                     <MdOutlineAccountCircle className="text-5xl" />
                     <div className="flex flex-col gap-0">
@@ -154,7 +140,6 @@ const HeaderAuth = ({ isOpen, setisOpen }) => {
                     </div>
                   </div>
 
-                  {/* Dashboard */}
                   <Link
                     href={
                       loginUser?.role === "Admin"
@@ -167,7 +152,6 @@ const HeaderAuth = ({ isOpen, setisOpen }) => {
                     <span>Dashboard</span>
                   </Link>
 
-                  {/* Profile */}
                   <Link
                     href="/dashboard/profile"
                     className="text-gray-600 text-md font-semibold hover:bg-gray-200 rounded-md p-2 flex items-center gap-2"
@@ -176,7 +160,6 @@ const HeaderAuth = ({ isOpen, setisOpen }) => {
                     <span>Profile</span>
                   </Link>
 
-                  {/* Logout */}
                   <button
                     onClick={handlelogout}
                     className="text-gray-600 text-md font-semibold hover:bg-gray-200 rounded-md p-2 flex items-center gap-2 cursor-pointer"
@@ -189,7 +172,6 @@ const HeaderAuth = ({ isOpen, setisOpen }) => {
             </div>
           </div>
 
-          {/* Hamburger — only outside dashboard */}
           {!isDashboard &&
             (isOpen ? (
               <ImCross
@@ -208,7 +190,7 @@ const HeaderAuth = ({ isOpen, setisOpen }) => {
           <div className="flex items-center gap-3 h-full text-gray-500">
             <Link
               href="/signin"
-              className="bg-sky-200 px-2 py-1 rounded-md text-gray-600 font-semibold text-md cursor-pointer"
+              className="bg-[#3CA9FF] px-2 py-1 rounded-md text-white lg:py-3 lg:px-6 font-semibold text-md cursor-pointer"
             >
               Login
             </Link>

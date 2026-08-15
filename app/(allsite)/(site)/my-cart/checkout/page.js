@@ -36,7 +36,16 @@ const plexMono = IBM_Plex_Mono({
 const inputStyle =
   "w-full bg-[#F3F4F6] text-[#1B2420] placeholder-[#1B2420]/40 px-4 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#3CA9FF] transition-all text-sm border border-[#1B2420]/10";
 
-const deckPreviewLayers = ["dresses", "skin_tones", "hairs", "crowns", "beards", "eyes", "mouths", "noses"];
+const deckPreviewLayers = [
+  "dresses",
+  "skin_tones",
+  "hairs",
+  "crowns",
+  "beards",
+  "eyes",
+  "mouths",
+  "noses",
+];
 const DECK_RANK_MAP = {
   Ace_Card: "ace",
   king_Card: "king",
@@ -50,14 +59,21 @@ const hasJokerCard = (item) => {
   const productType = String(item?.productType || "").toLowerCase();
   if (productType === "trading") return false;
 
-  const sourceCards = Array.isArray(item?.FinalProduct) ? item.FinalProduct : [];
+  const sourceCards = Array.isArray(item?.FinalProduct)
+    ? item.FinalProduct
+    : [];
 
   return sourceCards.some((card) => {
-    const rawValue = card?.rank ?? card?.editedCard ?? card?.card_type ?? card?.type ?? null;
+    const rawValue =
+      card?.rank ?? card?.editedCard ?? card?.card_type ?? card?.type ?? null;
 
     if (typeof rawValue === "string") {
       const normalized = rawValue.trim().toLowerCase();
-      return normalized === "joker" || normalized === "joker_card" || normalized.includes("joker");
+      return (
+        normalized === "joker" ||
+        normalized === "joker_card" ||
+        normalized.includes("joker")
+      );
     }
 
     return false;
@@ -280,7 +296,7 @@ export default function CheckoutPage() {
     { code: "VE", name: "Venezuela" },
     { code: "VN", name: "Vietnam" },
     { code: "WS", name: "Samoa" },
-    { code: "YE", name: "Yemen" }
+    { code: "YE", name: "Yemen" },
   ];
 
   // Deck Customization State
@@ -304,13 +320,18 @@ export default function CheckoutPage() {
 
     const restore = async () => {
       try {
-        const { restoreCartImagesFromIDB, restoreDeckCartImagesFromIDB, restorePhotoCartImagesFromIDB } = await import("@/store/useCartStore");
+        const {
+          restoreCartImagesFromIDB,
+          restoreDeckCartImagesFromIDB,
+          restorePhotoCartImagesFromIDB,
+        } = await import("@/store/useCartStore");
 
         // Step 1: restore trading card images (existing logic — unchanged)
         const tradingRestored = await restoreCartImagesFromIDB(cart);
 
         // Step 2: restore deck card images on top
-        const deckRestored = await restoreDeckCartImagesFromIDB(tradingRestored);
+        const deckRestored =
+          await restoreDeckCartImagesFromIDB(tradingRestored);
 
         // Step 3: restore photo portrait images on top
         const fullyRestored = await restorePhotoCartImagesFromIDB(deckRestored);
@@ -332,7 +353,8 @@ export default function CheckoutPage() {
       (item) =>
         item.productType === "trading" &&
         item.productQuantity > 1 &&
-        (item.productQuantity === item.packageConfig?.totalCards || item.productQuantity > 10)
+        (item.productQuantity === item.packageConfig?.totalCards ||
+          item.productQuantity > 10),
     );
 
     if (needsUpdate) {
@@ -341,7 +363,8 @@ export default function CheckoutPage() {
           if (
             item.productType === "trading" &&
             item.productQuantity > 1 &&
-            (item.productQuantity === item.packageConfig?.totalCards || item.productQuantity > 10)
+            (item.productQuantity === item.packageConfig?.totalCards ||
+              item.productQuantity > 10)
           ) {
             return { ...item, productQuantity: 1 };
           }
@@ -385,15 +408,18 @@ export default function CheckoutPage() {
           has_joker: hasJokerCard(item),
         }));
 
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/cart/price`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-            ...(token && { Authorization: `Bearer ${token}` }),
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/cart/price`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Accept: "application/json",
+              ...(token && { Authorization: `Bearer ${token}` }),
+            },
+            body: JSON.stringify({ items }),
           },
-          body: JSON.stringify({ items }),
-        });
+        );
 
         if (!res.ok) throw new Error("Failed to price cart");
         const data = await res.json();
@@ -418,7 +444,7 @@ export default function CheckoutPage() {
       (line) =>
         String(line.product_id) === String(item.productId) &&
         (line.package_slug ?? null) === (item.selectedPackage ?? null) &&
-        Boolean(line.has_joker) === itemHasJoker
+        Boolean(line.has_joker) === itemHasJoker,
     );
   };
 
@@ -439,34 +465,34 @@ export default function CheckoutPage() {
   const getItemPreviewImages = (item) => {
     const snapshot = getSavedCustomization(item);
     if (snapshot?.previews) {
-      const localPreviews = [snapshot?.previews?.front, snapshot?.previews?.back].filter(Boolean);
+      const localPreviews = [
+        snapshot?.previews?.front,
+        snapshot?.previews?.back,
+      ].filter(Boolean);
       if (localPreviews.length > 0) return localPreviews;
     }
 
-    if (Array.isArray(item?.FinalProductImages) && item.FinalProductImages.length > 0) {
+    if (
+      Array.isArray(item?.FinalProductImages) &&
+      item.FinalProductImages.length > 0
+    ) {
       return item.FinalProductImages.filter(Boolean);
     }
 
     if (Array.isArray(item?.FinalProduct) && item.FinalProduct.length > 0) {
-      return item.FinalProduct
-        .map((card) => {
-          if (typeof card === "string") return card;
-          if (card && typeof card === "object") return card.image || card.baseImage || null;
-          return null;
-        })
-        .filter(Boolean);
+      return item.FinalProduct.map((card) => {
+        if (typeof card === "string") return card;
+        if (card && typeof card === "object")
+          return card.image || card.baseImage || null;
+        return null;
+      }).filter(Boolean);
     }
 
     return item?.productImage ? [item.productImage] : [];
   };
 
   const isDeckCustomizedCard = (card) => {
-    return Boolean(
-      card &&
-      typeof card === "object" &&
-      card.rank &&
-      card.image
-    );
+    return Boolean(card && typeof card === "object" && card.rank && card.image);
   };
 
   const isDeckLayeredCard = (card) => {
@@ -475,14 +501,18 @@ export default function CheckoutPage() {
       typeof card === "object" &&
       card.baseImage &&
       card.selectedLayers &&
-      typeof card.selectedLayers === "object"
+      typeof card.selectedLayers === "object",
     );
   };
 
   const isJokerRankValue = (value) => {
     if (typeof value !== "string") return false;
     const normalized = value.trim().toLowerCase();
-    return normalized === "joker" || normalized === "joker_card" || normalized.includes("joker");
+    return (
+      normalized === "joker" ||
+      normalized === "joker_card" ||
+      normalized.includes("joker")
+    );
   };
 
   const getItemPreviewCards = (item) => {
@@ -492,13 +522,11 @@ export default function CheckoutPage() {
       Array.isArray(item?.FinalProduct) &&
       item.FinalProduct.some(isDeckCustomizedCard)
     ) {
-      return item.FinalProduct
-        .filter(isDeckCustomizedCard)
-        .map((card) => ({
-          type: "image",
-          src: card.image,
-          isJoker: isJokerRankValue(card.rank),
-        }));
+      return item.FinalProduct.filter(isDeckCustomizedCard).map((card) => ({
+        type: "image",
+        src: card.image,
+        isJoker: isJokerRankValue(card.rank),
+      }));
     }
 
     // ── Photo Portrait card restored from IDB: same rank + image shape as deck ──
@@ -507,34 +535,39 @@ export default function CheckoutPage() {
       Array.isArray(item?.FinalProduct) &&
       item.FinalProduct.some(isDeckCustomizedCard)
     ) {
-      return item.FinalProduct
-        .filter(isDeckCustomizedCard)
-        .map((card) => ({
-          type: "image",
-          src: card.image,
-          isJoker: isJokerRankValue(card.rank),
-        }));
+      return item.FinalProduct.filter(isDeckCustomizedCard).map((card) => ({
+        type: "image",
+        src: card.image,
+        isJoker: isJokerRankValue(card.rank),
+      }));
     }
 
     // ── Deck card in-memory (not refreshed): has baseImage + selectedLayers ──
-    if (Array.isArray(item?.FinalProduct) && item.FinalProduct.some(isDeckLayeredCard)) {
-      return item.FinalProduct
-        .filter(isDeckLayeredCard)
-        .map((card) => ({
-          type: "deck",
-          card,
-          isJoker: isJokerRankValue(card?.editedCard || card?.card_type || card?.type),
-        }));
+    if (
+      Array.isArray(item?.FinalProduct) &&
+      item.FinalProduct.some(isDeckLayeredCard)
+    ) {
+      return item.FinalProduct.filter(isDeckLayeredCard).map((card) => ({
+        type: "deck",
+        card,
+        isJoker: isJokerRankValue(
+          card?.editedCard || card?.card_type || card?.type,
+        ),
+      }));
     }
 
     // ── Trading card: has {side, image, card_pair_key} structure ──
-    if (item?.customization_mode === "trading" && Array.isArray(item?.FinalProduct)) {
-      const fronts = item.FinalProduct
-        .filter(c => c?.side === "front" && c?.image)
-        .map(c => ({ type: "image", src: c.image, isJoker: false }));
+    if (
+      item?.customization_mode === "trading" &&
+      Array.isArray(item?.FinalProduct)
+    ) {
+      const fronts = item.FinalProduct.filter(
+        (c) => c?.side === "front" && c?.image,
+      ).map((c) => ({ type: "image", src: c.image, isJoker: false }));
 
-      const back = item.FinalProduct
-        .find(c => c?.side === "back" && c?.image);
+      const back = item.FinalProduct.find(
+        (c) => c?.side === "back" && c?.image,
+      );
 
       const cards = [...fronts];
       if (back) cards.push({ type: "image", src: back.image, isJoker: false });
@@ -543,14 +576,20 @@ export default function CheckoutPage() {
     }
 
     // ── Fallback ──
-    return getItemPreviewImages(item).map((src) => ({ type: "image", src, isJoker: false }));
+    return getItemPreviewImages(item).map((src) => ({
+      type: "image",
+      src,
+      isJoker: false,
+    }));
   };
 
   const handleEditCustomization = () => {
     const editableItem = cart.find(
       (item) =>
         item?.productSlug &&
-        (item?.productType === "trading" || item?.productType === "customizable" || item?.productType === "photo")
+        (item?.productType === "trading" ||
+          item?.productType === "customizable" ||
+          item?.productType === "photo"),
     );
 
     if (!editableItem?.productSlug) {
@@ -572,7 +611,8 @@ export default function CheckoutPage() {
   };
 
   const isDataUrlImage = (value) =>
-    typeof value === "string" && /^data:image\/[a-zA-Z0-9.+-]+;base64,/.test(value);
+    typeof value === "string" &&
+    /^data:image\/[a-zA-Z0-9.+-]+;base64,/.test(value);
 
   const blobToDataUrl = (blob) =>
     new Promise((resolve, reject) => {
@@ -598,7 +638,9 @@ export default function CheckoutPage() {
   };
 
   const normalizeTradingFinalProduct = async (item) => {
-    const sourceCards = Array.isArray(item?.FinalProduct) ? item.FinalProduct : [];
+    const sourceCards = Array.isArray(item?.FinalProduct)
+      ? item.FinalProduct
+      : [];
     const normalized = [];
 
     for (const card of sourceCards) {
@@ -615,7 +657,9 @@ export default function CheckoutPage() {
   };
 
   const normalizeDeckFinalProduct = async (item) => {
-    const sourceCards = Array.isArray(item?.FinalProduct) ? item.FinalProduct : [];
+    const sourceCards = Array.isArray(item?.FinalProduct)
+      ? item.FinalProduct
+      : [];
     const normalized = [];
 
     for (let index = 0; index < sourceCards.length; index += 1) {
@@ -633,7 +677,8 @@ export default function CheckoutPage() {
       }
 
       // Fallback: derive rank and fetch/convert image
-      const rawType = card?.editedCard || card?.card_type || card?.type || card?.rank || null;
+      const rawType =
+        card?.editedCard || card?.card_type || card?.type || card?.rank || null;
       const rank =
         DECK_RANK_MAP[rawType] ||
         (typeof rawType === "string" ? rawType.toLowerCase() : null);
@@ -653,7 +698,8 @@ export default function CheckoutPage() {
     }
 
     return normalized.sort(
-      (a, b) => DECK_RANK_ORDER.indexOf(a.rank) - DECK_RANK_ORDER.indexOf(b.rank)
+      (a, b) =>
+        DECK_RANK_ORDER.indexOf(a.rank) - DECK_RANK_ORDER.indexOf(b.rank),
     );
   };
 
@@ -669,8 +715,16 @@ export default function CheckoutPage() {
     if (type === "trading") return "trading";
     if (type === "customizable") return "deck";
     if (type === "photo") return "photo";
-    if (Array.isArray(item?.FinalProduct) && item.FinalProduct.some((card) => card?.editedCard)) return "deck";
-    if (Array.isArray(item?.FinalProduct) && item.FinalProduct.some((card) => card?.rank && card?.image)) return "deck";
+    if (
+      Array.isArray(item?.FinalProduct) &&
+      item.FinalProduct.some((card) => card?.editedCard)
+    )
+      return "deck";
+    if (
+      Array.isArray(item?.FinalProduct) &&
+      item.FinalProduct.some((card) => card?.rank && card?.image)
+    )
+      return "deck";
     return "trading";
   };
 
@@ -696,12 +750,14 @@ export default function CheckoutPage() {
       return;
     }
 
-    const invalidItems = hydratedCart.filter(item =>
-      !item.productId || !item.productQuantity
+    const invalidItems = hydratedCart.filter(
+      (item) => !item.productId || !item.productQuantity,
     );
 
     if (invalidItems.length > 0) {
-      toast.error("Some items in your cart are invalid. Please refresh and try again.");
+      toast.error(
+        "Some items in your cart are invalid. Please refresh and try again.",
+      );
       return;
     }
 
@@ -713,7 +769,9 @@ export default function CheckoutPage() {
       return;
     }
     if (pricingError || !pricing) {
-      toast.error("We couldn't verify current prices. Please refresh and try again.");
+      toast.error(
+        "We couldn't verify current prices. Please refresh and try again.",
+      );
       return;
     }
 
@@ -727,7 +785,7 @@ export default function CheckoutPage() {
             pdfData = await new Promise((resolve, reject) => {
               const reader = new FileReader();
               reader.onloadend = () => {
-                const base64 = reader.result.split(',')[1];
+                const base64 = reader.result.split(",")[1];
                 resolve(base64);
               };
               reader.onerror = reject;
@@ -750,28 +808,36 @@ export default function CheckoutPage() {
             // never trust a client-supplied amount for the actual charge.
             package_slug: item.selectedPackage ?? null,
             has_joker: hasJokerCard(item),
-            name: item.productName || 'Product',
+            name: item.productName || "Product",
             customization_mode,
             FinalProduct,
             FinalPDF: pdfData ? { data: pdfData } : null,
             boxImages: item.boxImages ?? [],
             photo_box_images: item.boxImages ?? [],
           };
-        })
+        }),
       );
 
       const checkoutEmail = `${id || "guest"}@example.com`;
 
-      const tradingItem = hydratedCart.find(item => item.productType === "trading");
+      const tradingItem = hydratedCart.find(
+        (item) => item.productType === "trading",
+      );
 
-      const persistedPackageTitle = typeof window !== "undefined"
-        ? localStorage.getItem("persistent_packageTitle") ?? tradingItem?.packTitle ?? null
-        : tradingItem?.packTitle ?? null;
+      const persistedPackageTitle =
+        typeof window !== "undefined"
+          ? (localStorage.getItem("persistent_packageTitle") ??
+            tradingItem?.packTitle ??
+            null)
+          : (tradingItem?.packTitle ?? null);
 
       const deckItem = hydratedCart.find(
-        (item) => item.customization_mode === "deck" || item.customization_mode === "photo"
+        (item) =>
+          item.customization_mode === "deck" ||
+          item.customization_mode === "photo",
       );
-      const characterImages = deckItem?.CharacterImages ?? deckcart?.[0]?.CharacterImages ?? [];
+      const characterImages =
+        deckItem?.CharacterImages ?? deckcart?.[0]?.CharacterImages ?? [];
 
       // ── Photo portrait box ──────────────────────────────────────────────
       // The photo preview store holds the user-composed box: `BoxImage` is the
@@ -812,11 +878,15 @@ export default function CheckoutPage() {
         // regenerate the photo portrait box on its template if desired.
         photo_box_images: photoBoxImages,
         trading_box_pack_title: persistedPackageTitle,
-        trading_box_created_for: localStorage.getItem("persistent_carddes") ?? tradingItem?.createdFor ?? null,
+        trading_box_created_for:
+          localStorage.getItem("persistent_carddes") ??
+          tradingItem?.createdFor ??
+          null,
       };
 
       const checkoutEndpoint =
-        process.env.NEXT_PUBLIC_CHECKOUT_SESSION_ENDPOINT || "/api/create-checkout-session";
+        process.env.NEXT_PUBLIC_CHECKOUT_SESSION_ENDPOINT ||
+        "/api/create-checkout-session";
 
       const response = await fetch(
         checkoutEndpoint.startsWith("http")
@@ -830,7 +900,7 @@ export default function CheckoutPage() {
             ...(token && { Authorization: `Bearer ${token}` }),
           },
           body: JSON.stringify(checkoutData),
-        }
+        },
       );
 
       const result = await response.json();
@@ -840,7 +910,10 @@ export default function CheckoutPage() {
           window.location.href = result.checkout_url;
         }
       } else {
-        const errorMessage = result?.message || result?.error || "Failed to create checkout session";
+        const errorMessage =
+          result?.message ||
+          result?.error ||
+          "Failed to create checkout session";
         toast.error(errorMessage);
       }
     } catch (error) {
@@ -863,19 +936,22 @@ export default function CheckoutPage() {
   const deckBoxCharacterImages =
     deckcart?.[0]?.CharacterImages?.length > 0
       ? deckcart[0].CharacterImages
-      : hydratedCart.find(
-          (item) => item.customization_mode === "deck" || item.customization_mode === "photo"
-        )?.CharacterImages ?? [];
+      : (hydratedCart.find(
+          (item) =>
+            item.customization_mode === "deck" ||
+            item.customization_mode === "photo",
+        )?.CharacterImages ?? []);
 
   const hasDeckItemForBoxPreview = cart.some(
     (item) =>
       item.productType === "customizable" ||
       item.productType === "photo" ||
       item.customization_mode === "deck" ||
-      item.customization_mode === "photo"
+      item.customization_mode === "photo",
   );
 
-  const showDeckBoxPreview = hasDeckItemForBoxPreview && deckBoxCharacterImages.length > 0;
+  const showDeckBoxPreview =
+    hasDeckItemForBoxPreview && deckBoxCharacterImages.length > 0;
 
   return (
     <section
@@ -884,11 +960,9 @@ export default function CheckoutPage() {
     >
       <ToastContainer />
 
-      <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8">
-
+      <div className="container mx-auto grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8">
         {/* LEFT COLUMN - Order Summary & Details */}
         <div className="lg:col-span-7 space-y-6">
-
           {/* Card 1: Your Deck */}
           <div className="bg-white rounded-3xl p-4 sm:p-6 shadow-sm border border-[#1B2420]/[0.06]">
             <div className="flex justify-between items-center mb-5">
@@ -896,30 +970,51 @@ export default function CheckoutPage() {
                 className="text-xl sm:text-2xl font-semibold"
                 style={{ fontFamily: "var(--font-display)" }}
               >
-                {cart.some(item => item?.productType === "trading")
+                {cart.some((item) => item?.productType === "trading")
                   ? "Your Trading Card"
-                  : cart.some(item => item?.productType === "photo")
+                  : cart.some((item) => item?.productType === "photo")
                     ? "Your Photo Portrait"
                     : "Your Deck Card"}
               </h2>
             </div>
 
             <div className="inline-flex items-center gap-1.5 bg-[#C9A227]/10 text-[#1B2420] border border-[#C9A227]/25 text-xs font-medium px-3 py-1.5 rounded-full mb-6">
-              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#C9A227" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="#C9A227"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+                <line x1="12" y1="22.08" x2="12" y2="12"></line>
+              </svg>
               Premium Packaging
             </div>
 
             {/* Display Cart Items visually */}
             <div className="mb-3 lg:mb-6 space-y-5">
               {hydrating ? (
-                <div className="text-[#1B2420]/45 text-sm py-4 animate-pulse">Loading…</div>
+                <div className="text-[#1B2420]/45 text-sm py-4 animate-pulse">
+                  Loading…
+                </div>
               ) : hydratedCart.length === 0 ? (
-                <div className="text-[#1B2420]/45 text-sm py-4">Your cart is empty</div>
+                <div className="text-[#1B2420]/45 text-sm py-4">
+                  Your cart is empty
+                </div>
               ) : (
                 hydratedCart.map((item, idx) => {
                   const allPreviewCards = getItemPreviewCards(item);
-                  const jokerCard = allPreviewCards.find((c) => c.isJoker) ?? null;
-                  const previewCards = allPreviewCards.filter((c) => !c.isJoker);
+                  const jokerCard =
+                    allPreviewCards.find((c) => c.isJoker) ?? null;
+                  const previewCards = allPreviewCards.filter(
+                    (c) => !c.isJoker,
+                  );
                   const customizedCount = allPreviewCards.length;
                   const pricedLine = findPricedLine(item);
                   const jokerPrice = Number(pricedLine?.joker_addon ?? 0);
@@ -945,12 +1040,11 @@ export default function CheckoutPage() {
                           >
                             {item.productName}
                           </p>
-                          <p
-                            className="text-xs text-[#1B2420]/50 whitespace-nowrap"
-                            
-                          >
+                          <p className="text-xs text-[#1B2420]/50 whitespace-nowrap">
                             Qty: {item.productQuantity}
-                            {customizedCount > 1 ? ` · ${customizedCount} cards` : ""}
+                            {customizedCount > 1
+                              ? ` · ${customizedCount} cards`
+                              : ""}
                           </p>
                         </div>
 
@@ -960,13 +1054,34 @@ export default function CheckoutPage() {
                               item,
                               previewCard,
                               imageIndex,
-                              "w-[88px] h-[123px] sm:w-24 sm:h-32 md:w-28 md:h-40"
-                            )
+                              "w-[88px] h-[123px] sm:w-24 sm:h-32 md:w-28 md:h-40",
+                            ),
                           )}
 
                           {previewCards.length === 0 && !jokerCard && (
                             <div className="w-[88px] h-[123px] sm:w-24 sm:h-32 md:w-28 md:h-40 bg-[#F7F3EC] rounded-xl border border-[#1B2420]/10 overflow-hidden relative flex items-center justify-center text-[#1B2420]/20">
-                              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="24"
+                                height="24"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              >
+                                <rect
+                                  x="3"
+                                  y="3"
+                                  width="18"
+                                  height="18"
+                                  rx="2"
+                                  ry="2"
+                                ></rect>
+                                <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                                <polyline points="21 15 16 10 5 21"></polyline>
+                              </svg>
                             </div>
                           )}
 
@@ -977,15 +1092,18 @@ export default function CheckoutPage() {
                                   item,
                                   jokerCard,
                                   "joker",
-                                  "w-[88px] h-[123px] sm:w-24 sm:h-32 md:w-28 md:h-40"
+                                  "w-[88px] h-[123px] sm:w-24 sm:h-32 md:w-28 md:h-40",
                                 )}
                               </div>
-                              <span className="text-[11px] text-[#1B2420]/50">Joker card</span>
+                              <span className="text-[11px] text-[#1B2420]/50">
+                                Joker card
+                              </span>
                             </div>
                           )}
-</div>
+                        </div>
 
-                          {isDeckItem && (deriveCustomizationMode(item) === "photo" ? (
+                        {isDeckItem &&
+                          (deriveCustomizationMode(item) === "photo" ? (
                             <div className="mt-4">
                               <h3
                                 className="text-sm font-semibold text-[#1B2420]/80 mb-3"
@@ -994,14 +1112,16 @@ export default function CheckoutPage() {
                                 Box Preview
                               </h3>
                               <div className="flex flex-wrap gap-3">
-                                <PhotoPortraitBoxPreview 
-                                  boxImages={photocart?.[0]?.boxImages?.map((img) => ({
-                                    id: img?.id ?? null,
-                                    src: img?.src ?? null,
-                                    zoom: img?.zoom ?? 1,
-                                    xFraction: img?.xFraction ?? 0,
-                                    yFraction: img?.yFraction ?? 0,   
-                                  })) ?? []} 
+                                <PhotoPortraitBoxPreview
+                                  boxImages={
+                                    photocart?.[0]?.boxImages?.map((img) => ({
+                                      id: img?.id ?? null,
+                                      src: img?.src ?? null,
+                                      zoom: img?.zoom ?? 1,
+                                      xFraction: img?.xFraction ?? 0,
+                                      yFraction: img?.yFraction ?? 0,
+                                    })) ?? []
+                                  }
                                 />
                               </div>
                             </div>
@@ -1015,47 +1135,72 @@ export default function CheckoutPage() {
                                   Box Preview
                                 </h3>
                                 <div className="flex flex-wrap gap-3">
-                                  <DeckBoxPreview characterImages={deckBoxCharacterImages} />
+                                  <DeckBoxPreview
+                                    characterImages={deckBoxCharacterImages}
+                                  />
                                 </div>
                               </div>
                             )
                           ))}
 
-                          {/* Price breakdown — horizontal strip, full width, directly
+                        {/* Price breakdown — horizontal strip, full width, directly
                               under the card art. Same markup on every breakpoint. */}
-                          {isDeckItem && (
-                            <div className="mt-4 pt-4 pb-1 border-t border-dashed border-[#1B2420]/10 space-y-2 text-sm" style={{ fontFamily: "var(--font-mono)" }}>
-                              {pricedLine ? (
-                                <>
-                                  <div className="flex justify-between text-[#1B2420]/60">
-                                    <span style={{ fontFamily: "var(--font-body)" }}>Package</span>
-                                    <span>${packagePrice.toFixed(2)}</span>
+                        {isDeckItem && (
+                          <div
+                            className="mt-4 pt-4 pb-1 border-t border-dashed border-[#1B2420]/10 space-y-2 text-sm"
+                            style={{ fontFamily: "var(--font-mono)" }}
+                          >
+                            {pricedLine ? (
+                              <>
+                                <div className="flex justify-between text-[#1B2420]/60">
+                                  <span
+                                    style={{ fontFamily: "var(--font-body)" }}
+                                  >
+                                    Package
+                                  </span>
+                                  <span>${packagePrice.toFixed(2)}</span>
+                                </div>
+                                {jokerCard && jokerPrice > 0 && (
+                                  <div className="flex justify-between text-[#C9A227]">
+                                    <span
+                                      style={{ fontFamily: "var(--font-body)" }}
+                                    >
+                                      Joker add-on
+                                    </span>
+                                    <span>${jokerPrice.toFixed(2)}</span>
                                   </div>
-                                  {jokerCard && jokerPrice > 0 && (
-                                    <div className="flex justify-between text-[#C9A227]">
-                                      <span style={{ fontFamily: "var(--font-body)" }}>Joker add-on</span>
-                                      <span>${jokerPrice.toFixed(2)}</span>
-                                    </div>
-                                  )}
-                                  <div className="flex justify-between font-semibold pt-2 border-t border-[#1B2420]/10">
-                                    <span style={{ fontFamily: "var(--font-body)" }}>Item total</span>
-                                    <span>${Number(pricedLine.line_total ?? 0).toFixed(2)}</span>
-                                  </div>
-                                </>
-                              ) : pricingLoading ? (
-                                <p className="text-xs text-[#1B2420]/40 animate-pulse">Calculating price…</p>
-                              ) : pricingError ? (
-                                <p className="text-xs text-[#B65C4D]">Price unavailable</p>
-                              ) : null}
-                            </div>
-                          )}
-                        </div>
+                                )}
+                                <div className="flex justify-between font-semibold pt-2 border-t border-[#1B2420]/10">
+                                  <span
+                                    style={{ fontFamily: "var(--font-body)" }}
+                                  >
+                                    Item total
+                                  </span>
+                                  <span>
+                                    $
+                                    {Number(pricedLine.line_total ?? 0).toFixed(
+                                      2,
+                                    )}
+                                  </span>
+                                </div>
+                              </>
+                            ) : pricingLoading ? (
+                              <p className="text-xs text-[#1B2420]/40 animate-pulse">
+                                Calculating price…
+                              </p>
+                            ) : pricingError ? (
+                              <p className="text-xs text-[#B65C4D]">
+                                Price unavailable
+                              </p>
+                            ) : null}
+                          </div>
+                        )}
+                      </div>
 
-                        {/* Mobile-only Box Preview — sits between the price strip and
+                      {/* Mobile-only Box Preview — sits between the price strip and
                             the next item on narrow screens. Hidden at lg: and up,
                             where the full-width Box Preview below the cart-item
                             list (see the IIFE block further down) takes over. */}
-                        
                     </div>
                   );
                 })
@@ -1084,19 +1229,30 @@ export default function CheckoutPage() {
                 </div>
               )}
 
-            <div className="lg:border-t lg:border-dashed lg:border-[#1B2420]/12 pt-2 lg:pt-4 space-y-3" style={{ fontFamily: "var(--font-mono)" }}>
+            <div
+              className="lg:border-t lg:border-dashed lg:border-[#1B2420]/12 pt-2 lg:pt-4 space-y-3"
+              style={{ fontFamily: "var(--font-mono)" }}
+            >
               {pricingLoading ? (
-                <p className="text-sm text-[#1B2420]/40 animate-pulse" style={{ fontFamily: "var(--font-body)" }}>
+                <p
+                  className="text-sm text-[#1B2420]/40 animate-pulse"
+                  style={{ fontFamily: "var(--font-body)" }}
+                >
                   Calculating total…
                 </p>
               ) : pricingError ? (
-                <p className="text-sm text-[#B65C4D]" style={{ fontFamily: "var(--font-body)" }}>
+                <p
+                  className="text-sm text-[#B65C4D]"
+                  style={{ fontFamily: "var(--font-body)" }}
+                >
                   Couldn&apos;t verify prices. Please refresh the page.
                 </p>
               ) : (
                 <>
                   <div className="hidden lg:flex justify-between text-sm text-[#1B2420]/60">
-                    <span style={{ fontFamily: "var(--font-body)" }}>Subtotal</span>
+                    <span style={{ fontFamily: "var(--font-body)" }}>
+                      Subtotal
+                    </span>
                     <span>${subtotal.toFixed(2)}</span>
                   </div>
                   <div className="flex justify-between text-sm text-[#1B2420]/60">
@@ -1104,14 +1260,15 @@ export default function CheckoutPage() {
                     <span>${tax.toFixed(2)}</span>
                   </div>
                   <div className="flex justify-between items-baseline font-semibold text-lg pt-2">
-                    <span style={{ fontFamily: "var(--font-display)" }}>Total</span>
+                    <span style={{ fontFamily: "var(--font-display)" }}>
+                      Total
+                    </span>
                     <span>${total.toFixed(2)}</span>
                   </div>
                 </>
               )}
             </div>
           </div>
-
         </div>
 
         {/* RIGHT COLUMN - Payment Details Form */}
@@ -1121,67 +1278,147 @@ export default function CheckoutPage() {
               className="text-xl sm:text-2xl font-semibold mb-6 flex items-center gap-2"
               style={{ fontFamily: "var(--font-display)" }}
             >
-              <svg className="text-[#2F6F5E]" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>
+              <svg
+                className="text-[#2F6F5E]"
+                xmlns="http://www.w3.org/2000/svg"
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
+                <line x1="1" y1="10" x2="23" y2="10"></line>
+              </svg>
               Shipping Information
             </h2>
 
             <form onSubmit={handleCheckout} className="space-y-6">
-
               <div className="space-y-4">
-
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
                     <FieldLabel label="First Name" required />
-                    <input type="text" value={firstName} onChange={(e) => setFirstName(e.target.value)} placeholder="First Name" className={inputStyle} required />
+                    <input
+                      type="text"
+                      value={firstName}
+                      onChange={(e) => setFirstName(e.target.value)}
+                      placeholder="First Name"
+                      className={inputStyle}
+                      required
+                    />
                   </div>
                   <div>
                     <FieldLabel label="Last Name" required />
-                    <input type="text" value={lastName} onChange={(e) => setLastName(e.target.value)} placeholder="Last Name" className={inputStyle} required />
+                    <input
+                      type="text"
+                      value={lastName}
+                      onChange={(e) => setLastName(e.target.value)}
+                      placeholder="Last Name"
+                      className={inputStyle}
+                      required
+                    />
                   </div>
                 </div>
 
                 <div>
                   <FieldLabel label="Company" />
-                  <input type="text" value={company} onChange={(e) => setCompany(e.target.value)} placeholder="Company (optional)" className={inputStyle} />
+                  <input
+                    type="text"
+                    value={company}
+                    onChange={(e) => setCompany(e.target.value)}
+                    placeholder="Company (optional)"
+                    className={inputStyle}
+                  />
                 </div>
 
                 <div>
                   <FieldLabel label="Phone Number" required />
-                  <input type="tel" value={phone} onChange={(e) => setphone(e.target.value)} placeholder="Phone Number" className={inputStyle} required />
+                  <input
+                    type="tel"
+                    value={phone}
+                    onChange={(e) => setphone(e.target.value)}
+                    placeholder="Phone Number"
+                    className={inputStyle}
+                    required
+                  />
                 </div>
 
                 <div>
                   <FieldLabel label="Address 1" required />
-                  <input type="text" value={address} onChange={(e) => setaddress(e.target.value)} placeholder="Address 1" className={inputStyle} required />
+                  <input
+                    type="text"
+                    value={address}
+                    onChange={(e) => setaddress(e.target.value)}
+                    placeholder="Address 1"
+                    className={inputStyle}
+                    required
+                  />
                 </div>
 
                 <div>
                   <FieldLabel label="Address 2" />
-                  <input type="text" value={address2} onChange={(e) => setAddress2(e.target.value)} placeholder="Apartment, suite, unit, etc. (optional)" className={inputStyle} />
+                  <input
+                    type="text"
+                    value={address2}
+                    onChange={(e) => setAddress2(e.target.value)}
+                    placeholder="Apartment, suite, unit, etc. (optional)"
+                    className={inputStyle}
+                  />
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
                     <FieldLabel label="City" required />
-                    <input type="text" value={City} onChange={(e) => setCity(e.target.value)} placeholder="City" className={inputStyle} required />
+                    <input
+                      type="text"
+                      value={City}
+                      onChange={(e) => setCity(e.target.value)}
+                      placeholder="City"
+                      className={inputStyle}
+                      required
+                    />
                   </div>
                   <div>
                     <FieldLabel label="State / Province" required />
-                    <input type="text" value={state} onChange={(e) => setState(e.target.value)} placeholder="State / Province" className={inputStyle} required />
+                    <input
+                      type="text"
+                      value={state}
+                      onChange={(e) => setState(e.target.value)}
+                      placeholder="State / Province"
+                      className={inputStyle}
+                      required
+                    />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
                     <FieldLabel label="Zip / Postal Code" required />
-                    <input type="text" value={zipcode} onChange={(e) => setzipcode(e.target.value)} placeholder="Zip / Postal Code" className={inputStyle} required />
+                    <input
+                      type="text"
+                      value={zipcode}
+                      onChange={(e) => setzipcode(e.target.value)}
+                      placeholder="Zip / Postal Code"
+                      className={inputStyle}
+                      required
+                    />
                   </div>
                   <div>
                     <FieldLabel label="Country" required />
-                    <select value={country} onChange={(e) => setCountry(e.target.value)} className={inputStyle} required>
+                    <select
+                      value={country}
+                      onChange={(e) => setCountry(e.target.value)}
+                      className={inputStyle}
+                      required
+                    >
                       <option value="">Select Country</option>
                       {countries.map((item) => (
-                        <option key={item.code} value={item.code}>{item.name} ({item.code})</option>
+                        <option key={item.code} value={item.code}>
+                          {item.name} ({item.code})
+                        </option>
                       ))}
                     </select>
                   </div>
@@ -1190,7 +1427,9 @@ export default function CheckoutPage() {
 
               <button
                 type="submit"
-                disabled={loading || cart.length === 0 || pricingLoading || pricingError}
+                disabled={
+                  loading || cart.length === 0 || pricingLoading || pricingError
+                }
                 className="w-full bg-[#3CA9FF] text-[#F7F3EC] font-semibold py-3.5 rounded-xl shadow-md shadow-[#2F6F5E]/20 transition-all flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none mt-2 cursor-pointer"
               >
                 Continue
@@ -1198,12 +1437,10 @@ export default function CheckoutPage() {
             </form>
           </div>
         </div>
-
       </div>
     </section>
   );
 }
-
 
 // Renders a single card thumbnail (rank card or Joker) at a given size.
 // Defined at module level (not inside CheckoutPage) so it isn't
@@ -1221,7 +1458,7 @@ function renderCardThumb(item, previewCard, imageIndex, sizeClass) {
             alt={`${item?.productName || "Product"} customized card ${imageIndex + 1}`}
             className="w-full h-full object-cover bg-white"
           />
-          {deckPreviewLayers.map((layer) => (
+          {deckPreviewLayers.map((layer) =>
             previewCard.card?.selectedLayers?.[layer] ? (
               <div key={`${imageIndex}-${layer}`}>
                 <img
@@ -1235,8 +1472,8 @@ function renderCardThumb(item, previewCard, imageIndex, sizeClass) {
                   className="absolute left-1/2 -translate-x-1/2 bottom-[8%] w-[64%] h-[43%] object-contain scale-y-[-1]"
                 />
               </div>
-            ) : null
-          ))}
+            ) : null,
+          )}
         </div>
       ) : (
         <img

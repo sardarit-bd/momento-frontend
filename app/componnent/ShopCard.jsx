@@ -26,7 +26,7 @@ export default function ShopCard({ product }) {
   return (
     <article className="w-full lg:w-[32%] bg-white rounded-2xl shadow-lg overflow-hidden transform transition">
       {/* Product Image */}
-      <div className="relative h-65 w-full overflow-hidden group">
+      <div className="relative h-90 w-full overflow-hidden group">
         <div className="bg-[#c9e7fd]">
           <Image
             width={1000}

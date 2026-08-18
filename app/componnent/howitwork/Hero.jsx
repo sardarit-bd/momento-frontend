@@ -70,9 +70,10 @@ export default function Hero() {
             </h1>
 
             <p className="text-xl text-slate-700 leading-relaxed max-w-xl">
-              Momento turns real people into playable cards. Not just photos on
-              a card — fully customizable characters designed for unforgettable
-              game nights, gifts, and keepsakes.
+              Turn the people and memories that matter most into personalized
+              playing cards and collectibles. Choose your product, customize
+              every detail, preview your design, and create something made for
+              game nights, gifts, milestones, and keepsakes.
             </p>
 
             <div className="flex flex-wrap gap-4">

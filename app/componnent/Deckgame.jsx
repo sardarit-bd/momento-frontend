@@ -5,7 +5,7 @@ import Link from "next/link";
 import { FaRegSquareCheck } from "react-icons/fa6";
 
 // Ensure your file paths align with your project structure
-import deckGame from "../../public/mockup3.png";
+import deckGame from "../../public/mockup4.png";
 
 export default function Tradition() {
   const features = [

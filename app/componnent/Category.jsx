@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 import TredingOne from "../../public/mockup4.png";
+import TredingTwo from "../../public/mockup9.webp";
 import TredingThree from "../../public/mockup7.png";
 
 export default function Category() {
@@ -12,32 +13,36 @@ export default function Category() {
 
   const categories = [
     {
-      title: "Momento Photo Portrait Deck",
-      description: "Customize the classic cards with your personal images.",
-      image: TredingOne,
+      title: "Momento Photo Deck",
+      description:
+        "Upload your favorite photos and turn them into a premium deck of personalized playing cards.",
+      image: TredingTwo,
       href: "/shop",
       type: "customizable",
-    },
-    {
-      title: "Momento Portrait Deck",
-      description: "Classic playing cards with immersive themes.",
-      image: TredingOne,
-      href: "/shop",
-      type: "customizable",
+      cta: "Start Customizing",
     },
     {
       title: "Momento Trading Cards",
       description:
-        "Custom collectibles specifically designed for creators, fans, and elite collectors.",
+        "Create personalized trading cards celebrating people, memories, achievements, milestones, and the moments that matter most.",
       image: TredingThree,
       href: "/shop",
       type: "trading",
+      cta: "Build Your Collection",
+    },
+    {
+      title: "Momento Portrait Deck",
+      description:
+        "Create a premium deck featuring fully customizable characters inspired by your favorite people.",
+      image: TredingOne,
+      href: "/shop",
+      type: "customizable",
+      cta: "Build Your Deck",
     },
   ];
 
   return (
     <section className="py-16 md:py-20 lg:py-12 w-full bg-linear-to-b from-gray-50 to-white">
-      {/* Header Section */}
       <div className="text-center px-4 mb-10 md:mb-12">
         <h2 className="text-4xl md:text-5xl xl:text-6xl font-extrabold text-gray-900 tracking-tight leading-tight mb-5">
           Turn Meaningful Moments <br className="hidden sm:block" />
@@ -48,9 +53,6 @@ export default function Category() {
           matter most.
         </p>
       </div>
-
-      {/* Centered 2-Card Grid */}
-      {/* Reduced max-width to 5xl to keep the two cards beautifully proportioned and centered */}
       <div className="w-full container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
           {categories.map((cat, idx) => (
@@ -58,7 +60,6 @@ export default function Category() {
               key={idx}
               className="group flex flex-col bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-xl transform transition-all duration-300 hover:-translate-y-1 overflow-hidden"
             >
-              {/* Image Wrapper */}
               <div className="relative w-full aspect-4/3 overflow-hidden bg-[#d9eefd]">
                 <Image
                   src={cat.image}
@@ -70,7 +71,6 @@ export default function Category() {
                 />
               </div>
 
-              {/* Content & Action Area */}
               <div className="flex flex-col grow p-6 lg:p-8">
                 <div className="grow text-center md:text-left">
                   <h3 className="text-2xl font-bold text-gray-900 mb-3">
@@ -89,7 +89,7 @@ export default function Category() {
                     href={cat.href}
                     className="group/btn relative w-full inline-flex items-center justify-center bg-[#3CA9FF] hover:bg-[#FF6F3C] text-white font-semibold py-4 px-6 rounded-xl transition-colors duration-300 shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#3CA9FF]"
                   >
-                    <span>Explore Cards</span>
+                    <span>{cat.cta}</span>
                     <svg
                       className="ml-2 w-5 h-5 transform transition-transform group-hover/btn:translate-x-1"
                       fill="none"

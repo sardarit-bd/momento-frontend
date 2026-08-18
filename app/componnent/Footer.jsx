@@ -18,10 +18,9 @@ const Footer = () => {
           <div className="w-full col-span-4 md:col-span-2 lg:col-span-1">
             <h3 className="font-bold text-2xl text-gray-600">About</h3>
             <p className="text-gray-500 text-md pt-5">
-              At Momento, we turn memories into collectible experiences. Whether
-              you're creating a Momento Portrait Deck or Momento Trading Cards,
-              we make it easy to design cards that feel personal, meaningful,
-              and worth keeping forever.
+              Momento helps people celebrate the people and memories that matter
+              most through personalized playing cards and collectibles made for
+              gifts, milestones, game nights, and unforgettable moments.
             </p>
             <div className="flex items-center gap-4 mt-6">
               <Link className="z-30" href={"/"}>
@@ -63,13 +62,13 @@ const Footer = () => {
             <div className="mt-5">
               <ul className="flex flex-col gap-3">
                 <Link href={"/shop"} className="text-gray-500 text-md z-30">
-                  Momento Photo Portrait Deck
-                </Link>
-                <Link href={"/shop"} className="text-gray-500 text-md z-30">
-                  Momento Portrait Deck
+                  Momento Photo Deck
                 </Link>
                 <Link href={"/shop"} className="text-gray-500 text-md z-30">
                   Momento Trading Cards
+                </Link>
+                <Link href={"/shop"} className="text-gray-500 text-md z-30">
+                  Momento Portrait Deck
                 </Link>
               </ul>
             </div>
@@ -84,7 +83,7 @@ const Footer = () => {
                                 </Link> */}
                 <Link
                   href={"#"}
-                  className="text-gray-500 text-md z-30 flex gap-2 flex items-center"
+                  className="text-gray-500 text-md z-30  gap-2 flex items-center"
                 >
                   <MdEmail className="text-sky-500" />
                   <span>contact@momentocardgames.com</span>

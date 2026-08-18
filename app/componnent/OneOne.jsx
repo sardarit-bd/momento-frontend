@@ -3,9 +3,9 @@ import Link from "next/link";
 
 export default function AboutPage() {
   return (
-    <section className="relative overflow-hidden bg-gradient-to-b from-[#E6F0F8] to-white py-20 md:py-32">
+    <section className="relative  bg-linear-to-b from-[#E6F0F8] to-white py-20 md:py-32">
       {/* Subtle ambient background flares */}
-      <div className="absolute top-0 left-0 w-[500px] h-[500px] bg-sky-200/40 rounded-full blur-[100px] -translate-x-1/2 -translate-y-1/2 pointer-events-none" />
+      <div className="absolute top-0 left-0 w-125 h-125 bg-sky-200/40 rounded-full blur-[100px] -translate-x-1/2 -translate-y-1/2 pointer-events-none" />
 
       <div className="relative z-10 container mx-auto px-6 flex flex-col lg:flex-row items-center justify-between gap-16 lg:gap-20">
         {/* Left Side (Text Content) */}
@@ -37,18 +37,18 @@ export default function AboutPage() {
         </div>
 
         {/* Right Side (Image Grid) */}
-        <div className="flex-1 w-full flex justify-center lg:justify-end items-center">
-          <div className="group relative w-full max-w-md lg:max-w-lg xl:max-w-xl aspect-[5/4] rounded-3xl overflow-hidden shadow-2xl shadow-slate-200/50 border border-white/50 bg-white">
+        <div className="flex-1 w-full flex justify-center lg:justify-end items-center ">
+          <div className="group relative w-full  aspect-5/4 rounded-3xl ">
             <Image
-              src="/about/graduate2.png"
+              src="/mockup6.png"
               alt="Diamond"
               fill
               priority
-              className="object-cover transform transition-transform duration-700 ease-out group-hover:scale-105"
-              sizes="(max-width: 768px) 100vw, 50vw"
+              className="object-contain transform transition-transform duration-700 ease-out group-hover:scale-105"
+              sizes="(max-width: 1024px) 100vw, 50vw"
             />
             {/* Soft interior shadow overlay for depth */}
-            <div className="absolute inset-0 ring-1 ring-inset ring-black/5 rounded-3xl pointer-events-none" />
+            {/* <div className="absolute inset-0  rounded-3xl pointer-events-none" /> */}
           </div>
         </div>
       </div>

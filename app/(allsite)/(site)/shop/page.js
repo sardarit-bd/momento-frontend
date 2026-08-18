@@ -12,25 +12,42 @@ const About = () => {
   const { type, settype } = useFilterStore();
 
   const fetchProducts = async () => {
-    const res = await MakeGet(`api/shop`);
+    try {
+      const res = await MakeGet("api/shop");
 
-    if (res.success) {
-      setProducts(res?.data);
+      if (!res?.success) {
+        console.error("Failed to fetch products");
+        setLoading(false);
+        return;
+      }
+
+      const productOrder = {
+        "Momento Photo Deck": 1,
+        "Momento Trading Cards": 2,
+        "Momento Portrait Deck": 3,
+      };
+
+      const productData = Array.isArray(res?.data?.data) ? res.data.data : [];
+
+      const sortedProducts = productData.sort(
+        (a, b) => (productOrder[a.name] ?? 999) - (productOrder[b.name] ?? 999),
+      );
+
+      setProducts(sortedProducts);
+    } catch (error) {
+      console.error("Failed to fetch products:", error);
+    } finally {
       setLoading(false);
-    } else {
-      setLoading(false);
-      console.error("Failed to fetch products");
     }
   };
-
   useEffect(() => {
     fetchProducts();
   }, []);
 
-  const filteredProducts = products?.data?.filter((p) => {
+  const filteredProducts = products?.filter((p) => {
     if (type === "all") return true;
     if (type === "photo") return p?.type === "photo";
-    return p.type === type;
+    return p?.type === type;
   });
 
   console.log(filteredProducts, "filteredProducts");
@@ -65,7 +82,7 @@ const About = () => {
           {/* <option value={"simple"}>Simple Cards</option> */}
         </select>
       </div>
-      <div className="py-14 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 px-8 container mx-auto">
+      <div className="py-14 flex flex-wrap gap-6 px-8 container mx-auto">
         {filteredProducts.map((product) => (
           <ShopCard key={product.id} product={product} />
         ))}

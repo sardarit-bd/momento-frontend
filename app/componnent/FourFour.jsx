@@ -3,16 +3,16 @@ import Link from "next/link";
 
 export default function Four() {
   return (
-    <section className="relative py-20 md:py-32 px-6 bg-gradient-to-b from-slate-50 to-slate-100/80 overflow-hidden">
+    <section className="relative py-20 md:py-32 px-6 bg-linear-to-b from-slate-50 to-slate-100/80 overflow-hidden">
       {/* Eye-Soothing Ambient Gray Mesh */}
-      <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-slate-200/90 rounded-full blur-[120px] -translate-y-1/4 translate-x-1/4 pointer-events-none" />
-      <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-gray-200/40 rounded-full blur-[100px] translate-y-1/4 -translate-x-1/4 pointer-events-none" />
+      <div className="absolute top-0 right-0 w-150 h-150 bg-slate-200/90 rounded-full blur-[120px] -translate-y-1/4 translate-x-1/4 pointer-events-none" />
+      <div className="absolute bottom-0 left-0 w-125 h-125 bg-gray-200/40 rounded-full blur-[100px] translate-y-1/4 -translate-x-1/4 pointer-events-none" />
 
       <div className="relative z-10 container mx-auto">
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
           {/* Image Side (Left on Desktop, Bottom on Mobile) */}
           <div className="order-2 lg:order-1 w-full flex justify-center lg:justify-start">
-            <div className="group relative w-full max-w-md lg:max-w-full aspect-[4/3] rounded-3xl overflow-hidden shadow-2xl shadow-slate-300/50 border border-white/80 bg-white">
+            <div className="group relative w-full max-w-md lg:max-w-full aspect-[4/3] rounded-3xl ">
               <Image
                 src="https://res.cloudinary.com/dg83pvgls/image/upload/v1771908529/03_tdwl52.png"
                 alt="Momento Collectible Cards"

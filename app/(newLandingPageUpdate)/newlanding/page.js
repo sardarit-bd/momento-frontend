@@ -20,7 +20,6 @@ export default function MomentoLanding() {
     fontLink.rel = "stylesheet";
     document.head.appendChild(fontLink);
 
-    // Inject Tailwind CDN
     if (!document.getElementById("tailwind-cdn")) {
       const tw = document.createElement("script");
       tw.id = "tailwind-cdn";
@@ -72,8 +71,6 @@ export default function MomentoLanding() {
       };
       document.head.appendChild(tw);
     }
-
-    // Inject CSS
     const style = document.createElement("style");
     style.id = "momento-styles";
     style.textContent = `
@@ -113,8 +110,6 @@ export default function MomentoLanding() {
       .hover-lift:hover { transform: translateY(-4px); }
     `;
     document.head.appendChild(style);
-
-    // Scroll reveal observer
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((el) => {
@@ -132,12 +127,10 @@ export default function MomentoLanding() {
     };
   }, []);
 
-  // Sticky bar visibility — tied to hero leaving the viewport
   useEffect(() => {
     if (!heroRef.current) return;
     const observer = new IntersectionObserver(
       ([entry]) => {
-        // show bar once hero is mostly scrolled past
         setShowStickyBar(!entry.isIntersecting);
       },
       { threshold: 0, rootMargin: "-80px 0px 0px 0px" },
@@ -151,7 +144,7 @@ export default function MomentoLanding() {
       image: "/mockup2.png",
       alt: "Friends laughing over a custom card deck during game night",
       title: "Fun & Connection",
-      tags: ["🃏 Game Nights", "💑 Couples", "👨‍👩‍👧 Family"],
+      tags: ["Game Nights", "Couples", "Family"],
       desc: "Bring people together around personalized cards built from inside jokes, memories, and moments that actually mean something.",
       delay: "0s",
     },
@@ -159,7 +152,7 @@ export default function MomentoLanding() {
       image: "/mockup2.png",
       alt: "Friends laughing over a custom card deck during game night",
       title: "Love & Laughter",
-      tags: ["🃏 Game Nights", "💑 Couples", "👨‍👩‍👧 Family"],
+      tags: ["Game Nights", "Couples", "Family"],
       desc: "Share meaningful moments through personalized playing cards created from your favorite photos and memories.",
       delay: "0s",
     },
@@ -167,7 +160,7 @@ export default function MomentoLanding() {
       image: "/mockup8.png",
       alt: "A wrapped gift beside a personalized deck of cards",
       title: "Milestones & Gifts",
-      tags: ["🎓 Graduation", "🎂 Birthdays", "🎄 Holidays"],
+      tags: ["Graduation", "Birthdays", "Holidays"],
       desc: "Turn memories into something people can actually hold onto.",
       delay: "0.15s",
     },
@@ -176,8 +169,6 @@ export default function MomentoLanding() {
   return (
     <div className="momento-root">
       <div className="grain" />
-
-      {/* ═══ STICKY SHOP NOW BAR ═══ */}
       <div
         style={{
           position: "fixed",
@@ -223,13 +214,10 @@ export default function MomentoLanding() {
           </Link>
         </div>
       </div>
-
-      {/* ═══ SECTION 1 — HERO ═══ */}
       <section
         ref={heroRef}
         className="relative min-h-[90vh] flex items-center justify-center overflow-hidden py-16 lg:py-24 bg-[#FAF9F6]"
       >
-        {/* 1. Background Image */}
         <div className="absolute inset-0 z-0">
           <Image
             src={TradingCardImage6}
@@ -241,8 +229,6 @@ export default function MomentoLanding() {
           <div className="absolute inset-0 bg-linear-to-r from-white/50 via-transparent to-white/50 pointer-events-none" />
           <div className="absolute inset-0 bg-white/10 pointer-events-none" />
         </div>
-
-        {/* 2. Main Content Container */}
         <div className="relative z-10 w-full max-w-6xl mx-auto px-4 sm:px-6 flex justify-center">
           <div
             className="
@@ -262,7 +248,6 @@ export default function MomentoLanding() {
               background: "rgba(253, 253, 253, 0.8)",
             }}
           >
-            {/* Badge */}
             <div
               className="
                                 inline-flex items-center gap-2
@@ -280,8 +265,6 @@ export default function MomentoLanding() {
             >
               <span>✦</span> Premium Personalized Cards
             </div>
-
-            {/* Headline */}
             <h1
               className="
                                 font-serif
@@ -306,11 +289,9 @@ export default function MomentoLanding() {
                 }}
               >
                 Favorite People
-              </span>{" "}
+              </span>
               Into Playable Cards
             </h1>
-
-            {/* Description */}
             <p
               className="
                                 mt-5
@@ -326,8 +307,6 @@ export default function MomentoLanding() {
               Create premium personalized cards for game nights, milestones,
               gifts, and unforgettable memories — all in just a few minutes.
             </p>
-
-            {/* Trust Indicators */}
             <div
               className="
                                 mt-6
@@ -355,8 +334,6 @@ export default function MomentoLanding() {
                 Quality
               </span>
             </div>
-
-            {/* CTA Button */}
             <div className="mt-8 mb-10 flex flex-wrap items-center justify-center gap-4">
               <Link
                 href="/shop"
@@ -407,8 +384,6 @@ export default function MomentoLanding() {
                 Create a Momento
               </Link>
             </div>
-
-            {/* Bottom Features */}
             <div
               className="
                                 w-full
@@ -449,8 +424,6 @@ export default function MomentoLanding() {
           </div>
         </div>
       </section>
-
-      {/* ═══ MARQUEE STRIP ═══ */}
       <div
         style={{
           padding: "1rem 0",
@@ -494,9 +467,6 @@ export default function MomentoLanding() {
           </div>
         </div>
       </div>
-
-      {/* ═══ SECTION 2 — TWO WAYS ═══ */}
-
       <section
         className="texture-bg"
         style={{ padding: "7rem 1.5rem", backgroundColor: "#F5EFE0" }}
@@ -530,7 +500,6 @@ export default function MomentoLanding() {
             </p>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            {/* Portrait Deck */}
             <div
               className="scroll-reveal card-ui hover-lift"
               style={{
@@ -539,7 +508,6 @@ export default function MomentoLanding() {
                 cursor: "pointer",
               }}
             >
-              {/* Image zone */}
               <div
                 style={{
                   position: "relative",
@@ -554,7 +522,6 @@ export default function MomentoLanding() {
                   fill
                   style={{ objectFit: "cover" }}
                 />
-                {/* blend image into card background */}
                 <div
                   style={{
                     position: "absolute",
@@ -564,8 +531,6 @@ export default function MomentoLanding() {
                   }}
                 />
               </div>
-
-              {/* Content zone */}
               <div
                 style={{
                   padding: "2rem 2.5rem 2.5rem",
@@ -661,8 +626,6 @@ export default function MomentoLanding() {
                 </div>
               </div>
             </div>
-
-            {/* Photo Portrait Deck */}
             <div
               className="scroll-reveal card-ui hover-lift"
               style={{
@@ -671,7 +634,6 @@ export default function MomentoLanding() {
                 cursor: "pointer",
               }}
             >
-              {/* Image zone */}
               <div
                 style={{
                   position: "relative",
@@ -686,7 +648,6 @@ export default function MomentoLanding() {
                   fill
                   style={{ objectFit: "cover" }}
                 />
-                {/* blend image into card background */}
                 <div
                   style={{
                     position: "absolute",
@@ -696,8 +657,6 @@ export default function MomentoLanding() {
                   }}
                 />
               </div>
-
-              {/* Content zone */}
               <div
                 style={{
                   padding: "2rem 2.5rem 2.5rem",
@@ -739,7 +698,7 @@ export default function MomentoLanding() {
                       color: "#1A1209",
                     }}
                   >
-                    Momento Photo Portrait Deck
+                    Momento Photo Deck
                   </h3>
                   <p
                     style={{
@@ -793,8 +752,6 @@ export default function MomentoLanding() {
                 </div>
               </div>
             </div>
-
-            {/* Momento Cards */}
             <div
               className="scroll-reveal ink-section hover-lift"
               style={{
@@ -804,7 +761,6 @@ export default function MomentoLanding() {
                 transitionDelay: "0.15s",
               }}
             >
-              {/* Image zone */}
               <div
                 style={{
                   position: "relative",
@@ -819,7 +775,6 @@ export default function MomentoLanding() {
                   fill
                   style={{ objectFit: "cover" }}
                 />
-                {/* blend image into dark card background — note different gradient color */}
                 <div
                   style={{
                     position: "absolute",
@@ -829,8 +784,6 @@ export default function MomentoLanding() {
                   }}
                 />
               </div>
-
-              {/* Content zone */}
               <div
                 style={{
                   padding: "2rem 2.5rem 2.5rem",
@@ -927,8 +880,6 @@ export default function MomentoLanding() {
           </div>
         </div>
       </section>
-
-      {/* ═══ SECTION 3 — HOW IT WORKS ═══ */}
       <section
         id="how"
         className="ink-section"
@@ -1107,8 +1058,6 @@ export default function MomentoLanding() {
           </div>
         </div>
       </section>
-
-      {/* ═══ SECTION 4 — PRICING ═══ */}
       <section
         id="products"
         className="texture-bg"
@@ -1134,7 +1083,6 @@ export default function MomentoLanding() {
             </h2>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
-            {/* Portrait Deck */}
             <div
               className="scroll-reveal price-card"
               style={{
@@ -1198,7 +1146,6 @@ export default function MomentoLanding() {
                   </div>
                 </div>
               </div>
-              {/* Card spread visual */}
               <div
                 style={{
                   position: "relative",
@@ -1229,12 +1176,7 @@ export default function MomentoLanding() {
                   marginBottom: "2rem",
                 }}
               >
-                {[
-                  "🎮 Game Nights",
-                  "👫 Couples",
-                  "👨‍👩‍👧 Family",
-                  "🎉 Friends",
-                ].map((tag) => (
+                {["Game Nights", "Couples", "Family", "Friends"].map((tag) => (
                   <span
                     key={tag}
                     style={{
@@ -1264,9 +1206,6 @@ export default function MomentoLanding() {
                 Create Your Deck →
               </button>
             </div>
-
-            {/* Photo portrait */}
-
             <div
               className="scroll-reveal price-card"
               style={{
@@ -1330,7 +1269,6 @@ export default function MomentoLanding() {
                   </div>
                 </div>
               </div>
-              {/* Card spread visual */}
               <div
                 style={{
                   position: "relative",
@@ -1361,12 +1299,7 @@ export default function MomentoLanding() {
                   marginBottom: "2rem",
                 }}
               >
-                {[
-                  "🎮 Game Nights",
-                  "👫 Couples",
-                  "👨‍👩‍👧 Family",
-                  "🎉 Friends",
-                ].map((tag) => (
+                {["Game Nights", "Couples", "Family", "Friends"].map((tag) => (
                   <span
                     key={tag}
                     style={{
@@ -1396,8 +1329,6 @@ export default function MomentoLanding() {
                 Create Your Deck →
               </button>
             </div>
-
-            {/* Momento Cards */}
             <div
               className="scroll-reveal price-card"
               style={{
@@ -1469,7 +1400,6 @@ export default function MomentoLanding() {
                   </div>
                 </div>
               </div>
-              {/* Card spread visual */}
               <div
                 style={{
                   position: "relative",
@@ -1480,12 +1410,6 @@ export default function MomentoLanding() {
                   justifyContent: "center",
                 }}
               >
-                {/* {[{ r: -15, tx: -50, ty: 5, o: 1 }, { r: -7, tx: -20, ty: 2, o: 1 }, { r: 0, tx: 0, ty: 0, o: 0 }, { r: 7, tx: 20, ty: 2, o: 1 }, { r: 15, tx: 50, ty: 5, o: 1 }].map((c, i) => (
-                                    <div key={i} style={{ position: "absolute", width: 112, height: 160, borderRadius: 12, background: i === 2 ? "linear-gradient(145deg,#fff9ee,#f0e0b8)" : "linear-gradient(145deg,#2d2010,#3d2e12)", border: i === 2 ? "1.5px solid rgba(201,168,76,0.5)" : "1px solid rgba(201,168,76,0.3)", transform: `rotate(${c.r}deg) translate(${c.tx}px,${c.ty}px)`, zIndex: i === 2 ? 3 : i, padding: i === 2 ? 12 : 0, display: "flex", flexDirection: "column" }}>
-                                        {i === 2 && <><div style={{ width: "100%", flex: 1, borderRadius: 8, marginBottom: 8, background: "linear-gradient(135deg,#d4a843,#8b6b3d)" }} /><div style={{ height: 6, borderRadius: 9999, background: "rgba(201,168,76,0.4)", marginBottom: 6, width: "75%" }} /><div style={{ height: 6, borderRadius: 9999, background: "rgba(201,168,76,0.2)", width: "50%" }} /></>}
-                                    </div>
-                                ))} */}
-
                 <Image src={TradingCardImage} alt="momento-deck-card" fill />
               </div>
               <p
@@ -1505,12 +1429,7 @@ export default function MomentoLanding() {
                   marginBottom: "2rem",
                 }}
               >
-                {[
-                  "🎮 Game Nights",
-                  "👫 Couples",
-                  "👨‍👩‍👧 Family",
-                  "🎉 Friends",
-                ].map((tag) => (
+                {["Game Nights", "Couples", "Family", "Friends"].map((tag) => (
                   <span
                     key={tag}
                     style={{
@@ -1543,8 +1462,6 @@ export default function MomentoLanding() {
           </div>
         </div>
       </section>
-
-      {/* ═══ SECTION 5 — USE CASES ═══ */}
 
       <section className="ink-section" style={{ padding: "7rem 1.5rem" }}>
         <div style={{ maxWidth: "72rem", margin: "0 auto" }}>
@@ -1669,14 +1586,11 @@ export default function MomentoLanding() {
           </div>
         </div>
       </section>
-
-      {/* ═══ SECTION 6 & 7 — VALUE + QUALITY ═══ */}
       <section
         className="texture-bg"
         style={{ padding: "7rem 1.5rem", backgroundColor: "#F5EFE0" }}
       >
         <div style={{ maxWidth: "72rem", margin: "0 auto" }}>
-          {/* Value */}
           <div
             className="scroll-reveal"
             style={{ textAlign: "center", marginBottom: "5rem" }}
@@ -1745,7 +1659,6 @@ export default function MomentoLanding() {
               ))}
             </div>
           </div>
-          {/* Quality */}
           <div
             className="scroll-reveal ink-section"
             style={{
@@ -1852,7 +1765,6 @@ export default function MomentoLanding() {
                   ))}
                 </div>
               </div>
-              {/* Card stack mockup */}
               <div
                 style={{
                   display: "flex",
@@ -1869,7 +1781,6 @@ export default function MomentoLanding() {
         </div>
       </section>
 
-      {/* ═══ SECTION 8 — TRUST & URGENCY ═══ */}
       <section className="ink-section" style={{ padding: "4rem 1.5rem" }}>
         <div style={{ maxWidth: "56rem", margin: "0 auto" }}>
           <div
@@ -1939,7 +1850,6 @@ export default function MomentoLanding() {
         </div>
       </section>
 
-      {/* ═══ SECTION 9 — FINAL CTA ═══ */}
       <section
         className="texture-bg"
         style={{
@@ -2055,7 +1965,6 @@ export default function MomentoLanding() {
         </div>
       </section>
 
-      {/* FOOTER */}
       <footer
         className="ink-section"
         style={{ padding: "2.5rem 1.5rem", textAlign: "center" }}

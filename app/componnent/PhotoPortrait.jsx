@@ -4,7 +4,7 @@ import useFilterStore from "@/store/useFilterStore";
 import Image from "next/image";
 import Link from "next/link";
 import { FaRegSquareCheck } from "react-icons/fa6";
-import cardsTradition from "../../public/mockup7.png";
+import cardsTradition from "../../public/mockup9.webp";
 
 export default function PhotoPortrait() {
   const { settype } = useFilterStore();
@@ -40,8 +40,7 @@ export default function PhotoPortrait() {
           <div className="order-last flex flex-col space-y-8">
             <div className="space-y-4 text-center lg:text-left">
               <h2 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-gray-900 tracking-tight">
-                Momento{" "}
-                <span className="text-[#3CA9FF]">Photo Portrait Deck</span>
+                Momento <span className="text-[#3CA9FF]">Photo Deck</span>
               </h2>
               <p className="text-lg sm:text-xl text-gray-600 leading-relaxed max-w-2xl mx-auto lg:mx-0">
                 Turn life's most meaningful people, memories, and milestones

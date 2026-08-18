@@ -47,9 +47,7 @@ const SingleProduct = () => {
     async (slug) => {
       try {
         const response = await MakeGet(`api/shop/${slug}`);
-
         setdata(response?.data);
-
         setfetchloading(false);
       } catch (error) {
         console.error("Error fetching All Products:", error);
@@ -174,39 +172,81 @@ const SingleProduct = () => {
               className="w-auto h-auto bg-gray-200 border border-gray-200 rounded-md"
             />
           </div>
-
-          <div className="space-y-4 col-span-3">
-            <p>
-              <strong>Name:</strong> {data?.name}
-            </p>
-            <p>
-              <strong>Type:</strong>{" "}
-              {data?.type === "trading" && "Trading Card"}{" "}
-              {data?.type === "customizable" && "Customizable Card"}{" "}
-              {data?.type === "photo" && "Photo Portrait"}{" "}
-              {data?.type === "simple" && "Simple Card"}
-            </p>
-            <p>
-              <strong>Price:</strong> ${data?.price}
-            </p>
-            <p>
-              <strong>Offer Price:</strong> ${data?.offer_price}
-            </p>
-            <p>
-              <strong>Status:</strong> {data?.status ? "Published" : "Draft"}
-            </p>
-            <p>
-              <strong>Category:</strong> {data?.category?.name}
-            </p>
-            <p className="line-clamp-2">
-              <strong>Short Description:</strong> {data?.short_description}
-            </p>
-
-            <div className="space-y-2">
-              <p className="text-sm text-gray-600">
-                Create yours in under 2 minutes
+          <div className="col-span-3 space-y-6">
+            <div className="space-y-1">
+              <span className="text-xs font-semibold tracking-wide uppercase text-sky-600">
+                {data?.type === "trading" && "Trading Card"}
+                {data?.type === "customizable" && "Customizable Card"}
+                {data?.type === "photo" && "Photo Portrait"}
+                {data?.type === "simple" && "Simple Card"}
+              </span>
+              <h2 className="text-3xl font-bold text-gray-900 leading-tight">
+                {data?.name}
+              </h2>
+              <p className="text-gray-500 leading-relaxed line-clamp-2 pt-1">
+                {data?.short_description}
               </p>
+            </div>
 
+            <div className="flex items-center justify-between rounded-lg border border-gray-200 px-4 py-3 bg-gray-50">
+              <div className="flex items-baseline gap-2">
+                {data?.offer_price ? (
+                  <>
+                    <span className="text-3xl font-extrabold text-gray-900">
+                      ${data?.offer_price}
+                    </span>
+                    <span className="text-sm text-gray-400 line-through">
+                      ${data?.price}
+                    </span>
+                  </>
+                ) : (
+                  <span className="text-3xl font-extrabold text-gray-900">
+                    ${data?.price}
+                  </span>
+                )}
+              </div>
+              <span
+                className={`text-xs font-medium px-2.5 py-1 rounded-full ${
+                  data?.status
+                    ? "bg-green-100 text-green-700"
+                    : "bg-amber-100 text-amber-700"
+                }`}
+              >
+                {data?.status ? "Published" : "Draft"}
+              </span>
+            </div>
+
+            <div className="flex items-center gap-2 text-sm text-gray-500">
+              <span className="w-1.5 h-1.5 rounded-full bg-sky-400" />
+              {data?.category?.name}
+            </div>
+
+            <ul className="space-y-1.5">
+              {(data?.type === "trading"
+                ? [
+                    "Perfect for gifting",
+                    "Fully customizable",
+                    "Made to be shared",
+                  ]
+                : data?.type === "customizable" || data?.type === "photo"
+                  ? [
+                      "Preview before you order",
+                      "Premium quality",
+                      "Made on demand",
+                    ]
+                  : ["Simple"]
+              ).map((feature, i) => (
+                <li
+                  key={i}
+                  className="flex items-center gap-2 text-sm text-gray-600"
+                >
+                  <BsStars className="text-sky-500 text-xs shrink-0" />
+                  {feature}
+                </li>
+              ))}
+            </ul>
+
+            <div className="space-y-2 pt-1">
               {data?.type === "photo" ? (
                 <button
                   onClick={(e) =>
@@ -216,7 +256,7 @@ const SingleProduct = () => {
                     )
                   }
                   disabled={btnLoading}
-                  className="flex-1 inline-flex justify-center items-center gap-2 rounded-md bg-sky-500 text-white py-2.5 px-4 text-md font-semibold shadow-lg hover:brightness-105 transition cursor-pointer"
+                  className="w-full inline-flex justify-center items-center gap-2 rounded-lg bg-linear-to-r from-sky-500 to-sky-600 text-white py-3 px-4 text-md font-semibold shadow-md hover:shadow-lg hover:brightness-105 transition cursor-pointer"
                 >
                   {btnLoading ? (
                     <SpinLoader />
@@ -235,7 +275,7 @@ const SingleProduct = () => {
                     }
                   }}
                   disabled={btnLoading}
-                  className="flex-1 rounded-md bg-sky-500 text-white py-2.5 px-4 text-md font-semibold shadow-lg hover:brightness-105 transition cursor-pointer flex items-center justify-center gap-2"
+                  className="w-full inline-flex justify-center items-center gap-2 rounded-lg bg-linear-to-r from-sky-500 to-sky-600 text-white py-3 px-4 text-md font-semibold shadow-md hover:shadow-lg hover:brightness-105 transition cursor-pointer"
                 >
                   {btnLoading ? (
                     <SpinLoader />
@@ -252,12 +292,8 @@ const SingleProduct = () => {
                       : "Add to Cart"}
                 </button>
               )}
-              <p className="text-sm text-gray-600">
-                {data?.type === "trading"
-                  ? "Perfect for gifting • Fully customizable • Made to be shared"
-                  : data?.type === "customizable" || data?.type === "photo"
-                    ? "Preview before you order • Premium quality • Made on demand"
-                    : "Simple"}
+              <p className="text-xs text-gray-400 text-center">
+                Create yours in under 2 minutes
               </p>
             </div>
           </div>

@@ -6,7 +6,7 @@ import Link from "next/link";
 
 const products = [
   {
-    img: "/mockup4.png",
+    img: "/mockup9.webp",
     title: "Momento Portrait Deck",
     description: "A full playing card deck — built from your people.",
     features: [
@@ -17,7 +17,7 @@ const products = [
   },
   {
     img: "/mockup4.png",
-    title: "Momento Photo Portrait Deck",
+    title: "Momento Photo Deck",
     description: "A full playing card deck — made uniquely yours.",
     features: [
       "Fully customizable",
@@ -57,8 +57,7 @@ export default function Products() {
               key={idx}
               className="group flex flex-col bg-white rounded-3xl p-6 lg:p-8 border border-slate-200 shadow-sm hover:shadow-2xl hover:border-sky-200 transition-all duration-500 hover:-translate-y-1"
             >
-              {/* Image Container with precise aspect ratio and zoom effect */}
-              <div className="relative w-full aspect-[4/3] rounded-2xl overflow-hidden mb-8 bg-slate-100">
+              <div className="relative w-full aspect-4/3 rounded-2xl overflow-hidden mb-8 bg-slate-100">
                 <Image
                   src={product.img}
                   alt={product.title}
@@ -69,7 +68,7 @@ export default function Products() {
                 />
               </div>
 
-              <div className="flex flex-col flex-grow">
+              <div className="flex flex-col grow">
                 <div className="mb-4">
                   {product.badge && (
                     <span className="inline-block px-3 py-1 mb-4 text-xs font-bold tracking-wider text-sky-700 uppercase bg-sky-100 rounded-full">
@@ -87,7 +86,7 @@ export default function Products() {
                 <ul className="space-y-4 mb-8 mt-auto pt-6">
                   {product.features.map((feature, i) => (
                     <li key={i} className="flex items-start gap-3">
-                      <div className="flex-shrink-0 w-6 h-6 rounded-full bg-sky-50 flex items-center justify-center mt-0.5">
+                      <div className="shrink-0 w-6 h-6 rounded-full bg-sky-50 flex items-center justify-center mt-0.5">
                         <Check
                           className="w-4 h-4 text-sky-500"
                           strokeWidth={3}

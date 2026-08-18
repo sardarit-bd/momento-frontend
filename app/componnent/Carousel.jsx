@@ -6,7 +6,7 @@ import hero3 from "../../public/ele.png";
 import hero2 from "../../public/hero2.png";
 import hero4 from "../../public/mockup5.png";
 import hero1 from "../../public/mockup4.png";
-import hero5 from "../../public/tredingTwo.png";
+import hero5 from "../../public/mockup3.png";
 
 export default function Carousel() {
   const [slidesToShow, setSlidesToShow] = useState(3);
@@ -55,8 +55,8 @@ export default function Carousel() {
     },
     {
       id: 5,
-      img: hero1,
-      title: "Family Game Night Deck",
+      img: hero5,
+      title: "Family Best Trip Ever Deck",
       desc: "\u201cCustom cards for every family member\u2014turned our gatherings into a tradition!\u201d",
     },
   ];

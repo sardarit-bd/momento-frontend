@@ -46,7 +46,7 @@ export default function DesignedForPlay() {
                     key={idx}
                     className="flex items-center gap-4 text-lg text-slate-700"
                   >
-                    <div className="flex-shrink-0 w-6 h-6 flex items-center justify-center rounded-full bg-sky-100 text-sky-500">
+                    <div className="shrink-0 w-6 h-6 flex items-center justify-center rounded-full bg-sky-100 text-sky-500">
                       <CheckCircle2 className="w-5 h-5" strokeWidth={2.5} />
                     </div>
                     <span>{text}</span>
@@ -71,17 +71,17 @@ export default function DesignedForPlay() {
 
           {/* Right side (Image) */}
           <div className="order-1 lg:order-2 w-full flex justify-center lg:justify-end">
-            <div className="group relative w-full max-w-md lg:max-w-full aspect-[4/5] lg:aspect-square rounded-3xl overflow-hidden shadow-2xl shadow-slate-200/50 border border-white/60 bg-white">
+            <div className="group relative w-full max-w-md lg:max-w-full aspect-4/5 lg:aspect-square rounded-3xl ">
               <Image
                 // src="https://res.cloudinary.com/dg83pvgls/image/upload/v1771908530/05_jujjpj.png"
-                src="/about/graduate3.png"
+                src="/mockup9.webp"
                 alt="Stacked Momento Cards"
                 fill
                 sizes="(max-width: 1024px) 100vw, 50vw"
                 className="object-cover transform transition-transform duration-700 ease-out group-hover:scale-105"
               />
               {/* Inner shadow for depth */}
-              <div className="absolute inset-0 ring-1 ring-inset ring-black/5 rounded-3xl pointer-events-none" />
+              <div className="absolute inset-0  rounded-3xl pointer-events-none" />
             </div>
           </div>
         </div>

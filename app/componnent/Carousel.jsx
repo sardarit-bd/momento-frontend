@@ -2,8 +2,6 @@
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import Slider from "react-slick";
-import hero3 from "../../public/ele.png";
-import hero2 from "../../public/hero2.png";
 import hero4 from "../../public/mockup5.png";
 import hero1 from "../../public/mockup4.png";
 import hero5 from "../../public/mockup3.png";
@@ -49,21 +47,21 @@ export default function Carousel() {
     // { id: 3, img: hero3, title: "Family Game Night Deck", desc: "\u201cCustom cards for every family member\u2014turned our gatherings into a tradition!\u201d" },
     {
       id: 4,
-      img: hero1,
+      img: hero5,
       title: "Family Game Night Deck",
       desc: "\u201cCustom cards for every family member\u2014turned our gatherings into a tradition!\u201d",
     },
     {
       id: 5,
-      img: hero5,
-      title: "Family Best Trip Ever Deck",
+      img: hero1,
+      title: "Best Trip Ever Deck",
       desc: "\u201cCustom cards for every family member\u2014turned our gatherings into a tradition!\u201d",
     },
   ];
 
   return (
-    <section className="bg-gradient-to-b from-[#EBF6FE] to-[#f2f9ff29]">
-      <div className="pt-[80px] sm:pt-[120px] pb-[60px] sm:pb-[100px] container mx-auto">
+    <section className="bg-linear-to-b from-[#EBF6FE] to-[#f2f9ff29]">
+      <div className="pt-20 sm:pt-30 pb-15 sm:pb-25 container mx-auto">
         <div className="text-center text-[#333333] mb-12 px-4">
           <h1 className="text-3xl sm:text-5xl uppercase font-bold">
             Bringing Ideas to <span className="text-[#3CA9FF]">Life</span>

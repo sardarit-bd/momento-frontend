@@ -22,10 +22,8 @@ export default function ShopCard({ product }) {
   const targetLink = isTradingCard
     ? `/shop/${product?.slug}/package`
     : `/shop/${product?.slug}`;
-  console.log(product, "product");
   return (
     <article className="w-full lg:w-[32%] bg-white rounded-2xl shadow-lg overflow-hidden transform transition">
-      {/* Product Image */}
       <div className="relative h-90 w-full overflow-hidden group">
         <div className="bg-[#c9e7fd]">
           <Image
@@ -38,7 +36,7 @@ export default function ShopCard({ product }) {
             className="h-full w-full rounded-xl object-contain transform transition-transform duration-500 ease-in-out group-hover:scale-110"
           />
         </div>
-        {/* Other badges */}
+
         <div className="absolute top-3 left-3 flex gap-2">
           {(() => {
             const displayBadge =
@@ -59,7 +57,7 @@ export default function ShopCard({ product }) {
           })()}
         </div>
       </div>
-      {/* Product Info */}
+
       <div className="p-4 flex flex-col gap-3">
         <div>
           <div>
@@ -83,13 +81,12 @@ export default function ShopCard({ product }) {
             </div>
           </div>
         </div>
-        {/* Action Buttons */}
         <div className="flex items-center justify-between">
           <button
             onClick={(e) => {
               gotoLink(e, targetLink);
             }}
-            className="flex-1 inline-flex justify-center items-center gap-2 rounded-md bg-sky-500 text-white py-2 px-4 text-md font-semibold shadow-lg hover:brightness-105 transition cursor-pointer flex items-center justify-center gap-2"
+            className="flex-1 rounded-md bg-sky-500 text-white py-2 px-4 text-md font-semibold shadow-lg hover:brightness-105 transition cursor-pointer flex items-center justify-center gap-2"
           >
             {btnLoading && <SpinLoader />}
             Explore Card

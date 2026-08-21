@@ -167,8 +167,8 @@ const SingleProduct = () => {
             <Image
               src={data?.image}
               alt="Thumbnail"
-              width={250}
-              height={300}
+              width={1000}
+              height={900}
               className="w-auto h-auto bg-gray-200 border border-gray-200 rounded-md"
             />
           </div>

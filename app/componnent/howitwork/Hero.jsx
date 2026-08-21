@@ -17,7 +17,7 @@ export default function Hero() {
       name: "Luna",
       trait: "Night Owl",
       color: "from-purple-400 to-pink-500",
-      image: "hero7.png",
+      image: "photoDeckQ.png",
     },
     {
       name: "Mike",

@@ -187,23 +187,6 @@ export default function PackageSelectionPage() {
                 Premium Print
               </div>
             </div>
-
-            {/* Thumbnails */}
-            {/* <div className="grid grid-cols-4 gap-2.5 sm:gap-3 mt-3">
-              {THUMBNAILS.map((i) => (
-                <button
-                  key={i}
-                  onClick={() => setActiveThumb(i)}
-                  className={`aspect-square rounded-xl border bg-white flex items-center justify-center transition-all ${
-                    activeThumb === i
-                      ? "border-[#3CA9FF] ring-1 ring-[#3CA9FF]"
-                      : "border-slate-200 hover:border-slate-300 hover:-translate-y-0.5"
-                  }`}
-                >
-                  <FaImage className="text-slate-300 text-base sm:text-lg" />
-                </button>
-              ))}
-            </div> */}
           </div>
 
           {/* ---------------- Right: product info ---------------- */}

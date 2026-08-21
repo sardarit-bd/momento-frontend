@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 
 import hero3 from "../../public/hero8.png";
-import hero4 from "../../public/hero7.png";
+import hero4 from "../../public/photoDeckQ.png";
 import hero5 from "../../public/hero6.png";
 const cards = [hero3, hero5, hero4];
 

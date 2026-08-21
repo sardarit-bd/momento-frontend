@@ -72,7 +72,7 @@ export default function Tradition() {
               <Image
                 src={deckGame}
                 alt="Traditional Playing Cards"
-                className="relative w-full h-auto rounded-2xl shadow-2xl transform transition-transform duration-700 hover:scale-[1.02]"
+                className="relative w-full h-auto rounded-2xl  transform transition-transform duration-700 hover:scale-[1.02]"
                 placeholder="blur"
               />
             </div>

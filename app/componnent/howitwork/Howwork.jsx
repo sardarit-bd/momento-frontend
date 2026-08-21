@@ -3,9 +3,9 @@ import Link from "next/link";
 
 export default function Howwork() {
   const stepImages = [
-    "https://res.cloudinary.com/dg83pvgls/image/upload/v1770007236/one_rzpshu.png",
+    "/S1.jpg",
 
-    "https://res.cloudinary.com/dg83pvgls/image/upload/v1770290393/all_fota_ko7a57.png",
+    "/S2.jpg",
 
     "https://res.cloudinary.com/dg83pvgls/image/upload/v1770289864/image_26_rt1gtr.png",
 
@@ -37,7 +37,7 @@ export default function Howwork() {
               style={{ animation: "fadeInLeft 0.8s ease-out" }}
             >
               <div className="inline-flex items-center gap-3">
-                <div className="w-12 h-12 bg-gradient-to-br from-amber-400 to-orange-500 rounded-xl flex items-center justify-center shadow-lg">
+                <div className="w-12 h-12 bg-linear-to-br from-amber-400 to-orange-500 rounded-xl flex items-center justify-center shadow-lg">
                   <span className="text-white font-black text-xl">1</span>
                 </div>
                 <span className="text-sm font-bold text-amber-600 uppercase tracking-wider">
@@ -53,7 +53,7 @@ export default function Howwork() {
               </p>
               <ul className="space-y-3">
                 <li className="flex items-start gap-3">
-                  <div className="w-6 h-6 bg-green-400 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                  <div className="w-6 h-6 bg-green-400 rounded-full flex items-center justify-center shrink-0 mt-1">
                     <span className="text-white text-xs font-bold">✓</span>
                   </div>
                   <div>
@@ -67,7 +67,7 @@ export default function Howwork() {
                   </div>
                 </li>
                 <li className="flex items-start gap-3">
-                  <div className="w-6 h-6 bg-blue-400 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                  <div className="w-6 h-6 bg-blue-400 rounded-full flex items-center justify-center shrink-0 mt-1">
                     <span className="text-white text-xs font-bold">✓</span>
                   </div>
                   <div>
@@ -81,7 +81,7 @@ export default function Howwork() {
                   </div>
                 </li>
                 <li className="flex items-start gap-3">
-                  <div className="w-6 h-6 bg-[#FF8700] rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                  <div className="w-6 h-6 bg-[#FF8700] rounded-full flex items-center justify-center shrink-0 mt-1">
                     <span className="text-white text-xs font-bold">✓</span>
                   </div>
                   <div>
@@ -97,7 +97,7 @@ export default function Howwork() {
               </ul>
               <Link
                 href="/shop"
-                className="w-fit px-8 py-4 bg-gradient-to-r from-amber-500 to-orange-500 text-white font-bold rounded-xl hover:from-amber-600 hover:to-orange-600 transition-all shadow-lg hover:shadow-xl hover:scale-105 transform flex items-center gap-2"
+                className="w-fit px-8 py-4 bg-linear-to-r from-amber-500 to-orange-500 text-white font-bold rounded-xl hover:from-amber-600 hover:to-orange-600 transition-all shadow-lg hover:shadow-xl hover:scale-105 transform flex items-center gap-2"
               >
                 Start Creating Your Cards
                 <ArrowRight className="w-5 h-5" />
@@ -105,9 +105,9 @@ export default function Howwork() {
             </div>
             <div className="order-1 lg:order-2 relative h-fit rounded-3x w-full">
               <img
-                src="/trading-deck.png"
+                src="/S1.jpg"
                 alt="Step 1 visual"
-                className="w-full h-full object-cover rounded-3xl shadow-2xl"
+                className="w-full h-full object-cover rounded-3xl "
               />
             </div>
           </div>
@@ -119,7 +119,7 @@ export default function Howwork() {
               style={{ animation: "fadeInRight 0.8s ease-out" }}
             >
               <div className="inline-flex items-center gap-3">
-                <div className="w-12 h-12 bg-gradient-to-br from-blue-400 to-indigo-500 rounded-xl flex items-center justify-center shadow-lg">
+                <div className="w-12 h-12 bg-linear-to-br from-blue-400 to-indigo-500 rounded-xl flex items-center justify-center shadow-lg">
                   <span className="text-white font-black text-xl">2</span>
                 </div>
                 <span className="text-sm font-bold text-blue-600 uppercase tracking-wider">
@@ -134,7 +134,7 @@ export default function Howwork() {
                 photo. You create a fully editable character with
                 interchangeable traits.
               </p>
-              <div className="bg-white rounded-2xl p-6 shadow-lg space-y-4">
+              <div className="bg-white rounded-2xl p-6  space-y-4">
                 <div className="flex items-center gap-3">
                   <Camera className="w-6 h-6 text-blue-500" />
                   <span className="font-bold text-slate-900">
@@ -156,7 +156,7 @@ export default function Howwork() {
               </div>
               <Link
                 href={"/shop"}
-                className="w-fit px-8 py-4 bg-gradient-to-r from-blue-500 to-indigo-500 text-white font-bold rounded-xl hover:from-blue-600 hover:to-indigo-600 transition-all shadow-lg hover:shadow-xl hover:scale-105 transform flex items-center gap-2"
+                className="w-fit px-8 py-4 bg-linear-to-r from-blue-500 to-indigo-500 text-white font-bold rounded-xl hover:from-blue-600 hover:to-indigo-600 transition-all shadow-lg hover:shadow-xl hover:scale-105 transform flex items-center gap-2"
               >
                 Build Your Character
                 <ArrowRight className="w-5 h-5" />
@@ -166,7 +166,7 @@ export default function Howwork() {
               <img
                 src={stepImages[1]}
                 alt="Step 1 visual"
-                className="w-full h-full object-cover rounded-3xl shadow-2xl"
+                className="w-full h-full object-cover rounded-3xl "
               />
             </div>
           </div>
@@ -238,7 +238,7 @@ export default function Howwork() {
               <img
                 src="/mockup8.png"
                 alt="Step 1 visual"
-                className="w-full h-full object-cover rounded-3xl shadow-2xl"
+                className="w-full h-full object-cover rounded-3xl "
               />
             </div>
           </div>
@@ -250,7 +250,7 @@ export default function Howwork() {
               style={{ animation: "fadeInRight 0.8s ease-out" }}
             >
               <div className="inline-flex items-center gap-3">
-                <div className="w-12 h-12 bg-gradient-to-br from-green-400 to-emerald-500 rounded-xl flex items-center justify-center shadow-lg">
+                <div className="w-12 h-12 bg-linear-to-br from-green-400 to-emerald-500 rounded-xl flex items-center justify-center shadow-lg">
                   <span className="text-white font-black text-xl">4</span>
                 </div>
                 <span className="text-sm font-bold text-green-600 uppercase tracking-wider">
@@ -267,7 +267,7 @@ export default function Howwork() {
               </p>
               <Link
                 href={"/shop"}
-                className="w-fit px-8 py-4 bg-gradient-to-r from-green-500 to-emerald-500 text-white font-bold rounded-xl hover:from-green-600 hover:to-emerald-600 transition-all shadow-lg hover:shadow-xl hover:scale-105 transform flex items-center gap-2"
+                className="w-fit px-8 py-4 bg-linear-to-r from-green-500 to-emerald-500 text-white font-bold rounded-xl hover:from-green-600 hover:to-emerald-600 transition-all shadow-lg hover:shadow-xl hover:scale-105 transform flex items-center gap-2"
               >
                 Preview Your Cards
                 <Eye className="w-5 h-5" />
@@ -275,9 +275,9 @@ export default function Howwork() {
             </div>
             <div className="order-1 lg:order-1 relative h-fit rounded-3xl w-full flex items-center justify-center">
               <img
-                src="/trading-deck.png"
+                src="/S1.jpg"
                 alt="Step 1 visual"
-                className="w-full h-full object-cover rounded-3xl shadow-2xl"
+                className="w-full h-full object-cover rounded-3xl"
               />
             </div>
           </div>
@@ -289,7 +289,7 @@ export default function Howwork() {
               style={{ animation: "fadeInLeft 0.8s ease-out" }}
             >
               <div className="inline-flex items-center gap-3">
-                <div className="w-12 h-12 bg-gradient-to-br from-rose-400 to-red-500 rounded-xl flex items-center justify-center shadow-lg">
+                <div className="w-12 h-12 bg-linear-to-br from-rose-400 to-red-500 rounded-xl flex items-center justify-center shadow-lg">
                   <span className="text-white font-black text-xl">5</span>
                 </div>
                 <span className="text-sm font-bold text-rose-600 uppercase tracking-wider">
@@ -330,7 +330,7 @@ export default function Howwork() {
               </div>
               <Link
                 href={"/shop"}
-                className="w-fit px-8 py-4 bg-gradient-to-r from-rose-500 to-red-500 text-white font-bold rounded-xl hover:from-rose-600 hover:to-red-600 transition-all shadow-lg hover:shadow-xl hover:scale-105 transform flex items-center gap-2"
+                className="w-fit px-8 py-4 bg-linear-to-r from-rose-500 to-red-500 text-white font-bold rounded-xl hover:from-rose-600 hover:to-red-600 transition-all shadow-lg hover:shadow-xl hover:scale-105 transform flex items-center gap-2"
               >
                 Complete Your Order
                 <Package className="w-5 h-5" />
@@ -340,7 +340,7 @@ export default function Howwork() {
               <img
                 src={stepImages[4]}
                 alt="Step 1 visual"
-                className="w-full h-full object-cover rounded-3xl shadow-2xl"
+                className="w-full h-full object-cover rounded-3xl "
               />
             </div>
           </div>

@@ -588,10 +588,9 @@ export const FrontThree = ({
     >
       <span
         id="card-title"
-        className="absolute top-[7%] left-[38%] -translate-x-1/2 z-50 text-[#00BCFF] uppercase tracking-wide text-center"
+        className="absolute top-[7%] left-[30%] -translate-x-1/2 z-50 text-[#00BCFF] uppercase tracking-wide text-center BrunsonFont text-[1.8rem] -leading-[0.8rem]"
         style={{
-          fontFamily: "DinBold",
-          fontSize: getTitleFontSize(cardti),
+          // fontSize: getTitleFontSize(cardti),
           textShadow:
             "-2px -1px 0 #000, 1px -1px 0 #000, -2px 1px 0 #000, 2px 1px 0 #000",
           width: "85%",
@@ -644,8 +643,8 @@ export const FrontThree = ({
       <div className="absolute left-1/2 -translate-x-1/2 top-[90%] z-50 text-center">
         <div className="TradingCardBadgeOrange">
           <span
-            className="block TradingCardBadgeOrangeText font-bold uppercase text-[1rem] tracking-wider leading-tight"
-            style={{ fontFamily: "DinBold" }}
+            className="block TradingCardBadgeOrangeText font-bold uppercase text-[1rem] tracking-wider leading-tight BrunsonFont"
+            // style={{ fontFamily: "DinBold" }}
           >
             {dateLine2 ? (
               <>
@@ -661,7 +660,7 @@ export const FrontThree = ({
       </div>
 
       <span
-        className="absolute bottom-1.5 left-1/2 -translate-x-1/2 z-50 text-[0.5rem] text-[#1f1f1f] font-semibold tracking-wide text-center whitespace-nowrap"
+        className="absolute bottom-1.5 left-1/2 -translate-x-1/2 z-50 text-[0.5rem] text-[#1f1f1f] font-semibold tracking-wide text-center whitespace-nowrap BrunsonFont"
         style={{ fontFamily: "DinBold" }}
       >
         &copy; {currentYear} MOMENTO TRADING CARDS

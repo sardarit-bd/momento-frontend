@@ -343,9 +343,9 @@ input[type="number"] {
 
 .TradingCardBadgeOrangeText {
   color: #f5731f;
-  -webkit-text-stroke: 1.5px #ffffff;
+  -webkit-text-stroke: 0.5px #000000;
   paint-order: stroke fill;
-  text-shadow: 2px 3px 3px rgba(0, 0, 0, 0.55);
+  /* text-shadow: 2px 3px 3px rgba(0, 0, 0, 0.55); */
   transform: skewX(-6deg);
   display: inline-block;
 }

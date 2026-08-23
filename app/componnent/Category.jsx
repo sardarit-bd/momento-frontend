@@ -17,7 +17,7 @@ export default function Category() {
       description:
         "Upload your favorite photos and turn them into a premium deck of personalized playing cards.",
       image: TredingTwo,
-      href: "/shop",
+      href: "/shop/momento-photo-deck-6604",
       type: "customizable",
       cta: "Start Customizing",
     },
@@ -26,7 +26,7 @@ export default function Category() {
       description:
         "Create personalized trading cards celebrating people, memories, achievements, milestones, and the moments that matter most.",
       image: TredingThree,
-      href: "/shop",
+      href: "/shop/momento-trading-cards-9175/package",
       type: "trading",
       cta: "Build Your Collection",
     },
@@ -35,7 +35,7 @@ export default function Category() {
       description:
         "Create a premium deck featuring fully customizable characters inspired by your favorite people.",
       image: TredingOne,
-      href: "/shop",
+      href: "/shop/momento-portrait-deck-8844",
       type: "customizable",
       cta: "Build Your Deck",
     },

@@ -4,7 +4,6 @@ import "./globals.css";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 
-
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -19,11 +18,6 @@ const bebas = Bebas_Neue({
   weight: "400",
   subsets: ["latin"],
 });
-
-
-
-
-
 
 //local font is here
 const Brunson = localFont({
@@ -101,7 +95,16 @@ const RamaGothic = localFont({
   variable: "--font-RamaGothic",
 });
 
-
+const Akira = localFont({
+  src: [
+    {
+      path: "../public/font/Akira-Super-Bold.otf",
+      weight: "800",
+      style: "normal",
+    },
+  ],
+  variable: "--font-Akira",
+});
 
 export const metadata = {
   title: "Momento Cards - Customize Your Own Cards",
@@ -112,7 +115,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${bebas.variable} ${Brunson.variable} ${GustanBlack.variable} ${AileronFont.variable} ${FastSpeedDemo.variable} ${RamaGothic.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} ${bebas.variable} ${Brunson.variable} ${GustanBlack.variable} ${AileronFont.variable} ${FastSpeedDemo.variable} ${RamaGothic.variable} ${Akira.variable} antialiased`}
       >
         {children}
       </body>

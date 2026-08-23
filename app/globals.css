@@ -1,8 +1,7 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap");
 @import "tailwindcss";
 @import "slick-carousel/slick/slick.css";
 @import "slick-carousel/slick/slick-theme.css";
-
 
 :root {
   --background: #ffffff;
@@ -11,76 +10,74 @@
 }
 
 @font-face {
-  font-family: 'AileronCanvas';
-  src: url('/font/Aileron-Regular.otf');
+  font-family: "AileronCanvas";
+  src: url("/font/Aileron-Regular.otf");
   font-weight: 300;
 }
 @font-face {
-  font-family: 'AileronCanvas';
-  src: url('/font/Aileron-SemiBold.otf');
+  font-family: "AileronCanvas";
+  src: url("/font/Aileron-SemiBold.otf");
   font-weight: 600;
 }
 @font-face {
-  font-family: 'AileronCanvas';
-  src: url('/font/Aileron-Bold.otf');
+  font-family: "AileronCanvas";
+  src: url("/font/Aileron-Bold.otf");
   font-weight: 700;
 }
 @font-face {
-  font-family: 'AileronCanvas';
-  src: url('/font/Aileron-Heavy.otf');
+  font-family: "AileronCanvas";
+  src: url("/font/Aileron-Heavy.otf");
   font-weight: 800;
 }
 @font-face {
-  font-family: 'GustanBlackCanvas';
-  src: url('/font/GustanBlack.otf');
+  font-family: "GustanBlackCanvas";
+  src: url("/font/GustanBlack.otf");
   font-weight: 900;
 }
 @font-face {
-  font-family: 'BrunsonCanvas';
-  src: url('/font/Brunson.ttf');
+  font-family: "BrunsonCanvas";
+  src: url("/font/Brunson.ttf");
   font-weight: 400;
 }
 @font-face {
-  font-family: 'CorsicaCanvas';
-  src: url('/font/CorsicaLX-Book.ttf');
-  font-weight: 400;
-}
-
-@font-face {
-  font-family: 'Libertad';
-  src: url('/font/Libertad-Bold.otf');
+  font-family: "CorsicaCanvas";
+  src: url("/font/CorsicaLX-Book.ttf");
   font-weight: 400;
 }
 
 @font-face {
-  font-family: 'OculiMagni';
-  src: url('/font/OculiMagni.ttf');
+  font-family: "Libertad";
+  src: url("/font/Libertad-Bold.otf");
+  font-weight: 400;
+}
+
+@font-face {
+  font-family: "OculiMagni";
+  src: url("/font/OculiMagni.ttf");
   font-weight: 800;
 }
 
 @font-face {
-  font-family: 'DinBold';
-  src: url('/font/DIN-Bold.otf');
+  font-family: "DinBold";
+  src: url("/font/DIN-Bold.otf");
   font-weight: 700 800 900;
 }
 
 @font-face {
-  font-family: 'Hermona';
-  src: url('/font/Hermona.otf');
+  font-family: "Hermona";
+  src: url("/font/Hermona.otf");
   font-weight: 400;
 }
 
 .HermonaFont {
-  font-family: 'Hermona' !important;
+  font-family: "Hermona" !important;
 }
 
 .DinBoldFont {
-  font-family: 'DinBold' !important;
+  font-family: "DinBold" !important;
 }
 
-
 @layer utilities {
-
   /* Hide scrollbar for Chrome, Safari and Opera */
   .no-scrollbar::-webkit-scrollbar {
     display: none;
@@ -94,7 +91,6 @@
     /* Firefox */
   }
 }
-
 
 @theme inline {
   --color-background: var(--background);
@@ -110,11 +106,9 @@
   }
 }
 
-
 html {
   scroll-behavior: smooth;
 }
-
 
 body {
   background: var(--background);
@@ -122,7 +116,6 @@ body {
   font-family: Arial, Helvetica, sans-serif;
   overflow-x: hidden;
 }
-
 
 /* Hide scrollbar for Chrome, Safari, and Opera */
 .scrollbar-hide::-webkit-scrollbar {
@@ -172,8 +165,6 @@ body {
   mix-blend-mode: screen;
 }
 
-
-
 /*loading componennt css here */
 /* HTML: <div class="loader"></div> */
 .loadingWrper {
@@ -183,41 +174,38 @@ body {
   background: #00000085;
 }
 
-
 /* HTML: <div class="loader"></div> */
 .loader {
   width: 120px;
   height: 20px;
-  -webkit-mask: radial-gradient(circle closest-side, #3ca9ff 94%, #0000) left/20% 100%;
+  -webkit-mask: radial-gradient(circle closest-side, #3ca9ff 94%, #0000)
+    left/20% 100%;
   background: linear-gradient(#3ca9ff 0 0) left/0% 100% no-repeat #ddd;
   animation: l17 2s infinite steps(6);
 }
 
 @keyframes l17 {
   100% {
-    background-size: 120% 100%
+    background-size: 120% 100%;
   }
 }
 
-
-
-
 /* hero background pata image here */
+.heroBgPataImage {
+  background: url("../public/heroBg.webp");
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center -50px;
+}
+
+@media (max-width: 767px) {
   .heroBgPataImage {
-    background: url('../public/heroBg.webp');
-    background-repeat: no-repeat;
-    background-size: cover;
-    background-position: center -50px;
+    background-position: center center;
   }
-  
-  @media (max-width: 767px) {
-    .heroBgPataImage {
-      background-position: center center;
-    }
-  }
+}
 
 .tooltipscostom::before {
-  content: '';
+  content: "";
   width: 15px;
   height: 15px;
   position: absolute;
@@ -229,14 +217,14 @@ body {
 }
 
 /* Hide arrows in Chrome, Safari, Edge, and Opera */
-input[type=number]::-webkit-inner-spin-button,
-input[type=number]::-webkit-outer-spin-button {
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
 
 /* Hide arrows in Firefox */
-input[type=number] {
+input[type="number"] {
   -moz-appearance: textfield;
 }
 
@@ -278,12 +266,10 @@ input[type=number] {
   content: none !important;
 }
 
-
 .bebas {
   font-family: "Bebas Neue", sans-serif;
   font-weight: 700;
 }
-
 
 .AileronFont {
   font-family: var(--font-Aileron) !important;
@@ -296,7 +282,9 @@ input[type=number] {
 .BrunsonFont {
   font-family: var(--font-Brunson) !important;
 }
-
+.AkiraFont {
+  font-family: var(--font-Akira) !important;
+}
 .FastSpeedDemoFont {
   font-family: var(--font-FastSpeedDemo) !important;
 }
@@ -312,10 +300,15 @@ input[type=number] {
   -webkit-text-stroke: 1.2px #514d4d;
 }
 
-
 .TradingCardTitleMetal {
   color: transparent;
-  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 35%, #eef2f7 70%, #e5e7eb 100%);
+  background: linear-gradient(
+    180deg,
+    #ffffff 0%,
+    #f8fafc 35%,
+    #eef2f7 70%,
+    #e5e7eb 100%
+  );
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -379,42 +372,48 @@ input[type=number] {
 }
 
 @media (min-width: 1024px) {
-    :root {
-        --card-scale: 1;
-    }
+  :root {
+    --card-scale: 1;
+  }
 }
 
 @keyframes spin {
-    from { transform: rotate(0deg); }
-    to   { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 @media print {
-    body * {
-        visibility: hidden;
-    }
-    #receipt-print-area,
-    #receipt-print-area * {
-        visibility: visible;
-    }
-    #receipt-print-area {
-        position: absolute;
-        left: 0;
-        top: 0;
-        width: 100%;
-        padding: 20px;
-    }
+  body * {
+    visibility: hidden;
+  }
+  #receipt-print-area,
+  #receipt-print-area * {
+    visibility: visible;
+  }
+  #receipt-print-area {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    padding: 20px;
+  }
 }
 
 .moment-card {
-  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+  transition:
+    transform 0.4s cubic-bezier(0.22, 1, 0.36, 1),
     box-shadow 0.4s ease,
     border-color 0.4s ease;
 }
 
 .moment-card:hover {
   transform: translateY(-6px);
-  box-shadow: 0 24px 60px -20px rgba(0, 0, 0, 0.5),
+  box-shadow:
+    0 24px 60px -20px rgba(0, 0, 0, 0.5),
     0 0 0 1px rgba(201, 168, 76, 0.4);
 }
 
@@ -437,7 +436,11 @@ input[type=number] {
   position: absolute;
   inset: auto 0 0 0;
   height: 42%;
-  background: linear-gradient(to bottom, transparent, #f5efe0); /* match your card-ui background */
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    #f5efe0
+  ); /* match your card-ui background */
   pointer-events: none;
 }
 

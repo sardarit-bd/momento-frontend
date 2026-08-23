@@ -30,6 +30,16 @@ const Brunson = localFont({
   ],
   variable: "--font-Brunson",
 });
+const BrunsonBold = localFont({
+  src: [
+    {
+      path: "../public/font/Brunson.ttf",
+      weight: "800",
+      style: "regular",
+    },
+  ],
+  variable: "--font-BrunsonBold",
+});
 
 const FastSpeedDemo = localFont({
   src: [
@@ -99,13 +109,22 @@ const Akira = localFont({
   src: [
     {
       path: "../public/font/Akira-Super-Bold.otf",
-      weight: "800",
-      style: "normal",
+      weight: "900",
+      style: "bold",
     },
   ],
   variable: "--font-Akira",
 });
-
+const Arialbd = localFont({
+  src: [
+    {
+      path: "../public/font/arialbd.ttf",
+      weight: "800",
+      style: "normal",
+    },
+  ],
+  variable: "--font-Arialbd",
+});
 export const metadata = {
   title: "Momento Cards - Customize Your Own Cards",
   description: "Design your own custom cards with ease.",
@@ -115,7 +134,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${bebas.variable} ${Brunson.variable} ${GustanBlack.variable} ${AileronFont.variable} ${FastSpeedDemo.variable} ${RamaGothic.variable} ${Akira.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} ${bebas.variable} ${Brunson.variable} ${BrunsonBold.variable} ${GustanBlack.variable} ${AileronFont.variable} ${FastSpeedDemo.variable} ${RamaGothic.variable} ${Akira.variable} ${Arialbd.variable} antialiased`}
       >
         {children}
       </body>

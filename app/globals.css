@@ -282,8 +282,14 @@ input[type="number"] {
 .BrunsonFont {
   font-family: var(--font-Brunson) !important;
 }
+.BrunsonFontBold {
+  font-family: var(--font-BrunsonBold) !important;
+}
 .AkiraFont {
   font-family: var(--font-Akira) !important;
+}
+.Arialbd {
+  font-family: var(--font-Arialbd) !important;
 }
 .FastSpeedDemoFont {
   font-family: var(--font-FastSpeedDemo) !important;

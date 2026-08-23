@@ -411,17 +411,18 @@ export const FrontOne = ({
     block
     w-full
     text-right
-    text-[1.3rem]
-    font-bold
-    leading-[0.9]
+    text-[3rem]
+    font-medium
+    leading-[0.8]
+    tracking-wide
     text-transparent    
     bg-clip-text
-    bg-[linear-gradient(180deg,#3a3a3a_0%,#787878_20%,#ffffff_50%,#787878_100%,#3a3a3a_100%)]  
-    AkiraFont
+    bg-[linear-gradient(180deg,#3a3a3a_-10%,#787878_20%,#ffffff_80%)]  
+    BrunsonFont
     bg-size-[100%_100%]
   "
           style={{
-            WebkitTextStroke: "1px black",
+            WebkitTextStroke: "0.7px black",
             paintOrder: "stroke fill",
           }}
         >
@@ -429,11 +430,10 @@ export const FrontOne = ({
         </span>
         <span
           id="card-date"
-          className="block CorsicaCanvas text-[11px] lg:text-[1rem] tracking-tighter leading-tight mt-0"
+          className="block CorsicaCanvas text-[11px] lg:text-[1.3rem] tracking-wide leading-tight mt-0 BrunsonFont text-transparent bg-clip-text bg-[linear-gradient(180deg,#3a3a3a_-10%,#787878_20%,#ffffff_80%)]"
           style={{
-            WebkitTextStroke: "3px black",
+            WebkitTextStroke: "0.3px black",
             paintOrder: "stroke fill",
-            color: "#b8acac",
           }}
         >
           {acarddate}

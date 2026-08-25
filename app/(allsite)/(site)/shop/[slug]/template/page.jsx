@@ -18,7 +18,6 @@ const inter = Inter({
   weight: ["400", "500", "600", "700"],
 });
 
-// Brand palette — same tokens as the package selection page
 const BRAND = "#3CA9FF";
 const BRAND_DARK = "#1C8CE0";
 const BRAND_TINT = "#EAF6FF";
@@ -44,8 +43,6 @@ const TEMPLATES = [
   },
 ];
 
-// Display info for the package chip in the header — the page only gets the
-// slug back from the URL, so map it to what the package page already shows.
 const PACKAGE_INFO = {
   single: { name: "Single", subtitle: "1 design · 18 copies" },
   trio: { name: "Trio", subtitle: "3 designs · 6 each" },
@@ -62,8 +59,9 @@ export default function TemplateSelectionPage() {
 
   const handleContinue = () => {
     if (!selected) return;
+    localStorage.clear();
     router.push(
-      `/application/tradingcard/${slug}?package=${selectedPackage}&template=${selected.id}`
+      `/application/tradingcard/${slug}?package=${selectedPackage}&template=${selected.id}`,
     );
   };
 
@@ -98,7 +96,6 @@ export default function TemplateSelectionPage() {
       `}</style>
 
       <div className="max-w-5xl w-full">
-        {/* Back */}
         <div className="mb-6 md:mb-8">
           <Link
             href={`/shop/${slug}/package`}
@@ -111,7 +108,6 @@ export default function TemplateSelectionPage() {
           </Link>
         </div>
 
-        {/* Header: title + package chip, side by side like the package page's hierarchy */}
         <header className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-5 mb-10 md:mb-12">
           <div>
             <h1
@@ -124,19 +120,22 @@ export default function TemplateSelectionPage() {
             </p>
           </div>
 
-          <div className="shrink-0 rounded-xl border border-slate-200 bg-white px-4 py-3 sm:min-w-[180px]">
+          <div className="shrink-0 rounded-xl border border-slate-200 bg-white px-4 py-3 sm:min-w-45">
             <p className="text-[10px] font-semibold tracking-[0.18em] uppercase text-slate-400">
               Your package
             </p>
-            <p className={`${fraunces.className} text-[#12141F] font-semibold mt-0.5`}>
+            <p
+              className={`${fraunces.className} text-[#12141F] font-semibold mt-0.5`}
+            >
               {packageInfo.name}
             </p>
-            <p className="text-xs text-slate-500 mt-0.5">{packageInfo.subtitle}</p>
+            <p className="text-xs text-slate-500 mt-0.5">
+              {packageInfo.subtitle}
+            </p>
           </div>
         </header>
 
-        {/* Templates */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 max-w-5xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 max-w-5xl mx-auto">
           {TEMPLATES.map((tpl) => {
             const isSelected = selected?.id === tpl.id;
             return (
@@ -149,16 +148,13 @@ export default function TemplateSelectionPage() {
                     : "border-slate-200 hover:border-slate-300 hover:shadow-[0_10px_24px_-18px_rgba(18,20,40,0.25)]"
                 }`}
               >
-                {/* Checkmark badge — hangs off the corner (like the package page's
-                    "Most Popular" label) instead of sitting inside the rounded
-                    curve, so it doesn't read as clipped by the card edge */}
                 {isSelected && (
                   <span className="absolute -top-2.5 -right-2.5 z-10 w-7 h-7 rounded-full bg-[#3CA9FF] ring-2 ring-white flex items-center justify-center shadow-sm">
                     <FaCheck className="text-white text-[11px]" />
                   </span>
                 )}
 
-                <div className="relative w-full aspect-[3/4] mb-5 rounded-xl overflow-hidden bg-slate-50">
+                <div className="relative w-full aspect-3/4 mb-5 rounded-xl overflow-hidden bg-slate-50">
                   <Image
                     src={tpl.image}
                     alt={tpl.name}
@@ -184,7 +180,7 @@ export default function TemplateSelectionPage() {
                   }}
                   className={`w-full text-[13px] md:text-sm font-semibold py-3 px-6 rounded-xl transition-all duration-200 active:scale-[0.98] flex items-center justify-center gap-2 ${
                     isSelected
-                      ? "bg-gradient-to-r from-[#3CA9FF] to-[#1C8CE0] text-white"
+                      ? "bg-linear-to-r from-[#3CA9FF] to-[#1C8CE0] text-white"
                       : "bg-[#12141F] text-white hover:bg-[#1e2536]"
                   }`}
                 >
@@ -201,7 +197,6 @@ export default function TemplateSelectionPage() {
           })}
         </div>
 
-        {/* Continue row — desktop: selected summary + CTA share one bottom bar */}
         <div
           className={`hidden md:flex items-center justify-between mt-10 pt-6 border-t border-slate-200 transition-all duration-500 ${
             selected
@@ -211,33 +206,34 @@ export default function TemplateSelectionPage() {
         >
           <p className="text-slate-500 text-sm">
             Selected:{" "}
-            <strong className={`${fraunces.className} text-[#12141F] font-semibold`}>
+            <strong
+              className={`${fraunces.className} text-[#12141F] font-semibold`}
+            >
               {selected?.name}
             </strong>
             {selected && ` — ${selected.description}`}
           </p>
           <button
             onClick={handleContinue}
-            className="btn-sheen bg-gradient-to-r from-[#3CA9FF] to-[#1C8CE0] text-white text-sm font-semibold py-3 px-8 rounded-xl hover:shadow-[0_14px_30px_-14px_rgba(28,140,224,0.5)] transition-all duration-200 active:scale-[0.98] flex items-center gap-2"
+            className="btn-sheen bg-linear-to-r from-[#3CA9FF] to-[#1C8CE0] text-white text-sm font-semibold py-3 px-8 rounded-xl hover:shadow-[0_14px_30px_-14px_rgba(28,140,224,0.5)] transition-all duration-200 active:scale-[0.98] flex items-center gap-2"
           >
             Start Customizing
             <FaArrowRight className="text-xs" />
           </button>
         </div>
 
-        {/* Mobile spacer so fixed bar never overlaps last card */}
         {selected && <div className="md:hidden h-28" />}
       </div>
 
-      {/* Mobile fixed bottom CTA — appears only once a template is selected */}
       {selected && (
         <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white/90 backdrop-blur border-t border-slate-200 px-4 pt-3 pb-[max(1rem,env(safe-area-inset-bottom))]">
           <p className="text-slate-500 text-xs mb-2 text-center truncate">
-            Selected: <strong className="text-[#12141F]">{selected?.name}</strong>
+            Selected:{" "}
+            <strong className="text-[#12141F]">{selected?.name}</strong>
           </p>
           <button
             onClick={handleContinue}
-            className="btn-sheen w-full bg-gradient-to-r from-[#3CA9FF] to-[#1C8CE0] text-white text-sm font-semibold py-3 px-6 rounded-xl active:scale-[0.98] transition-all duration-200 flex items-center justify-center gap-2"
+            className="btn-sheen w-full bg-linear-to-r from-[#3CA9FF] to-[#1C8CE0] text-white text-sm font-semibold py-3 px-6 rounded-xl active:scale-[0.98] transition-all duration-200 flex items-center justify-center gap-2"
           >
             Start Customizing
             <FaArrowRight className="text-xs" />

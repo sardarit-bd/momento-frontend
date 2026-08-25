@@ -336,7 +336,7 @@ export default function PackageAndTemplateSelectionPage() {
                           : "border-slate-100 hover:shadow-[0_20px_50px_rgba(0,0,0,0.06)]"
                       }`}
                     >
-                      <div className="relative w-full aspect-[3/4] mb-5">
+                      <div className="relative w-full aspect-3/4 mb-5">
                         {/* Soft contact shadow beneath the card, like it's resting on a table */}
                         <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 w-[70%] h-6 rounded-full bg-black/10 blur-lg" />
                         <div className="template-card-art relative w-full h-full rounded-xl overflow-hidden bg-slate-50 transition-transform duration-500 ease-out">

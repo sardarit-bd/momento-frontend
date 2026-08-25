@@ -2,6 +2,7 @@
 
 const DeckBoxPreview = ({ characterImages = [] }) => {
   console.log(characterImages);
+  console.log(characterImages.length);
   return (
     <div className="relative w-70 sm:w-85 md:w-105 rounded-xl border border-gray-200 bg-white shadow-lg overflow-hidden">
       <img
@@ -92,20 +93,20 @@ const DeckBoxPreview = ({ characterImages = [] }) => {
                     },
                     {
                       i: 1,
-                      x: -26,
-                      y: 10,
-                      scale: 0.78,
+                      x: -19,
+                      y: 17,
+                      scale: 0.8,
                       z: 2,
-                      size: "80%",
+                      size: "99%",
                       clip: "0% 27% 55% 28%",
                     },
                     {
                       i: 2,
-                      x: 26,
-                      y: 10,
-                      scale: 0.78,
+                      x: 19,
+                      y: 17,
+                      scale: 0.8,
                       z: 2,
-                      size: "80%",
+                      size: "99%",
                       clip: "0% 27% 55% 25%",
                     },
                     {

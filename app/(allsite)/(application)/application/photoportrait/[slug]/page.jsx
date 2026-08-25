@@ -978,7 +978,6 @@ const ProductCustomizer = () => {
   };
 
   const MOBILE_SHEET_PEEK = 80;
-  console.log("boxImages", jokerPreviewImage);
   return (
     <>
       <div className="bg-[#f2f4f8]">

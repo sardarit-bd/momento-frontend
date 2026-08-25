@@ -40,12 +40,8 @@ const ForgotPas = () => {
         }
     }
 
-    /******** handle verify  OTP  function is here *******/
     async function verifyOTP(e) {
         e.preventDefault();
-
-        console.log(otp);
-
         if (otp) {
             setLoading(true);
             const response = await logingandsignupmakepost("api/verify", { email, otp });
@@ -63,7 +59,6 @@ const ForgotPas = () => {
         }
     }
 
-    /******** handle verify  OTP  function is here *******/
     async function passwordChange(e) {
         e.preventDefault();
 
@@ -75,8 +70,6 @@ const ForgotPas = () => {
                     email,
                     password
                 }
-
-                console.log(passdata);
 
                 const response = await logingandsignupmakepost("api/resetpass", passdata);
 

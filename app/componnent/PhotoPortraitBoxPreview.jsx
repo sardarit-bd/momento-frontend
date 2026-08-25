@@ -82,13 +82,6 @@ const PhotoPortraitBoxPreview = forwardRef(function PhotoPortraitBoxPreview(
                 const image = imgEl ? toFrac(imgEl.getBoundingClientRect()) : frame;
                 return { id, frame, image };
             });
-
-            // TEMP DEBUG: sanity-check the captured numbers before this goes
-            // further. Expected: frame.widthFrac matches the slot.size preset
-            // (e.g. ~0.55 for a single photo), image rect fully covers frame.
-            // eslint-disable-next-line no-console
-            console.log('[captureResolvedRects]', JSON.stringify(result, null, 2));
-
             return result;
         },
     }));

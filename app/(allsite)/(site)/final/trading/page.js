@@ -26,8 +26,6 @@ const FinalCardsPage = () => {
     }, 900);
   }
 
-  console.log(tradingcart);
-
   return (
     <div className="text-black container mx-auto" style={{ padding: "2rem" }}>
       <div className="flex items-center justify-between">
@@ -66,7 +64,7 @@ const FinalCardsPage = () => {
       >
         {tradingcart[0]?.FinalProduct.map((card, idx) => (
           <Image
-            className="rounded-lg h-[280px] w-[185px] border border-gray-200"
+            className="rounded-lg h-70 w-46.25 border border-gray-200"
             src={card}
             width={1000}
             height={1000}
@@ -83,7 +81,7 @@ const FinalCardsPage = () => {
           return (
             <div
               key={index}
-              className="w-[170px] h-auto lg:w-[600px] lg:h-auto flex items-center justify-center "
+              className="w-42.5 h-auto lg:w-150 lg:h-auto flex items-center justify-center "
             >
               <Image
                 className="object-contain z-10"

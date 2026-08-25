@@ -22,7 +22,6 @@ export default function ShopCard({ product }) {
   const targetLink = isTradingCard
     ? `/shop/${product?.slug}/package`
     : `/shop/${product?.slug}`;
-  console.log("product", product);
   const displayBadge =
     product?.type === "customizable" ||
     product?.type === "trading" ||
@@ -79,7 +78,10 @@ export default function ShopCard({ product }) {
 
         <div className="pt-6 mt-auto">
           <button
-            onClick={(e) => gotoLink(e, targetLink)}
+            onClick={(e) => {
+              localStorage.clear();
+              gotoLink(e, targetLink);
+            }}
             className="group/btn relative w-full inline-flex items-center justify-center bg-[#3CA9FF] hover:bg-[#FF6F3C] text-white font-semibold py-4 px-6 rounded-xl transition-colors duration-300 shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#3CA9FF] cursor-pointer"
           >
             {btnLoading ? (

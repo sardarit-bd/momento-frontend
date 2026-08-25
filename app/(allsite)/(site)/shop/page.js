@@ -8,7 +8,6 @@ import ShopCard from "../../../componnent/ShopCard";
 const About = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
-  console.log("product", products);
   const fetchProducts = async () => {
     try {
       const res = await MakeGet("api/shop");

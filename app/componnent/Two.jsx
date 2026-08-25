@@ -294,7 +294,6 @@ const Two = () => {
 
   /* ── next step validation ── */
   const handleNext = () => {
-    console.log(productType);
     if (productType === "customizable" || productType === "photo") {
       if (
         productName &&
@@ -352,16 +351,11 @@ const Two = () => {
     }
   };
 
-  /* ══════════════════════════════════════════════════════════════════
-       RENDER
-    ══════════════════════════════════════════════════════════════════ */
   return (
     <div className="flex justify-center px-2">
       <div className="w-full bg-white rounded-2xl">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-5">
-          {/* ── Left column ── */}
           <div className="space-y-5 col-span-1 md:col-span-8 border border-gray-300 rounded-md px-4 py-3">
-            {/* Name */}
             <div>
               <label className="block text-gray-700 mb-1">
                 Name <span className="text-red-500 text-xl">*</span>
@@ -374,7 +368,6 @@ const Two = () => {
               />
             </div>
 
-            {/* Type */}
             <div>
               <label className="block text-gray-700 mb-1">
                 Type <span className="text-red-500 text-xl">*</span>
@@ -393,7 +386,6 @@ const Two = () => {
               />
             </div>
 
-            {/* Price */}
             <div>
               <label className="block text-gray-700 mb-1">
                 Price <span className="text-red-500 text-xl">*</span>
@@ -406,7 +398,6 @@ const Two = () => {
               />
             </div>
 
-            {/* Offer Price */}
             <div>
               <label className="block text-gray-700 mb-1">Offer Price</label>
               <input
@@ -417,7 +408,6 @@ const Two = () => {
               />
             </div>
 
-            {/* Category */}
             <div>
               <label className="block text-gray-700 mb-1">
                 Category <span className="text-red-500 text-xl">*</span>
@@ -439,7 +429,6 @@ const Two = () => {
               </select>
             </div>
 
-            {/* Status */}
             <div>
               <label className="block text-gray-700 mb-1">Status</label>
               <select
@@ -452,7 +441,6 @@ const Two = () => {
               </select>
             </div>
 
-            {/* Short Description */}
             <div>
               <label className="block text-gray-700 mb-1">
                 Short Description{" "}
@@ -466,7 +454,6 @@ const Two = () => {
               />
             </div>
 
-            {/* Description */}
             <div>
               <label className="block text-gray-700 mb-1">Description</label>
               <textarea
@@ -477,10 +464,8 @@ const Two = () => {
               />
             </div>
 
-            {/* ══ CUSTOMIZABLE LAYERS ══ */}
             {(productType === "customizable" || productType === "photo") && (
               <>
-                {/* Base Cards */}
                 <div className="mt-6">
                   <label className="block text-gray-700 mb-1">
                     Base Card:&nbsp;
@@ -502,7 +487,6 @@ const Two = () => {
                   </div>
                 </div>
 
-                {/* Skin Tone */}
                 <div className="mt-6">
                   <label className="block text-gray-700 mb-1">
                     Skin Tone:
@@ -557,7 +541,6 @@ const Two = () => {
                   </div>
                 </div>
 
-                {/* Hair */}
                 <div className="mt-6">
                   <label className="block text-gray-700 mb-1">
                     Hair:
@@ -608,7 +591,6 @@ const Two = () => {
                   </div>
                 </div>
 
-                {/* Nose */}
                 <div className="mt-6">
                   <label className="block text-gray-700 mb-1">
                     Nose:
@@ -659,7 +641,6 @@ const Two = () => {
                   </div>
                 </div>
 
-                {/* Eyes */}
                 <div className="mt-6">
                   <label className="block text-gray-700 mb-1">
                     Eyes:
@@ -710,7 +691,6 @@ const Two = () => {
                   </div>
                 </div>
 
-                {/* Mouth */}
                 <div className="mt-6">
                   <label className="block text-gray-700 mb-1">
                     Mouth:
@@ -761,7 +741,6 @@ const Two = () => {
                   </div>
                 </div>
 
-                {/* Dress */}
                 <div className="mt-6">
                   <label className="block text-gray-700 mb-1">
                     Dress:
@@ -812,7 +791,6 @@ const Two = () => {
                   </div>
                 </div>
 
-                {/* Crown */}
                 <div className="mt-6">
                   <label className="block text-gray-700 mb-1">
                     Crown:
@@ -863,7 +841,6 @@ const Two = () => {
                   </div>
                 </div>
 
-                {/* Beard */}
                 <div className="mt-6">
                   <label className="block text-gray-700 mb-1">
                     Beard:
@@ -916,10 +893,8 @@ const Two = () => {
               </>
             )}
 
-            {/* ══ TRADING LAYERS ══ */}
             {productType === "trading" && (
               <>
-                {/* Trading Front */}
                 <div className="mt-6">
                   <label className="block text-gray-700 mb-1">
                     Trading Card Front Base:
@@ -978,7 +953,6 @@ const Two = () => {
                   </div>
                 </div>
 
-                {/* Trading Back */}
                 <div className="mt-6">
                   <label className="block text-gray-700 mb-1">
                     Trading Card Back Base:
@@ -1039,12 +1013,9 @@ const Two = () => {
               </>
             )}
           </div>
-          {/* end left column */}
 
-          {/* ── Right column ── */}
           <div className="col-span-1 md:col-span-4">
             <div className="w-full border border-gray-300 rounded-md px-4 py-3 sticky top-[100px]">
-              {/* Thumbnail */}
               <div>
                 <label className="block text-gray-700 mb-1">
                   Product Thumbnail{" "}
@@ -1074,7 +1045,6 @@ const Two = () => {
                 />
               </div>
 
-              {/* Gallery */}
               <div className="mt-6">
                 <label className="block text-gray-700 mb-1">
                   Image Gallery:
@@ -1129,7 +1099,6 @@ const Two = () => {
                 </div>
               </div>
 
-              {/* Navigation buttons */}
               <div className="flex justify-start gap-3 mt-6">
                 <button
                   onClick={() => setrander(1)}
@@ -1150,7 +1119,6 @@ const Two = () => {
         </div>
       </div>
 
-      {/* ══ Global slot-selection dropdown ══ */}
       {activeSlotSelector && (
         <>
           <div

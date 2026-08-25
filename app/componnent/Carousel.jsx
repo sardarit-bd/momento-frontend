@@ -37,25 +37,23 @@ export default function Carousel() {
   };
 
   const items = [
-    // { id: 1, img: hero5, title: "Family Game Night Deck", desc: "\u201cCustom cards for every family member\u2014turned our gatherings into a tradition!\u201d" },
     {
       id: 2,
       img: hero4,
-      title: "Memorable Trading card",
-      desc: "\u201cCustom cards for every family member\u2014turned our gatherings into a tradition!\u201d",
+      title: "Milestone Trading Cards",
+      desc: "Celebrate birthdays, achievements, big moments, and everything worth remembering.",
     },
-    // { id: 3, img: hero3, title: "Family Game Night Deck", desc: "\u201cCustom cards for every family member\u2014turned our gatherings into a tradition!\u201d" },
     {
       id: 4,
       img: hero5,
-      title: "Family Game Night Deck",
-      desc: "\u201cCustom cards for every family member\u2014turned our gatherings into a tradition!\u201d",
+      title: "Our Crew Deck",
+      desc: "Turn your friend group into a deck packed with personalities, memories, and inside jokes.",
     },
     {
       id: 5,
       img: hero1,
-      title: "Best Trip Ever Deck",
-      desc: "\u201cCustom cards for every family member\u2014turned our gatherings into a tradition!\u201d",
+      title: "Turn Us Into Cards",
+      desc: "Transform your favorite people into a one-of-a-kind illustrated deck.",
     },
   ];
 
@@ -67,8 +65,8 @@ export default function Carousel() {
             Bringing Ideas to <span className="text-[#3CA9FF]">Life</span>
           </h1>
           <p className="text-gray-500 text-base sm:text-lg mt-4">
-            Real stories, stunning designs, and unforgettable moments—see how
-            the Momento community creates, plays, and connects.
+            See how the people, moments, and memories you love can become cards
+            made your way.
           </p>
         </div>
 
@@ -76,18 +74,20 @@ export default function Carousel() {
           <Slider {...settings}>
             {items.map((item) => (
               <div key={item.id} className="px-3 pb-12">
-                <div className="bg-white rounded-xl shadow-md overflow-hidden">
+                <div className="bg-white rounded-xl shadow-md overflow-hidden h-full flex flex-col">
                   <Image
                     src={item.img}
                     alt={item.title}
                     width={500}
                     height={400}
-                    className="w-full h-64 sm:h-80 object-contain bg-sky-100 p-5"
+                    className="w-full h-64 sm:h-80 object-contain bg-sky-100 p-5 shrink-0"
                   />
-                  <div className="p-5 text-center">
+
+                  <div className="p-5 text-center flex flex-col min-h-29">
                     <h2 className="text-xl font-bold text-[#333]">
                       {item.title}
                     </h2>
+
                     <p className="text-gray-600 mt-2 text-sm">{item.desc}</p>
                   </div>
                 </div>

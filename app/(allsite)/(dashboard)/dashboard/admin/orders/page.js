@@ -45,8 +45,6 @@ const AdminOrders = () => {
                 setIsPageLoading(true);
             }
             const response = await MakeGet(`api/admin/orders?page=${page}`, token);
-            console.log("RAW orders response:", response);
-
             const payload = response?.data || {};
             setallorders(payload?.orders || []);
             setPagination(payload?.pagination || {
@@ -55,7 +53,6 @@ const AdminOrders = () => {
                 per_page: 10,
                 total: 0,
             });
-
             setfetchloading(false);
             setIsPageLoading(false);
         } catch (error) {

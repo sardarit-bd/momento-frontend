@@ -3,7 +3,6 @@
 import useFilterStore from "@/store/useFilterStore";
 import Image from "next/image";
 import Link from "next/link";
-
 import TredingOne from "../../public/mockup4.png";
 import TredingTwo from "../../public/mockup9.webp";
 import TredingThree from "../../public/mockup7.png";
@@ -84,6 +83,7 @@ export default function Category() {
                 <div className="pt-6 mt-auto">
                   <Link
                     onClick={() => {
+                      localStorage.clear();
                       settype(cat.type);
                     }}
                     href={cat.href}

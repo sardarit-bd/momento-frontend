@@ -22,11 +22,10 @@ const FinalCardsPage = () => {
   const router = useRouter();
   const boxPreviewRef = useRef(null);
 
-  // ── Cursor-following zoom, e-commerce style ──
   const zoomStageRef = useRef(null);
   const [isZooming, setIsZooming] = useState(false);
   const [zoomOrigin, setZoomOrigin] = useState({ x: 50, y: 50 });
-  const ZOOM_SCALE = 2.4; // bump to 3+ for a more aggressive zoom
+  const ZOOM_SCALE = 2.4;
 
   const handleZoomMove = (e) => {
     const stage = zoomStageRef.current;
@@ -168,12 +167,11 @@ const FinalCardsPage = () => {
         </div>
       </div>
 
-      {/* Individual Full Card Previews */}
       <div className="grid grid-cols-2 justify-items-center gap-3 py-6 my-6 sm:grid-cols-3 md:grid-cols-5 md:gap-4">
         {finalProductCards.map((card, idx) => (
           <div
             key={idx}
-            className="relative mx-auto w-full max-w-[170px] sm:max-w-[190px] md:max-w-[200px] lg:max-w-[220px] aspect-[5/7] overflow-hidden rounded-3xl border border-gray-100 bg-white/60 shadow-md"
+            className="relative mx-auto w-full max-w-42.5 sm:max-w-47.5 `md:max-w-50 lg:max-w-55 aspect-5/7 overflow-hidden rounded-3xl border border-gray-100 bg-white/60 shadow-md"
           >
             <img
               src={card.image}
@@ -184,7 +182,6 @@ const FinalCardsPage = () => {
         ))}
       </div>
 
-      {/* Dynamic Box Preview */}
       <div className="pb-8">
         <h2 className="py-4 font-semibold text-gray-600">Box Preview</h2>
         <div className="flex flex-wrap gap-6">

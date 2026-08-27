@@ -6,7 +6,7 @@ import { FaArrowLeft, FaCheck, FaArrowRight } from "react-icons/fa6";
 import Link from "next/link";
 import Image from "next/image";
 import { Fraunces, Inter } from "next/font/google";
-
+import { useTradingCardState } from "../../../../(application)/application/tradingcard/[slug]/_tradingcard/hooks/useTradingCardState";
 const fraunces = Fraunces({
   subsets: ["latin"],
   weight: ["500", "600", "700"],
@@ -56,10 +56,12 @@ export default function TemplateSelectionPage() {
   const selectedPackage = searchParams.get("package") || "single";
   const packageInfo = PACKAGE_INFO[selectedPackage] || PACKAGE_INFO.single;
   const [selected, setSelected] = useState(null);
-
-  const handleContinue = () => {
+  const { savedSlots, setSavedSlots } = useTradingCardState();
+  const handleContinue = async () => {
     if (!selected) return;
     localStorage.clear();
+    setSavedSlots([]);
+    console.log("asasd", savedSlots.length);
     router.push(
       `/application/tradingcard/${slug}?package=${selectedPackage}&template=${selected.id}`,
     );
@@ -205,7 +207,7 @@ export default function TemplateSelectionPage() {
           }`}
         >
           <p className="text-slate-500 text-sm">
-            Selected:{" "}
+            Selected:
             <strong
               className={`${fraunces.className} text-[#12141F] font-semibold`}
             >
@@ -228,7 +230,7 @@ export default function TemplateSelectionPage() {
       {selected && (
         <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white/90 backdrop-blur border-t border-slate-200 px-4 pt-3 pb-[max(1rem,env(safe-area-inset-bottom))]">
           <p className="text-slate-500 text-xs mb-2 text-center truncate">
-            Selected:{" "}
+            Selected:
             <strong className="text-[#12141F]">{selected?.name}</strong>
           </p>
           <button

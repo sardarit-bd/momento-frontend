@@ -73,7 +73,6 @@ const CARD_TYPE_LABELS = {
   Joker_Card: "Joker",
 };
 
-// Wayfinding copy, keyed the same way as CARD_TYPE_LABELS so the two stay in sync.
 const STEP_COPY = {
   king_Card: {
     heading: "Create Your King",
@@ -115,7 +114,6 @@ const DECK_RANK_MAP = {
   Joker_Card: "joker",
 };
 
-// Renders the "Create Your King" style heading above the card canvas.
 const StepHeading = ({ activeType, activeIndex, totalSteps }) => {
   const copy = STEP_COPY[activeType] ?? {
     heading: "Customize Your Card",
@@ -124,7 +122,7 @@ const StepHeading = ({ activeType, activeIndex, totalSteps }) => {
 
   return (
     <div
-      className="relative z-10 w-full max-w-[980px] mx-auto text-center px-4 mb-4"
+      className="relative z-10 w-full max-w-245 mx-auto text-center px-4 mb-4"
       aria-live="polite"
     >
       <h1 className="text-2xl md:text-3xl font-bold text-black mt-1">
@@ -224,7 +222,7 @@ const ProductCustomizer = () => {
           );
           const shared = {
             userPhotoZoom: card?.userPhotoZoom || 1,
-            userPhotoOffset: card?.userPhotoOffset || { x: 0, y: 0 }, // ← add
+            userPhotoOffset: card?.userPhotoOffset || { x: 0, y: 0 },
           };
           if (hasValidBase)
             return {
@@ -244,7 +242,6 @@ const ProductCustomizer = () => {
           };
         });
 
-        // Re-sort against the current King → Queen → Jack → Ace → Joker order.
         const flowOrder = [...CARD_FLOW, "Joker_Card"];
         sanitizedCards.sort(
           (a, b) =>
@@ -410,7 +407,6 @@ const ProductCustomizer = () => {
     const indexAtClick = activeCardIndex;
     const currentCard = cards[indexAtClick];
 
-    // Same type, just swapping the base art -> no duplication risk
     if (currentCard?.editedCard === type) {
       setCards((prev) =>
         prev.map((card, i) =>
@@ -420,7 +416,6 @@ const ProductCustomizer = () => {
       return;
     }
 
-    // Block switching to a type that's already used by another slot
     const isDuplicate = cards.some(
       (card, i) => i !== indexAtClick && card.editedCard === type,
     );
@@ -438,7 +433,6 @@ const ProductCustomizer = () => {
           : card,
       );
 
-      // Keep deck ordered King -> Queen -> Jack -> Ace -> Joker
       const order = [...CARD_FLOW, "Joker_Card"];
       const changedCard = updated[indexAtClick];
       const sorted = [...updated].sort(
@@ -531,7 +525,6 @@ const ProductCustomizer = () => {
       ctx.drawImage(base, 0, 0, 750, 1050);
     }
 
-    // User photo overrides the layered character when present.
     if (card.userPhoto) {
       const img = await loadImage(card.userPhoto);
       const isJoker = card.editedCard === "Joker_Card";
@@ -649,7 +642,6 @@ const ProductCustomizer = () => {
         img.src = src;
       });
 
-    // User photo overrides the layered character when present.
     if (card.userPhoto) {
       const img = await loadImage(card.userPhoto);
       const boxW = 750 * 0.64,
@@ -752,9 +744,6 @@ const ProductCustomizer = () => {
 
     clearCart();
 
-    // Capture the browser-resolved frame/image geometry for each photo so
-    // the backend composites from real rendered rects instead of replaying
-    // a drag-delta transform. Attached to whatever boxImages we already have.
     let resolvedBoxImages = passedBoxImages || [];
     try {
       const captured = boxPreviewRef.current?.captureResolvedRects?.() ?? [];
@@ -792,7 +781,6 @@ const ProductCustomizer = () => {
       customization_mode: "photo",
     };
 
-    // ── Save composited images to IDB so checkout page survives refresh ──
     try {
       const { savePhotoCartImagesToIDB } = await import("@/store/useCartStore");
       await savePhotoCartImagesToIDB([cartItem]);
@@ -996,11 +984,11 @@ const ProductCustomizer = () => {
               }}
             />
             <div
-              className="pointer-events-none absolute right-[-52px] top-[18%] h-36 w-36 rounded-[24px] opacity-70"
+              className="pointer-events-none absolute -right-13 top-[18%] h-36 w-36 rounded-3xl opacity-70"
               style={{ background: "#D9EEFD" }}
             />
             <div
-              className="pointer-events-none absolute bottom-[-28px] left-[18%] h-40 w-40 rounded-[30px] opacity-60"
+              className="pointer-events-none absolute -bottom-7 left-[18%] h-40 w-40 rounded-[30px] opacity-60"
               style={{ background: "#EBF6FF" }}
             />
             <div
@@ -1010,7 +998,7 @@ const ProductCustomizer = () => {
               }}
             />
             <div
-              className="relative z-10 w-full max-w-[700px] overflow-hidden rounded-[30px] border p-4 shadow-2xl sm:p-6 md:p-8"
+              className="relative z-10 w-full max-w-175 overflow-hidden rounded-[30px] border p-4 shadow-2xl sm:p-6 md:p-8"
               style={{
                 background:
                   "linear-gradient(180deg, rgba(243,244,246,0.96) 0%, rgba(235,246,255,0.98) 100%)",
@@ -1118,7 +1106,7 @@ const ProductCustomizer = () => {
                       <img
                         src={jokerPreviewImage}
                         alt="Joker card preview"
-                        className="h-[200px] w-[145px] rounded-xl object-cover shadow-md sm:h-[240px] sm:w-[175px]"
+                        className="h-50 w-36.25 rounded-xl object-cover shadow-md sm:h-60 sm:w-43.75"
                         style={{
                           border: "1px solid #3CA9FF",
                           boxShadow: "0 12px 24px rgba(60, 169, 255, 0.24)",
@@ -1132,11 +1120,11 @@ const ProductCustomizer = () => {
           </main>
         ) : (
           <>
-            <header className="sticky top-[68px] z-50 w-full border-b border-gray-200 bg-white/95 backdrop-blur md:top-[76px]">
+            <header className="sticky top-17 z-50 w-full border-b border-gray-200 bg-white/95 backdrop-blur md:top-19">
               <div className="grid w-full grid-cols-1 xl:grid-cols-[260px_minmax(0,1fr)_350px]">
                 <div className="hidden xl:block" />
                 <div className="w-full px-3 py-2 md:px-6 md:py-2.5">
-                  <div className="mx-auto w-full max-w-[980px]">
+                  <div className="mx-auto w-full max-w-245">
                     <div className="flex w-full items-start justify-between">
                       {stepFlow.map((step, index) => {
                         const Icon = step.icon;
@@ -1179,7 +1167,7 @@ const ProductCustomizer = () => {
                             </button>
                             {index !== stepFlow.length - 1 && (
                               <div
-                                className={`mt-5 h-[2px] flex-1 mx-2 md:mx-3 md:mt-6 ${isCompleted ? "bg-[#3CA9FF]" : "bg-[#B8E6FE]"}`}
+                                className={`mt-5 h-0.5 flex-1 mx-2 md:mx-3 md:mt-6 ${isCompleted ? "bg-[#3CA9FF]" : "bg-[#B8E6FE]"}`}
                               />
                             )}
                           </Fragment>
@@ -1193,7 +1181,7 @@ const ProductCustomizer = () => {
             </header>
 
             <main className="grid w-full grid-cols-1 items-start xl:grid-cols-[260px_minmax(0,1fr)_350px] xl:h-[calc(100dvh-148px)]">
-              <aside className="hidden border-r border-gray-200 bg-white xl:sticky xl:top-[148px] xl:block xl:h-[calc(100dvh-148px)] xl:overflow-hidden">
+              <aside className="hidden border-r border-gray-200 bg-white xl:sticky xl:top-37 xl:block xl:h-[calc(100dvh-148px)] xl:overflow-hidden">
                 <PhotoCardSidebar
                   cards={cards}
                   activeIndex={activeCardIndex}
@@ -1218,7 +1206,6 @@ const ProductCustomizer = () => {
 
                 {activeStep === "box" ? (
                   <>
-                    {/* Box customization center */}
                     <div
                       className="xl:hidden w-full"
                       style={{
@@ -1228,8 +1215,8 @@ const ProductCustomizer = () => {
                       }}
                     >
                       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_35%_30%,rgba(255,255,255,0.92),rgba(242,244,248,0.7)_60%,rgba(242,244,248,1))]" />
-                      <div className="relative z-10 flex w-full max-w-[980px] flex-col items-center mx-auto">
-                        <div className="relative flex min-h-[420px] w-full items-center justify-center">
+                      <div className="relative z-10 flex w-full max-w-245 flex-col items-center mx-auto">
+                        <div className="relative flex min-h-105 w-full items-center justify-center">
                           <PhotoPortraitBoxPreview
                             ref={boxPreviewRef}
                             boxImages={boxImages}
@@ -1240,8 +1227,8 @@ const ProductCustomizer = () => {
                     </div>
                     <div className="hidden xl:block w-full">
                       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_35%_30%,rgba(255,255,255,0.92),rgba(242,244,248,0.7)_60%,rgba(242,244,248,1))]" />
-                      <div className="relative z-10 flex w-full max-w-[980px] flex-col items-center mx-auto">
-                        <div className="relative flex min-h-[650px] w-full items-center justify-center">
+                      <div className="relative z-10 flex w-full max-w-245 flex-col items-center mx-auto">
+                        <div className="relative flex min-h-162.5 w-full items-center justify-center">
                           <PhotoPortraitBoxPreview
                             ref={boxPreviewRef}
                             boxImages={boxImages}
@@ -1253,7 +1240,6 @@ const ProductCustomizer = () => {
                   </>
                 ) : (
                   <>
-                    {/* Mobile: push card above bottom sheet peek */}
                     <div
                       className="xl:hidden"
                       style={{
@@ -1264,8 +1250,8 @@ const ProductCustomizer = () => {
                       }}
                     >
                       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_35%_30%,rgba(255,255,255,0.92),rgba(242,244,248,0.7)_60%,rgba(242,244,248,1))]" />
-                      <div className="relative z-10 flex w-full max-w-[980px] flex-col items-center mx-auto">
-                        <div className="relative flex min-h-[420px] w-full items-center justify-center">
+                      <div className="relative z-10 flex w-full max-w-245 flex-col items-center mx-auto">
+                        <div className="relative flex min-h-105 w-full items-center justify-center">
                           <PhotoCardPreview
                             activeCard={activeCard}
                             previewCardNodeRef={previewCardNodeRef}
@@ -1275,11 +1261,10 @@ const ProductCustomizer = () => {
                         </div>
                       </div>
                     </div>
-                    {/* Desktop: original layout */}
                     <div className="hidden xl:block w-full">
                       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_35%_30%,rgba(255,255,255,0.92),rgba(242,244,248,0.7)_60%,rgba(242,244,248,1))]" />
-                      <div className="relative z-10 flex w-full max-w-[980px] flex-col items-center mx-auto">
-                        <div className="relative flex min-h-[650px] w-full items-center justify-center">
+                      <div className="relative z-10 flex w-full max-w-245 flex-col items-center mx-auto">
+                        <div className="relative flex min-h-162.5 w-full items-center justify-center">
                           <PhotoCardPreview
                             activeCard={activeCard}
                             previewCardNodeRef={previewCardNodeRef}
@@ -1293,7 +1278,7 @@ const ProductCustomizer = () => {
                 )}
               </section>
 
-              <aside className="hidden border-l border-gray-200 bg-white xl:sticky xl:top-[148px] xl:flex xl:flex-col xl:h-[calc(100dvh-148px)] xl:overflow-hidden">
+              <aside className="hidden border-l border-gray-200 bg-white xl:sticky xl:top-37 xl:flex xl:flex-col xl:h-[calc(100dvh-148px)] xl:overflow-hidden">
                 {activeStep === "box" ? (
                   <div className="min-h-0 flex-1 overflow-y-auto px-5">
                     <h2 className="py-4 font-semibold text-gray-700">

@@ -52,7 +52,7 @@ const DeckBoxPreview = ({ characterImages = [] }) => {
           </div>
 
           <div
-            className="absolute z-10"
+            className="absolute z-10 "
             style={{ top: "43%", left: "10%", width: "36%", height: "42%" }}
           >
             {(() => {
@@ -188,7 +188,7 @@ const DeckBoxPreview = ({ characterImages = [] }) => {
                   <img
                     src={characterImages[slot.i]}
                     alt={`Character ${slot.i}`}
-                    className="absolute w-full object-cover"
+                    className="absolute w-full object-cover "
                     style={{
                       top: "0%",
                       height: "100%",

@@ -1,25 +1,13 @@
 "use client";
-/**
- * PhotoBoxMobileCustomizerSheet
- * ------------------------------
- * Mobile-only bottom sheet for the Box customization step.
- * Mirrors PhotoMobileCustomizerSheet's peek/half/full drag-snap behavior,
- * mounting PhotoPortraitBoxCustomizer instead of PhotoSideController so the
- * box preview stays visible above the sheet, matching the card steps.
- * Desktop is completely unaffected — this renders only on <xl screens.
- */
-
 import { useEffect, useRef, useState } from "react";
 import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
 import PhotoPortraitBoxCustomizer from "./PhotoPortraitBoxCustomizer";
-
 const PEEK_HEIGHT = 80;
 const NAV_HEIGHT = 68;
 const HALF_RATIO = 0.48;
-
 const snapTo = (ratio) => {
   if (ratio < 0.15) return "peek";
-  if (ratio < 0.70) return "half";
+  if (ratio < 0.7) return "half";
   return "full";
 };
 
@@ -30,25 +18,18 @@ export default function PhotoBoxMobileCustomizerSheet({
   doneloading,
   doneButtonLabel,
 }) {
-  const [snap, setSnap] = useState("half"); // "peek" | "half" | "full"
+  const [snap, setSnap] = useState("half");
   const sheetRef = useRef(null);
   const dragRef = useRef({ startY: 0, startH: 0, dragging: false });
   const contentRef = useRef(null);
 
-  // ------------------------------------------------------------------
-  // Derived height
-  // ------------------------------------------------------------------
   const vh = typeof window !== "undefined" ? window.innerHeight : 800;
-
   const HEIGHT = {
     peek: PEEK_HEIGHT,
     half: Math.round(vh * HALF_RATIO),
     full: vh - NAV_HEIGHT,
   };
 
-  // ------------------------------------------------------------------
-  // Pointer / touch drag on the handle bar
-  // ------------------------------------------------------------------
   const onDragStart = (clientY) => {
     dragRef.current = {
       startY: clientY,
@@ -60,7 +41,10 @@ export default function PhotoBoxMobileCustomizerSheet({
   const onDragMove = (clientY) => {
     if (!dragRef.current.dragging || !sheetRef.current) return;
     const delta = dragRef.current.startY - clientY;
-    const newH = Math.max(PEEK_HEIGHT, Math.min(vh - NAV_HEIGHT, dragRef.current.startH + delta));
+    const newH = Math.max(
+      PEEK_HEIGHT,
+      Math.min(vh - NAV_HEIGHT, dragRef.current.startH + delta),
+    );
     sheetRef.current.style.height = `${newH}px`;
   };
 
@@ -75,7 +59,6 @@ export default function PhotoBoxMobileCustomizerSheet({
     if (sheetRef.current) sheetRef.current.style.height = "";
   };
 
-  // Mouse events (dev tools / desktop emulation)
   const handleMouseDown = (e) => {
     onDragStart(e.clientY);
     const move = (ev) => onDragMove(ev.clientY);
@@ -88,7 +71,6 @@ export default function PhotoBoxMobileCustomizerSheet({
     window.addEventListener("mouseup", up);
   };
 
-  // Touch events
   const handleTouchStart = (e) => onDragStart(e.touches[0].clientY);
   const handleTouchMove = (e) => {
     e.preventDefault();
@@ -96,14 +78,12 @@ export default function PhotoBoxMobileCustomizerSheet({
   };
   const handleTouchEnd = (e) => onDragEnd(e.changedTouches[0].clientY);
 
-  // ------------------------------------------------------------------
-  // Tap handle cycles: peek → half → full → peek
-  // ------------------------------------------------------------------
   const cycleSnap = () => {
-    setSnap((prev) => (prev === "peek" ? "half" : prev === "half" ? "full" : "peek"));
+    setSnap((prev) =>
+      prev === "peek" ? "half" : prev === "half" ? "full" : "peek",
+    );
   };
 
-  // Reset to half whenever this sheet first mounts (entering the box step)
   useEffect(() => {
     setSnap("half");
   }, []);
@@ -117,14 +97,21 @@ export default function PhotoBoxMobileCustomizerSheet({
         height: HEIGHT[snap],
         maxHeight: `calc(100dvh - ${NAV_HEIGHT}px)`,
         minHeight: PEEK_HEIGHT,
-        transition: dragRef.current.dragging ? "none" : "height 0.32s cubic-bezier(0.32,0.72,0,1)",
+        transition: dragRef.current.dragging
+          ? "none"
+          : "height 0.32s cubic-bezier(0.32,0.72,0,1)",
       }}
       ref={sheetRef}
     >
       {isOpen && (
         <div
           className="absolute inset-x-0 bottom-full"
-          style={{ height: "40vh", background: "linear-gradient(to top, rgba(0,0,0,0.08), transparent)", pointerEvents: "none" }}
+          style={{
+            height: "40vh",
+            background:
+              "linear-gradient(to top, rgba(0,0,0,0.08), transparent)",
+            pointerEvents: "none",
+          }}
         />
       )}
 
@@ -136,7 +123,9 @@ export default function PhotoBoxMobileCustomizerSheet({
           onTouchMove={handleTouchMove}
           onTouchEnd={handleTouchEnd}
           onClick={cycleSnap}
-          aria-label={isOpen ? "Collapse box customizer" : "Expand box customizer"}
+          aria-label={
+            isOpen ? "Collapse box customizer" : "Expand box customizer"
+          }
           role="button"
         >
           <span className="mb-2 block h-1.5 w-10 rounded-full bg-gray-300" />
@@ -151,7 +140,11 @@ export default function PhotoBoxMobileCustomizerSheet({
               </span>
             </div>
             <span className="flex h-7 w-7 items-center justify-center rounded-full bg-gray-100 text-gray-500">
-              {isOpen ? <IoIosArrowDown className="text-base" /> : <IoIosArrowUp className="text-base" />}
+              {isOpen ? (
+                <IoIosArrowDown className="text-base" />
+              ) : (
+                <IoIosArrowUp className="text-base" />
+              )}
             </span>
           </div>
         </div>

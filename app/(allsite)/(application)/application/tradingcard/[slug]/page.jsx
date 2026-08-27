@@ -9,13 +9,14 @@ import TradingCardSidebar from "@/app/componnent/TradingCardSidebar";
 import TradingBoxPreview from "@/app/componnent/TradingBoxPreview/TradingBoxPreview";
 import { ToastContainer } from "react-toastify";
 import TradingCardCaptureNode from "@/app/componnent/TradingCardCaptureNode";
-
+import { idbClear } from "./_tradingcard/lib/idb";
 export default function ProductCustomizer() {
   const state = useTradingCardState();
   const [mobileDrawer, setMobileDrawer] = useState(null);
-  console.log("state", state);
+  // console.log("state", state);
   React.useEffect(() => {
     const h = document.querySelector("nav")?.offsetHeight;
+    idbClear();
     state.setSavedSlots([]);
   }, []);
 

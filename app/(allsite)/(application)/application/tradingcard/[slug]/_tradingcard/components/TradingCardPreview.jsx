@@ -50,7 +50,7 @@ export default function TradingCardPreview({
 
   const containerRef = React.useRef(null);
   const [mobileScale, setMobileScale] = React.useState(0.56);
-
+  // console.log(workingcard);
   React.useEffect(() => {
     if (!isMobileCanvas) return;
 
@@ -214,7 +214,7 @@ export default function TradingCardPreview({
       className={
         isMobileCanvas
           ? "flex flex-col items-center justify-center w-full h-full overflow-hidden"
-          : "col-span-10 row-span-9 lg:row-span-10 lg:col-span-6 flex items-center justify-center -translate-y-[35px] lg:-translate-y-[50px] w-screen lg:w-full z-40"
+          : "col-span-10 row-span-9 lg:row-span-10 lg:col-span-6 flex items-center justify-center -translate-y-8.75 lg:-translate-y-12.5 w-screen lg:w-full z-40"
       }
     >
       <div
@@ -229,7 +229,7 @@ export default function TradingCardPreview({
           className={
             isMobileCanvas
               ? "rounded-xl border border-gray-200 shadow-xl ring-1 ring-gray-100 relative bg-white"
-              : "w-[255px] h-[373px] lg:w-[390px] lg:h-[570px] overflow-hidden rounded-xl border border-gray-200 shadow-xl ring-1 ring-gray-100 relative bg-white"
+              : "w-63.75 h-93.25 lg:w-97.5 lg:h-142.5 overflow-hidden rounded-xl border border-gray-200 shadow-xl ring-1 ring-gray-100 relative bg-white"
           }
           style={
             isMobileCanvas
@@ -468,7 +468,7 @@ export default function TradingCardPreview({
             onClick={() =>
               setworkingcard((prev) => (prev === "front" ? "back" : "front"))
             }
-            className="relative z-60 text-base lg:text-lg text-semibold text-white flex items-center gap-2 px-4 py-2 rounded-lg justify-center cursor-pointer bg-sky-400 w-[255px] lg:w-[160px] shadow-md hover:shadow-lg transition-all duration-200"
+            className="relative z-60 text-base lg:text-lg text-semibold text-white flex items-center gap-2 px-4 py-2 rounded-lg justify-center cursor-pointer bg-sky-400 w-63.75 lg:w-40 shadow-md hover:shadow-lg transition-all duration-200"
           >
             <BsArrowRepeat className="text-xl" />
             <span>

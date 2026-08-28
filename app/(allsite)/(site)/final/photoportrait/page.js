@@ -8,7 +8,7 @@ import { IoCartOutline } from "react-icons/io5";
 import { MdOutlineShoppingBag } from "react-icons/md";
 import PhotoPortraitBoxPreview from "@/app/componnent/PhotoPortraitBoxPreview";
 import useCartStore from "@/store/useCartStore";
-
+import Image from "next/image";
 const FinalCardsPage = () => {
   const router = useRouter();
   const photocart = usePhotoFinalPreview((state) => state.photocart);
@@ -52,32 +52,24 @@ const FinalCardsPage = () => {
   const ensurePhotoInCart = () => {
     const photoItem = photocart?.[0];
     if (!photoItem) return false;
-
-    // Keep the photo-preview store in sync (used by the preview/box flow)
     const alreadyInPhotoCart = photocart.some(
       (item) => item?.id === photoItem?.id,
     );
     if (!alreadyInPhotoCart) addToPhotoCart(photoItem);
-
-    // Also push into the real cart store — the checkout page reads from it
     const alreadyInCart = cart.some((item) => item?.id === photoItem?.id);
     if (!alreadyInCart) addToCart(photoItem);
-
     return true;
   };
 
   const captureBoxImage = async () => {
     if (!boxPreviewRef.current) return null;
-
     try {
       const domToImageModule = await import("dom-to-image-more");
       const domtoimage = domToImageModule.default ?? domToImageModule;
-
       if (typeof domtoimage.toPng !== "function") {
         console.error("toPng is not a function");
         return null;
       }
-
       const dataUrl = await domtoimage.toPng(boxPreviewRef.current, {
         width: boxPreviewRef.current.offsetWidth,
         height: boxPreviewRef.current.offsetHeight,
@@ -98,9 +90,7 @@ const FinalCardsPage = () => {
     e.preventDefault();
     if (!ensurePhotoInCart()) return;
     setCheckoutLoading(true);
-
     const boxImage = await captureBoxImage();
-
     const captured =
       boxPreviewCaptureRef.current?.captureResolvedRects?.() ?? [];
     let resolvedBoxImages = boxImages;
@@ -125,7 +115,6 @@ const FinalCardsPage = () => {
         boxImages: resolvedBoxImages,
       });
     }
-
     router.push("/my-cart/checkout");
     setCheckoutLoading(false);
   };
@@ -134,9 +123,7 @@ const FinalCardsPage = () => {
     e.preventDefault();
     if (!ensurePhotoInCart()) return;
     setLoading(true);
-
     const boxImage = await captureBoxImage();
-
     const captured =
       boxPreviewCaptureRef.current?.captureResolvedRects?.() ?? [];
     let resolvedBoxImages = boxImages;
@@ -180,12 +167,6 @@ const FinalCardsPage = () => {
           </h1>
         </div>
         <div className="flex items-center gap-2">
-          {/* <button
-                        onClick={handleBoxCustomization}
-                        className="border border-gray-200 bg-white hover:bg-gray-50 text-gray-700 p-2 rounded-md shadow-md cursor-pointer transition duration-100 flex items-center gap-2"
-                    >
-                        Customize Box
-                    </button> */}
           <button
             onClick={(e) => handleAddToCart(e)}
             className="border border-gray-200 bg-sky-400 hover:bg-sky-500 text-white p-2 rounded-md shadow-md cursor-pointer transition duration-100 flex items-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed"
@@ -213,9 +194,9 @@ const FinalCardsPage = () => {
         {finalProductCards.map((card, idx) => (
           <div
             key={idx}
-            className="relative mx-auto w-full max-w-[170px] sm:max-w-[190px] md:max-w-[200px] lg:max-w-[220px] aspect-[11/15] overflow-hidden rounded-3xl border border-gray-100 bg-white/60 shadow-md"
+            className="relative mx-auto w-full max-w-42.5 sm:max-w-47.5 md:max-w-50 lg:max-w-55 aspect-11/15 overflow-hidden rounded-3xl border border-gray-100 bg-white/60 shadow-md"
           >
-            <img
+            <Image
               src={card.image}
               alt={`Card ${card.rank || idx}`}
               className="absolute inset-0 w-full h-full object-contain"

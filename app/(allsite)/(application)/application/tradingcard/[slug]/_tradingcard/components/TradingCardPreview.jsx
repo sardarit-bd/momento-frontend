@@ -50,7 +50,6 @@ export default function TradingCardPreview({
 
   const containerRef = React.useRef(null);
   const [mobileScale, setMobileScale] = React.useState(0.56);
-  // console.log(workingcard);
   React.useEffect(() => {
     if (!isMobileCanvas) return;
 
@@ -65,9 +64,7 @@ export default function TradingCardPreview({
 
     const observer = new ResizeObserver(computeScale);
     if (containerRef.current) observer.observe(containerRef.current);
-
     window.addEventListener("orientationchange", computeScale);
-
     return () => {
       observer.disconnect();
       window.removeEventListener("orientationchange", computeScale);

@@ -13,10 +13,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
-// ── Type system — shared with the cart page ─────────────────────────────
-// Fraunces: headings / display copy. Inter: body copy, labels, buttons.
-// IBM Plex Mono: every number (prices, quantities).
+import Image from "next/image";
 const fraunces = Fraunces({
   subsets: ["latin"],
   weight: ["500", "600", "700"],
@@ -87,7 +84,6 @@ export default function CheckoutPage() {
 
   const [loading, setloading] = useState(false);
 
-  // Form State
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [phone, setphone] = useState("");
@@ -299,15 +295,11 @@ export default function CheckoutPage() {
     { code: "YE", name: "Yemen" },
   ];
 
-  // Deck Customization State
   const [deckFinish, setDeckFinish] = useState("prism");
   const { deckcart } = useDeckFinalPreview();
 
   const { cart } = useCartStore();
-  // Photo portrait box data lives in its own preview store (it persists the
-  // full base64 + user positions without the size-stripping the real cart
-  // store applies). Read it directly here so the checkout payload carries the
-  // exact box the user composed, including drag/zoom positions.
+
   const { photocart } = usePhotoFinalPreview();
   const [hydratedCart, setHydratedCart] = useState([]);
   const [hydrating, setHydrating] = useState(true);
@@ -326,14 +318,11 @@ export default function CheckoutPage() {
           restorePhotoCartImagesFromIDB,
         } = await import("@/store/useCartStore");
 
-        // Step 1: restore trading card images (existing logic — unchanged)
         const tradingRestored = await restoreCartImagesFromIDB(cart);
 
-        // Step 2: restore deck card images on top
         const deckRestored =
           await restoreDeckCartImagesFromIDB(tradingRestored);
 
-        // Step 3: restore photo portrait images on top
         const fullyRestored = await restorePhotoCartImagesFromIDB(deckRestored);
 
         setHydratedCart(fullyRestored);
@@ -376,13 +365,7 @@ export default function CheckoutPage() {
 
   const { boxs, setboxs } = useboxcartstore();
 
-  // ── Backend-verified pricing ──────────────────────────────────────────
-  // The cart's own `productUnitPrice` is client-side state and must never
-  // be trusted for the actual total shown or charged. As soon as the cart
-  // is hydrated, we ask the backend to price every line from product_id
-  // (+ package_slug for trading cards) so what's displayed here always
-  // matches what checkout will actually charge.
-  const [pricing, setPricing] = useState(null); // { items, subtotal, tax, total }
+  const [pricing, setPricing] = useState(null);
   const [pricingLoading, setPricingLoading] = useState(false);
   const [pricingError, setPricingError] = useState(false);
 
@@ -402,8 +385,6 @@ export default function CheckoutPage() {
         const items = hydratedCart.map((item) => ({
           product_id: parseInt(item.productId),
           qty: parseInt(item.productQuantity) || 1,
-          // Trading-card items store the chosen package slug under
-          // `selectedPackage` (set from ?package= in useTradingCardState.js).
           package_slug: item.selectedPackage ?? null,
           has_joker: hasJokerCard(item),
         }));
@@ -434,7 +415,6 @@ export default function CheckoutPage() {
     };
 
     fetchPricing();
-    // Re-price whenever the cart contents actually change, not on every render
   }, [hydrating, hydratedCart, token]);
 
   const findPricedLine = (item) => {
@@ -516,7 +496,6 @@ export default function CheckoutPage() {
   };
 
   const getItemPreviewCards = (item) => {
-    // ── Deck card restored from IDB: has rank + image (composited base64) ──
     if (
       item?.customization_mode === "deck" &&
       Array.isArray(item?.FinalProduct) &&
@@ -529,7 +508,6 @@ export default function CheckoutPage() {
       }));
     }
 
-    // ── Photo Portrait card restored from IDB: same rank + image shape as deck ──
     if (
       item?.customization_mode === "photo" &&
       Array.isArray(item?.FinalProduct) &&
@@ -542,7 +520,6 @@ export default function CheckoutPage() {
       }));
     }
 
-    // ── Deck card in-memory (not refreshed): has baseImage + selectedLayers ──
     if (
       Array.isArray(item?.FinalProduct) &&
       item.FinalProduct.some(isDeckLayeredCard)
@@ -556,7 +533,6 @@ export default function CheckoutPage() {
       }));
     }
 
-    // ── Trading card: has {side, image, card_pair_key} structure ──
     if (
       item?.customization_mode === "trading" &&
       Array.isArray(item?.FinalProduct)
@@ -575,7 +551,6 @@ export default function CheckoutPage() {
       if (cards.length > 0) return cards;
     }
 
-    // ── Fallback ──
     return getItemPreviewImages(item).map((src) => ({
       type: "image",
       src,
@@ -665,7 +640,6 @@ export default function CheckoutPage() {
     for (let index = 0; index < sourceCards.length; index += 1) {
       const card = sourceCards[index];
 
-      // Cards restored from IDB already have rank + image — use directly
       if (card?.rank && card?.image && isDataUrlImage(card.image)) {
         normalized.push({
           rank: card.rank,
@@ -676,7 +650,6 @@ export default function CheckoutPage() {
         continue;
       }
 
-      // Fallback: derive rank and fetch/convert image
       const rawType =
         card?.editedCard || card?.card_type || card?.type || card?.rank || null;
       const rank =
@@ -704,13 +677,10 @@ export default function CheckoutPage() {
   };
 
   const deriveCustomizationMode = (item) => {
-    // customization_mode is set explicitly at cart-item creation time and
-    // survives sanitizeForStorage/IDB restoration — trust it first.
     if (item?.customization_mode === "deck") return "deck";
     if (item?.customization_mode === "photo") return "photo";
     if (item?.customization_mode === "trading") return "trading";
 
-    // Fallback heuristics only for legacy/unlabeled items.
     const type = String(item?.productType || "").toLowerCase();
     if (type === "trading") return "trading";
     if (type === "customizable") return "deck";
@@ -761,9 +731,6 @@ export default function CheckoutPage() {
       return;
     }
 
-    // Never submit while prices haven't been verified against the backend,
-    // and never submit if verification failed — otherwise we'd be sending
-    // an order with no reliable idea of what it should cost.
     if (pricingLoading) {
       toast.warn("Please wait, we're verifying your cart prices.");
       return;
@@ -802,10 +769,7 @@ export default function CheckoutPage() {
           return {
             product_id: parseInt(item.productId),
             qty: parseInt(item.productQuantity),
-            // Price is deliberately NOT sent here. The checkout-session
-            // endpoint must re-resolve the authoritative price itself
-            // from product_id (+ package_slug) using CartPriceResolver —
-            // never trust a client-supplied amount for the actual charge.
+
             package_slug: item.selectedPackage ?? null,
             has_joker: hasJokerCard(item),
             name: item.productName || "Product",
@@ -839,12 +803,6 @@ export default function CheckoutPage() {
       const characterImages =
         deckItem?.CharacterImages ?? deckcart?.[0]?.CharacterImages ?? [];
 
-      // ── Photo portrait box ──────────────────────────────────────────────
-      // The photo preview store holds the user-composed box: `BoxImage` is the
-      // already-composited PNG (positions baked in) and `boxImages` are the
-      // source photos with their drag/zoom positions. We send both so the
-      // backend can either display the composite directly or regenerate the
-      // box from source images + positions.
       const photoPreviewItem = photocart?.[0];
       const photoBoxImage = photoPreviewItem?.BoxImage ?? null;
       const photoBoxImages = Array.isArray(photoPreviewItem?.boxImages)
@@ -870,12 +828,8 @@ export default function CheckoutPage() {
         gateway: "stripe",
         items: cartItems,
         userID: id,
-        // Composited box PNG (positions baked in) — used directly by the
-        // backend for display and as the TGC tuckbox outside face.
         tuckbox_image: photoBoxImage,
         tuckbox_characters: characterImages,
-        // Source box photos + their drag/zoom positions, so the backend can
-        // regenerate the photo portrait box on its template if desired.
         photo_box_images: photoBoxImages,
         trading_box_pack_title: persistedPackageTitle,
         trading_box_created_for:
@@ -931,8 +885,6 @@ export default function CheckoutPage() {
     </label>
   );
 
-  // Deck box preview data — shared by both the mobile-inline copy (rendered
-  // inside the deck item's row) and the desktop-only full-width copy below.
   const deckBoxCharacterImages =
     deckcart?.[0]?.CharacterImages?.length > 0
       ? deckcart[0].CharacterImages
@@ -959,12 +911,9 @@ export default function CheckoutPage() {
       style={{ fontFamily: "var(--font-body)" }}
     >
       <ToastContainer />
-
       <div className="container mx-auto grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8">
-        {/* LEFT COLUMN - Order Summary & Details */}
         <div className="lg:col-span-7 space-y-6">
-          {/* Card 1: Your Deck */}
-          <div className="bg-white rounded-3xl p-4 sm:p-6 shadow-sm border border-[#1B2420]/[0.06]">
+          <div className="bg-white rounded-3xl p-4 sm:p-6 shadow-sm border border-[#1B2420]/6">
             <div className="flex justify-between items-center mb-5">
               <h2
                 className="text-xl sm:text-2xl font-semibold"
@@ -997,7 +946,6 @@ export default function CheckoutPage() {
               Premium Packaging
             </div>
 
-            {/* Display Cart Items visually */}
             <div className="mb-3 lg:mb-6 space-y-5">
               {hydrating ? (
                 <div className="text-[#1B2420]/45 text-sm py-4 animate-pulse">
@@ -1019,8 +967,7 @@ export default function CheckoutPage() {
                   const pricedLine = findPricedLine(item);
                   const jokerPrice = Number(pricedLine?.joker_addon ?? 0);
                   const packagePrice = Number(pricedLine?.base_unit_price ?? 0);
-                  // Price breakdown is deck-only — trading cards just
-                  // show their card art, no per-line price panel.
+
                   const isDeckItem =
                     deriveCustomizationMode(item) === "deck" ||
                     deriveCustomizationMode(item) === "photo";
@@ -1030,8 +977,6 @@ export default function CheckoutPage() {
                       key={idx}
                       className="pb-6 border-b border-dashed border-[#1B2420]/12 last:border-0 last:pb-0"
                     >
-                      {/* Product identity + card visuals + price + (mobile) box preview,
-                          all stacked in one column on every breakpoint. */}
                       <div className="min-w-0">
                         <div className="flex items-baseline justify-between gap-3 mb-3">
                           <p
@@ -1059,7 +1004,7 @@ export default function CheckoutPage() {
                           )}
 
                           {previewCards.length === 0 && !jokerCard && (
-                            <div className="w-[88px] h-[123px] sm:w-24 sm:h-32 md:w-28 md:h-40 bg-[#F7F3EC] rounded-xl border border-[#1B2420]/10 overflow-hidden relative flex items-center justify-center text-[#1B2420]/20">
+                            <div className="w-22 h-30.75 sm:w-24 sm:h-32 md:w-28 md:h-40 bg-[#F7F3EC] rounded-xl border border-[#1B2420]/10 overflow-hidden relative flex items-center justify-center text-[#1B2420]/20">
                               <svg
                                 xmlns="http://www.w3.org/2000/svg"
                                 width="24"
@@ -1143,8 +1088,6 @@ export default function CheckoutPage() {
                             )
                           ))}
 
-                        {/* Price breakdown — horizontal strip, full width, directly
-                              under the card art. Same markup on every breakpoint. */}
                         {isDeckItem && (
                           <div
                             className="mt-4 pt-4 pb-1 border-t border-dashed border-[#1B2420]/10 space-y-2 text-sm"
@@ -1196,18 +1139,12 @@ export default function CheckoutPage() {
                           </div>
                         )}
                       </div>
-
-                      {/* Mobile-only Box Preview — sits between the price strip and
-                            the next item on narrow screens. Hidden at lg: and up,
-                            where the full-width Box Preview below the cart-item
-                            list (see the IIFE block further down) takes over. */}
                     </div>
                   );
                 })
               )}
             </div>
 
-            {/* Trading Card Box Preview — completely isolated from deck card logic */}
             {cart.some((item) => item.productType === "trading") &&
               boxs?.some((b) => b?.bfor === "trading") && (
                 <div className="mb-6">
@@ -1218,7 +1155,7 @@ export default function CheckoutPage() {
                     Trading Card Box Preview
                   </h3>
                   <div className="flex flex-wrap gap-3">
-                    <div className="w-[240px] sm:w-[300px] md:w-[360px] rounded-2xl border border-[#1B2420]/10 bg-white p-3 shadow-sm">
+                    <div className="w-60 sm:w-75md:w-90 rounded-2xl border border-[#1B2420]/10 bg-white p-3 shadow-sm">
                       <HoverZoomImage
                         src={boxs.find((b) => b?.bfor === "trading")?.BoxImage}
                         alt="trading-card-box-preview"
@@ -1271,9 +1208,8 @@ export default function CheckoutPage() {
           </div>
         </div>
 
-        {/* RIGHT COLUMN - Payment Details Form */}
         <div className="lg:col-span-5">
-          <div className="bg-white rounded-3xl shadow-sm border border-[#1B2420]/[0.06] p-5 sm:p-6 md:p-8 lg:sticky lg:top-6">
+          <div className="bg-white rounded-3xl shadow-sm border border-[#1B2420]/6 p-5 sm:p-6 md:p-8 lg:sticky lg:top-6">
             <h2
               className="text-xl sm:text-2xl font-semibold mb-6 flex items-center gap-2"
               style={{ fontFamily: "var(--font-display)" }}
@@ -1442,9 +1378,6 @@ export default function CheckoutPage() {
   );
 }
 
-// Renders a single card thumbnail (rank card or Joker) at a given size.
-// Defined at module level (not inside CheckoutPage) so it isn't
-// recreated on every render of every cart line.
 function renderCardThumb(item, previewCard, imageIndex, sizeClass) {
   return (
     <div
@@ -1453,7 +1386,7 @@ function renderCardThumb(item, previewCard, imageIndex, sizeClass) {
     >
       {previewCard.type === "deck" ? (
         <div className="relative w-full h-full bg-white">
-          <img
+          <Image
             src={previewCard.card.baseImage}
             alt={`${item?.productName || "Product"} customized card ${imageIndex + 1}`}
             className="w-full h-full object-cover bg-white"
@@ -1461,12 +1394,12 @@ function renderCardThumb(item, previewCard, imageIndex, sizeClass) {
           {deckPreviewLayers.map((layer) =>
             previewCard.card?.selectedLayers?.[layer] ? (
               <div key={`${imageIndex}-${layer}`}>
-                <img
+                <Image
                   src={previewCard.card.selectedLayers[layer]}
                   alt={`${layer} top`}
                   className="absolute left-1/2 -translate-x-1/2 top-[8%] w-[64%] h-[43%] object-contain"
                 />
-                <img
+                <Image
                   src={previewCard.card.selectedLayers[layer]}
                   alt={`${layer} bottom`}
                   className="absolute left-1/2 -translate-x-1/2 bottom-[8%] w-[64%] h-[43%] object-contain scale-y-[-1]"
@@ -1476,7 +1409,7 @@ function renderCardThumb(item, previewCard, imageIndex, sizeClass) {
           )}
         </div>
       ) : (
-        <img
+        <Image
           src={previewCard.src}
           alt={`${item?.productName || "Product"} preview ${imageIndex + 1}`}
           className="w-full h-full object-cover bg-white"
@@ -1486,12 +1419,6 @@ function renderCardThumb(item, previewCard, imageIndex, sizeClass) {
   );
 }
 
-// Ecommerce-style magnifier: the region under the cursor zooms in and pans
-// as the cursor moves, rather than a uniform CSS scale-on-hover. Works by
-// overlaying a second copy of the same image, sized up by `zoom`, whose
-// background-position is driven by the cursor's relative position inside
-// the container — so it looks like you're "moving a magnifying glass"
-// over the image.
 function HoverZoomImage({ src, alt, zoom = 2.5, className = "" }) {
   const containerRef = useRef(null);
   const [isHovering, setIsHovering] = useState(false);
@@ -1517,15 +1444,12 @@ function HoverZoomImage({ src, alt, zoom = 2.5, className = "" }) {
       onMouseLeave={() => setIsHovering(false)}
       onMouseMove={handleMouseMove}
     >
-      {/* Base image — always visible, defines the box's natural size */}
-      <img
+      <Image
         src={src}
         alt={alt}
         draggable={false}
         className="h-auto w-full object-contain block"
       />
-
-      {/* Zoomed overlay — only rendered while hovering, panned to follow cursor */}
       {isHovering && (
         <div
           className="absolute inset-0 pointer-events-none"

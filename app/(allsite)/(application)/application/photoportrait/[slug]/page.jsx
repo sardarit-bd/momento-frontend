@@ -142,7 +142,6 @@ const ProductCustomizer = () => {
   const boxImagesStorageKey = `photoBoxImages:${slug}`;
   const previewCardNodeRef = useRef(null);
   const boxPreviewRef = useRef(null);
-
   const [product, setProduct] = useState(null);
   const [cards, setCards] = useState([]);
   const [activeCardIndex, setActiveCardIndex] = useState(0);

@@ -9,7 +9,7 @@ import { BiLeftArrowAlt } from "react-icons/bi";
 import { IoCartOutline } from "react-icons/io5";
 import { MdOutlineShoppingBag } from "react-icons/md";
 import DeckBoxPreview from "@/app/componnent/DeckBoxPreview";
-
+import Image from "next/image";
 const FinalCardsPage = () => {
   const { addToCart, cart } = useCartStore();
   const { boxs } = useboxcartstore();
@@ -173,7 +173,7 @@ const FinalCardsPage = () => {
             key={idx}
             className="relative mx-auto w-full max-w-42.5 sm:max-w-47.5 `md:max-w-50 lg:max-w-55 aspect-5/7 overflow-hidden rounded-3xl border border-gray-100 bg-white/60 shadow-md"
           >
-            <img
+            <Image
               src={card.image}
               alt={`Card ${card.rank || idx}`}
               className="absolute inset-0 w-full h-full object-contain"

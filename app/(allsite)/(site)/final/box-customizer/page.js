@@ -15,15 +15,12 @@ const BoxCustomizerPage = () => {
   const photocart = usePhotoFinalPreview((state) => state.photocart);
   const updateCart = usePhotoFinalPreview((state) => state.updateCart);
   const addToPhotoCart = usePhotoFinalPreview((state) => state.addToCart);
-
   const { addToCart, cart } = useCartStore();
-
   const [loading, setLoading] = useState(false);
   const [checkoutLoading, setCheckoutLoading] = useState(false);
   const [boxImages, setBoxImages] = useState([]);
   const boxPreviewRef = useRef(null);
   const boxPreviewCaptureRef = useRef(null);
-
   useEffect(() => {
     if (photocart && photocart[0]) {
       const savedBoxImages = photocart[0].boxImages;
@@ -35,16 +32,13 @@ const BoxCustomizerPage = () => {
 
   const captureBoxImage = async () => {
     if (!boxPreviewRef.current) return null;
-
     try {
       const domToImageModule = await import("dom-to-image-more");
       const domtoimage = domToImageModule.default ?? domToImageModule;
-
       if (typeof domtoimage.toPng !== "function") {
         console.error("toPng is not a function");
         return null;
       }
-
       const dataUrl = await domtoimage.toPng(boxPreviewRef.current, {
         width: boxPreviewRef.current.offsetWidth,
         height: boxPreviewRef.current.offsetHeight,
@@ -60,14 +54,10 @@ const BoxCustomizerPage = () => {
   const ensureInCart = () => {
     const photoItem = photocart?.[0];
     if (!photoItem) return false;
-
-    // Keep the photo-preview store in sync (used by the preview/box flow)
     const alreadyInPhotoCart = photocart.some(
       (item) => item?.id === photoItem?.id,
     );
     if (!alreadyInPhotoCart) addToPhotoCart(photoItem);
-
-    // Also push into the real cart store — the checkout page reads from it
     const alreadyInCart = cart.some((item) => item?.id === photoItem?.id);
     if (!alreadyInCart) addToCart(photoItem);
 
@@ -78,10 +68,7 @@ const BoxCustomizerPage = () => {
     e.preventDefault();
     if (!ensureInCart()) return;
     setCheckoutLoading(true);
-
     const boxImage = await captureBoxImage();
-
-    // Capture browser-resolved frame/image geometry for each photo.
     const captured =
       boxPreviewCaptureRef.current?.captureResolvedRects?.() ?? [];
     let resolvedBoxImages = boxImages;
@@ -114,9 +101,7 @@ const BoxCustomizerPage = () => {
     e.preventDefault();
     if (!ensureInCart()) return;
     setLoading(true);
-
     const boxImage = await captureBoxImage();
-
     const captured =
       boxPreviewCaptureRef.current?.captureResolvedRects?.() ?? [];
     let resolvedBoxImages = boxImages;

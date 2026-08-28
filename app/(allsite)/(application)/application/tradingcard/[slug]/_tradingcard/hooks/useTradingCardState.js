@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { toast } from "react-toastify";
-
 import useCartStore from "@/store/useCartStore";
 import useboxcartstore from "@/store/useboxcartstore";
 import generateUserId from "@/utilis/helper/generateUserId";
@@ -9,33 +8,21 @@ import MakeGet from "@/utilis/requestrespose/get";
 import ImageResize from "@/utilis/helper/ImageResize";
 import captureNodeClean from "@/utilis/helper/captureNodeClean";
 import captureNodeScreenshotForTranding from "@/utilis/helper/captureNodeScreenshotForTranding";
-
+import Image from "next/image";
 import { idbGet, idbPut, idbDelete, idbGetKeysByPrefix } from "../lib/idb";
 import {
-  fonts,
-  cardTypeOptions,
-  attributeIconOptions,
   defaultBackHighlights,
   PACKAGE_CONFIG,
   TEMPLATE_MAP,
 } from "../constants";
 
-const SLOT_TTL_MS = 72 * 60 * 60 * 1000; // 72 hours
-
+const SLOT_TTL_MS = 72 * 60 * 60 * 1000;
 const isExpired = (savedAt) => !savedAt || Date.now() - savedAt > SLOT_TTL_MS;
 
-/**
- * Waits until every <img> inside `node` has fully decoded.
- * Handles Next.js <Image> which renders real <img> tags in the DOM.
- */
 async function waitForImagesToLoad(node) {
   if (!node) return;
-
-  // Give React one more tick to flush any pending renders
   await new Promise((r) => setTimeout(r, 50));
-
   const imgs = Array.from(node.querySelectorAll("img"));
-
   await Promise.all(
     imgs.map((img) => {
       if (img.complete && img.naturalWidth > 0) return Promise.resolve();
@@ -58,10 +45,8 @@ export function useTradingCardState() {
   const selectedPackage = searchParams.get("package");
   const selectedTemplate = searchParams.get("template");
   const router = useRouter();
-
   const { addToCart } = useCartStore();
   const { setboxs } = useboxcartstore();
-
   const templateConfig = TEMPLATE_MAP[selectedTemplate] || null;
   const [editingSlotId, setEditingSlotId] = useState(null);
 
@@ -111,7 +96,6 @@ export function useTradingCardState() {
   const hasHydratedFromStorage = useRef(false);
   const canPersistCustomization = useRef(false);
   const getBaseTradingDone = useRef(false);
-
   const previewCardNodeRef = useRef(null);
   const captureNodeRef = useRef(null);
   const tradingBoxPreviewRef = useRef(null);
@@ -120,7 +104,6 @@ export function useTradingCardState() {
     if (!tradingBoxPreviewRef.current) return null;
     try {
       const domtoimage = (await import("dom-to-image-more")).default;
-
       const dataUrl = await domtoimage.toPng(tradingBoxPreviewRef.current, {
         width: tradingBoxPreviewRef.current.offsetWidth,
         height: tradingBoxPreviewRef.current.offsetHeight,
@@ -142,38 +125,29 @@ export function useTradingCardState() {
       return null;
     }
   };
-
   const [smallconOpen, setsmallconOpen] = useState(false);
   const [sidebarTab, setSidebarTab] = useState("front");
   const [isCardTypeOpen, setIsCardTypeOpen] = useState(false);
-
   const [frontImages, setfrontImages] = useState(null);
   const [backImages, setbackImages] = useState(null);
-
   const [baseFront, setBaseFront] = useState(null);
   const [baseBack, setBaseBack] = useState(null);
   const [uploads, setUploads] = useState([]);
   const [texts, setTexts] = useState([]);
-
   const [activeText, setActiveText] = useState(null);
   const [activeImage, setActiveImage] = useState(null);
   const [workingcard, setworkingcard] = useState("front");
   const [fetchingData, setfetchingData] = useState(null);
   const [fetchingDataLoading, setfetchingDataLoading] = useState(false);
-
   const [savedSlots, setSavedSlots] = useState([]);
   const savedSlotsRef = useRef([]);
 
   useEffect(() => {
     savedSlotsRef.current = savedSlots;
   }, [savedSlots]);
-
   const [spinloading, setspinloading] = useState(false);
   const [doneloading, setdoneloading] = useState(false);
-
-  // text state
   const [cardti, setcardti] = useState("Title");
-  // const [carddes, setcarddes] = useState('Created For');
   const [carddes, setcarddes] = useState(() => {
     if (typeof window !== "undefined") {
       return localStorage.getItem("persistent_carddes") ?? "Created For";
@@ -219,8 +193,6 @@ export function useTradingCardState() {
     useState(null);
 
   const [cardfinder, setcardfinder] = useState(0);
-
-  // text input limit states
   const [cardtiltelimite, setcardtiltelimite] = useState(8);
   const [carddeslimite, setcarddeslimite] = useState(15);
   const [packageTitlelimite, setpackageTitlelimite] = useState(15);
@@ -228,46 +200,34 @@ export function useTradingCardState() {
   const [name2limite, setname2limite] = useState(15);
   const [name3limite, setname3limite] = useState(15);
   const [acarddatelimite, setacarddatelimite] = useState(15);
-
-  // color state
   const [isblack, setisblack] = useState(false);
 
   const getBaseTrading = useCallback(
     async (slug) => {
-      // At the top of getBaseTrading:
       const persistedCarddes =
         localStorage.getItem("persistent_carddes") ?? "Created For";
       setcarddes(persistedCarddes);
-
       const persistedPackageTitle =
         localStorage.getItem("persistent_packageTitle") ?? "";
       setPackageTitle(persistedPackageTitle);
-
       setfetchingDataLoading(true);
       const res = await MakeGet(`api/shop/${slug}`);
       const apiFronts = res?.data?.customizations?.trading_fronts;
-
       setfrontImages(apiFronts);
       setbackImages(res?.data?.customizations?.trading_backs);
       setfetchingData(res?.data);
-
       const defaultFront =
         templateConfig?.image ||
         (res?.data?.customizations?.trading_fronts?.[0]?.image ?? null);
       const defaultBack =
         res?.data?.customizations?.trading_backs?.[0]?.image || null;
-
       let restoredFromStorage = false;
-
       if (customizationStorageKey) {
         try {
-          // BLOCK A — restore canvas state from IndexedDB
           const saved = await idbGet(customizationStorageKey);
           const persistedCarddes =
             localStorage.getItem("persistent_carddes") ?? "Created For";
-
           setcarddes(persistedCarddes);
-
           if (saved) {
             setcardfinder(saved?.cardfinder ?? 0);
             setBaseFront(saved?.baseFront || defaultFront);
@@ -317,7 +277,6 @@ export function useTradingCardState() {
             hasHydratedFromStorage.current = true;
           }
 
-          // BLOCK B — restore slots from IndexedDB
           const slotPrefix = `${customizationStorageKey}:slot:`;
           const allSlotKeys = await idbGetKeysByPrefix(slotPrefix);
 
@@ -326,7 +285,7 @@ export function useTradingCardState() {
             const slotData = await idbGet(k);
             if (!slotData) continue;
             if (isExpired(slotData.savedAt)) {
-              await idbDelete(k); // clean up expired
+              await idbDelete(k);
               continue;
             }
             if (
@@ -346,11 +305,9 @@ export function useTradingCardState() {
 
           restoredSlots.sort((a, b) => a.savedAt - b.savedAt);
           const validSlots = restoredSlots.slice(0, packageConfig.designs);
-
           if (validSlots.length > 0) {
             setSavedSlots(validSlots);
             savedSlotsRef.current = validSlots;
-
             const allDone = validSlots.length >= packageConfig.designs;
             const lastSlot = validSlots[validSlots.length - 1];
             const s = lastSlot.snapshot;
@@ -385,8 +342,6 @@ export function useTradingCardState() {
               hasHydratedFromStorage.current = true;
             }
           }
-
-          // BLOCK C — clean up legacy localStorage slot entries
           const legacyKeysToRemove = [];
           for (let i = 0; i < localStorage.length; i++) {
             const k = localStorage.key(i);
@@ -404,8 +359,6 @@ export function useTradingCardState() {
         setBaseFront(defaultFront);
         setBaseBack(defaultBack);
       }
-
-      // Always apply the user-chosen template (overrides any restored state)
       if (templateConfig) {
         setBaseFront(templateConfig.image);
         setcardfinder(templateConfig.cardfinder);
@@ -432,14 +385,12 @@ export function useTradingCardState() {
       setAttrIconTwo("/attribute-images/attribute_3.png");
       setAttrIconThree("/attribute-images/attribute_4.png");
       setacarddate("CLASS OF 2026");
-
       setcardtiltelimite(15);
       setcarddeslimite(15);
       setnamelimite(15);
       setname2limite(15);
       setname3limite(15);
       setacarddatelimite(15);
-
       setcardfinder(0);
     } else {
       setcardti("Profile");
@@ -454,14 +405,12 @@ export function useTradingCardState() {
       setacarddate(
         "Lorem Ipsum 10, This Momento card Customization One of the best Placeform",
       );
-
       setcardtiltelimite(15);
       setcarddeslimite(15);
       setnamelimite(15);
       setname2limite(95);
       setname3limite(15);
       setacarddatelimite(95);
-
       setcardfinder(0);
     }
   }, [workingcard]);
@@ -636,8 +585,6 @@ export function useTradingCardState() {
       ),
     );
   };
-
-  // Unused in main flow, but kept to prevent breakage
   const [cards, setCards] = useState([]);
   const [activeCardIndex, setActiveCardIndex] = useState(0);
   const selectLayerImage = (layer, url) => {
@@ -674,13 +621,10 @@ export function useTradingCardState() {
       return;
     }
 
-    // ✅ Read fresh from localStorage to avoid stale closure
     const freshPackageTitle =
       localStorage.getItem("persistent_packageTitle") ?? packageTitle ?? "";
     const freshCarddes =
       localStorage.getItem("persistent_carddes") ?? carddes ?? "";
-
-    // ✅ Validate packageTitle not cardti
     if (!freshPackageTitle.trim()) {
       toast.warn("Please enter a Pack Title for your box.");
       return;
@@ -745,8 +689,8 @@ export function useTradingCardState() {
 
       const product = {
         id: generateUserId(),
-        packTitle: freshPackageTitle, // ✅ fresh value
-        createdFor: freshCarddes, // ✅ fresh value
+        packTitle: freshPackageTitle,
+        createdFor: freshCarddes,
         productId: fetchingData?.id,
         productSlug: fetchingData?.slug,
         productName: fetchingData?.name,
@@ -774,9 +718,6 @@ export function useTradingCardState() {
           bfor: "trading",
         },
       ]);
-
-      // addToCart(product);
-      // router.push("/my-cart/checkout");
       addToCart(product);
       const { saveCartImagesToIDB } = await import("@/store/useCartStore");
       await saveCartImagesToIDB([product]);
@@ -1051,7 +992,11 @@ export function useTradingCardState() {
       iconValue.startsWith("/attribute-images/")
     ) {
       return (
-        <img src={iconValue} alt={altText} className="h-7 w-7 object-contain" />
+        <Image
+          src={iconValue}
+          alt={altText}
+          className="h-7 w-7 object-contain"
+        />
       );
     }
     return <span className="text-xl leading-none">{iconValue}</span>;
@@ -1122,12 +1067,8 @@ export function useTradingCardState() {
     templateConfig,
     packageConfig,
     customizationStorageKey,
-
-    // refs
     previewCardNodeRef,
     tradingBoxPreviewRef,
-
-    // states
     smallconOpen,
     setsmallconOpen,
     sidebarTab,
@@ -1221,15 +1162,11 @@ export function useTradingCardState() {
     setisblack,
     editingSlotId,
     setEditingSlotId,
-
-    // computed
     displayAttributeOne,
     displayAttributeTwo,
     displayAttributeThree,
     backHighlightsPreview,
     backDateDisplay,
-
-    // functions
     handleNext,
     handleEditSlot,
     handleDeleteSlot,

@@ -13,7 +13,6 @@ import { idbClear } from "./_tradingcard/lib/idb";
 export default function ProductCustomizer() {
   const state = useTradingCardState();
   const [mobileDrawer, setMobileDrawer] = useState(null);
-  // console.log("state", state);
   React.useEffect(() => {
     const h = document.querySelector("nav")?.offsetHeight;
     idbClear();
@@ -597,13 +596,6 @@ function MobileTabStrip({ activeTab, onTabClick }) {
   ];
 
   return (
-    /*
-     * position:absolute right:0, centered vertically in the canvas div.
-     * marginRight:-1 hides the pill's right border flush with the screen
-     * edge while keeping the rounded-left corners fully visible.
-     * The parent canvas div must have overflow:visible (not hidden) for
-     * this to render without clipping — which it now does.
-     */
     <div
       style={{
         position: "absolute",
@@ -621,7 +613,7 @@ function MobileTabStrip({ activeTab, onTabClick }) {
           background: "rgba(255,255,255,0.95)",
           backdropFilter: "blur(8px)",
           border: "1px solid #e5e7eb",
-          borderRight: "none", // hide flush-right border
+          borderRight: "none",
           borderRadius: "16px 0 0 16px",
           boxShadow: "-2px 0 12px rgba(0,0,0,0.08)",
           overflow: "hidden",
@@ -668,7 +660,6 @@ function MobileTabStrip({ activeTab, onTabClick }) {
   );
 }
 
-/* ─── Mobile Bottom Saved-Slots Bar ────────────────────────────── */
 function MobileSavedSlotsBar({
   savedSlots,
   packageConfig,
@@ -680,7 +671,6 @@ function MobileSavedSlotsBar({
 }) {
   return (
     <div style={{ height: "100%", display: "flex", flexDirection: "column" }}>
-      {/* Bar header */}
       <div
         style={{
           display: "flex",
@@ -698,7 +688,6 @@ function MobileSavedSlotsBar({
         </span>
       </div>
 
-      {/* Horizontally scrollable slots */}
       <div
         style={{
           flex: 1,
@@ -769,7 +758,6 @@ function MobileSavedSlotsBar({
   );
 }
 
-/* ─── Individual slot card in the bottom bar ────────────────────── */
 function MobileSavedSlotCard({
   isEditing,
   label,
@@ -857,7 +845,6 @@ function MobileSavedSlotCard({
         transition: "border 0.15s, box-shadow 0.15s",
       }}
     >
-      {/* Mini preview */}
       <div
         style={{
           width: 48,
@@ -911,7 +898,6 @@ function MobileSavedSlotCard({
         )}
       </div>
 
-      {/* Label + status */}
       <div style={{ marginTop: 4, textAlign: "center", lineHeight: 1 }}>
         <p
           style={{ fontSize: 10, fontWeight: 600, color: "#374151", margin: 0 }}
@@ -929,7 +915,6 @@ function MobileSavedSlotCard({
         </span>
       </div>
 
-      {/* Delete button */}
       {onDelete && (
         <button
           onClick={(e) => {
@@ -1006,14 +991,9 @@ function MobileCardScaler({ children }) {
         justifyContent: "center",
       }}
     >
-      {/* 
-                This div is 1024px wide — wide enough to trigger Tailwind's `lg:` 
-                breakpoint inside the card components, so lg:text-4xl, lg:left-8 
-                etc. all apply correctly. Then we scale it down to fit the screen.
-            */}
       <div
         style={{
-          width: 1024, // ← forces lg: breakpoint
+          width: 1024,
           height: 570,
           transform: `scale(${scale})`,
           transformOrigin: "center center",

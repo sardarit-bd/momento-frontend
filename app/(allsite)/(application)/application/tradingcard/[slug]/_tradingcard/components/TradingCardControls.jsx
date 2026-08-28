@@ -10,13 +10,9 @@ import {
 } from "react-icons/bs";
 import { CiCirclePlus } from "react-icons/ci";
 import CharactersCountComponent from "@/app/componnent/CharactersCountComponent";
-
 import { TEMPLATE_MAP, attributeIconOptions } from "../constants";
-
 export default function TradingCardControls({
-  /* ── new mobile prop ── */
   isMobileDrawer = false,
-  /* ── all original props ── */
   sidebarTab,
   setSidebarTab,
   setworkingcard,
@@ -97,21 +93,14 @@ export default function TradingCardControls({
 }) {
   const searchParams = useSearchParams();
   const selectedTemplate = searchParams.get("template");
-
   const filteredTemplates = Object.entries(TEMPLATE_MAP).filter(([key]) => {
     if (selectedTemplate) return key === selectedTemplate;
     return true;
   });
 
-  /* ─────────────────────────────────────────────────────────────
-       MOBILE DRAWER MODE
-       Renders as a plain flex column (no positioning, no toggle bar)
-       because the parent page already handles the drawer shell.
-    ───────────────────────────────────────────────────────────── */
   if (isMobileDrawer) {
     return (
       <div className="flex flex-col h-full">
-        {/* Scrollable content */}
         <div className="flex-1 overflow-y-auto px-4 py-3 pb-28 space-y-4">
           <PanelContent
             sidebarTab={sidebarTab}
@@ -183,50 +172,20 @@ export default function TradingCardControls({
             renderIconPreview={renderIconPreview}
           />
         </div>
-
-        {/* Fixed Save/Next button at bottom of drawer */}
-        {/* {savedSlots.length >= 0 && (
-                    <div className="flex-shrink-0 px-4 pb-4 pt-2 border-t border-gray-100 bg-white">
-                        <button
-                            onClick={handleNext}
-                            disabled={spinloading || doneloading || (!baseFront && !(savedSlots.length >= packageConfig.designs && editingSlotId === null))}
-                            className="w-full bg-[#00bcff] text-white text-lg font-semibold py-3 rounded-xl transition flex items-center justify-center gap-2 disabled:opacity-60 shadow-md"
-                        >
-                            {doneloading || spinloading
-                                ? "Please wait..."
-                                : editingSlotId
-                                    ? "Update Design"
-                                    : savedSlots.length >= packageConfig.designs
-                                        ? workingcard === "front"
-                                            ? "Customize Back Card"
-                                            : "Go to Checkout"
-                                        : savedSlots.length >= packageConfig.designs - 1
-                                            ? workingcard === "front"
-                                                ? `Save & Customize Back (${savedSlots.length + 1}/${packageConfig.designs})`
-                                                : `Save & Checkout (${savedSlots.length + 1}/${packageConfig.designs})`
-                                            : `Next (${savedSlots.length + 1}/${packageConfig.designs})`
-                            }
-                        </button>
-                    </div>
-                )} */}
       </div>
     );
   }
 
-  /* ─────────────────────────────────────────────────────────────
-       DESKTOP MODE  (original layout — completely unchanged)
-    ───────────────────────────────────────────────────────────── */
   return (
     <div
       className={`hidden lg:block absolute transition-all duration-300 ${smallconOpen ? "top-px" : "top-3/4 sm:top-2/3"} lg:static col-span-10 row-span-1 lg:row-span-10 lg:col-span-4 w-full max-w-full h-full bg-white border-t border-gray-300 lg:border-l lg:border-gray-200 px-2 md:px-6 lg:px-6 mt-2 lg:mt-0 shadow-2xl lg:shadow-md z-50 overflow-x-hidden`}
     >
-      {/* Mobile swipe handle — desktop ignores this */}
       <div className="w-full flex lg:hidden items-center justify-center">
         <div
           onClick={() => setsmallconOpen(!smallconOpen)}
           className="w-fit p-2 rounded-full cursor-pointer"
         >
-          <div className="bg-sky-300 w-[100px] h-[10px] rounded-full flex items-center justify-center p-2">
+          <div className="bg-sky-300 w-25 h-2.5 rounded-full flex items-center justify-center p-2">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               className={`text-white w-3 h-3 transition-transform ${!smallconOpen ? "rotate-180" : ""}`}
@@ -243,7 +202,6 @@ export default function TradingCardControls({
       </div>
 
       <div className="h-full lg:h-[83vh] overflow-y-scroll mt-2 pb-32 lg:pb-0">
-        {/* Tabs */}
         <div className="sticky top-0 z-20 bg-white border-b border-gray-200 backdrop-blur-sm">
           <div className="grid grid-cols-3">
             <button
@@ -382,10 +340,6 @@ export default function TradingCardControls({
   );
 }
 
-/* ─────────────────────────────────────────────────────────────────
-   PanelContent — shared between desktop and mobile drawer.
-   Renders the correct section based on `sidebarTab`.
-───────────────────────────────────────────────────────────────── */
 function PanelContent({
   sidebarTab,
   filteredTemplates,
@@ -457,9 +411,8 @@ function PanelContent({
 }) {
   return (
     <>
-      {/* ── Front Base Card ── */}
       {sidebarTab === "front" && (
-        <div className="rounded-2xl border border-slate-200 bg-gradient-to-b from-slate-50 to-white p-2.5 shadow-sm">
+        <div className="rounded-2xl border border-slate-200 bg-linear-to-b from-slate-50 to-white p-2.5 shadow-sm">
           <div className="mb-2 flex items-center justify-between gap-2">
             <label className="block text-gray-800 font-semibold">
               Front Base Card <span className="text-red-600 text-xl">*</span>
@@ -490,7 +443,7 @@ function PanelContent({
                     width={1000}
                     height={1000}
                     alt={`front-${key}`}
-                    className="w-full aspect-[3/4] object-contain bg-slate-100"
+                    className="w-full aspect-3/4 object-contain bg-slate-100"
                   />
                   {isSelected && (
                     <div className="absolute top-1.5 right-1.5 rounded-full bg-white/95 p-1 shadow-sm">
@@ -504,7 +457,6 @@ function PanelContent({
         </div>
       )}
 
-      {/* ── Upload Image (front tab) ── */}
       {sidebarTab === "front" && (
         <div className="my-6 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
           <div className="mb-3 flex items-center justify-between">
@@ -584,10 +536,8 @@ function PanelContent({
           />
         </div>
       )}
-
-      {/* ── Back Base Card ── */}
       {sidebarTab === "back" && (
-        <div className="rounded-2xl border border-slate-200 bg-gradient-to-b from-slate-50 to-white p-4 shadow-sm">
+        <div className="rounded-2xl border border-slate-200 bg-linear-to-b from-slate-50 to-white p-4 shadow-sm">
           <div className="mb-3 flex items-center justify-between gap-2">
             <label className="block text-gray-800 font-semibold">
               Back Base Card <span className="text-red-600 text-xl">*</span>
@@ -615,7 +565,7 @@ function PanelContent({
                     width={1000}
                     height={1000}
                     alt={`back-${idx}`}
-                    className="w-full aspect-[5/7] object-contain bg-slate-100"
+                    className="w-full aspect-5/7 object-contain bg-slate-100"
                   />
                   {isSelected && (
                     <div className="absolute top-1.5 right-1.5 rounded-full bg-white/95 p-1 shadow-sm">
@@ -628,8 +578,6 @@ function PanelContent({
           </div>
         </div>
       )}
-
-      {/* ── Back fields ── */}
       {sidebarTab === "back" && (
         <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm space-y-5">
           <div>
@@ -698,7 +646,7 @@ function PanelContent({
                     ×
                   </button>
                   {activeBackHighlightPicker === item.id && (
-                    <div className="absolute top-11 left-0 z-30 w-[255px] rounded-xl border border-slate-200 bg-white p-3 shadow-xl">
+                    <div className="absolute top-11 left-0 z-30 w-63.75 rounded-xl border border-slate-200 bg-white p-3 shadow-xl">
                       <div className="grid grid-cols-8 gap-2">
                         {attributeIconOptions.map((icon) => (
                           <button
@@ -746,11 +694,9 @@ function PanelContent({
         </div>
       )}
 
-      {/* ── Attributes Tab ── */}
       {sidebarTab === "attributes" && (
         <div className="space-y-4">
-          {/* Packaging Information */}
-          <div className="rounded-2xl border border-sky-100 bg-gradient-to-br from-sky-50 to-white p-5 shadow-sm">
+          <div className="rounded-2xl border border-sky-100 bg-linear-to-br from-sky-50 to-white p-5 shadow-sm">
             <div className="mb-4">
               <h3 className="text-lg font-semibold text-slate-900">
                 Packaging Information
@@ -793,8 +739,6 @@ function PanelContent({
               className="h-14 w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-slate-700 outline-none transition-all duration-200 focus:border-sky-300 focus:ring-2 focus:ring-sky-100"
             />
           </div>
-
-          {/* Card Content */}
           <div className="border border-gray-200 p-4 md:p-5 mb-4 rounded-xl bg-white shadow-sm ring-1 ring-gray-100">
             <label className="block text-xl text-gray-700 mb-3 mt-4 font-semibold">
               Card Content
@@ -821,7 +765,6 @@ function PanelContent({
             </div>
           </div>
 
-          {/* Attribute Name — only for 3rd template */}
           {selectedTemplate === "3" && (
             <div className="border border-gray-200 p-4 md:p-5 mb-4 rounded-xl bg-white shadow-sm ring-1 ring-gray-100">
               <label className="block text-xl text-gray-700 mb-3 mt-4 font-semibold">
@@ -838,13 +781,11 @@ function PanelContent({
             </div>
           )}
 
-          {/* Card Attributes */}
           <div className="border border-gray-200 p-4 md:p-5 mb-4 rounded-xl bg-white shadow-sm ring-1 ring-gray-100">
             <label className="block text-xl text-gray-700 mb-3 font-semibold">
               Card Attributes
             </label>
             <div className="space-y-3">
-              {/* Attribute One */}
               <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
                 <div className="relative flex items-center gap-3">
                   <button
@@ -867,7 +808,7 @@ function PanelContent({
                     className="h-12 w-full rounded-xl border border-slate-200 bg-white px-3 text-slate-700 outline-none transition-all duration-200 focus:border-sky-300 focus:ring-2 focus:ring-sky-100"
                   />
                   {activeIconPicker === "one" && (
-                    <div className="absolute top-14 left-0 z-30 w-[255px] rounded-xl border border-slate-200 bg-white p-3 shadow-xl">
+                    <div className="absolute top-14 left-0 z-30 w-63.75 rounded-xl border border-slate-200 bg-white p-3 shadow-xl">
                       <div className="grid grid-cols-8 gap-2">
                         {attributeIconOptions.map((icon) => (
                           <button
@@ -900,8 +841,6 @@ function PanelContent({
                   style={getSliderTrackStyle(labelone)}
                 />
               </div>
-
-              {/* Attribute Two */}
               <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
                 <div className="relative flex items-center gap-3">
                   <button
@@ -924,7 +863,7 @@ function PanelContent({
                     className="h-12 w-full rounded-xl border border-slate-200 bg-white px-3 text-slate-700 outline-none transition-all duration-200 focus:border-sky-300 focus:ring-2 focus:ring-sky-100"
                   />
                   {activeIconPicker === "two" && (
-                    <div className="absolute top-14 left-0 z-30 w-[255px] rounded-xl border border-slate-200 bg-white p-3 shadow-xl">
+                    <div className="absolute top-14 left-0 z-30 w-63.75 rounded-xl border border-slate-200 bg-white p-3 shadow-xl">
                       <div className="grid grid-cols-8 gap-2">
                         {attributeIconOptions.map((icon) => (
                           <button
@@ -958,7 +897,6 @@ function PanelContent({
                 />
               </div>
 
-              {/* Attribute Three */}
               <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
                 <div className="relative flex items-center gap-3">
                   <button
@@ -981,7 +919,7 @@ function PanelContent({
                     className="h-12 w-full rounded-xl border border-slate-200 bg-white px-3 text-slate-700 outline-none transition-all duration-200 focus:border-sky-300 focus:ring-2 focus:ring-sky-100"
                   />
                   {activeIconPicker === "three" && (
-                    <div className="absolute top-14 left-0 z-30 w-[255px] rounded-xl border border-slate-200 bg-white p-3 shadow-xl">
+                    <div className="absolute top-14 left-0 z-30 w-63.75 rounded-xl border border-slate-200 bg-white p-3 shadow-xl">
                       <div className="grid grid-cols-8 gap-2">
                         {attributeIconOptions.map((icon) => (
                           <button
@@ -1019,7 +957,6 @@ function PanelContent({
             </div>
           </div>
 
-          {/* Card Date */}
           <div className="border border-gray-200 p-4 md:p-5 mb-4 rounded-xl bg-white shadow-sm ring-1 ring-gray-100">
             <label className="block text-xl text-gray-700 mb-3 font-semibold">
               About Card Date

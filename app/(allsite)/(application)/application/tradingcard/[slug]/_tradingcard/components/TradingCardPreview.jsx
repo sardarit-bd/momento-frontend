@@ -234,10 +234,9 @@ export default function TradingCardPreview({
           style={
             isMobileCanvas
               ? {
-                  // Exact scaled dimensions — shell matches canvas, no gaps
                   width: `${390 * mobileScale}px`,
                   height: `${570 * mobileScale}px`,
-                  overflow: "hidden", // clip BackOne text that escapes canvas
+                  overflow: "hidden",
                   flexShrink: 0,
                 }
               : undefined
@@ -270,7 +269,6 @@ export default function TradingCardPreview({
                   }
             }
           >
-            {/* Capture ref overlay for mobile html2canvas */}
             {isMobileCanvas && (
               <div
                 ref={previewCardNodeRef}
@@ -278,8 +276,6 @@ export default function TradingCardPreview({
                 style={{ zIndex: -999 }}
               />
             )}
-
-            {/* Uploaded images — draggable & resizable */}
             {uploads.map((img) => (
               <Rnd
                 key={img.id}
@@ -351,7 +347,6 @@ export default function TradingCardPreview({
               </Rnd>
             ))}
 
-            {/* Base card image */}
             {(workingcard === "front" ? baseFront : baseBack) && (
               <img
                 key={workingcard}
@@ -370,7 +365,6 @@ export default function TradingCardPreview({
               />
             )}
 
-            {/* Text overlays */}
             <div
               ref={textOverlayRef}
               className="absolute top-0 left-0 w-full h-full z-50 pointer-events-none"
@@ -453,7 +447,6 @@ export default function TradingCardPreview({
               )}
             </div>
 
-            {/* Empty state */}
             {!uploads.length && !baseFront && !baseBack && (
               <div className="absolute inset-0 flex items-center justify-center text-gray-300">
                 Preview area
@@ -462,7 +455,6 @@ export default function TradingCardPreview({
           </div>
         </div>
 
-        {/* Flip button — desktop only */}
         {!isMobileCanvas && (
           <button
             onClick={() =>

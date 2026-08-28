@@ -27,7 +27,6 @@ const TradingCardSidebar = ({
   }, [onLivePreviewRef]);
   return (
     <div className="w-full border-b lg:border-r border-gray-200 bg-white h-full px-3 md:px-7 lg:px-8 py-3 z-20 shadow-sm flex flex-col">
-      {/* Header */}
       <h3 className="text-gray-700 font-semibold text-2xl pb-3 flex items-center justify-between">
         <span>Designs</span>
         <span className="text-gray-500 text-sm bg-gray-100 px-2 py-0.5 rounded-full">
@@ -35,8 +34,7 @@ const TradingCardSidebar = ({
         </span>
       </h3>
 
-      {/* Slot list */}
-      <div className="flex-1 overflow-y-auto scrollbar-hide space-y-2 bg-gray-50 rounded-xl border border-gray-100 shadow-inner p-2 min-h-[200px] max-h-[80vh]">
+      <div className="flex-1 overflow-y-auto scrollbar-hide space-y-2 bg-gray-50 rounded-xl border border-gray-100 shadow-inner p-2 min-h-50 max-h-[80vh]">
         {savedSlots.length === 0 && editingSlotId !== null && (
           <div className="h-full flex items-center justify-center text-xs text-gray-400 text-center py-8">
             No designs saved yet.
@@ -45,12 +43,10 @@ const TradingCardSidebar = ({
           </div>
         )}
 
-        {/* Show Live Preview for New Unsaved Design */}
         {editingSlotId === null &&
           savedSlots.length < packageConfig.designs &&
           state && (
             <div className="relative flex flex-col items-center border rounded-xl p-3 shadow-sm bg-sky-50 border-sky-400 ring-2 ring-sky-200 cursor-default">
-              {/* Live Thumbnail */}
               <div
                 style={{
                   width: 110,
@@ -58,7 +54,7 @@ const TradingCardSidebar = ({
                   overflow: "hidden",
                   position: "relative",
                 }}
-                className="w-[110px] h-[161px] flex-shrink-0 rounded border border-gray-200 bg-white"
+                className="w-27.5 h-40.25 shrink-0 rounded border border-gray-200 bg-white"
               >
                 <div
                   ref={livePreviewNodeRef}
@@ -108,13 +104,13 @@ const TradingCardSidebar = ({
                   />
                 </div>
               </div>
-              {/* Info */}
+
               <div className="mt-2 text-center">
                 <p className="text-sm font-semibold text-gray-700">
                   Front #{savedSlots.length + 1}
                 </p>
                 <span className="inline-flex items-center gap-1 text-[10px] text-sky-600 font-medium">
-                  ✏️ Editing
+                  Editing
                 </span>
               </div>
             </div>
@@ -132,7 +128,6 @@ const TradingCardSidebar = ({
                   : "bg-white border-gray-200 hover:border-sky-300 hover:bg-sky-50"
               }`}
             >
-              {/* Thumbnail (Live if editing) */}
               {isEditing && state ? (
                 <div
                   style={{
@@ -250,7 +245,6 @@ const TradingCardSidebar = ({
                 </div>
               )}
 
-              {/* Info */}
               <div className="mt-2 text-center">
                 <p className="text-sm font-semibold text-gray-700">
                   Front #{index + 1}
@@ -266,7 +260,6 @@ const TradingCardSidebar = ({
                 )}
               </div>
 
-              {/* Delete */}
               <button
                 onClick={(e) => {
                   e.stopPropagation();
@@ -282,11 +275,10 @@ const TradingCardSidebar = ({
         })}
       </div>
 
-      {/* Checkout */}
       {savedSlots.length >= 1 && (
         <div className="mt-1">
           <p className="text-[10px] text-gray-400 text-center">
-            {savedSlots.length} of {packageConfig.designs} designs ·{" "}
+            {savedSlots.length} of {packageConfig.designs} designs ·
             {packageConfig.totalCards} cards total
           </p>
         </div>

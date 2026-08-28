@@ -65,7 +65,6 @@ const SingleProduct = () => {
     setTimeout(() => {
       if (data?.status) {
         setbtnLoading(true);
-
         const product = {
           id: generateUserId(),
           productId: data?.id,
@@ -79,7 +78,6 @@ const SingleProduct = () => {
           productDescription: data?.description,
           FinalProduct: data?.images,
         };
-
         addToCart(product);
         setbtnLoading(false);
       } else {

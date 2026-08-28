@@ -184,7 +184,6 @@ const AttributeMetricHorizontal = ({
       width: "100%",
     }}
   >
-    {/* Left Column */}
     <div
       style={{
         display: "flex",
@@ -204,14 +203,14 @@ const AttributeMetricHorizontal = ({
         }}
       />
       <span
-        className={`${textClass} ${metallic ? metallicGradientClass : ""}`} // ← ADD THIS
+        className={`${textClass} ${metallic ? metallicGradientClass : ""}`}
         style={{
           whiteSpace: "nowrap",
           overflow: "hidden",
           textOverflow: "ellipsis",
           ...(metallic
             ? {
-                WebkitTextStroke: "0.5px black", // ← ADD METALLIC STYLES
+                WebkitTextStroke: "0.5px black",
                 paintOrder: "stroke fill",
               }
             : {
@@ -228,7 +227,6 @@ const AttributeMetricHorizontal = ({
       </span>
     </div>
 
-    {/* Right Column — progress bar */}
     <div
       style={{
         flex: "1 1 0",
@@ -575,7 +573,6 @@ export const FrontTwo = ({
                     tracking-tighter
                     leading-tight
                     FrontTwoCopy
-                    
                 "
         >
           {dateParts ? (
@@ -623,7 +620,6 @@ export const FrontThree = ({
         id="card-title"
         className="absolute top-[7%] left-[33%] -translate-x-1/2 z-50 text-[#00BCFF] uppercase tracking-wide text-center BrunsonFont text-[1.8rem] -leading-[0.8rem]"
         style={{
-          // fontSize: getTitleFontSize(cardti),
           textShadow:
             "-2px -1px 0 #000, 1px -1px 0 #000, -2px 1px 0 #000, 2px 1px 0 #000",
           width: "85%",
@@ -675,10 +671,7 @@ export const FrontThree = ({
 
       <div className="absolute left-1/2 -translate-x-1/2 top-[90%] z-50 text-center">
         <div className="TradingCardBadgeOrange">
-          <span
-            className="block TradingCardBadgeOrangeText font-bold uppercase text-[1rem] tracking-wider leading-tight BrunsonFont"
-            // style={{ fontFamily: "DinBold" }}
-          >
+          <span className="block TradingCardBadgeOrangeText font-bold uppercase text-[1rem] tracking-wider leading-tight BrunsonFont">
             {dateLine2 ? (
               <>
                 {dateLine1}

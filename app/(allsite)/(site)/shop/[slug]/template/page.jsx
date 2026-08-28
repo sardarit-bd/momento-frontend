@@ -6,7 +6,10 @@ import { FaArrowLeft, FaCheck, FaArrowRight } from "react-icons/fa6";
 import Link from "next/link";
 import Image from "next/image";
 import { Fraunces, Inter } from "next/font/google";
-import { useTradingCardState } from "../../../../(application)/application/tradingcard/[slug]/_tradingcard/hooks/useTradingCardState";
+import {
+  idbDelete,
+  idbGetKeysByPrefix,
+} from "../../../../(application)/application/tradingcard/[slug]/_tradingcard/lib/idb";
 const fraunces = Fraunces({
   subsets: ["latin"],
   weight: ["500", "600", "700"],
@@ -45,7 +48,7 @@ const TEMPLATES = [
     image: "/trading-cards/trading-front3.png",
   },
 ];
-// /trading-cards/trading-front3.png
+
 const PACKAGE_INFO = {
   single: { name: "Single", subtitle: "1 design · 18 copies" },
   trio: { name: "Trio", subtitle: "3 designs · 6 each" },
@@ -59,12 +62,18 @@ export default function TemplateSelectionPage() {
   const selectedPackage = searchParams.get("package") || "single";
   const packageInfo = PACKAGE_INFO[selectedPackage] || PACKAGE_INFO.single;
   const [selected, setSelected] = useState(null);
-  const { savedSlots, setSavedSlots } = useTradingCardState();
+
   const handleContinue = async () => {
     if (!selected) return;
-    localStorage.clear();
-    setSavedSlots([]);
-    console.log("asasd", savedSlots.length);
+
+    const storageKey = `tradingCustomization:${slug}`;
+    const slotPrefix = `${storageKey}:slot:`;
+    const slotKeys = await idbGetKeysByPrefix(slotPrefix);
+    await Promise.all([
+      idbDelete(storageKey),
+      ...slotKeys.map((k) => idbDelete(k)),
+    ]);
+
     router.push(
       `/application/tradingcard/${slug}?package=${selectedPackage}&template=${selected.id}`,
     );

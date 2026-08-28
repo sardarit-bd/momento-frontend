@@ -42,7 +42,7 @@ const TEMPLATES = [
     name: "THE MILESTONE",
     description:
       "A structured card built to celebrate birthdays, graduations, achievements, and big moments.",
-    image: "",
+    image: "/trading-cards/trading-front3.png",
   },
 ];
 // /trading-cards/trading-front3.png

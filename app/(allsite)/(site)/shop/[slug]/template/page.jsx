@@ -25,24 +25,27 @@ const BRAND_TINT = "#EAF6FF";
 const TEMPLATES = [
   {
     id: "1",
-    name: "Classic",
-    description: "Traditional card layout",
+    name: "THE ICON",
+    description:
+      "Bold, collectible design that puts personality front and center.",
     image: "/trading-cards/trading-front1.png",
   },
   {
     id: "2",
-    name: "Modern",
-    description: "Contemporary card design",
+    name: "THE MOMENT",
+    description:
+      "A polished photo-first layout made to turn a favorite memory into a collectible.",
     image: "/trading-cards/trading-front2.png",
   },
   {
     id: "3",
-    name: "New Template",
-    description: "Sleek transparent finish",
-    image: "/trading-cards/trading-front3.png",
+    name: "THE MILESTONE",
+    description:
+      "A structured card built to celebrate birthdays, graduations, achievements, and big moments.",
+    image: "",
   },
 ];
-
+// /trading-cards/trading-front3.png
 const PACKAGE_INFO = {
   single: { name: "Single", subtitle: "1 design · 18 copies" },
   trio: { name: "Trio", subtitle: "3 designs · 6 each" },
@@ -191,7 +194,7 @@ export default function TemplateSelectionPage() {
                       <FaCheck className="text-[11px]" /> Selected
                     </>
                   ) : (
-                    "Select Template"
+                    "Choose This Style"
                   )}
                 </button>
               </div>

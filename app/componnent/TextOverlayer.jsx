@@ -34,7 +34,26 @@ const getTitleFontSize = (text = "") => {
   if (len <= 20) return "0.9rem";
   return "0.75rem";
 };
+function getTitleFontSizeWithText(
+  text = "",
+  minChars = 6,
+  maxChars = 15,
+  maxFontRem = 3,
+  minFontRem = 1.3,
+) {
+  const len = text.length;
+  // const minChars = 6;
+  // const maxChars = 15;
+  // const maxFontRem = 3;
+  // const minFontRem = 1.3;
 
+  if (len <= minChars) return maxFontRem;
+  if (len >= maxChars) return minFontRem;
+
+  const ratio = (len - minChars) / (maxChars - minChars);
+  console.log(maxFontRem - ratio * (maxFontRem - minFontRem));
+  return maxFontRem - ratio * (maxFontRem - minFontRem);
+}
 const AttributeMetric = ({
   icon,
   text,
@@ -351,6 +370,19 @@ export const FrontOne = ({
   iconThree,
 }) => {
   const currentYear = new Date().getFullYear();
+  function getTitleFontSize(text = "") {
+    const len = text.length;
+    const minChars = 6;
+    const maxChars = 15;
+    const maxFontRem = 3;
+    const minFontRem = 1.6;
+
+    if (len <= minChars) return maxFontRem;
+    if (len >= maxChars) return minFontRem;
+
+    const ratio = (len - minChars) / (maxChars - minChars);
+    return maxFontRem - ratio * (maxFontRem - minFontRem);
+  }
   return (
     <div
       className="w-full h-full relative"
@@ -402,28 +434,28 @@ export const FrontOne = ({
       </div>
 
       <div
-        className="absolute right-[10%] bottom-[16%] z-50 w-45 text-right"
+        className="absolute right-[9%] bottom-[16%] z-50 w-40 text-right  overflow-hidden"
         style={{ backgroundColor: "transparent", background: "transparent" }}
       >
         <span
           id="card-title"
           className="
-    block
+   block
     w-full
     text-right
-    text-[3rem]
     font-medium
     leading-[0.8]
     tracking-wide
-    text-transparent    
+    text-transparent
     bg-clip-text
-    bg-[linear-gradient(180deg,#3a3a3a_-10%,#787878_20%,#ffffff_80%)]  
+    bg-[linear-gradient(180deg,#3a3a3a_-10%,#787878_20%,#ffffff_80%)]
     BrunsonFont
     bg-size-[100%_100%]
   "
           style={{
             WebkitTextStroke: "0.7px black",
             paintOrder: "stroke fill",
+            fontSize: `${getTitleFontSizeWithText(cardti)}rem`,
           }}
         >
           {cardti}
@@ -504,7 +536,7 @@ export const FrontTwo = ({
         />
       </div>
 
-      <div className="absolute inset-0 pointer-events-none z-50">
+      <div className="absolute inset-0 pointer-events-none z-50  w-9/10 mx-auto">
         <span
           id="card-title"
           className="
@@ -513,18 +545,19 @@ export const FrontTwo = ({
                 w-full
                 bottom-[28%]
                 text-center
-                text-4xl
+                font-medium
                 leading-tight
-                whitespace-nowrap
                 text-transparent
                 bg-clip-text
                 bg-[linear-gradient(180deg,#3a3a3a_0%,#787878_30%,#ffffff_50%,#787878_70%,#3a3a3a_100%)]
                 bg-size-[100%_100%]
                 AkiraFont
+               
             "
           style={{
             WebkitTextStroke: "1px black",
             paintOrder: "stroke fill",
+            fontSize: `${getTitleFontSizeWithText(cardti)}rem`,
           }}
         >
           {cardti}
@@ -588,7 +621,7 @@ export const FrontThree = ({
     >
       <span
         id="card-title"
-        className="absolute top-[7%] left-[30%] -translate-x-1/2 z-50 text-[#00BCFF] uppercase tracking-wide text-center BrunsonFont text-[1.8rem] -leading-[0.8rem]"
+        className="absolute top-[7%] left-[33%] -translate-x-1/2 z-50 text-[#00BCFF] uppercase tracking-wide text-center BrunsonFont text-[1.8rem] -leading-[0.8rem]"
         style={{
           // fontSize: getTitleFontSize(cardti),
           textShadow:

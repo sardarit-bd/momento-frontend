@@ -996,6 +996,8 @@ export function useTradingCardState() {
           src={iconValue}
           alt={altText}
           className="h-7 w-7 object-contain"
+          width={900}
+          height={900}
         />
       );
     }

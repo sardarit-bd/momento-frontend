@@ -41,7 +41,6 @@ const Footer = () => {
                 <Link href={"/about"} className="text-gray-500 text-md z-30">
                   About
                 </Link>
-                {/* <Link href={'/shop'} className="text-gray-500 text-md z-30">Shop</Link> */}
                 <Link href={"/shop"} className="text-gray-500 text-md z-30">
                   Card customization
                 </Link>
@@ -77,10 +76,6 @@ const Footer = () => {
             <h3 className="font-bold text-2xl text-gray-600">Get In Touch</h3>
             <div className="mt-5">
               <ul className="flex flex-col gap-3">
-                {/* <Link href={'/about'} className="text-gray-500 text-md z-30 flex gap-2">
-                                    <MdEmail className="text-sky-500" />
-                                    <span>123 Main Street New York, NY 10001</span>
-                                </Link> */}
                 <Link
                   href={"#"}
                   className="text-gray-500 text-md z-30  gap-2 flex items-center"
@@ -88,10 +83,6 @@ const Footer = () => {
                   <MdEmail className="text-sky-500" />
                   <span>contact@momentocardgames.com</span>
                 </Link>
-                {/* <Link href={'/about'} className="text-gray-500 text-md z-30 flex gap-2">
-                                    <MdEmail className='text-sky-500' />
-                                    <span>123-456-7890</span>
-                                </Link> */}
               </ul>
             </div>
           </div>

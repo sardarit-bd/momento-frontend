@@ -8,14 +8,12 @@ import {
   FaArrowLeft,
   FaArrowRight,
   FaCheck,
-  FaStar,
   FaBox,
   FaLayerGroup,
   FaTableCells,
   FaTruck,
   FaShieldHalved,
   FaGem,
-  FaImage,
 } from "react-icons/fa6";
 import Link from "next/link";
 
@@ -30,7 +28,6 @@ const inter = Inter({
   weight: ["400", "500", "600", "700"],
 });
 
-// Brand palette — sampled from the Momento logo (#3CA9FF)
 const BRAND = "#3CA9FF";
 const BRAND_DARK = "#1C8CE0";
 const BRAND_TINT = "#EAF6FF";
@@ -157,7 +154,6 @@ export default function PackageSelectionPage() {
       `}</style>
 
       <div className="max-w-6xl w-full mx-auto">
-        {/* Header: logo + back */}
         <div className="flex items-center justify-between mb-6 md:mb-10">
           <Link
             href="/shop"
@@ -171,7 +167,6 @@ export default function PackageSelectionPage() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-[1.05fr_1fr] gap-8 lg:gap-16">
-          {/* ---------------- Left: media ---------------- */}
           <div>
             <div className="relative aspect-4/5 sm:aspect-5/6 w-full rounded-[1.75rem] overflow-hidden shadow-[0_20px_50px_-25px_rgba(18,20,40,0.25)]">
               <Image
@@ -189,7 +184,6 @@ export default function PackageSelectionPage() {
             </div>
           </div>
 
-          {/* ---------------- Right: product info ---------------- */}
           <div>
             <h1
               className={`${fraunces.className} text-[2.1rem] sm:text-4xl lg:text-[2.9rem] font-semibold text-[#12141F] tracking-tight leading-[1.1]`}
@@ -204,7 +198,6 @@ export default function PackageSelectionPage() {
               celebrating, and keeping forever.
             </p>
 
-            {/* Package selection */}
             <p className="text-xs font-semibold tracking-[0.2em] uppercase text-slate-400 mt-8 mb-3">
               Choose your package
             </p>
@@ -228,7 +221,6 @@ export default function PackageSelectionPage() {
                       }
                     `}
                   >
-                    {/* Badge */}
                     <span
                       className={`absolute -top-2.5 right-4 text-[10px] font-bold uppercase tracking-wide px-2.5 py-1 rounded-full shadow-sm ${
                         isSelected
@@ -239,7 +231,6 @@ export default function PackageSelectionPage() {
                       {pkg.badge}
                     </span>
 
-                    {/* Icon */}
                     <div
                       className={`shrink-0 w-11 h-11 rounded-xl flex items-center justify-center transition-colors ${
                         isSelected
@@ -250,7 +241,6 @@ export default function PackageSelectionPage() {
                       <Icon className="text-[15px]" />
                     </div>
 
-                    {/* Name + subtitle */}
                     <div className="flex-1 min-w-0">
                       <p className="font-semibold text-[#12141F] text-sm sm:text-base">
                         {pkg.name}
@@ -260,7 +250,6 @@ export default function PackageSelectionPage() {
                       </p>
                     </div>
 
-                    {/* Price */}
                     <div className="text-right shrink-0">
                       <div className="flex items-center gap-2 justify-end">
                         <span className="font-semibold text-[#12141F] text-sm sm:text-base tabular-nums">
@@ -289,7 +278,6 @@ export default function PackageSelectionPage() {
               })}
             </div>
 
-            {/* Selected package summary */}
             {selected && (
               <div className="mt-4 rounded-xl bg-white border border-slate-200 px-4 py-3.5 text-sm text-slate-600 leading-relaxed">
                 <span
@@ -301,7 +289,6 @@ export default function PackageSelectionPage() {
               </div>
             )}
 
-            {/* Trust chips */}
             <div className="hidden sm:flex flex-wrap items-center gap-x-5 gap-y-2 mt-5">
               {TRUST_CHIPS.map(({ icon: ChipIcon, label }) => (
                 <span
@@ -314,7 +301,6 @@ export default function PackageSelectionPage() {
               ))}
             </div>
 
-            {/* CTA — desktop / tablet inline */}
             <button
               onClick={handleContinue}
               disabled={!selected}
@@ -331,13 +317,11 @@ export default function PackageSelectionPage() {
               <FaArrowRight className="text-xs" />
             </button>
 
-            {/* Mobile spacer so fixed bar never overlaps content */}
             <div className="md:hidden h-24" />
           </div>
         </div>
       </div>
 
-      {/* CTA — mobile fixed bar */}
       <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white/90 backdrop-blur border-t border-slate-200 px-4 pt-3 pb-[max(1rem,env(safe-area-inset-bottom))]">
         <div className="flex items-center justify-between mb-2">
           <div>

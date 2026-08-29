@@ -1,5 +1,5 @@
 /**
- * @param {HTMLElement} node 
+ * @param {HTMLElement} node
  * @param {(node: HTMLElement) => Promise<string>} captureFn
  * @returns {Promise<string|null>}
  */
@@ -10,25 +10,32 @@ export default async function captureNodeClean(node, captureFn) {
 
   if (!node) return null;
 
-
-  const containerProps = ["border", "borderColor", "borderWidth", "borderStyle",
-    "boxShadow", "outline", "outlineWidth", "outlineColor", "outlineStyle"];
+  const containerProps = [
+    "border",
+    "borderColor",
+    "borderWidth",
+    "borderStyle",
+    "boxShadow",
+    "outline",
+    "outlineWidth",
+    "outlineColor",
+    "outlineStyle",
+  ];
 
   const rndWrappers = Array.from(
-    node.querySelectorAll('div[style*="position: absolute"], div[style*="position:absolute"]')
+    node.querySelectorAll(
+      'div[style*="position: absolute"], div[style*="position:absolute"]',
+    ),
   );
-
 
   const handleSelectors = [
     '[class*="react-resizable-handle"]',
     '[class*="resizable-handle"]',
 
-    '[data-direction]',
+    "[data-direction]",
   ].join(", ");
   const handles = Array.from(node.querySelectorAll(handleSelectors));
 
-
-  // --- Card container ---
   const containerSnapshot = {};
   containerProps.forEach((prop) => {
     containerSnapshot[prop] = node.style[prop];
@@ -56,16 +63,25 @@ export default async function captureNodeClean(node, captureFn) {
     return { el, snap };
   });
 
-  // --- Resize handles ---
   const handleSnapshots = handles.map((el) => {
     const snap = { display: el.style.display };
     el.style.display = "none";
     return { el, snap };
   });
 
-  const classesToStrip = ["border", "border-gray-200", "ring-1", "ring-gray-100",
-    "shadow-xl", "shadow-lg", "shadow-md", "shadow-sm"];
-  const strippedClasses = classesToStrip.filter((cls) => node.classList.contains(cls));
+  const classesToStrip = [
+    "border",
+    "border-gray-200",
+    "ring-1",
+    "ring-gray-100",
+    "shadow-xl",
+    "shadow-lg",
+    "shadow-md",
+    "shadow-sm",
+  ];
+  const strippedClasses = classesToStrip.filter((cls) =>
+    node.classList.contains(cls),
+  );
   strippedClasses.forEach((cls) => node.classList.remove(cls));
 
   const rndTailwindSnapshots = rndWrappers.map((el) => {
@@ -74,7 +90,9 @@ export default async function captureNodeClean(node, captureFn) {
     return { el, stripped };
   });
 
-  await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+  await new Promise((resolve) =>
+    requestAnimationFrame(() => requestAnimationFrame(resolve)),
+  );
 
   let dataUrl = null;
   try {
@@ -83,28 +101,23 @@ export default async function captureNodeClean(node, captureFn) {
     console.error("captureNodeClean: capture failed", err);
   }
 
-  // Container inline styles
   containerProps.forEach((prop) => {
     node.style[prop] = containerSnapshot[prop] ?? "";
   });
   node.style.borderRadius = containerBorderRadius;
 
-  // Container Tailwind classes
   strippedClasses.forEach((cls) => node.classList.add(cls));
 
-  // Rnd wrapper inline styles
   rndSnapshots.forEach(({ el, snap }) => {
     Object.entries(snap).forEach(([prop, val]) => {
       el.style[prop] = val ?? "";
     });
   });
 
-  // Rnd wrapper Tailwind classes
   rndTailwindSnapshots.forEach(({ el, stripped }) => {
     stripped.forEach((cls) => el.classList.add(cls));
   });
 
-  // Resize handles
   handleSnapshots.forEach(({ el, snap }) => {
     el.style.display = snap.display ?? "";
   });

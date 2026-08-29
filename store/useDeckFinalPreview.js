@@ -13,15 +13,19 @@ const useDeckFinalPreview = create(
         }));
       },
 
-      updateCart: (updatedItem) => set((state) => ({
-        deckcart: state.deckcart.map((item) =>
-          item.id === updatedItem.id ? { ...item, ...updatedItem } : item
-        ),
-      })),
+      updateCart: (updatedItem) =>
+        set((state) => ({
+          deckcart: state.deckcart.map((item) =>
+            item.id === updatedItem.id ? { ...item, ...updatedItem } : item,
+          ),
+        })),
 
-      removeFromCart: (productId) => set((state) => ({
-        deckcart: state.deckcart.filter((item) => item.productId !== productId),
-      })),
+      removeFromCart: (productId) =>
+        set((state) => ({
+          deckcart: state.deckcart.filter(
+            (item) => item.productId !== productId,
+          ),
+        })),
 
       clearCart: () => set({ deckcart: [] }),
     }),
@@ -38,14 +42,20 @@ const useDeckFinalPreview = create(
           productQuantity: item.productQuantity ?? 1,
           productImage: item.productImage ?? null,
           customization_mode: item.customization_mode ?? "deck",
-          FinalProduct: Array.isArray(item.FinalProduct) ? item.FinalProduct : [],
-          FinalProductImages: Array.isArray(item.FinalProductImages) ? item.FinalProductImages : [],
-          CharacterImages: Array.isArray(item.CharacterImages) ? item.CharacterImages : [],
+          FinalProduct: Array.isArray(item.FinalProduct)
+            ? item.FinalProduct
+            : [],
+          FinalProductImages: Array.isArray(item.FinalProductImages)
+            ? item.FinalProductImages
+            : [],
+          CharacterImages: Array.isArray(item.CharacterImages)
+            ? item.CharacterImages
+            : [],
           BoxImage: item.BoxImage ?? null,
         })),
       }),
-    }
-  )
+    },
+  ),
 );
 
 export default useDeckFinalPreview;

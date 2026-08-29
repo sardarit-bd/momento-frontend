@@ -1774,7 +1774,12 @@ export default function MomentoLanding() {
                   minHeight: 260,
                 }}
               >
-                <Image src={TradingCardImage6} width={1000} height={1000} />
+                <Image
+                  src={TradingCardImage6}
+                  width={1000}
+                  height={1000}
+                  alt="missing"
+                />
               </div>
             </div>
           </div>

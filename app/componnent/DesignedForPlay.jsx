@@ -16,7 +16,6 @@ export default function DesignedForPlay() {
     <section className="py-20 md:py-32 px-6 bg-slate-50 overflow-hidden">
       <div className="container mx-auto">
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
-          {/* Left side (Text Content) */}
           <div className="order-2 lg:order-1 max-w-2xl mx-auto lg:mx-0">
             <h2 className="text-4xl md:text-5xl font-extrabold text-slate-900 leading-[1.1] tracking-tight mb-6">
               Play, Made Personal
@@ -34,7 +33,6 @@ export default function DesignedForPlay() {
               </p>
             </div>
 
-            {/* List Section */}
             <div className="mt-10 pt-10 border-t border-slate-200">
               <h3 className="text-xl font-bold text-slate-800 mb-6">
                 Momento is used by:
@@ -59,7 +57,6 @@ export default function DesignedForPlay() {
                 <span className="text-sky-500">It’s about ownership.</span>
               </p>
 
-              {/* CTA Button */}
               <Link
                 href="/shop"
                 className="inline-flex items-center justify-center px-8 py-4 bg-sky-500 hover:bg-sky-600 text-white text-sm font-bold tracking-widest uppercase rounded-full shadow-lg shadow-sky-500/30 transition-all duration-300 hover:-translate-y-1 active:scale-95"
@@ -69,18 +66,15 @@ export default function DesignedForPlay() {
             </div>
           </div>
 
-          {/* Right side (Image) */}
           <div className="order-1 lg:order-2 w-full flex justify-center lg:justify-end">
             <div className="group relative w-full max-w-md lg:max-w-full aspect-4/5 lg:aspect-square rounded-3xl ">
               <Image
-                // src="https://res.cloudinary.com/dg83pvgls/image/upload/v1771908530/05_jujjpj.png"
                 src="/mockup9.webp"
                 alt="Stacked Momento Cards"
                 fill
                 sizes="(max-width: 1024px) 100vw, 50vw"
                 className="object-cover transform transition-transform duration-700 ease-out group-hover:scale-105"
               />
-              {/* Inner shadow for depth */}
               <div className="absolute inset-0  rounded-3xl pointer-events-none" />
             </div>
           </div>

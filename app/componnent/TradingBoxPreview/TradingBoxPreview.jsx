@@ -17,7 +17,6 @@ const TradingBoxPreview = forwardRef(({ packTitle = "", createdFor = "" }, ref) 
                 background: "transparent",
             }}
         >
-            {/* Base box image */}
             <img
                 src="/tradingbox.png"
                 alt="Trading Card Box"
@@ -31,7 +30,6 @@ const TradingBoxPreview = forwardRef(({ packTitle = "", createdFor = "" }, ref) 
                 }}
             />
 
-            {/* PACK TITLE overlay */}
             <div
                 style={{
                     position: "absolute",
@@ -68,7 +66,6 @@ const TradingBoxPreview = forwardRef(({ packTitle = "", createdFor = "" }, ref) 
                 </span>
             </div>
 
-            {/* CREATED FOR overlay */}
             <div
                 style={{
                     position: "absolute",

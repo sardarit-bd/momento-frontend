@@ -9,18 +9,10 @@ export default function ShopCardSkeleton() {
             key={idx}
             className="w-full bg-white rounded-2xl shadow-lg overflow-hidden animate-pulse"
           >
-            {/* Image */}
             <div className="h-60 w-full bg-gray-200 rounded-t-2xl" />
-
-            {/* Info */}
             <div className="p-4 flex flex-col gap-3">
-              {/* Name */}
               <div className="h-5 bg-gray-300 rounded w-3/4" />
-
-              {/* Price */}
               <div className="h-4 bg-gray-300 rounded w-1/2 mt-2" />
-
-              {/* Button */}
               <div className="h-10 bg-gray-300 rounded mt-4" />
             </div>
           </article>

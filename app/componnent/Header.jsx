@@ -28,7 +28,6 @@ const Header = () => {
             <Image src={logo} alt="Logo" className="w-30" />
           </Link>
           <Navigation isOpen={isOpen} setisOpen={setisOpen} />
-
           <HeaderAuth isOpen={isOpen} setisOpen={setisOpen} />
         </div>
       </div>

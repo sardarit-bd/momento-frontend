@@ -17,11 +17,6 @@ import { HiArrowRight } from "react-icons/hi2";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-// ── Type system ──────────────────────────────────────────────────────────
-// Fraunces: headings / display copy — gives the page a "certificate" voice.
-// Inter: body copy, labels, buttons.
-// IBM Plex Mono: every number (prices, quantities, edition tags) — reads
-// like a ledger / receipt, which fits a collectible cards product.
 const fraunces = Fraunces({
   subsets: ["latin"],
   weight: ["500", "600", "700"],
@@ -77,12 +72,7 @@ const MyCart = () => {
     }
   }, [cart]);
 
-  // ── Backend-verified pricing ──────────────────────────────────────────
-  // Never trust item.productUnitPrice for display totals — it's client
-  // state and can be stale or (if ever exposed to tampering) incorrect.
-  // Re-price the whole cart from product_id (+ package_slug for trading
-  // items) every time the cart contents change.
-  const [pricing, setPricing] = useState(null); // { items, subtotal, tax, total }
+  const [pricing, setPricing] = useState(null);
   const [pricingLoading, setPricingLoading] = useState(false);
   const [pricingError, setPricingError] = useState(false);
 
@@ -233,8 +223,7 @@ const MyCart = () => {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
-          {/* Cart Items Section */}
-          <div className="bg-white rounded-3xl shadow-sm border border-[#1B2420]/[0.06] col-span-1 lg:col-span-8 p-4 sm:p-6">
+          <div className="bg-white rounded-3xl shadow-sm border border-[#1B2420]/6 col-span-1 lg:col-span-8 p-4 sm:p-6">
             {cart.length > 0 ? (
               <div className="divide-y divide-dashed divide-[#1B2420]/15">
                 {cart.map((item, index) => {
@@ -252,7 +241,6 @@ const MyCart = () => {
                       key={item.id ?? index}
                       className="relative flex flex-col sm:flex-row sm:items-center gap-4 py-5 first:pt-0 last:pb-0"
                     >
-                      {/* Thumbnail + identity (+ price on mobile) */}
                       <div className="flex items-start gap-3 sm:gap-4 flex-1 min-w-0">
                         <div className="relative shrink-0">
                           <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-xl overflow-hidden border-2 border-[#F7F3EC] ring-1 ring-[#1B2420]/10 bg-[#EDE7DA]">
@@ -279,9 +267,6 @@ const MyCart = () => {
                             {item?.productType}
                           </span>
 
-                          {/* Price — mobile only. Lives in the same column as
-                                                        the title/badge so it lines up instead of floating
-                                                        in a separate indented row. */}
                           <div
                             className="sm:hidden mt-2"
                             style={{ fontFamily: "var(--font-mono)" }}
@@ -317,35 +302,9 @@ const MyCart = () => {
                         </div>
                       </div>
 
-                      {/* Qty + price + remove — desktop only, right-aligned column */}
                       <div className="hidden sm:flex items-center justify-end gap-6">
-                        {/* {showStepper && (
-                                                    <div className="flex items-center gap-1 bg-[#F7F3EC] border border-[#1B2420]/10 rounded-lg p-1">
-                                                        <button
-                                                            onClick={() => decreaseQuantity(item?.id)}
-                                                            aria-label="Decrease quantity"
-                                                            className="w-8 h-8 flex items-center justify-center rounded-md hover:bg-white text-[#1B2420] font-medium cursor-pointer transition"
-                                                        >
-                                                            −
-                                                        </button>
-                                                        <span
-                                                            className="min-w-[1.75rem] text-center text-sm font-medium text-[#1B2420] select-none"
-                                                            style={{ fontFamily: 'var(--font-mono)' }}
-                                                        >
-                                                            {item.productQuantity}
-                                                        </span>
-                                                        <button
-                                                            onClick={() => increaseQuantity(item?.id)}
-                                                            aria-label="Increase quantity"
-                                                            className="w-8 h-8 flex items-center justify-center rounded-md hover:bg-white text-[#1B2420] font-medium cursor-pointer transition"
-                                                        >
-                                                            +
-                                                        </button>
-                                                    </div>
-                                                )} */}
-
                         <div
-                          className="text-right min-w-[5.5rem]"
+                          className="text-right min-w-22"
                           style={{ fontFamily: "var(--font-mono)" }}
                         >
                           {unitPrice !== null ? (
@@ -358,7 +317,6 @@ const MyCart = () => {
                               )}
                               {Number(pricedLine?.joker_addon ?? 0) > 0 && (
                                 <p className="text-xs text-[#C9A227]">
-                                  {/* + ${Number(pricedLine.joker_addon).toFixed(2)} joker */}
                                   (Including joker card)
                                 </p>
                               )}
@@ -386,7 +344,6 @@ const MyCart = () => {
                         </button>
                       </div>
 
-                      {/* Remove button — mobile only, pinned to top-right corner */}
                       <button
                         onClick={() => removeFromCart(item?.id)}
                         aria-label="Remove item"
@@ -445,8 +402,7 @@ const MyCart = () => {
             )}
           </div>
 
-          {/* Order Summary Section */}
-          <div className="col-span-1 lg:col-span-4 bg-white rounded-3xl shadow-sm border border-[#1B2420]/[0.06] p-5 sm:p-6 lg:sticky lg:top-6">
+          <div className="col-span-1 lg:col-span-4 bg-white rounded-3xl shadow-sm border border-[#1B2420]/6 p-5 sm:p-6 lg:sticky lg:top-6">
             <h3
               className="text-xl sm:text-2xl font-semibold text-[#1B2420] mb-4"
               style={{ fontFamily: "var(--font-display)" }}
@@ -462,7 +418,6 @@ const MyCart = () => {
               </p>
             </div>
 
-            {/* Ticket-stub perforation */}
             <div className="relative my-1">
               <div className="border-t-2 border-dashed border-[#1B2420]/15" />
               <span className="absolute -left-8 -top-3 w-6 h-6 rounded-full bg-[#F3F4F6]" />
@@ -513,7 +468,6 @@ const MyCart = () => {
         </div>
       </div>
 
-      {/* Mobile sticky checkout bar */}
       {cart.length > 0 && (
         <div className="lg:hidden fixed bottom-0 inset-x-0 z-40 bg-white/95 backdrop-blur border-t border-[#1B2420]/10 px-4 py-3 shadow-[0_-6px_20px_rgba(0,0,0,0.06)]">
           <div className="container mx-auto flex items-center justify-between gap-4">

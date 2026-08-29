@@ -332,10 +332,9 @@ export default function ContactForm() {
       />
 
       <div
-        className="w-full max-w-6xl grid md:grid-cols-[minmax(280px,0.85fr)_minmax(0,1.3fr)] rounded-[2rem] overflow-hidden relative z-10 bg-white"
+        className="w-full max-w-6xl grid md:grid-cols-[minmax(280px,0.85fr)_minmax(0,1.3fr)] rounded-4xl overflow-hidden relative z-10 bg-white"
         style={{ boxShadow: "0 30px 80px rgba(15, 35, 65, 0.18)" }}
       >
-        {/* LEFT INFORMATION PANEL */}
         <div
           className="flex flex-col justify-between gap-8 p-8 sm:p-10"
           style={{ background: NAVY }}
@@ -359,7 +358,7 @@ export default function ContactForm() {
             </h1>
 
             <div
-              className="w-10 h-[3px] rounded-full my-5"
+              className="w-10 h-0.75 rounded-full my-5"
               style={{ background: BLUE_LIGHT }}
             />
 
@@ -429,7 +428,6 @@ export default function ContactForm() {
           </div>
         </div>
 
-        {/* RIGHT FORM PANEL */}
         <div className="p-6 sm:p-10">
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="grid sm:grid-cols-2 gap-5">
@@ -598,7 +596,7 @@ export default function ContactForm() {
                   onChange={handleChange}
                   required
                   placeholder="Tell us what you're creating, who it's for, approximate quantity, timing, and anything else we should know."
-                  className={`${inputBase} resize-none min-h-[110px] pt-3.5`}
+                  className={`${inputBase} resize-none min-h-27.5 pt-3.5`}
                 />
               </div>
             </div>

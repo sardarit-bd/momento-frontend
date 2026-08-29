@@ -42,7 +42,6 @@ export default function CustomizationWork() {
         Your creativity. Your masterpiece. Let’s make it happen.
       </p>
 
-      {/* Cards Container */}
       <div className="text-left grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-10">
         {steps.map((step) => {
           const words = step.title.split(" ");

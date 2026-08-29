@@ -4,11 +4,8 @@ import Link from "next/link";
 export default function AboutPage() {
   return (
     <section className="relative  bg-linear-to-b from-[#E6F0F8] to-white py-20 md:py-32">
-      {/* Subtle ambient background flares */}
       <div className="absolute top-0 left-0 w-125 h-125 bg-sky-200/40 rounded-full blur-[100px] -translate-x-1/2 -translate-y-1/2 pointer-events-none" />
-
       <div className="relative z-10 container mx-auto px-6 flex flex-col lg:flex-row items-center justify-between gap-16 lg:gap-20">
-        {/* Left Side (Text Content) */}
         <div className="flex-1 text-center lg:text-left max-w-2xl mx-auto lg:mx-0">
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-slate-900 leading-[1.1] tracking-tight mb-6 md:mb-8">
             Designed for the Moments That Matter
@@ -36,7 +33,6 @@ export default function AboutPage() {
           </div>
         </div>
 
-        {/* Right Side (Image Grid) */}
         <div className="flex-1 w-full flex justify-center lg:justify-end items-center ">
           <div className="group relative w-full  aspect-5/4 rounded-3xl ">
             <Image
@@ -47,8 +43,6 @@ export default function AboutPage() {
               className="object-contain transform transition-transform duration-700 ease-out group-hover:scale-105"
               sizes="(max-width: 1024px) 100vw, 50vw"
             />
-            {/* Soft interior shadow overlay for depth */}
-            {/* <div className="absolute inset-0  rounded-3xl pointer-events-none" /> */}
           </div>
         </div>
       </div>

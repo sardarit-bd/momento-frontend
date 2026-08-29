@@ -7,19 +7,24 @@ const usePhotoFinalPreview = create(
     (set) => ({
       photocart: [],
 
-      addToCart: (item) => set((state) => ({
-        photocart: [...state.photocart, item],
-      })),
+      addToCart: (item) =>
+        set((state) => ({
+          photocart: [...state.photocart, item],
+        })),
 
-      updateCart: (updatedItem) => set((state) => ({
-        photocart: state.photocart.map((item) =>
-          item.id === updatedItem.id ? { ...item, ...updatedItem } : item
-        ),
-      })),
+      updateCart: (updatedItem) =>
+        set((state) => ({
+          photocart: state.photocart.map((item) =>
+            item.id === updatedItem.id ? { ...item, ...updatedItem } : item,
+          ),
+        })),
 
-      removeFromCart: (productId) => set((state) => ({
-        photocart: state.photocart.filter((item) => item.productId !== productId),
-      })),
+      removeFromCart: (productId) =>
+        set((state) => ({
+          photocart: state.photocart.filter(
+            (item) => item.productId !== productId,
+          ),
+        })),
 
       clearCart: () => set({ photocart: [] }),
     }),
@@ -37,15 +42,15 @@ const usePhotoFinalPreview = create(
             id: img.id,
             src: img.src ?? null,
             zoom: img.zoom ?? 1,
-            xFraction: img.xFraction ?? 0,   
+            xFraction: img.xFraction ?? 0,
             yFraction: img.yFraction ?? 0,
             frame: img.frame ?? null,
             image: img.image ?? null,
           })),
         })),
       }),
-    }
-  )
+    },
+  ),
 );
 
 export default usePhotoFinalPreview;

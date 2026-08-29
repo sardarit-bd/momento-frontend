@@ -72,10 +72,7 @@ const CheckoutAuth = () => {
     };
 
     return (
-        /* 
-           Added: fixed inset-0, z-50, backdrop-blur-md, and bg-gray-900/50 
-           This locks it to the screen and blurs everything behind it 
-        */
+
         <div className="fixed inset-0 z-50 flex justify-center items-center bg-gray-900/50 backdrop-blur-md p-4">
             
             <div className="w-full max-w-md mx-auto relative">
@@ -88,7 +85,6 @@ const CheckoutAuth = () => {
 
                         <form onSubmit={handleLogin} className="space-y-5">
                             
-                            {/* Email Input */}
                             <div>
                                 <label htmlFor="login-email" className="block text-sm font-medium text-gray-700 mb-1">
                                     Email
@@ -103,7 +99,6 @@ const CheckoutAuth = () => {
                                 />
                             </div>
 
-                            {/* Password Input */}
                             <div>
                                 <div className="flex justify-between items-center mb-1">
                                     <label htmlFor="login-password" className="block text-sm font-medium text-gray-700">
@@ -123,7 +118,6 @@ const CheckoutAuth = () => {
                                 />
                             </div>
 
-                            {/* Submit Button */}
                             <button
                                 disabled={isLoading}
                                 className="w-full mt-4 bg-sky-400 text-white font-semibold py-3 rounded-xl shadow-md hover:bg-sky-500 hover:shadow-lg disabled:opacity-70 disabled:cursor-not-allowed transition-all duration-300 active:scale-[0.98] flex items-center justify-center gap-2"
@@ -133,7 +127,6 @@ const CheckoutAuth = () => {
                             </button>
                         </form>
 
-                        {/* Toggle to Sign Up */}
                         <div className="mt-8 text-center">
                             <span className="text-sm text-gray-600">
                                 Don't have an account?{' '}
@@ -155,8 +148,7 @@ const CheckoutAuth = () => {
                         </div>
 
                         <form onSubmit={handleSubmit} className="space-y-5">
-                            
-                            {/* Name Input */}
+
                             <div>
                                 <label htmlFor="signup-name" className="block text-sm font-medium text-gray-700 mb-1">
                                     Full Name
@@ -171,7 +163,6 @@ const CheckoutAuth = () => {
                                 />
                             </div>
 
-                            {/* Email Input */}
                             <div>
                                 <label htmlFor="signup-email" className="block text-sm font-medium text-gray-700 mb-1">
                                     Email
@@ -186,7 +177,6 @@ const CheckoutAuth = () => {
                                 />
                             </div>
 
-                            {/* Password Input */}
                             <div>
                                 <label htmlFor="signup-password" className="block text-sm font-medium text-gray-700 mb-1">
                                     Password
@@ -201,7 +191,6 @@ const CheckoutAuth = () => {
                                 />
                             </div>
 
-                            {/* Submit Button */}
                             <button
                                 disabled={isLoading}
                                 className="w-full mt-4 bg-sky-400 text-white font-semibold py-3 rounded-xl shadow-md hover:bg-sky-500 hover:shadow-lg disabled:opacity-70 disabled:cursor-not-allowed transition-all duration-300 active:scale-[0.98] flex items-center justify-center gap-2"
@@ -211,7 +200,6 @@ const CheckoutAuth = () => {
                             </button>
                         </form>
 
-                        {/* Toggle to Sign In */}
                         <div className="mt-8 text-center">
                             <span className="text-sm text-gray-600">
                                 Already have an account?{' '}

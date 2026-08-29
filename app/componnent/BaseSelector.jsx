@@ -1,37 +1,65 @@
 import Image from "next/image";
 import { useEffect, useMemo, useState } from "react";
-import { GiCardAceClubs, GiCardJackClubs, GiCardJoker, GiCardKingClubs, GiCardQueenClubs } from "react-icons/gi";
+import {
+  GiCardAceClubs,
+  GiCardJackClubs,
+  GiCardJoker,
+  GiCardKingClubs,
+  GiCardQueenClubs,
+} from "react-icons/gi";
 import { IoIosArrowDown } from "react-icons/io";
 
 const normalizeMatch = (dbValue = "", canonicalType = "") => {
-    const v = String(dbValue).toLowerCase();
-    switch (canonicalType) {
-        case "Ace_Card":   return v.includes("ace");
-        case "king_Card":  return v.includes("king");
-        case "Queen_Card": return v.includes("queen");
-        case "Jeck_Card":  return v.includes("jeck") || v.includes("jack");
-        case "Joker_Card": return v.includes("joker");
-        default:           return false;
-    }
+  const v = String(dbValue).toLowerCase();
+  switch (canonicalType) {
+    case "Ace_Card":
+      return v.includes("ace");
+    case "king_Card":
+      return v.includes("king");
+    case "Queen_Card":
+      return v.includes("queen");
+    case "Jeck_Card":
+      return v.includes("jeck") || v.includes("jack");
+    case "Joker_Card":
+      return v.includes("joker");
+    default:
+      return false;
+  }
 };
 
-const DECK_BASE_CARD_TYPES = ["Ace_Card", "king_Card", "Queen_Card", "Jeck_Card"];
+const DECK_BASE_CARD_TYPES = [
+  "Ace_Card",
+  "king_Card",
+  "Queen_Card",
+  "Jeck_Card",
+];
 
-const BaseSelector = ({ product, cards, activeCard, selectBase, editedCard, seteditedCard, activebaseEditCard, setactivebaseEditCard }) => {
+const BaseSelector = ({
+  product,
+  cards,
+  activeCard,
+  selectBase,
+  editedCard,
+  seteditedCard,
+  activebaseEditCard,
+  setactivebaseEditCard,
+}) => {
   const [isOpen, setIsOpen] = useState(true);
-  const hasJokerInCustomization = cards?.some((card) => card?.editedCard === "Joker_Card");
-  const allowedCardTypes = useMemo(
-    () => (hasJokerInCustomization ? [...DECK_BASE_CARD_TYPES, "Joker_Card"] : DECK_BASE_CARD_TYPES),
-    [hasJokerInCustomization]
+  const hasJokerInCustomization = cards?.some(
+    (card) => card?.editedCard === "Joker_Card",
   );
-
-
+  const allowedCardTypes = useMemo(
+    () =>
+      hasJokerInCustomization
+        ? [...DECK_BASE_CARD_TYPES, "Joker_Card"]
+        : DECK_BASE_CARD_TYPES,
+    [hasJokerInCustomization],
+  );
 
   useEffect(() => {
     const activeType = activeCard?.editedCard;
     if (!activeType) return;
 
-    // Keep base tab synced with currently active card, including Joker when active.
     if (allowedCardTypes.includes(activeType)) {
       if (activeType !== editedCard) seteditedCard(activeType);
       return;
@@ -39,13 +67,19 @@ const BaseSelector = ({ product, cards, activeCard, selectBase, editedCard, sete
 
     if (!allowedCardTypes.includes(editedCard)) {
       const allcard = product?.customizations?.base_cards || [];
-      const fallbackType = allowedCardTypes.find((type) =>
-        allcard.some((card) => card?.card_type === type)
-      ) || allowedCardTypes[0];
+      const fallbackType =
+        allowedCardTypes.find((type) =>
+          allcard.some((card) => card?.card_type === type),
+        ) || allowedCardTypes[0];
       seteditedCard(fallbackType);
     }
-  }, [activeCard?.editedCard, editedCard, product, seteditedCard, allowedCardTypes]);
-
+  }, [
+    activeCard?.editedCard,
+    editedCard,
+    product,
+    seteditedCard,
+    allowedCardTypes,
+  ]);
 
   useEffect(() => {
     if (!product) return;
@@ -53,37 +87,44 @@ const BaseSelector = ({ product, cards, activeCard, selectBase, editedCard, sete
     const allcard = product?.customizations?.base_cards || [];
 
     const safeEditedCard = allowedCardTypes.includes(editedCard)
-        ? editedCard
-        : (allowedCardTypes.find((type) =>
-            allcard.some((card) => normalizeMatch(card?.card_type, type))
-          ) || allowedCardTypes[0]);
+      ? editedCard
+      : allowedCardTypes.find((type) =>
+          allcard.some((card) => normalizeMatch(card?.card_type, type)),
+        ) || allowedCardTypes[0];
 
     const filteredCards = allcard.filter((card) =>
-        normalizeMatch(card?.card_type, safeEditedCard)   // ← was using editedCard, not safeEditedCard
+      normalizeMatch(card?.card_type, safeEditedCard),
     );
 
     if (safeEditedCard !== editedCard) seteditedCard(safeEditedCard);
     setactivebaseEditCard(filteredCards || []);
+  }, [
+    editedCard,
+    product,
+    setactivebaseEditCard,
+    seteditedCard,
+    allowedCardTypes,
+  ]);
 
-}, [editedCard, product, setactivebaseEditCard, seteditedCard, allowedCardTypes]);
-
-const handleCardTypeSelect = (cardType) => {
+  const handleCardTypeSelect = (cardType) => {
     if (!allowedCardTypes.includes(cardType)) return;
 
     const allcard = product?.customizations?.base_cards || [];
-    const filteredCards = allcard.filter((card) => normalizeMatch(card?.card_type, cardType)); // ← normalized
-    const matchedCard = filteredCards?.find(
-        (card) => card?.image === activeCard?.baseImage
-    ) || filteredCards?.[0];
+    const filteredCards = allcard.filter((card) =>
+      normalizeMatch(card?.card_type, cardType),
+    );
+    const matchedCard =
+      filteredCards?.find((card) => card?.image === activeCard?.baseImage) ||
+      filteredCards?.[0];
 
     seteditedCard(cardType);
     selectBase(matchedCard?.image, cardType, matchedCard?.name);
-};
+  };
 
   const hasBaseForType = (cardType) =>
-    (product?.customizations?.base_cards || []).some((card) => normalizeMatch(card?.card_type, cardType));
-
-
+    (product?.customizations?.base_cards || []).some((card) =>
+      normalizeMatch(card?.card_type, cardType),
+    );
 
   return (
     <div className="mb-4 rounded-2xl border border-gray-200 bg-white p-3">
@@ -98,22 +139,76 @@ const handleCardTypeSelect = (cardType) => {
             {editedCard?.replace("_Card", "")?.replace("Jeck", "Jack")}
           </span>
         </div>
-        <IoIosArrowDown className={`text-gray-500 transition-transform ${isOpen ? "rotate-180" : ""}`} />
+        <IoIosArrowDown
+          className={`text-gray-500 transition-transform ${isOpen ? "rotate-180" : ""}`}
+        />
       </button>
 
       {isOpen && (
         <>
           <div className="flex items-center gap-2 overflow-x-auto pb-2">
-            <button disabled={!hasBaseForType("Ace_Card")} onClick={() => { handleCardTypeSelect("Ace_Card") }} className={`rounded-xl ${hasBaseForType("Ace_Card") ? "cursor-pointer" : "cursor-not-allowed opacity-50"} ${editedCard === 'Ace_Card' ? 'border-2 border-sky-500 bg-sky-100' : 'border-2 border-gray-400 bg-gray-200'}`}><GiCardAceClubs className={`text-6xl ${editedCard === 'Ace_Card' ? 'text-sky-400' : 'text-gray-400'}`} /></button>
-            <button disabled={!hasBaseForType("king_Card")} onClick={() => { handleCardTypeSelect("king_Card") }} className={`rounded-xl ${hasBaseForType("king_Card") ? "cursor-pointer" : "cursor-not-allowed opacity-50"} ${editedCard === 'king_Card' ? 'border-2 border-sky-500 bg-sky-100' : 'border-2 border-gray-400 bg-gray-200'}`}><GiCardKingClubs className={`text-6xl ${editedCard === 'king_Card' ? 'text-sky-400' : 'text-gray-400'}`} /></button>
-            <button disabled={!hasBaseForType("Queen_Card")} onClick={() => { handleCardTypeSelect("Queen_Card") }} className={`rounded-xl ${hasBaseForType("Queen_Card") ? "cursor-pointer" : "cursor-not-allowed opacity-50"} ${editedCard === 'Queen_Card' ? 'border-2 border-sky-500 bg-sky-100' : 'border-2 border-gray-400 bg-gray-200'}`}><GiCardQueenClubs className={`text-6xl ${editedCard === 'Queen_Card' ? 'text-sky-400' : 'text-gray-400'}`} /></button>
-            <button disabled={!hasBaseForType("Jeck_Card")} onClick={() => { handleCardTypeSelect("Jeck_Card") }} className={`rounded-xl ${hasBaseForType("Jeck_Card") ? "cursor-pointer" : "cursor-not-allowed opacity-50"} ${editedCard === 'Jeck_Card' ? 'border-2 border-sky-500 bg-sky-100' : 'border-2 border-gray-400 bg-gray-200'}`}><GiCardJackClubs className={`text-6xl ${editedCard === 'Jeck_Card' ? 'text-sky-400' : 'text-gray-400'}`} /></button>
+            <button
+              disabled={!hasBaseForType("Ace_Card")}
+              onClick={() => {
+                handleCardTypeSelect("Ace_Card");
+              }}
+              className={`rounded-xl ${hasBaseForType("Ace_Card") ? "cursor-pointer" : "cursor-not-allowed opacity-50"} ${editedCard === "Ace_Card" ? "border-2 border-sky-500 bg-sky-100" : "border-2 border-gray-400 bg-gray-200"}`}
+            >
+              <GiCardAceClubs
+                className={`text-6xl ${editedCard === "Ace_Card" ? "text-sky-400" : "text-gray-400"}`}
+              />
+            </button>
+            <button
+              disabled={!hasBaseForType("king_Card")}
+              onClick={() => {
+                handleCardTypeSelect("king_Card");
+              }}
+              className={`rounded-xl ${hasBaseForType("king_Card") ? "cursor-pointer" : "cursor-not-allowed opacity-50"} ${editedCard === "king_Card" ? "border-2 border-sky-500 bg-sky-100" : "border-2 border-gray-400 bg-gray-200"}`}
+            >
+              <GiCardKingClubs
+                className={`text-6xl ${editedCard === "king_Card" ? "text-sky-400" : "text-gray-400"}`}
+              />
+            </button>
+            <button
+              disabled={!hasBaseForType("Queen_Card")}
+              onClick={() => {
+                handleCardTypeSelect("Queen_Card");
+              }}
+              className={`rounded-xl ${hasBaseForType("Queen_Card") ? "cursor-pointer" : "cursor-not-allowed opacity-50"} ${editedCard === "Queen_Card" ? "border-2 border-sky-500 bg-sky-100" : "border-2 border-gray-400 bg-gray-200"}`}
+            >
+              <GiCardQueenClubs
+                className={`text-6xl ${editedCard === "Queen_Card" ? "text-sky-400" : "text-gray-400"}`}
+              />
+            </button>
+            <button
+              disabled={!hasBaseForType("Jeck_Card")}
+              onClick={() => {
+                handleCardTypeSelect("Jeck_Card");
+              }}
+              className={`rounded-xl ${hasBaseForType("Jeck_Card") ? "cursor-pointer" : "cursor-not-allowed opacity-50"} ${editedCard === "Jeck_Card" ? "border-2 border-sky-500 bg-sky-100" : "border-2 border-gray-400 bg-gray-200"}`}
+            >
+              <GiCardJackClubs
+                className={`text-6xl ${editedCard === "Jeck_Card" ? "text-sky-400" : "text-gray-400"}`}
+              />
+            </button>
             {hasJokerInCustomization && (
-              <button disabled={!hasBaseForType("Joker_Card")} onClick={() => { handleCardTypeSelect("Joker_Card") }} className={`rounded-xl ${hasBaseForType("Joker_Card") ? "cursor-pointer" : "cursor-not-allowed opacity-50"} ${editedCard === 'Joker_Card' ? 'border-2 border-sky-500 bg-sky-100' : 'border-2 border-gray-400 bg-gray-200'}`}><GiCardJoker className={`text-6xl ${editedCard === 'Joker_Card' ? 'text-sky-400' : 'text-gray-400'}`} /></button>
+              <button
+                disabled={!hasBaseForType("Joker_Card")}
+                onClick={() => {
+                  handleCardTypeSelect("Joker_Card");
+                }}
+                className={`rounded-xl ${hasBaseForType("Joker_Card") ? "cursor-pointer" : "cursor-not-allowed opacity-50"} ${editedCard === "Joker_Card" ? "border-2 border-sky-500 bg-sky-100" : "border-2 border-gray-400 bg-gray-200"}`}
+              >
+                <GiCardJoker
+                  className={`text-6xl ${editedCard === "Joker_Card" ? "text-sky-400" : "text-gray-400"}`}
+                />
+              </button>
             )}
           </div>
 
-          <h3 className="pb-2 pt-3 text-sm font-semibold text-gray-700">Base Card Image</h3>
+          <h3 className="pb-2 pt-3 text-sm font-semibold text-gray-700">
+            Base Card Image
+          </h3>
 
           <div className="flex flex-wrap gap-2">
             {activebaseEditCard?.map((image, idx) => {
@@ -124,8 +219,10 @@ const handleCardTypeSelect = (cardType) => {
                   key={idx}
                   src={image?.image}
                   alt={`Base ${idx + 1}`}
-                  className={`h-[80px] w-[60px] cursor-pointer rounded-lg object-cover p-1 ${activeCard?.baseImage === image?.image ? "border-2 border-sky-500 bg-sky-200" : "border-2 border-gray-300"}`}
-                  onClick={() => selectBase(image?.image, editedCard, image?.name)}
+                  className={`h-20 w-15 cursor-pointer rounded-lg object-cover p-1 ${activeCard?.baseImage === image?.image ? "border-2 border-sky-500 bg-sky-200" : "border-2 border-gray-300"}`}
+                  onClick={() =>
+                    selectBase(image?.image, editedCard, image?.name)
+                  }
                 />
               );
             })}
@@ -133,8 +230,7 @@ const handleCardTypeSelect = (cardType) => {
         </>
       )}
     </div>
-  )
+  );
 };
-
 
 export default BaseSelector;

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useTradingCardState } from "./_tradingcard/hooks/useTradingCardState";
 import TradingCardPreview from "./_tradingcard/components/TradingCardPreview";
 import TradingCardControls from "./_tradingcard/components/TradingCardControls";

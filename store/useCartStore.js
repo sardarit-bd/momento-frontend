@@ -47,7 +47,11 @@ const sanitizeForStorage = (item) => {
     ...stripped,
     // Strip images for both trading and deck cards — restored from IDB on checkout
     FinalProduct: Array.isArray(item.FinalProduct)
-      ? item.FinalProduct.map((card) => ({ ...card, image: null, character_image: null }))
+      ? item.FinalProduct.map((card) => ({
+          ...card,
+          image: null,
+          character_image: null,
+        }))
       : [],
     FinalProductImages: [],
     CharacterImages: [],
@@ -61,23 +65,25 @@ const sanitizeForStorage = (item) => {
 const idbPhotoCartKey = (cartId) => `cart-photo-images:${cartId}`;
 
 export const savePhotoCartImagesToIDB = async (cartItems) => {
-  const { idbPut } = await import("@/app/(allsite)/(application)/application/tradingcard/[slug]/_tradingcard/lib/idb");
+  const { idbPut } =
+    await import("@/app/(allsite)/(application)/application/tradingcard/[slug]/_tradingcard/lib/idb");
   for (const item of cartItems) {
     if (!item?.id) continue;
     if (item?.customization_mode !== "photo") continue;
     const key = idbPhotoCartKey(item.id);
 
     await idbPut(key, {
-      FinalProduct:       item.FinalProduct       ?? [],
+      FinalProduct: item.FinalProduct ?? [],
       FinalProductImages: item.FinalProductImages ?? [],
-      CharacterImages:    item.CharacterImages    ?? [],
-      boxImages:          item.boxImages          ?? [],
+      CharacterImages: item.CharacterImages ?? [],
+      boxImages: item.boxImages ?? [],
     });
   }
 };
 
 export const restorePhotoCartImagesFromIDB = async (cartItems) => {
-  const { idbGet } = await import("@/app/(allsite)/(application)/application/tradingcard/[slug]/_tradingcard/lib/idb");
+  const { idbGet } =
+    await import("@/app/(allsite)/(application)/application/tradingcard/[slug]/_tradingcard/lib/idb");
   return Promise.all(
     cartItems.map(async (item) => {
       if (!item?.id) return item;
@@ -89,10 +95,12 @@ export const restorePhotoCartImagesFromIDB = async (cartItems) => {
         if (saved?.FinalProduct?.length || saved?.boxImages?.length) {
           return {
             ...item,
-            FinalProduct:       saved.FinalProduct       ?? item.FinalProduct       ?? [],
-            FinalProductImages: saved.FinalProductImages ?? item.FinalProductImages ?? [],
-            CharacterImages:    saved.CharacterImages    ?? item.CharacterImages    ?? [],
-            boxImages:          saved.boxImages          ?? item.boxImages          ?? [],
+            FinalProduct: saved.FinalProduct ?? item.FinalProduct ?? [],
+            FinalProductImages:
+              saved.FinalProductImages ?? item.FinalProductImages ?? [],
+            CharacterImages:
+              saved.CharacterImages ?? item.CharacterImages ?? [],
+            boxImages: saved.boxImages ?? item.boxImages ?? [],
           };
         } else {
           console.warn("No photo FinalProduct found in IDB for key:", key);
@@ -101,19 +109,20 @@ export const restorePhotoCartImagesFromIDB = async (cartItems) => {
         console.error("IDB photo get error:", e);
       }
       return item;
-    })
+    }),
   );
 };
 
 // ─── Safe localStorage wrapper ────────────────────────────────────────────────
 
-const idbCartKey      = (cartId) => `cart-images:${cartId}`;
-const idbDeckCartKey  = (cartId) => `cart-deck-images:${cartId}`;
+const idbCartKey = (cartId) => `cart-images:${cartId}`;
+const idbDeckCartKey = (cartId) => `cart-deck-images:${cartId}`;
 
 // ── Trading card (existing — unchanged) ──────────────────────────────────────
 
 export const saveCartImagesToIDB = async (cartItems) => {
-  const { idbPut } = await import("@/app/(allsite)/(application)/application/tradingcard/[slug]/_tradingcard/lib/idb");
+  const { idbPut } =
+    await import("@/app/(allsite)/(application)/application/tradingcard/[slug]/_tradingcard/lib/idb");
   for (const item of cartItems) {
     if (!item?.id || !Array.isArray(item?.FinalProduct)) continue;
     if (item?.customization_mode !== "trading") continue;
@@ -123,7 +132,8 @@ export const saveCartImagesToIDB = async (cartItems) => {
 };
 
 export const restoreCartImagesFromIDB = async (cartItems) => {
-  const { idbGet } = await import("@/app/(allsite)/(application)/application/tradingcard/[slug]/_tradingcard/lib/idb");
+  const { idbGet } =
+    await import("@/app/(allsite)/(application)/application/tradingcard/[slug]/_tradingcard/lib/idb");
   return Promise.all(
     cartItems.map(async (item) => {
       if (!item?.id) return item;
@@ -140,7 +150,7 @@ export const restoreCartImagesFromIDB = async (cartItems) => {
         console.error("IDB get error:", e);
       }
       return item;
-    })
+    }),
   );
 };
 
@@ -156,16 +166,17 @@ export const restoreCartImagesFromIDB = async (cartItems) => {
  *   CharacterImages    — array of base64 strings (one per card)
  */
 export const saveDeckCartImagesToIDB = async (cartItems) => {
-  const { idbPut } = await import("@/app/(allsite)/(application)/application/tradingcard/[slug]/_tradingcard/lib/idb");
+  const { idbPut } =
+    await import("@/app/(allsite)/(application)/application/tradingcard/[slug]/_tradingcard/lib/idb");
   for (const item of cartItems) {
     if (!item?.id) continue;
     if (item?.customization_mode !== "deck") continue;
     const key = idbDeckCartKey(item.id);
 
     await idbPut(key, {
-      FinalProduct:       item.FinalProduct       ?? [],
+      FinalProduct: item.FinalProduct ?? [],
       FinalProductImages: item.FinalProductImages ?? [],
-      CharacterImages:    item.CharacterImages    ?? [],
+      CharacterImages: item.CharacterImages ?? [],
     });
   }
 };
@@ -175,7 +186,8 @@ export const saveDeckCartImagesToIDB = async (cartItems) => {
  * Called from CheckoutPage alongside the existing trading card restore.
  */
 export const restoreDeckCartImagesFromIDB = async (cartItems) => {
-  const { idbGet } = await import("@/app/(allsite)/(application)/application/tradingcard/[slug]/_tradingcard/lib/idb");
+  const { idbGet } =
+    await import("@/app/(allsite)/(application)/application/tradingcard/[slug]/_tradingcard/lib/idb");
   return Promise.all(
     cartItems.map(async (item) => {
       if (!item?.id) return item;
@@ -187,9 +199,9 @@ export const restoreDeckCartImagesFromIDB = async (cartItems) => {
         if (saved?.FinalProduct?.length) {
           return {
             ...item,
-            FinalProduct:       saved.FinalProduct,
+            FinalProduct: saved.FinalProduct,
             FinalProductImages: saved.FinalProductImages ?? [],
-            CharacterImages:    saved.CharacterImages    ?? [],
+            CharacterImages: saved.CharacterImages ?? [],
           };
         } else {
           console.warn("No deck FinalProduct found in IDB for key:", key);
@@ -198,7 +210,7 @@ export const restoreDeckCartImagesFromIDB = async (cartItems) => {
         console.error("IDB deck get error:", e);
       }
       return item;
-    })
+    }),
   );
 };
 
@@ -217,7 +229,7 @@ const safeLocalStorage = {
     if (value?.length > STORAGE_WARN_THRESHOLD) {
       console.warn(
         `[CartStore] Persisted cart is ${(value.length / 1024).toFixed(1)} KB — ` +
-          "consider reducing stored data."
+          "consider reducing stored data.",
       );
     }
 
@@ -230,7 +242,7 @@ const safeLocalStorage = {
           error.name === "NS_ERROR_DOM_QUOTA_REACHED")
       ) {
         console.error(
-          "[CartStore] localStorage quota exceeded. Clearing and retrying."
+          "[CartStore] localStorage quota exceeded. Clearing and retrying.",
         );
         try {
           localStorage.removeItem(name);
@@ -238,7 +250,7 @@ const safeLocalStorage = {
         } catch (retryError) {
           console.error(
             "[CartStore] Retry failed. Cart will not persist this session.",
-            retryError
+            retryError,
           );
         }
       } else {
@@ -276,7 +288,7 @@ const useCartStore = create(
           cart: state.cart.map((item) =>
             item.id === id
               ? { ...item, productQuantity: item.productQuantity + 1 }
-              : item
+              : item,
           ),
         })),
 
@@ -285,7 +297,7 @@ const useCartStore = create(
           cart: state.cart.map((item) =>
             item.id === id && item.productQuantity > 1
               ? { ...item, productQuantity: item.productQuantity - 1 }
-              : item
+              : item,
           ),
         })),
 
@@ -300,8 +312,8 @@ const useCartStore = create(
           ? state.cart.map(sanitizeForStorage)
           : [],
       }),
-    }
-  )
+    },
+  ),
 );
 
 export default useCartStore;

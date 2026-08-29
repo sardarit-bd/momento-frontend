@@ -7,7 +7,6 @@ export default function CustomOne() {
     <section className="py-24 bg-[#EBF6FF]">
       <div className="container mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 items-center">
-          {/* Left Content */}
           <div className="space-y-10 py-8 text-center lg:text-left">
             <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 leading-tight">
               Your
@@ -32,7 +31,6 @@ export default function CustomOne() {
             </Link>
           </div>
 
-          {/* Right Image */}
           <div className="relative group text-right">
             <Image
               src={customOnes}
@@ -40,7 +38,7 @@ export default function CustomOne() {
               width={1000}
               height={1000}
               draggable={false}
-              className="rounded-xl object-contain w-full h-[500px] transform transition-transform duration-500 group-hover:scale-105"
+              className="rounded-xl object-contain w-full h-125 transform transition-transform duration-500 group-hover:scale-105"
             />
           </div>
         </div>

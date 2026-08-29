@@ -7,7 +7,6 @@ export default function GiftSection() {
   return (
     <section className="container mx-auto py-16">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-        {/* Left Side */}
         <div className="flex items-center justify-center bg-[#EBF6FF] p-10 rounded-xl h-full">
           <div>
             <h2 className="text-2xl md:text-3xl font-extrabold text-gray-900 uppercase mb-4">
@@ -20,7 +19,6 @@ export default function GiftSection() {
               thoughtful, unique, and unforgettable.
             </p>
 
-            {/* Checklist */}
             <ul className="space-y-3 mb-8">
               <li className="flex items-start gap-2 text-gray-700">
                 <BsCheck2Square className="text-[#3CA9FF] text-xl mt-1" />
@@ -33,7 +31,6 @@ export default function GiftSection() {
               </li>
             </ul>
 
-            {/* Button */}
             <Link
               href={"/shop"}
               className="bg-[#3CA9FF] hover:bg-[#2f91e0] text-white font-bold px-6 py-4 rounded-lg transition"
@@ -43,7 +40,6 @@ export default function GiftSection() {
           </div>
         </div>
 
-        {/* Right Side Image */}
         <div>
           <Image
             src={giftImage}

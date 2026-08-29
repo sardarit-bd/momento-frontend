@@ -15,12 +15,10 @@ const StatusPillSkeleton = () => (
 const OrderRowSkeleton = () => {
     return (
         <tr className="border-b border-slate-200/80">
-            {/* Order ID */}
             <td className="px-6 py-4">
                 <SkeletonBlock className="h-4 w-20" />
             </td>
 
-            {/* Customer */}
             <td className="px-6 py-4">
                 <div className="space-y-2">
                     <SkeletonBlock className="h-4 w-28" />
@@ -28,22 +26,18 @@ const OrderRowSkeleton = () => {
                 </div>
             </td>
 
-            {/* Date */}
             <td className="px-6 py-4">
                 <SkeletonBlock className="h-4 w-24" />
             </td>
 
-            {/* Total */}
             <td className="px-6 py-4">
                 <SkeletonBlock className="ml-auto h-4 w-16" />
             </td>
 
-            {/* Status */}
             <td className="px-6 py-4">
                 <StatusPillSkeleton />
             </td>
 
-            {/* Action */}
             <td className="px-6 py-4 text-right">
                 <SkeletonBlock className="ml-auto h-4 w-20" />
             </td>

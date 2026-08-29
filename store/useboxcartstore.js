@@ -14,8 +14,8 @@ const useboxcartstore = create(
       partialize: (state) => ({
         boxs: state.boxs,
       }),
-    }
-  )
+    },
+  ),
 );
 
 export default useboxcartstore;

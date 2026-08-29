@@ -1,8 +1,15 @@
 import Image from "next/image";
-import { JOKER_SLOT_BOX, JOKER_SLOT_CLIP_PATH, JOKER_NATIVE_WIDTH, JOKER_NATIVE_HEIGHT } from "@/app/componnent/jokerSlotGeometry";
-import { CARD_SLOT_BOX, CARD_SLOT_CLIP_PATH } from "@/app/componnent/cardSlotGeometry";
+import {
+  JOKER_SLOT_BOX,
+  JOKER_SLOT_CLIP_PATH,
+  JOKER_NATIVE_WIDTH,
+  JOKER_NATIVE_HEIGHT,
+} from "@/app/componnent/jokerSlotGeometry";
+import {
+  CARD_SLOT_BOX,
+  CARD_SLOT_CLIP_PATH,
+} from "@/app/componnent/cardSlotGeometry";
 
-// Kept in sync with PhotoCardPreview.jsx — same measured card geometry.
 const SLOT_BOX = {
   top: `${CARD_SLOT_BOX.top}%`,
   left: `${CARD_SLOT_BOX.left}%`,
@@ -45,21 +52,25 @@ const PhotoCardThumbnail = ({ finalCard }) => {
           }}
         >
           <Image
-            width={1000} height={1000} src={finalCard.baseImage} alt="Base Card" className="w-full h-full object-contain"
+            width={1000}
+            height={1000}
+            src={finalCard.baseImage}
+            alt="Base Card"
+            className="w-full h-full object-contain"
           />
 
           {photo ? (
-              <div
-                style={{
-                  position: "absolute",
-                  top: JOKER_SLOT_BOX_STYLE.top,
-                  left: JOKER_SLOT_BOX_STYLE.left,
-                  width: JOKER_SLOT_BOX_STYLE.width,
-                  height: JOKER_SLOT_BOX_STYLE.height,
-                  overflow: "hidden",
-                  clipPath: JOKER_SLOT_CLIP_PATH,
-                }}
-              >
+            <div
+              style={{
+                position: "absolute",
+                top: JOKER_SLOT_BOX_STYLE.top,
+                left: JOKER_SLOT_BOX_STYLE.left,
+                width: JOKER_SLOT_BOX_STYLE.width,
+                height: JOKER_SLOT_BOX_STYLE.height,
+                overflow: "hidden",
+                clipPath: JOKER_SLOT_CLIP_PATH,
+              }}
+            >
               <Image
                 width={1000}
                 height={1000}
@@ -78,14 +89,16 @@ const PhotoCardThumbnail = ({ finalCard }) => {
                 }}
               />
             </div>
-          ) : (
-            null
-          )}
+          ) : null}
         </div>
       ) : (
         <>
           <Image
-            width={1000} height={1000} src={finalCard?.baseImage} alt="Base Card" className="w-full h-full object-contain"
+            width={1000}
+            height={1000}
+            src={finalCard?.baseImage}
+            alt="Base Card"
+            className="w-full h-full object-contain"
           />
 
           {photo ? (
@@ -118,9 +131,7 @@ const PhotoCardThumbnail = ({ finalCard }) => {
                 }}
               />
             </div>
-          ) : (
-            null
-          )}
+          ) : null}
         </>
       )}
     </div>

@@ -2,7 +2,14 @@
 
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { FaArrowLeft, FaCheck, FaBoxOpen, FaLayerGroup, FaLock, FaStar } from "react-icons/fa6";
+import {
+  FaArrowLeft,
+  FaCheck,
+  FaBoxOpen,
+  FaLayerGroup,
+  FaLock,
+  FaStar,
+} from "react-icons/fa6";
 import Link from "next/link";
 import Image from "next/image";
 
@@ -25,15 +32,11 @@ export default function PackageAndTemplateSelectionPage() {
   const { slug } = useParams();
   const router = useRouter();
 
-  // Packages now come from the backend — this is the single source of
-  // truth for pricing, so the UI can never drift from what checkout charges.
   const [packages, setPackages] = useState([]);
   const [loadingPackages, setLoadingPackages] = useState(true);
   const [packagesError, setPackagesError] = useState(false);
-
   const [selectedPackage, setSelectedPackage] = useState(null);
   const [selectedTemplate, setSelectedTemplate] = useState(null);
-
   const templateSectionRef = useRef(null);
   const hasAutoScrolled = useRef(false);
 
@@ -42,7 +45,9 @@ export default function PackageAndTemplateSelectionPage() {
       setLoadingPackages(true);
       setPackagesError(false);
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/trading-card/packages`);
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/trading-card/packages`,
+        );
         if (!res.ok) throw new Error("Failed to load packages");
         const data = await res.json();
         setPackages(Array.isArray(data) ? data : []);
@@ -70,29 +75,29 @@ export default function PackageAndTemplateSelectionPage() {
 
   const handleContinue = () => {
     if (!bothSelected) return;
-    // Only slugs are passed forward — price is never trusted from the
-    // client. The checkout step re-resolves price server-side from
-    // package_slug against the trading_card_packages table.
     router.push(
-      `/application/tradingcard/${slug}?package=${selectedPackage.slug}&template=${selectedTemplate.id}`
+      `/application/tradingcard/${slug}?package=${selectedPackage.slug}&template=${selectedTemplate.id}`,
     );
   };
 
   return (
     <main className="relative min-h-screen bg-[#f7f9fc] overflow-hidden px-4 sm:px-6 py-8 md:py-16 pb-40 md:pb-44">
-      {/* Ambient glow, matching the rest of the site's hero/section treatment */}
       <div
-        className="pointer-events-none absolute -top-24 -left-24 w-[420px] h-[420px] rounded-full opacity-60"
-        style={{ background: "radial-gradient(closest-side, rgba(60,169,255,0.10), transparent)" }}
+        className="pointer-events-none absolute -top-24 -left-24 w-105 h-105 rounded-full opacity-60"
+        style={{
+          background:
+            "radial-gradient(closest-side, rgba(60,169,255,0.10), transparent)",
+        }}
       />
       <div
-        className="pointer-events-none absolute top-[30%] -right-32 w-[460px] h-[460px] rounded-full opacity-60"
-        style={{ background: "radial-gradient(closest-side, rgba(60,169,255,0.08), transparent)" }}
+        className="pointer-events-none absolute top-[30%] -right-32 w-115 h-115 rounded-full opacity-60"
+        style={{
+          background:
+            "radial-gradient(closest-side, rgba(60,169,255,0.08), transparent)",
+        }}
       />
 
       <div className="relative max-w-6xl w-full mx-auto">
-
-        {/* Back */}
         <div className="mb-6 md:mb-8">
           <Link
             href={`/shop/${slug}`}
@@ -102,7 +107,6 @@ export default function PackageAndTemplateSelectionPage() {
           </Link>
         </div>
 
-        {/* Header */}
         <div className="text-center mb-10 md:mb-16">
           <span className="inline-block text-xs font-bold tracking-[0.2em] text-[#3CA9FF] uppercase mb-3">
             Start Designing
@@ -115,7 +119,6 @@ export default function PackageAndTemplateSelectionPage() {
           </p>
         </div>
 
-        {/* ── Step 1: Package ── */}
         <section>
           <StepLabel index={1} title="Choose your package" active />
 
@@ -124,7 +127,7 @@ export default function PackageAndTemplateSelectionPage() {
               {[0, 1, 2].map((i) => (
                 <div
                   key={i}
-                  className="animate-pulse rounded-[26px] border border-slate-200 bg-white p-4 md:p-7 h-[120px] md:h-[420px]"
+                  className="animate-pulse rounded-[26px] border border-slate-200 bg-white p-4 md:p-7 h-30 md:h-105"
                 />
               ))}
             </div>
@@ -165,9 +168,10 @@ export default function PackageAndTemplateSelectionPage() {
                       p-5 md:p-8 pt-6 md:pt-9
                       flex flex-row md:flex-col items-center md:items-stretch
                       gap-4 md:gap-0
-                      ${isSelected
-                        ? "shadow-[0_20px_60px_-15px_rgba(60,169,255,0.45)] ring-2 ring-[#3CA9FF]/70 md:scale-[1.02]"
-                        : "shadow-[0_4px_24px_rgba(15,23,42,0.06)] ring-1 ring-slate-200/80 hover:ring-[#3CA9FF]/40 hover:shadow-[0_20px_45px_-20px_rgba(60,169,255,0.25)]"
+                      ${
+                        isSelected
+                          ? "shadow-[0_20px_60px_-15px_rgba(60,169,255,0.45)] ring-2 ring-[#3CA9FF]/70 md:scale-[1.02]"
+                          : "shadow-[0_4px_24px_rgba(15,23,42,0.06)] ring-1 ring-slate-200/80 hover:ring-[#3CA9FF]/40 hover:shadow-[0_20px_45px_-20px_rgba(60,169,255,0.25)]"
                       }
                     `}
                     style={{
@@ -177,10 +181,11 @@ export default function PackageAndTemplateSelectionPage() {
                         : "linear-gradient(180deg, #FAFCFF 0%, #FFFFFF 60%)",
                     }}
                   >
-                    {/* Selected check badge */}
                     <div
                       className={`hidden md:flex absolute top-5 right-5 w-8 h-8 rounded-full items-center justify-center transition-all duration-300 z-10 ${
-                        isSelected ? "scale-100 opacity-100" : "scale-0 opacity-0"
+                        isSelected
+                          ? "scale-100 opacity-100"
+                          : "scale-0 opacity-0"
                       }`}
                       style={{
                         background: "linear-gradient(135deg, #3CA9FF, #6AC0FF)",
@@ -190,16 +195,19 @@ export default function PackageAndTemplateSelectionPage() {
                       <FaCheck className="text-white text-xs" />
                     </div>
 
-                    {/* Price badge */}
                     <div
                       className={`absolute top-5 left-5 text-xs md:text-sm font-bold px-3 py-1.5 rounded-full transition-all duration-300 z-10 ${
-                        isSelected ? "text-white" : "bg-[#EAF4FF] text-[#0b1320]"
+                        isSelected
+                          ? "text-white"
+                          : "bg-[#EAF4FF] text-[#0b1320]"
                       }`}
                       style={
                         isSelected
                           ? {
-                              background: "linear-gradient(135deg, #3CA9FF, #6AC0FF)",
-                              boxShadow: "0 6px 16px -4px rgba(60,169,255,0.45)",
+                              background:
+                                "linear-gradient(135deg, #3CA9FF, #6AC0FF)",
+                              boxShadow:
+                                "0 6px 16px -4px rgba(60,169,255,0.45)",
                             }
                           : undefined
                       }
@@ -214,14 +222,15 @@ export default function PackageAndTemplateSelectionPage() {
                       </div>
                     )}
 
-                    {/* Mobile selection dot */}
                     <div
                       className={`
                         md:hidden shrink-0 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors
                         ${isSelected ? "bg-[#3CA9FF] border-[#3CA9FF]" : "border-slate-300"}
                       `}
                     >
-                      {isSelected && <FaCheck className="text-white text-[10px]" />}
+                      {isSelected && (
+                        <FaCheck className="text-white text-[10px]" />
+                      )}
                     </div>
 
                     <div className="relative flex-1 min-w-0 md:flex-none">
@@ -250,10 +259,15 @@ export default function PackageAndTemplateSelectionPage() {
 
                       <div className="mt-1 md:mt-6 hidden md:flex flex-col gap-2.5">
                         {features.map((f, i) => (
-                          <div key={i} className="flex items-center gap-2.5 text-sm text-slate-600">
+                          <div
+                            key={i}
+                            className="flex items-center gap-2.5 text-sm text-slate-600"
+                          >
                             <span
                               className={`flex items-center justify-center w-4 h-4 rounded-full shrink-0 transition-colors ${
-                                isSelected ? "bg-[#3CA9FF]/15 text-[#3CA9FF]" : "bg-emerald-50 text-emerald-600"
+                                isSelected
+                                  ? "bg-[#3CA9FF]/15 text-[#3CA9FF]"
+                                  : "bg-emerald-50 text-emerald-600"
                               }`}
                             >
                               <FaCheck className="text-[9px]" />
@@ -274,14 +288,18 @@ export default function PackageAndTemplateSelectionPage() {
                       }}
                       className={`
                         relative hidden md:block mt-8 w-full py-3.5 rounded-2xl font-semibold text-sm transition-all duration-200 active:scale-[0.98]
-                        ${isSelected
-                          ? "text-white shadow-lg shadow-[#3CA9FF]/30"
-                          : "bg-[#EEF4FA] text-slate-700 group-hover:bg-slate-900 group-hover:text-white"
+                        ${
+                          isSelected
+                            ? "text-white shadow-lg shadow-[#3CA9FF]/30"
+                            : "bg-[#EEF4FA] text-slate-700 group-hover:bg-slate-900 group-hover:text-white"
                         }
                       `}
                       style={
                         isSelected
-                          ? { background: "linear-gradient(135deg, #3CA9FF, #2F8FE0)" }
+                          ? {
+                              background:
+                                "linear-gradient(135deg, #3CA9FF, #2F8FE0)",
+                            }
                           : undefined
                       }
                     >
@@ -294,9 +312,12 @@ export default function PackageAndTemplateSelectionPage() {
           )}
         </section>
 
-        {/* ── Step 2: Template — locked until a package is chosen ── */}
         <section ref={templateSectionRef} className="mt-14 md:mt-20">
-          <StepLabel index={2} title="Choose your template" active={Boolean(selectedPackage)} />
+          <StepLabel
+            index={2}
+            title="Choose your template"
+            active={Boolean(selectedPackage)}
+          />
 
           {!selectedPackage && (
             <div className="mt-5 md:mt-7 rounded-[26px] border border-dashed border-slate-300 bg-white/50 py-14 flex flex-col items-center justify-center text-center px-6">
@@ -337,7 +358,6 @@ export default function PackageAndTemplateSelectionPage() {
                       }`}
                     >
                       <div className="relative w-full aspect-3/4 mb-5">
-                        {/* Soft contact shadow beneath the card, like it's resting on a table */}
                         <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 w-[70%] h-6 rounded-full bg-black/10 blur-lg" />
                         <div className="template-card-art relative w-full h-full rounded-xl overflow-hidden bg-slate-50 transition-transform duration-500 ease-out">
                           <Image
@@ -379,7 +399,6 @@ export default function PackageAndTemplateSelectionPage() {
         </section>
       </div>
 
-      {/* ── Sticky build-ticket bar ── */}
       <div className="fixed bottom-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-md border-t border-slate-200 px-4 md:px-8 py-3 md:py-4 shadow-[0_-8px_30px_rgba(11,19,32,0.06)]">
         <div className="max-w-6xl mx-auto flex items-center gap-3 md:gap-6">
           <div className="flex-1 flex items-center gap-3 md:gap-6 min-w-0">
@@ -393,7 +412,11 @@ export default function PackageAndTemplateSelectionPage() {
               }
             />
             <div className="w-px h-8 bg-slate-200 shrink-0" />
-            <BuildSlot icon={<FaLayerGroup />} label="Template" value={selectedTemplate?.name} />
+            <BuildSlot
+              icon={<FaLayerGroup />}
+              label="Template"
+              value={selectedTemplate?.name}
+            />
           </div>
 
           <button
@@ -401,9 +424,10 @@ export default function PackageAndTemplateSelectionPage() {
             disabled={!bothSelected}
             className={`
               relative shrink-0 px-5 md:px-10 py-3 rounded-xl font-medium transition whitespace-nowrap text-sm md:text-base
-              ${bothSelected
-                ? "bg-[#0b1320] text-white hover:opacity-90 ready-pulse"
-                : "bg-slate-200 text-slate-400 cursor-not-allowed"
+              ${
+                bothSelected
+                  ? "bg-[#0b1320] text-white hover:opacity-90 ready-pulse"
+                  : "bg-slate-200 text-slate-400 cursor-not-allowed"
               }
             `}
           >
@@ -465,11 +489,12 @@ export default function PackageAndTemplateSelectionPage() {
 }
 
 function PackStack({ count, active }) {
-  const config = count >= 6
-    ? { spread: 8, rotate: 6, size: "w-9 h-13" }
-    : count === 3
-    ? { spread: 13, rotate: 9, size: "w-11 h-16" }
-    : { spread: 0, rotate: 0, size: "w-12 h-[4.5rem]" };
+  const config =
+    count >= 6
+      ? { spread: 8, rotate: 6, size: "w-9 h-13" }
+      : count === 3
+        ? { spread: 13, rotate: 9, size: "w-11 h-16" }
+        : { spread: 0, rotate: 0, size: "w-12 h-[4.5rem]" };
 
   const mid = (count - 1) / 2;
 

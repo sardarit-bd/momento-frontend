@@ -5,7 +5,7 @@ export default function Giftme() {
   return (
     <>
       <section className="relative container mx-auto px-6 py-20">
-        <div className="bg-gradient-to-br from-amber-500 via-orange-500 to-rose-500 rounded-3xl p-5 py-12 lg:p-16 text-center shadow-2xl">
+        <div className="bg-linear-to-br from-amber-500 via-orange-500 to-rose-500 rounded-3xl p-5 py-12 lg:p-16 text-center shadow-2xl">
           <Gift className="w-16 h-16 text-white mx-auto mb-6 animate-bounce" />
           <h2 className="text-4xl lg:text-5xl font-black text-white mb-6">
             The Perfect Personalized Gift

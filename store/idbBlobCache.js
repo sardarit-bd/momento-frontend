@@ -1,4 +1,8 @@
-import { idbPut, idbGet, idbDelete } from "@/app/(allsite)/(application)/application/tradingcard/[slug]/_tradingcard/lib/idb";
+import {
+  idbPut,
+  idbGet,
+  idbDelete,
+} from "@/app/(allsite)/(application)/application/tradingcard/[slug]/_tradingcard/lib/idb";
 
 const BLOB_SIZE_THRESHOLD = 50 * 1024;
 
@@ -35,7 +39,11 @@ async function walkAndExtract(obj, prefix, ids = []) {
       await idbPut(`${prefix}:blob:${id}`, value);
       obj[key] = { __momentoBlobRef: id };
       ids.push(id);
-    } else if (typeof value === "object" && value !== null && !value.__momentoBlobRef) {
+    } else if (
+      typeof value === "object" &&
+      value !== null &&
+      !value.__momentoBlobRef
+    ) {
       await walkAndExtract(value, prefix, ids);
     }
   }

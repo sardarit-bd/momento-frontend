@@ -6,9 +6,8 @@ export default function Five() {
   return (
     <section className="py-20">
       <div className="container mx-auto px-6 flex flex-col lg:flex-row items-center justify-between gap-12">
-        {/* Left side */}
         <div className="flex-1">
-          <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 leading-[1.0]">
+          <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 leading-none">
             Why Now
           </h2>
 
@@ -50,7 +49,6 @@ export default function Five() {
             </div>
           </div>
 
-          {/* Buttons */}
           <div className="mt-8 flex gap-4">
             <Link
               href={"/shop"}
@@ -61,8 +59,7 @@ export default function Five() {
           </div>
         </div>
 
-        {/* Right side (single merged image) */}
-        <div className="h-[500px] w-full rounded-md flex-1 flex justify-center lg:justify-center items-center">
+        <div className="h-125 w-full rounded-md flex-1 flex justify-center lg:justify-center items-center">
           <Image
             src={
               "https://res.cloudinary.com/dg83pvgls/image/upload/v1771908539/02_cteult.png"
@@ -70,7 +67,7 @@ export default function Five() {
             alt="Stacked Cards"
             width={1000}
             height={1000}
-            className="w-[600] h-[500px] object-cover transition-transform duration-500 hover:scale-105 object-container rounded-md shadow-md"
+            className="w-[600] h-125 object-cover transition-transform duration-500 hover:scale-105 object-container rounded-md shadow-md"
           />
         </div>
       </div>

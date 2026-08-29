@@ -42,10 +42,6 @@ function getTitleFontSizeWithText(
   minFontRem = 1.3,
 ) {
   const len = text.length;
-  // const minChars = 6;
-  // const maxChars = 15;
-  // const maxFontRem = 3;
-  // const minFontRem = 1.3;
 
   if (len <= minChars) return maxFontRem;
   if (len >= maxChars) return minFontRem;
@@ -76,7 +72,6 @@ const AttributeMetric = ({
       gap: "8px",
     }}
   >
-    {/* Icon — fixed 34x34, no grid */}
     <div
       style={{
         backgroundColor: "transparent",
@@ -102,7 +97,6 @@ const AttributeMetric = ({
       ) : null}
     </div>
 
-    {/* Text + track — fixed width, no 1fr */}
     <div
       style={{
         backgroundColor: "transparent",
@@ -135,7 +129,7 @@ const AttributeMetric = ({
       >
         {text}
       </span>
-      {/* Progress bar — fixed px width, matches parent */}
+
       <div
         className={trackClass}
         style={{
@@ -169,7 +163,7 @@ const AttributeMetricHorizontal = ({
   textClass = "",
   trackColor = "#000000",
   fillColor = "#5ba2d8",
-  metallic = false, // ← ADD THIS PROP
+  metallic = false,
   id,
 }) => (
   <div
@@ -248,17 +242,6 @@ const AttributeMetricHorizontal = ({
     </div>
   </div>
 );
-const fauxBoldShadow = `
-    0 0 0 black,
-    0.5px 0 0 black,
-    -0.5px 0 0 black,
-    0 0.5px 0 black,
-    0 -0.5px 0 black,
-    0.5px 0.5px 0 black,
-    -0.5px -0.5px 0 black,
-    0.5px -0.5px 0 black,
-    -0.5px 0.5px 0 black
-`;
 
 const metallicGradientClass = `
     text-transparent

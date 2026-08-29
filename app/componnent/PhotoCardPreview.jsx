@@ -3,11 +3,17 @@ import { useRef, useState } from "react";
 import Image from "next/image";
 import { Upload } from "lucide-react";
 import { toast } from "react-toastify";
-import { JOKER_SLOT_BOX, JOKER_SLOT_CLIP_PATH, JOKER_NATIVE_WIDTH, JOKER_NATIVE_HEIGHT } from "@/app/componnent/jokerSlotGeometry";
-import { CARD_SLOT_BOX, CARD_SLOT_CLIP_PATH } from "@/app/componnent/cardSlotGeometry";
+import {
+  JOKER_SLOT_BOX,
+  JOKER_SLOT_CLIP_PATH,
+  JOKER_NATIVE_WIDTH,
+  JOKER_NATIVE_HEIGHT,
+} from "@/app/componnent/jokerSlotGeometry";
+import {
+  CARD_SLOT_BOX,
+  CARD_SLOT_CLIP_PATH,
+} from "@/app/componnent/cardSlotGeometry";
 
-// King/Queen/Jack/Ace slot geometry — measured from the raw base card
-// asset (see cardSlotGeometry.js for how these numbers were derived).
 const SLOT_BOX = {
   top: `${CARD_SLOT_BOX.top}%`,
   left: `${CARD_SLOT_BOX.left}%`,
@@ -23,17 +29,12 @@ const JOKER_SLOT_BOX_STYLE = {
   height: `${JOKER_SLOT_BOX.height}%`,
 };
 
-const JOKER_CHARACTER_TOP_PERCENT = 17;
-const JOKER_CHARACTER_HEIGHT_PERCENT = 33;
-const JOKER_CHARACTER_WIDTH_PERCENT = 55;
-
 const ACCEPTED = ["image/png", "image/jpeg", "image/jpg", "image/webp"];
-const MAX_SIZE = 10 * 1024 * 1024; // 10 MB
-const OFFSET_LIMIT = 0.75; // how far (as a fraction of the box) the photo can be dragged
+const MAX_SIZE = 10 * 1024 * 1024;
+const OFFSET_LIMIT = 0.75;
 
 const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
 
-// Reusable, modern upload placeholder — now clickable + drop target
 const UploadPlaceholder = ({ compact = false, dragging, busy }) => (
   <div
     className={`group flex h-full w-full flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed backdrop-blur-md transition-all duration-300 cursor-pointer ${
@@ -45,10 +46,12 @@ const UploadPlaceholder = ({ compact = false, dragging, busy }) => (
     <div className="relative flex items-center justify-center">
       <div
         className={`absolute inset-0 rounded-full bg-sky-400/20 blur-md transition-opacity duration-300 ${
-          compact ? "opacity-0 group-hover:opacity-100" : "opacity-60 group-hover:opacity-100"
+          compact
+            ? "opacity-0 group-hover:opacity-100"
+            : "opacity-60 group-hover:opacity-100"
         }`}
       />
-      <div className="relative flex h-11 w-11 items-center justify-center rounded-full bg-gradient-to-br from-white/90 to-white/60 shadow-lg ring-1 ring-white/40 transition-transform duration-300 group-hover:scale-105">
+      <div className="relative flex h-11 w-11 items-center justify-center rounded-full bg-linear-to-br from-white/90 to-white/60 shadow-lg ring-1 ring-white/40 transition-transform duration-300 group-hover:scale-105">
         <Upload className="h-5 w-5 text-slate-700" strokeWidth={2.2} />
       </div>
     </div>
@@ -63,7 +66,12 @@ const UploadPlaceholder = ({ compact = false, dragging, busy }) => (
   </div>
 );
 
-const PhotoCardPreview = ({ activeCard, previewCardNodeRef, onSelectPhoto, onPhotoOffsetChange }) => {
+const PhotoCardPreview = ({
+  activeCard,
+  previewCardNodeRef,
+  onSelectPhoto,
+  onPhotoOffsetChange,
+}) => {
   const photo = activeCard?.userPhoto || null;
   const zoom = activeCard?.userPhotoZoom || 1;
   const offset = activeCard?.userPhotoOffset || { x: 0, y: 0 };
@@ -77,7 +85,6 @@ const PhotoCardPreview = ({ activeCard, previewCardNodeRef, onSelectPhoto, onPho
   const [isDraggingPhoto, setIsDraggingPhoto] = useState(false);
   const [busy, setBusy] = useState(false);
 
-  // ---------- Upload ----------
   const handleFile = (file) => {
     if (!file) return;
     if (!ACCEPTED.includes(file.type)) {
@@ -121,7 +128,6 @@ const PhotoCardPreview = ({ activeCard, previewCardNodeRef, onSelectPhoto, onPho
     handleFile(file);
   };
 
-  // ---------- Drag to reposition ----------
   const handlePointerDown = (e) => {
     if (!photo) return;
     e.preventDefault();
@@ -166,11 +172,17 @@ const PhotoCardPreview = ({ activeCard, previewCardNodeRef, onSelectPhoto, onPho
   return (
     <div
       ref={previewCardNodeRef}
-      className="flex items-center justify-center relative w-[200px] md:w-[270px] lg:w-[400px] rounded-4xl border-2 border-transparent"
+      className="flex items-center justify-center relative w-50 md:w-67.5 lg:w-100 rounded-4xl border-2 border-transparent"
       style={{ aspectRatio: `${JOKER_NATIVE_WIDTH} / ${JOKER_NATIVE_HEIGHT}` }}
     >
       {activeCard?.baseImage && (
-        <Image width={1000} height={1000} src={activeCard.baseImage} alt="Base Card" className="w-full h-full object-contain" />
+        <Image
+          width={1000}
+          height={1000}
+          src={activeCard.baseImage}
+          alt="Base Card"
+          className="w-full h-full object-contain"
+        />
       )}
 
       <input
@@ -183,37 +195,47 @@ const PhotoCardPreview = ({ activeCard, previewCardNodeRef, onSelectPhoto, onPho
 
       {isJoker ? (
         <div
-            ref={slotRef}
-            onClick={!photo ? openPicker : undefined}
-            onDragOver={(e) => {
-              if (photo) return;
-              e.preventDefault();
-              setIsDropTarget(true);
-            }}
-            onDragLeave={() => setIsDropTarget(false)}
-            onDrop={photo ? undefined : onDrop}
-            onPointerDown={photo ? handlePointerDown : undefined}
-            onPointerMove={photo ? handlePointerMove : undefined}
-            onPointerUp={photo ? endDrag : undefined}
-            onPointerCancel={photo ? endDrag : undefined}
-            style={{
-              position: "absolute",
-              top: JOKER_SLOT_BOX_STYLE.top,
-              left: JOKER_SLOT_BOX_STYLE.left,
-              width: JOKER_SLOT_BOX_STYLE.width,
-              height: JOKER_SLOT_BOX_STYLE.height,
-              overflow: "hidden",
-              clipPath: JOKER_SLOT_CLIP_PATH,
-              touchAction: photo ? "none" : "auto",
-              cursor: photo ? (isDraggingPhoto ? "grabbing" : "grab") : "pointer",
-            }}
-          >
+          ref={slotRef}
+          onClick={!photo ? openPicker : undefined}
+          onDragOver={(e) => {
+            if (photo) return;
+            e.preventDefault();
+            setIsDropTarget(true);
+          }}
+          onDragLeave={() => setIsDropTarget(false)}
+          onDrop={photo ? undefined : onDrop}
+          onPointerDown={photo ? handlePointerDown : undefined}
+          onPointerMove={photo ? handlePointerMove : undefined}
+          onPointerUp={photo ? endDrag : undefined}
+          onPointerCancel={photo ? endDrag : undefined}
+          style={{
+            position: "absolute",
+            top: JOKER_SLOT_BOX_STYLE.top,
+            left: JOKER_SLOT_BOX_STYLE.left,
+            width: JOKER_SLOT_BOX_STYLE.width,
+            height: JOKER_SLOT_BOX_STYLE.height,
+            overflow: "hidden",
+            clipPath: JOKER_SLOT_CLIP_PATH,
+            touchAction: photo ? "none" : "auto",
+            cursor: photo ? (isDraggingPhoto ? "grabbing" : "grab") : "pointer",
+          }}
+        >
           {photo ? (
             <Image
-              width={1000} height={1000} src={photo} alt="Your photo" draggable={false}
+              width={1000}
+              height={1000}
+              src={photo}
+              alt="Your photo"
+              draggable={false}
               style={{
-                position: "absolute", top: "50%", left: "50%", width: "100%", height: "100%",
-                objectFit: "contain", transform: photoTransform, transformOrigin: "center center",
+                position: "absolute",
+                top: "50%",
+                left: "50%",
+                width: "100%",
+                height: "100%",
+                objectFit: "contain",
+                transform: photoTransform,
+                transformOrigin: "center center",
               }}
             />
           ) : (
@@ -236,18 +258,33 @@ const PhotoCardPreview = ({ activeCard, previewCardNodeRef, onSelectPhoto, onPho
           onPointerUp={photo ? endDrag : undefined}
           onPointerCancel={photo ? endDrag : undefined}
           style={{
-            position: "absolute", top: SLOT_BOX.top, left: SLOT_BOX.left,
-            width: SLOT_BOX.width, height: SLOT_BOX.height, overflow: "hidden", clipPath: SLOT_CLIP_PATH,
+            position: "absolute",
+            top: SLOT_BOX.top,
+            left: SLOT_BOX.left,
+            width: SLOT_BOX.width,
+            height: SLOT_BOX.height,
+            overflow: "hidden",
+            clipPath: SLOT_CLIP_PATH,
             touchAction: photo ? "none" : "auto",
             cursor: photo ? (isDraggingPhoto ? "grabbing" : "grab") : "pointer",
           }}
         >
           {photo ? (
             <Image
-              width={1000} height={1000} src={photo} alt="Your photo" draggable={false}
+              width={1000}
+              height={1000}
+              src={photo}
+              alt="Your photo"
+              draggable={false}
               style={{
-                position: "absolute", top: "50%", left: "50%", width: "100%", height: "100%",
-                objectFit: "cover", transform: photoTransform, transformOrigin: "center center",
+                position: "absolute",
+                top: "50%",
+                left: "50%",
+                width: "100%",
+                height: "100%",
+                objectFit: "cover",
+                transform: photoTransform,
+                transformOrigin: "center center",
               }}
             />
           ) : (

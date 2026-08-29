@@ -178,7 +178,7 @@ export default function Howwork() {
               style={{ animation: "fadeInLeft 0.8s ease-out" }}
             >
               <div className="inline-flex items-center gap-3">
-                <div className="w-12 h-12 bg-gradient-to-br from-purple-400 to-pink-500 rounded-xl flex items-center justify-center shadow-lg">
+                <div className="w-12 h-12 bg-linear-to-br from-purple-400 to-pink-500 rounded-xl flex items-center justify-center shadow-lg">
                   <span className="text-white font-black text-xl">3</span>
                 </div>
                 <span className="text-sm font-bold text-purple-600 uppercase tracking-wider">
@@ -228,7 +228,7 @@ export default function Howwork() {
               </div>
               <Link
                 href={"/shop"}
-                className="w-fit px-8 py-4 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold rounded-xl hover:from-purple-600 hover:to-pink-600 transition-all shadow-lg hover:shadow-xl hover:scale-105 transform flex items-center gap-2"
+                className="w-fit px-8 py-4 bg-linear-to-r from-purple-500 to-pink-500 text-white font-bold rounded-xl hover:from-purple-600 hover:to-pink-600 transition-all shadow-lg hover:shadow-xl hover:scale-105 transform flex items-center gap-2"
               >
                 Create a Trading Card
                 <ArrowRight className="w-5 h-5" />

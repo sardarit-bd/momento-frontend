@@ -29,7 +29,7 @@ export default function MobileCustomizerSheet({
   doneloading,
   doneButtonLabel,
 }) {
-  const [snap, setSnap] = useState("half"); // "peek" | "half" | "full"
+  const [snap, setSnap] = useState("half");
   const sheetRef = useRef(null);
   const dragRef = useRef({ startY: 0, startH: 0, dragging: false });
   const contentRef = useRef(null);
@@ -84,7 +84,6 @@ export default function MobileCustomizerSheet({
     window.addEventListener("mouseup", up);
   };
 
-  // Touch events
   const handleTouchStart = (e) => onDragStart(e.touches[0].clientY);
   const handleTouchMove = (e) => {
     e.preventDefault();
@@ -98,7 +97,6 @@ export default function MobileCustomizerSheet({
     );
   };
 
-  // Reset to half whenever the active card changes (new context)
   useEffect(() => {
     setSnap("half");
   }, [activeCard?.editedCard]);
@@ -106,7 +104,6 @@ export default function MobileCustomizerSheet({
   const isOpen = snap !== "peek";
 
   return (
-    /* Only visible below xl breakpoint */
     <div
       className="xl:hidden fixed inset-x-0 bottom-0 z-50"
       style={{
@@ -119,7 +116,6 @@ export default function MobileCustomizerSheet({
       }}
       ref={sheetRef}
     >
-      {/* Backdrop — subtle, only when open */}
       {isOpen && (
         <div
           className="absolute inset-x-0 bottom-full"
@@ -133,7 +129,6 @@ export default function MobileCustomizerSheet({
       )}
 
       <div className="relative flex h-full flex-col rounded-t-3xl border-t border-gray-200 bg-white shadow-[0_-8px_40px_rgba(0,0,0,0.12)]">
-        {/* ── Handle bar ── */}
         <div
           className="flex shrink-0 touch-none select-none flex-col items-center pb-1 pt-2 cursor-grab active:cursor-grabbing"
           onMouseDown={handleMouseDown}
@@ -144,10 +139,8 @@ export default function MobileCustomizerSheet({
           aria-label={isOpen ? "Collapse customizer" : "Expand customizer"}
           role="button"
         >
-          {/* Pill */}
           <span className="mb-2 block h-1.5 w-10 rounded-full bg-gray-300" />
 
-          {/* Label row */}
           <div className="flex w-full items-center justify-between px-4">
             <div className="flex items-center gap-2">
               <span className="text-xs font-semibold uppercase tracking-widest text-gray-400">
@@ -167,13 +160,11 @@ export default function MobileCustomizerSheet({
           </div>
         </div>
 
-        {/* ── Scrollable content ── */}
         <div
           ref={contentRef}
           className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-3 pb-2"
           style={{ WebkitOverflowScrolling: "touch" }}
         >
-          {/* Only mount controller when open to avoid layout thrash */}
           {isOpen && (
             <SideController
               product={product}
@@ -189,7 +180,6 @@ export default function MobileCustomizerSheet({
           )}
         </div>
 
-        {/* ── Sticky CTA ── */}
         <div className="shrink-0 border-t border-gray-100 bg-white px-4 pb-[env(safe-area-inset-bottom,12px)] pt-3">
           <button
             onClick={Done}

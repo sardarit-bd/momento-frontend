@@ -4,9 +4,14 @@ import { IoCloudUploadOutline, IoTrashOutline } from "react-icons/io5";
 import { toast } from "react-toastify";
 
 const ACCEPTED = ["image/png", "image/jpeg", "image/jpg", "image/webp"];
-const MAX_SIZE = 10 * 1024 * 1024; // 10 MB
+const MAX_SIZE = 10 * 1024 * 1024;
 
-const PhotoUploader = ({ activeCard, selectPhoto, userPhotoZoom = 1, setUserPhotoZoom }) => {
+const PhotoUploader = ({
+  activeCard,
+  selectPhoto,
+  userPhotoZoom = 1,
+  setUserPhotoZoom,
+}) => {
   const inputRef = useRef(null);
   const [dragging, setDragging] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -75,7 +80,8 @@ const PhotoUploader = ({ activeCard, selectPhoto, userPhotoZoom = 1, setUserPhot
       </div>
 
       <p className="pb-3 text-xs text-gray-500">
-        Upload a photo to replace the character. Leave empty to use the default look.
+        Upload a photo to replace the character. Leave empty to use the default
+        look.
       </p>
 
       <input
@@ -92,7 +98,7 @@ const PhotoUploader = ({ activeCard, selectPhoto, userPhotoZoom = 1, setUserPhot
             <img
               src={photo}
               alt="Uploaded photo preview"
-              className="h-[180px] w-full object-contain bg-gray-50"
+              className="h-45 w-full object-contain bg-gray-50"
             />
           </div>
           <div className="flex items-center gap-3">
@@ -138,7 +144,7 @@ const PhotoUploader = ({ activeCard, selectPhoto, userPhotoZoom = 1, setUserPhot
           }}
           onDragLeave={() => setDragging(false)}
           onDrop={onDrop}
-          className={`flex h-[150px] cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed transition ${
+          className={`flex h-37.5 cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed transition ${
             dragging
               ? "border-sky-500 bg-sky-50"
               : "border-gray-300 bg-gray-50 hover:border-sky-400 hover:bg-sky-50/40"

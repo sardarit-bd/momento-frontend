@@ -63,12 +63,6 @@ const PhotoPortraitBoxPreview = forwardRef(function PhotoPortraitBoxPreview(
 
   const rootContainerRef = useRef(null);
 
-  // Capture the ALREADY-RESOLVED geometry the browser computed for each slot
-  // and its inner <img>, converted to fractions of the outer box container's
-  // own rect. This replaces the old fraction-delta replay: we send what the
-  // browser actually rendered (frame = overflow-hidden clip box, image =
-  // object-cover'd <img> bounding box) rather than re-deriving it from a drag
-  // delta. Called once at submit time, not on every drag tick.
   useImperativeHandle(ref, () => ({
     captureResolvedRects() {
       const container = rootContainerRef.current;

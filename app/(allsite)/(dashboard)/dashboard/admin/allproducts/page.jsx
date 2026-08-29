@@ -1,25 +1,16 @@
 "use client";
-import useLoadingStore from "@/store/useLoadingStore";
 import getId from "@/utilis/helper/cookie/getid";
 import getCookie from "@/utilis/helper/cookie/gettooken";
 import MakeGet from "@/utilis/requestrespose/get";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 
 export default function AllProducts() {
   const id = getId();
   const token = getCookie();
-  const router = useRouter();
-  const { isLoading, setLoading } = useLoadingStore();
   const [fetchloading, setfetchloading] = useState(true);
-  const [isedit, setisedit] = useState(false);
-  const [name, setname] = useState("");
-  const [image, setimage] = useState("");
-  const [des, setdes] = useState("");
   const [data, setdata] = useState(null);
-
   const fetching = useCallback(
     async (id, token) => {
       try {

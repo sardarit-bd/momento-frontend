@@ -391,7 +391,7 @@ export function useTradingCardState() {
       setname2limite(15);
       setname3limite(15);
       setacarddatelimite(15);
-      setcardfinder(0);
+      setcardfinder(templateConfig?.cardfinder ?? 0);
     } else {
       setcardti("Profile");
       setname("Achievements");
@@ -413,7 +413,7 @@ export function useTradingCardState() {
       setacarddatelimite(95);
       setcardfinder(0);
     }
-  }, [workingcard]);
+  }, [workingcard, templateConfig]);
 
   useEffect(() => {
     if (typeof window !== "undefined" && carddes && carddes !== "Created For") {

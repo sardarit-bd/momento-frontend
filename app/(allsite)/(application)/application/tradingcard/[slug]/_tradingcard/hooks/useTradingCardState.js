@@ -413,6 +413,7 @@ export function useTradingCardState() {
       setacarddatelimite(95);
       setcardfinder(0);
     }
+    //asfasd
   }, [workingcard, templateConfig]);
 
   useEffect(() => {

@@ -1,4 +1,9 @@
-import GradientText from "./GradientText";
+const getTitleSizeStep = (text = "", largeMax = 8, mediumMax = 14) => {
+  const len = text.length;
+  if (len <= largeMax) return "large";
+  if (len <= mediumMax) return "medium";
+  return "small";
+};
 
 const AttributeLabel = ({ icon, text, className = "" }) => (
   <div
@@ -114,8 +119,8 @@ const AttributeMetric = ({
           fontWeight: 600,
           fontSize: "13px",
           display: "block",
-          overflow: "visible",
-          textOverflow: "unset",
+          overflow: "hidden", // Changed from "visible"
+          textOverflow: "ellipsis", // Added
           whiteSpace: "nowrap",
           paddingBottom: "0px",
           textShadow: `
@@ -436,7 +441,14 @@ export const FrontOne = ({
           style={{
             WebkitTextStroke: "0.7px black",
             paintOrder: "stroke fill",
-            fontSize: `${getTitleFontSizeWithText(cardti)}rem`,
+            whiteSpace: "nowrap",
+            overflow: "hidden",
+            fontSize:
+              getTitleSizeStep(cardti) === "large"
+                ? "2.2rem"
+                : getTitleSizeStep(cardti) === "medium"
+                  ? "1.6rem"
+                  : "1.2rem",
           }}
         >
           {cardti}
@@ -517,58 +529,40 @@ export const FrontTwo = ({
         />
       </div>
 
-      <div className="absolute inset-0 pointer-events-none z-50  w-9/10 mx-auto">
+      {/* <div
+        className="absolute right-[9%] bottom-[16%] z-50 w-40 text-right overflow-hidden"
+        style={{ backgroundColor: "transparent", background: "transparent" }}
+      >
         <span
           id="card-title"
-          className="
-                absolute
-                left-0
-                w-full
-                bottom-[28%]
-                text-center
-                font-medium
-                leading-tight
-                text-transparent
-                bg-clip-text
-                bg-[linear-gradient(180deg,#3a3a3a_0%,#787878_30%,#ffffff_50%,#787878_70%,#3a3a3a_100%)]
-                bg-size-[100%_100%]
-                AkiraFont
-               
-            "
+          className="absolute left-0 w-full bottom-[28%] text-center font-medium leading-tight text-transparent bg-clip-text bg-[linear-gradient(180deg,#3a3a3a_0%,#787878_30%,#ffffff_50%,#787878_70%,#3a3a3a_100%)] bg-size-[100%_100%] AkiraFont"
           style={{
             WebkitTextStroke: "1px black",
             paintOrder: "stroke fill",
-            fontSize: `${getTitleFontSizeWithText(cardti)}rem`,
+            whiteSpace: "nowrap",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            fontSize:
+              getTitleSizeStep(cardti) === "large"
+                ? "2.2rem"
+                : getTitleSizeStep(cardti) === "medium"
+                  ? "1.6rem"
+                  : "1.2rem",
           }}
         >
           {cardti}
         </span>
         <span
           id="card-date"
-          className="
-                    absolute
-                    left-1/2
-                    -translate-x-1/2
-                    bottom-[4%]
-                    text-center
-                    font-extrabold
-                    text-[0.9rem]
-                    tracking-tighter
-                    leading-tight
-                    FrontTwoCopy
-                "
+          className="block CorsicaCanvas text-[11px] lg:text-[1.3rem] tracking-wide leading-tight mt-0 BrunsonFont text-transparent bg-clip-text bg-[linear-gradient(180deg,#3a3a3a_-10%,#787878_20%,#ffffff_80%)] truncate"
+          style={{
+            WebkitTextStroke: "0.3px black",
+            paintOrder: "stroke fill",
+          }}
         >
-          {dateParts ? (
-            <>
-              {dateParts[1]}
-              <br />
-              {dateParts[2]}
-            </>
-          ) : (
-            acarddate
-          )}
+          {acarddate}
         </span>
-      </div>
+      </div> */}
       <span className="absolute bottom-2 left-1/2 -translate-x-1/2 z-50 text-[8px] lg:text-[8px] text-[#1f1f1f] BrunsonCanvas tracking-wider text-center whitespace-nowrap">
         &copy; {currentYear} MOMENTO TRADING CARDS
       </span>
@@ -601,7 +595,7 @@ export const FrontThree = ({
     >
       <span
         id="card-title"
-        className="absolute top-[7%] left-[33%] -translate-x-1/2 z-50 text-[#00BCFF] uppercase tracking-wide text-center BrunsonFont text-[1.8rem] -leading-[0.8rem]"
+        className="absolute top-[7%] left-[33%] -translate-x-1/2 z-50 text-[#00BCFF] uppercase tracking-wide text-center BrunsonFont -leading-[0.8rem]"
         style={{
           textShadow:
             "-2px -1px 0 #000, 1px -1px 0 #000, -2px 1px 0 #000, 2px 1px 0 #000",
@@ -609,7 +603,13 @@ export const FrontThree = ({
           maxWidth: "340px",
           whiteSpace: "nowrap",
           overflow: "hidden",
-          textOverflow: "ellipsis",
+          textOverflow: "ellipsis", // ➕ ADDED
+          fontSize:
+            getTitleSizeStep(cardti, 6, 10) === "large"
+              ? "1.8rem"
+              : getTitleSizeStep(cardti, 6, 10) === "medium"
+                ? "1.4rem"
+                : "1.05rem",
         }}
       >
         {cardti}
@@ -633,7 +633,7 @@ export const FrontThree = ({
           fillColor="#f56f41"
         />
         <AttributeMetricHorizontal2
-          icon={iconOne}
+          icon={iconTwo}
           text={name2}
           value={labeltwo}
           metallic
@@ -642,13 +642,13 @@ export const FrontThree = ({
           fillColor="#f56f41"
         />
         <AttributeMetricHorizontal2
-          icon={iconOne}
+          icon={iconThree}
           text={name3}
           value={labelthree}
           metallic
           textClass="text-[16px] tracking-wider GustanBlackFont"
-          trackColor="#000000"
           fillColor="#f56f41"
+          trackColor="#000000"
         />
       </div>
 
@@ -736,7 +736,7 @@ export const FrontFour = ({
         className="absolute right-6.25 bottom-8.25 z-50 w-32.5 lg:w-45 text-right"
         style={{ backgroundColor: "transparent" }}
       >
-        <span className="block text-white text-sm lg:text-2xl font-bold tracking-widest bebas leading-tight">
+        <span className="block text-white text-sm lg:text-2xl font-bold tracking-widest bebas leading-tight truncate">
           {cardti}
         </span>
         <span className="block lg:font-extrabold text-[11px] lg:text-[1.35rem] tracking-tighter leading-tight mt-0 TradingCardDateGrayGradient">

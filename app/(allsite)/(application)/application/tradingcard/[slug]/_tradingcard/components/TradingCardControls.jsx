@@ -1,4 +1,4 @@
-import React from "react";
+import CharactersCountComponent from "@/app/componnent/CharactersCountComponent";
 import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 import {
@@ -9,7 +9,6 @@ import {
   BsSuitSpadeFill,
 } from "react-icons/bs";
 import { CiCirclePlus } from "react-icons/ci";
-import CharactersCountComponent from "@/app/componnent/CharactersCountComponent";
 import { TEMPLATE_MAP, attributeIconOptions } from "../constants";
 export default function TradingCardControls({
   isMobileDrawer = false,
@@ -722,22 +721,6 @@ function PanelContent({
               />
             </div>
 
-            <label className="mb-2 flex items-center justify-between text-sm font-medium text-slate-700">
-              <span className="flex items-center gap-1">
-                Package Title <span className="text-red-500">*</span>
-              </span>
-              <CharactersCountComponent
-                text={packageTitle}
-                limit={packageTitlelimite}
-              />
-            </label>
-            <input
-              maxLength={packageTitlelimite}
-              value={packageTitle}
-              onChange={(e) => setPackageTitle(e.target.value)}
-              placeholder="Enter package title..."
-              className="h-14 w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-slate-700 outline-none transition-all duration-200 focus:border-sky-300 focus:ring-2 focus:ring-sky-100"
-            />
           </div>
           <div className="border border-gray-200 p-4 md:p-5 mb-4 rounded-xl bg-white shadow-sm ring-1 ring-gray-100">
             <label className="block text-xl text-gray-700 mb-3 mt-4 font-semibold">

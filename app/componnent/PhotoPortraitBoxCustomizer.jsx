@@ -1,17 +1,18 @@
 "use client";
 import { useRef, useState } from "react";
-import {
-  IoCloudUploadOutline,
-  IoTrashOutline,
-  IoAddOutline,
-} from "react-icons/io5";
+import { IoAddOutline, IoTrashOutline } from "react-icons/io5";
 import { toast } from "react-toastify";
 
 const ACCEPTED = ["image/png", "image/jpeg", "image/jpg", "image/webp"];
 const MAX_SIZE = 10 * 1024 * 1024;
 const MAX_IMAGES = 5;
 
-const PhotoPortraitBoxCustomizer = ({ boxImages = [], onBoxImagesChange }) => {
+const PhotoPortraitBoxCustomizer = ({
+  boxImages = [],
+  onBoxImagesChange,
+  boxTitle = "",
+  onBoxTitleChange,
+}) => {
   const inputRef = useRef(null);
   const [dragging, setDragging] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -97,6 +98,25 @@ const PhotoPortraitBoxCustomizer = ({ boxImages = [], onBoxImagesChange }) => {
 
   return (
     <div className="w-full max-w-3xl mx-auto">
+      {onBoxTitleChange && (
+        <div className="mb-6">
+          <label className="block text-sm font-semibold text-gray-700 mb-2">
+            Box Title
+          </label>
+          <input
+            type="text"
+            value={boxTitle}
+            onChange={(e) => onBoxTitleChange(e.target.value)}
+            maxLength={30}
+            placeholder="Enter custom box title..."
+            className="w-full rounded-xl border border-gray-200 text-gray-700 bg-gray-50 px-4 py-3 text-sm outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-50"
+          />
+          <p className="mt-1 text-xs text-gray-500">
+            This title will appear on your physical box.
+          </p>
+        </div>
+      )}
+
       <input
         ref={inputRef}
         type="file"

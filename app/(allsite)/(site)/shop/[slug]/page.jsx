@@ -92,8 +92,12 @@ const SingleProduct = () => {
 
     setTimeout(() => {
       setbtnLoading(false);
+      const isActive =
+        data?.status === "active" ||
+        data?.status === true ||
+        data?.data?.status === "active";
 
-      if (data?.status) {
+      if (isActive) {
         if (type === "customizable") {
           router.push(`/application/deckcard/${productSlug}`);
         } else if (type === "photo") {
@@ -114,7 +118,12 @@ const SingleProduct = () => {
     setTimeout(() => {
       setbtnLoading(false);
 
-      if (data?.status) {
+      const isActive =
+        data?.status === "active" ||
+        data?.status === true ||
+        data?.data?.status === "active";
+
+      if (isActive) {
         router.push(path);
       } else {
         setSubcriptionModal(true);
@@ -195,7 +204,13 @@ const SingleProduct = () => {
       <section className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8 ">
         <div className="grid items-start gap-10 lg:grid-cols-[1.08fr_0.92fr] lg:gap-16">
           <div className="min-w-0">
-            <div className="relative flex aspect-4/3 w-full items-center justify-center overflow-hidden rounded-3xl bg-[#f5f6f7]">
+            <div
+              className={`relative flex w-full items-center justify-center overflow-hidden rounded-3xl bg-[#f5f6f7] ${
+                data?.type === "trading" || data?.type === "photo"
+                  ? "aspect-4/3"
+                  : "aspect-4/3"
+              }`}
+            >
               <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.95),rgba(245,246,247,0.8))]" />
 
               <Image
@@ -204,7 +219,7 @@ const SingleProduct = () => {
                 width={1200}
                 height={1000}
                 priority
-                className="relative z-10 h-full w-full object-contain p-6 transition-transform duration-500 hover:scale-[1.015] sm:p-10"
+                className="relative z-10 h-full w-full object-contain transition-transform duration-500 hover:scale-[1.015]"
               />
             </div>
 

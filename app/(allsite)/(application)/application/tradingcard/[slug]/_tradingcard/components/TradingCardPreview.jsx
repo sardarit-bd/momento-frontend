@@ -1,6 +1,3 @@
-import React from "react";
-import { Rnd } from "react-rnd";
-import { BsArrowRepeat } from "react-icons/bs";
 import {
   BackOne,
   FrontFour,
@@ -8,6 +5,9 @@ import {
   FrontThree,
   FrontTwo,
 } from "@/app/componnent/TextOverlayer";
+import React from "react";
+import { BsArrowRepeat } from "react-icons/bs";
+import { Rnd } from "react-rnd";
 
 export default function TradingCardPreview({
   previewCardNodeRef,
@@ -360,6 +360,17 @@ export default function TradingCardPreview({
                   display: "block",
                 }}
               />
+            )}
+
+            {workingcard === "front" && uploads.length === 0 && (
+              <div
+                className="absolute inset-0 flex items-center justify-center pointer-events-none"
+                style={{ zIndex: 3 }}
+              >
+                <span className="rounded-full bg-black/45 backdrop-blur-sm px-4 py-2 text-white text-xs font-semibold tracking-wide">
+                  Tap to Add Photo
+                </span>
+              </div>
             )}
 
             <div

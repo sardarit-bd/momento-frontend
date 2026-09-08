@@ -1,4 +1,11 @@
-import { useRef, useEffect } from "react";
+import { useEffect, useRef } from "react";
+
+const getTitleSizeStep = (text = "", largeMax = 8, mediumMax = 14) => {
+  const len = text.length;
+  if (len <= largeMax) return "large";
+  if (len <= mediumMax) return "medium";
+  return "small";
+};
 
 const handleExport = async () => {
   const element = document.getElementById("card-root");
@@ -39,6 +46,12 @@ const handleExport = async () => {
 
 const GradientTitleOne = ({ cardti }) => {
   const canvasRef = useRef(null);
+  const titleFontPx =
+    getTitleSizeStep(cardti) === "large"
+      ? 35
+      : getTitleSizeStep(cardti) === "medium"
+        ? 26
+        : 19;
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -53,7 +66,7 @@ const GradientTitleOne = ({ cardti }) => {
       canvas.height = H * 2;
       ctx.scale(2, 2);
       ctx.clearRect(0, 0, W, H);
-      ctx.font = `400 29px CorsicaCanvas`;
+      ctx.font = `400 ${titleFontPx}px CorsicaCanvas`;
       ctx.textAlign = "right";
       ctx.textBaseline = "middle";
       ctx.strokeStyle = "black";
@@ -75,10 +88,10 @@ const GradientTitleOne = ({ cardti }) => {
       ctx.fillText(cardti, W - 45, H / 2);
     };
 
-    document.fonts.load(`400 29px CorsicaCanvas`).then(() => {
+    document.fonts.load(`400 ${titleFontPx}px CorsicaCanvas`).then(() => {
       draw();
     });
-  }, [cardti]);
+  }, [cardti, titleFontPx]);
 
   return (
     <canvas
@@ -97,6 +110,12 @@ const GradientTitleOne = ({ cardti }) => {
 
 const GradientTitle = ({ cardti }) => {
   const canvasRef = useRef(null);
+  const titleFontPx =
+    getTitleSizeStep(cardti) === "large"
+      ? 35
+      : getTitleSizeStep(cardti) === "medium"
+        ? 26
+        : 19;
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -110,7 +129,7 @@ const GradientTitle = ({ cardti }) => {
       canvas.height = H * 2;
       ctx.scale(2, 2);
       ctx.clearRect(0, 0, W, H);
-      ctx.font = `400 30px CorsicaCanvas`;
+      ctx.font = `400 ${titleFontPx}px CorsicaCanvas`;
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
       ctx.strokeStyle = "black";
@@ -127,10 +146,10 @@ const GradientTitle = ({ cardti }) => {
       ctx.fillText(cardti, W / 2, H / 2);
     };
 
-    document.fonts.load(`400 30px CorsicaCanvas`).then(() => {
+    document.fonts.load(`400 ${titleFontPx}px CorsicaCanvas`).then(() => {
       draw();
     });
-  }, [cardti]);
+  }, [cardti, titleFontPx]);
 
   return (
     <canvas
@@ -238,7 +257,12 @@ const GradientTitleThree = ({ cardti }) => {
       ctx.scale(2, 2);
       ctx.clearRect(0, 0, W, H);
 
-      const fontSize = getTitleFontSizePx(cardti);
+      const fontSize =
+        getTitleSizeStep(cardti, 6, 10) === "large"
+          ? 28
+          : getTitleSizeStep(cardti, 6, 10) === "medium"
+            ? 22
+            : 16;
       ctx.font = `700 ${fontSize}px DinBold`;
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";

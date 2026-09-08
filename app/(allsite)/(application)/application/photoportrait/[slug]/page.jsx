@@ -1,14 +1,19 @@
 "use client";
 import ApplicationSkeleton from "@/app/componnent/ApplicationSkeleton";
+import {
+  JOKER_SLOT_CLIP_POLYGON,
+  JOKER_SLOT_RECT,
+} from "@/app/componnent/jokerSlotGeometry";
 import useboxcartstore from "@/store/useboxcartstore";
-import usePhotoFinalPreview from "@/store/usePhotoFinalPreview";
 import usefinalCardsStore from "@/store/usefinalCardsStore";
+import usePhotoFinalPreview from "@/store/usePhotoFinalPreview";
 import generateUserId from "@/utilis/helper/generateUserId";
 import MakeGet from "@/utilis/requestrespose/get";
 import { useParams, useRouter } from "next/navigation";
 import { Fragment, useEffect, useRef, useState } from "react";
 import {
   GiCardAceClubs,
+  GiCardboardBox,
   GiCardJackClubs,
   GiCardJoker,
   GiCardKingClubs,
@@ -16,18 +21,13 @@ import {
 } from "react-icons/gi";
 import { IoMdCheckmark } from "react-icons/io";
 import { toast, ToastContainer } from "react-toastify";
+import PhotoBoxMobileCustomizerSheet from "../../../../../componnent/PhotoBoxMobileCustomizerSheet";
 import PhotoCardPreview from "../../../../../componnent/PhotoCardPreview";
 import PhotoCardSidebar from "../../../../../componnent/PhotoCardSidebar";
-import PhotoSideController from "../../../../../componnent/PhotoSideController";
 import PhotoMobileCustomizerSheet from "../../../../../componnent/PhotoMobileCustomizerSheet";
-import PhotoPortraitBoxPreview from "../../../../../componnent/PhotoPortraitBoxPreview";
 import PhotoPortraitBoxCustomizer from "../../../../../componnent/PhotoPortraitBoxCustomizer";
-import PhotoBoxMobileCustomizerSheet from "../../../../../componnent/PhotoBoxMobileCustomizerSheet";
-import { GiCardboardBox } from "react-icons/gi";
-import {
-  JOKER_SLOT_RECT,
-  JOKER_SLOT_CLIP_POLYGON,
-} from "@/app/componnent/jokerSlotGeometry";
+import PhotoPortraitBoxPreview from "../../../../../componnent/PhotoPortraitBoxPreview";
+import PhotoSideController from "../../../../../componnent/PhotoSideController";
 
 const layers = [
   "dresses",
@@ -161,6 +161,15 @@ const ProductCustomizer = () => {
       return Array.isArray(parsed) ? parsed : [];
     } catch {
       return [];
+    }
+  });
+
+  const [boxTitle, setBoxTitle] = useState(() => {
+    if (typeof window === "undefined") return "";
+    try {
+      return localStorage.getItem(`photoBoxTitle:${slug}`) || "";
+    } catch {
+      return "";
     }
   });
   const { setfinalCards } = usefinalCardsStore();
@@ -340,6 +349,11 @@ const ProductCustomizer = () => {
     if (!slug) return;
     localStorage.setItem(boxImagesStorageKey, JSON.stringify(boxImages));
   }, [boxImages, slug, boxImagesStorageKey]);
+
+  useEffect(() => {
+    if (!slug) return;
+    localStorage.setItem(`photoBoxTitle:${slug}`, boxTitle);
+  }, [boxTitle, slug]);
 
   useEffect(() => {
     const currentCardType = cards?.[activeCardIndex]?.editedCard;
@@ -776,6 +790,7 @@ const ProductCustomizer = () => {
       CharacterImages: characterOnlyImages,
       BoxImage: null,
       boxImages: resolvedBoxImages,
+      boxTitle: boxTitle,
       jokerAdded: hasJokerCard,
       customization_mode: "photo",
     };
@@ -1286,6 +1301,8 @@ const ProductCustomizer = () => {
                     <PhotoPortraitBoxCustomizer
                       boxImages={boxImages}
                       onBoxImagesChange={setBoxImages}
+                      boxTitle={boxTitle}
+                      onBoxTitleChange={setBoxTitle}
                     />
                   </div>
                 ) : (
@@ -1322,6 +1339,8 @@ const ProductCustomizer = () => {
               <PhotoBoxMobileCustomizerSheet
                 boxImages={boxImages}
                 onBoxImagesChange={setBoxImages}
+                boxTitle={boxTitle}
+                onBoxTitleChange={setBoxTitle}
                 handleFinishBox={handleFinishBox}
                 doneloading={doneloading || spinloading}
                 doneButtonLabel={doneButtonLabel}

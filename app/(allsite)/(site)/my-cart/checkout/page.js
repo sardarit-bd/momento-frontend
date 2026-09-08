@@ -3,17 +3,17 @@
 import DeckBoxPreview from "@/app/componnent/DeckBoxPreview";
 import PhotoPortraitBoxPreview from "@/app/componnent/PhotoPortraitBoxPreview";
 import useCartStore from "@/store/useCartStore";
-import usePhotoFinalPreview from "@/store/usePhotoFinalPreview";
 import useDeckFinalPreview from "@/store/useDeckFinalPreview";
+import usePhotoFinalPreview from "@/store/usePhotoFinalPreview";
 import useboxcartstore from "@/store/useboxcartstore";
 import getId from "@/utilis/helper/cookie/getid";
 import getCookie from "@/utilis/helper/cookie/gettooken";
-import { Fraunces, Inter, IBM_Plex_Mono } from "next/font/google";
+import { Fraunces, IBM_Plex_Mono, Inter } from "next/font/google";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import Image from "next/image";
 const fraunces = Fraunces({
   subsets: ["latin"],
   weight: ["500", "600", "700"],
@@ -83,7 +83,6 @@ export default function CheckoutPage() {
   const router = useRouter();
 
   const [loading, setloading] = useState(false);
-
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [phone, setphone] = useState("");
@@ -297,9 +296,7 @@ export default function CheckoutPage() {
 
   const [deckFinish, setDeckFinish] = useState("prism");
   const { deckcart } = useDeckFinalPreview();
-
   const { cart } = useCartStore();
-
   const { photocart } = usePhotoFinalPreview();
   const [hydratedCart, setHydratedCart] = useState([]);
   const [hydrating, setHydrating] = useState(true);
@@ -927,7 +924,7 @@ export default function CheckoutPage() {
               </h2>
             </div>
 
-            <div className="inline-flex items-center gap-1.5 bg-[#C9A227]/10 text-[#1B2420] border border-[#C9A227]/25 text-xs font-medium px-3 py-1.5 rounded-full mb-6">
+            {/* <div className="inline-flex items-center gap-1.5 bg-[#C9A227]/10 text-[#1B2420] border border-[#C9A227]/25 text-xs font-medium px-3 py-1.5 rounded-full mb-6">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="14"
@@ -944,7 +941,7 @@ export default function CheckoutPage() {
                 <line x1="12" y1="22.08" x2="12" y2="12"></line>
               </svg>
               Premium Packaging
-            </div>
+            </div> */}
 
             <div className="mb-3 lg:mb-6 space-y-5">
               {hydrating ? (
@@ -1377,6 +1374,16 @@ export default function CheckoutPage() {
     </section>
   );
 }
+function SafeImage({ src, alt, className }) {
+  if (!src) return null;
+  const isBase64 = typeof src === "string" && src.startsWith("data:");
+
+  if (isBase64) {
+    return <img src={src} alt={alt} className={className} />;
+  }
+
+  return <Image src={src} alt={alt} className={className} />;
+}
 
 function renderCardThumb(item, previewCard, imageIndex, sizeClass) {
   return (
@@ -1386,7 +1393,7 @@ function renderCardThumb(item, previewCard, imageIndex, sizeClass) {
     >
       {previewCard.type === "deck" ? (
         <div className="relative w-full h-full bg-white">
-          <Image
+          <SafeImage
             src={previewCard.card.baseImage}
             alt={`${item?.productName || "Product"} customized card ${imageIndex + 1}`}
             className="w-full h-full object-cover bg-white"
@@ -1394,12 +1401,12 @@ function renderCardThumb(item, previewCard, imageIndex, sizeClass) {
           {deckPreviewLayers.map((layer) =>
             previewCard.card?.selectedLayers?.[layer] ? (
               <div key={`${imageIndex}-${layer}`}>
-                <Image
+                <SafeImage
                   src={previewCard.card.selectedLayers[layer]}
                   alt={`${layer} top`}
                   className="absolute left-1/2 -translate-x-1/2 top-[8%] w-[64%] h-[43%] object-contain"
                 />
-                <Image
+                <SafeImage
                   src={previewCard.card.selectedLayers[layer]}
                   alt={`${layer} bottom`}
                   className="absolute left-1/2 -translate-x-1/2 bottom-[8%] w-[64%] h-[43%] object-contain scale-y-[-1]"
@@ -1409,7 +1416,7 @@ function renderCardThumb(item, previewCard, imageIndex, sizeClass) {
           )}
         </div>
       ) : (
-        <Image
+        <SafeImage
           src={previewCard.src}
           alt={`${item?.productName || "Product"} preview ${imageIndex + 1}`}
           className="w-full h-full object-cover bg-white"
@@ -1436,6 +1443,9 @@ function HoverZoomImage({ src, alt, zoom = 2.5, className = "" }) {
 
   if (!src) return null;
 
+  // Check if the source is a base64 data URL
+  const isBase64 = typeof src === "string" && src.startsWith("data:");
+
   return (
     <div
       ref={containerRef}
@@ -1444,12 +1454,23 @@ function HoverZoomImage({ src, alt, zoom = 2.5, className = "" }) {
       onMouseLeave={() => setIsHovering(false)}
       onMouseMove={handleMouseMove}
     >
-      <Image
-        src={src}
-        alt={alt}
-        draggable={false}
-        className="h-auto w-full object-contain block"
-      />
+      {/* Use standard <img> for base64, Next.js <Image> for URLs */}
+      {isBase64 ? (
+        <img
+          src={src}
+          alt={alt}
+          draggable={false}
+          className="h-auto w-full object-contain block pointer-events-none select-none"
+        />
+      ) : (
+        <Image
+          src={src}
+          alt={alt}
+          draggable={false}
+          className="h-auto w-full object-contain block pointer-events-none select-none"
+        />
+      )}
+
       {isHovering && (
         <div
           className="absolute inset-0 pointer-events-none"

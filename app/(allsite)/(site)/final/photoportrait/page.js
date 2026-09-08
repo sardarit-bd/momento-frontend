@@ -1,14 +1,14 @@
 "use client";
+import PhotoPortraitBoxPreview from "@/app/componnent/PhotoPortraitBoxPreview";
 import SpinLoader from "@/app/componnent/SpingLoader";
+import useCartStore from "@/store/useCartStore";
 import usePhotoFinalPreview from "@/store/usePhotoFinalPreview";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { BiLeftArrowAlt } from "react-icons/bi";
 import { IoCartOutline } from "react-icons/io5";
 import { MdOutlineShoppingBag } from "react-icons/md";
-import PhotoPortraitBoxPreview from "@/app/componnent/PhotoPortraitBoxPreview";
-import useCartStore from "@/store/useCartStore";
-import Image from "next/image";
 const FinalCardsPage = () => {
   const router = useRouter();
   const photocart = usePhotoFinalPreview((state) => state.photocart);
@@ -196,11 +196,20 @@ const FinalCardsPage = () => {
             key={idx}
             className="relative mx-auto w-full max-w-42.5 sm:max-w-47.5 md:max-w-50 lg:max-w-55 aspect-11/15 overflow-hidden rounded-3xl border border-gray-100 bg-white/60 shadow-md"
           >
-            <Image
-              src={card.image}
-              alt={`Card ${card.rank || idx}`}
-              className="absolute inset-0 w-full h-full object-contain"
-            />
+            {card.image && card.image.startsWith("data:") ? (
+              <img
+                src={card.image}
+                alt={`Card ${card.rank || idx}`}
+                className="absolute inset-0 w-full h-full object-contain"
+              />
+            ) : (
+              <Image
+                src={card.image}
+                alt={`Card ${card.rank || idx}`}
+                fill
+                className="object-contain"
+              />
+            )}
           </div>
         ))}
       </div>

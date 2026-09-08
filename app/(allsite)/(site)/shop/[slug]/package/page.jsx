@@ -1,21 +1,21 @@
 "use client";
 
+import { Fraunces, Inter } from "next/font/google";
+import Image from "next/image";
+import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
-import Image from "next/image";
-import { Fraunces, Inter } from "next/font/google";
 import {
   FaArrowLeft,
   FaArrowRight,
-  FaCheck,
   FaBox,
+  FaCheck,
+  FaGem,
   FaLayerGroup,
+  FaShieldHalved,
   FaTableCells,
   FaTruck,
-  FaShieldHalved,
-  FaGem,
 } from "react-icons/fa6";
-import Link from "next/link";
 
 const fraunces = Fraunces({
   subsets: ["latin"],
@@ -168,19 +168,19 @@ export default function PackageSelectionPage() {
 
         <div className="grid grid-cols-1 lg:grid-cols-[1.05fr_1fr] gap-8 lg:gap-16">
           <div>
-            <div className="relative aspect-4/5 sm:aspect-5/6 w-full rounded-[1.75rem] overflow-hidden shadow-[0_20px_50px_-25px_rgba(18,20,40,0.25)]">
+            <div className="relative aspect-4/5 sm:aspect-5/6 w-full rounded-[1.75rem] overflow-hidden  bg-gray-100">
               <Image
                 src="/mockup7.png"
                 alt="Momento Trading Cards mockup"
                 fill
                 priority
                 sizes="(min-width: 1024px) 45vw, 100vw"
-                className="object-cover"
+                className="object-contain"
               />
 
-              <div className="absolute bottom-4 left-4 bg-white/90 backdrop-blur border border-slate-200 text-[#12141F] text-[11px] font-semibold uppercase tracking-wide px-3 py-1.5 rounded-full shadow-sm">
+              {/* <div className="absolute bottom-4 left-4 bg-white/90 backdrop-blur border border-slate-200 text-[#12141F] text-[11px] font-semibold uppercase tracking-wide px-3 py-1.5 rounded-full shadow-sm">
                 Premium Print
-              </div>
+              </div> */}
             </div>
           </div>
 

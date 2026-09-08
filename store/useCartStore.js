@@ -1,13 +1,9 @@
 // store/useCartStore.js
 import { create } from "zustand";
-import { persist, createJSONStorage } from "zustand/middleware";
-
-// ─── Constants ────────────────────────────────────────────────────────────────
+import { createJSONStorage, persist } from "zustand/middleware";
 
 const BASE64_SIZE_LIMIT = 50_000;
-const STORAGE_WARN_THRESHOLD = 2 * 1024 * 1024; // 2 MB
-
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+const STORAGE_WARN_THRESHOLD = 2 * 1024 * 1024;
 
 const isLargeDataImage = (value) =>
   typeof value === "string" &&
@@ -45,7 +41,6 @@ const sanitizeForStorage = (item) => {
 
   return {
     ...stripped,
-    // Strip images for both trading and deck cards — restored from IDB on checkout
     FinalProduct: Array.isArray(item.FinalProduct)
       ? item.FinalProduct.map((card) => ({
           ...card,
@@ -59,8 +54,6 @@ const sanitizeForStorage = (item) => {
     FinalPDFBlob: null,
   };
 };
-
-// ── Photo Portrait card (new, mirrors deck) ───────────────────────────────────
 
 const idbPhotoCartKey = (cartId) => `cart-photo-images:${cartId}`;
 
@@ -113,12 +106,8 @@ export const restorePhotoCartImagesFromIDB = async (cartItems) => {
   );
 };
 
-// ─── Safe localStorage wrapper ────────────────────────────────────────────────
-
 const idbCartKey = (cartId) => `cart-images:${cartId}`;
 const idbDeckCartKey = (cartId) => `cart-deck-images:${cartId}`;
-
-// ── Trading card (existing — unchanged) ──────────────────────────────────────
 
 export const saveCartImagesToIDB = async (cartItems) => {
   const { idbPut } =
@@ -154,17 +143,6 @@ export const restoreCartImagesFromIDB = async (cartItems) => {
   );
 };
 
-// ── Deck card (new) ───────────────────────────────────────────────────────────
-
-/**
- * Persists deck card composited images to IDB.
- * Called from ProductCustomizer right before router.push to /final/customization.
- *
- * Saves:
- *   FinalProduct      — array of { rank, image, name, character_image }
- *   FinalProductImages — array of base64 strings (one per card)
- *   CharacterImages    — array of base64 strings (one per card)
- */
 export const saveDeckCartImagesToIDB = async (cartItems) => {
   const { idbPut } =
     await import("@/app/(allsite)/(application)/application/tradingcard/[slug]/_tradingcard/lib/idb");
@@ -181,10 +159,6 @@ export const saveDeckCartImagesToIDB = async (cartItems) => {
   }
 };
 
-/**
- * Restores deck card images from IDB into cart items.
- * Called from CheckoutPage alongside the existing trading card restore.
- */
 export const restoreDeckCartImagesFromIDB = async (cartItems) => {
   const { idbGet } =
     await import("@/app/(allsite)/(application)/application/tradingcard/[slug]/_tradingcard/lib/idb");
@@ -213,8 +187,6 @@ export const restoreDeckCartImagesFromIDB = async (cartItems) => {
     }),
   );
 };
-
-// ─── Safe localStorage wrapper ────────────────────────────────────────────────
 
 const safeLocalStorage = {
   getItem: (name) => {
@@ -267,8 +239,6 @@ const safeLocalStorage = {
     }
   },
 };
-
-// ─── Store ────────────────────────────────────────────────────────────────────
 
 const useCartStore = create(
   persist(

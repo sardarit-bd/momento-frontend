@@ -1,11 +1,11 @@
 ﻿"use client";
 
+import { Fraunces, Inter } from "next/font/google";
+import Image from "next/image";
+import Link from "next/link";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
-import { FaArrowLeft, FaCheck, FaArrowRight } from "react-icons/fa6";
-import Link from "next/link";
-import Image from "next/image";
-import { Fraunces, Inter } from "next/font/google";
+import { FaArrowLeft, FaCheck } from "react-icons/fa6";
 import {
   idbDelete,
   idbGetKeysByPrefix,
@@ -63,8 +63,9 @@ export default function TemplateSelectionPage() {
   const packageInfo = PACKAGE_INFO[selectedPackage] || PACKAGE_INFO.single;
   const [selected, setSelected] = useState(null);
 
-  const handleContinue = async () => {
-    if (!selected) return;
+  const handleContinue = async (tplOverride) => {
+    const tpl = tplOverride ?? selected;
+    if (!tpl) return;
 
     const storageKey = `tradingCustomization:${slug}`;
     const slotPrefix = `${storageKey}:slot:`;
@@ -75,7 +76,7 @@ export default function TemplateSelectionPage() {
     ]);
 
     router.push(
-      `/application/tradingcard/${slug}?package=${selectedPackage}&template=${selected.id}`,
+      `/application/tradingcard/${slug}?package=${selectedPackage}&template=${tpl.id}`,
     );
   };
 
@@ -188,9 +189,10 @@ export default function TemplateSelectionPage() {
                 </p>
 
                 <button
-                  onClick={(e) => {
+                  onClick={async (e) => {
                     e.stopPropagation();
                     setSelected(tpl);
+                    await handleContinue(tpl);
                   }}
                   className={`w-full text-[13px] md:text-sm font-semibold py-3 px-6 rounded-xl transition-all duration-200 active:scale-[0.98] flex items-center justify-center gap-2 ${
                     isSelected
@@ -211,7 +213,7 @@ export default function TemplateSelectionPage() {
           })}
         </div>
 
-        <div
+        {/* <div
           className={`hidden md:flex items-center justify-between mt-10 pt-6 border-t border-slate-200 transition-all duration-500 ${
             selected
               ? "opacity-100 translate-y-0"
@@ -234,12 +236,12 @@ export default function TemplateSelectionPage() {
             Start Customizing
             <FaArrowRight className="text-xs" />
           </button>
-        </div>
+        </div> */}
 
         {selected && <div className="md:hidden h-28" />}
       </div>
 
-      {selected && (
+      {/* {selected && (
         <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white/90 backdrop-blur border-t border-slate-200 px-4 pt-3 pb-[max(1rem,env(safe-area-inset-bottom))]">
           <p className="text-slate-500 text-xs mb-2 text-center truncate">
             Selected:
@@ -253,7 +255,7 @@ export default function TemplateSelectionPage() {
             <FaArrowRight className="text-xs" />
           </button>
         </div>
-      )}
+      )} */}
     </main>
   );
 }

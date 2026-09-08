@@ -1,20 +1,20 @@
-import { useState, useEffect, useRef, useCallback } from "react";
-import { useParams, useRouter, useSearchParams } from "next/navigation";
-import { toast } from "react-toastify";
 import useCartStore from "@/store/useCartStore";
 import useboxcartstore from "@/store/useboxcartstore";
-import generateUserId from "@/utilis/helper/generateUserId";
-import MakeGet from "@/utilis/requestrespose/get";
 import ImageResize from "@/utilis/helper/ImageResize";
 import captureNodeClean from "@/utilis/helper/captureNodeClean";
 import captureNodeScreenshotForTranding from "@/utilis/helper/captureNodeScreenshotForTranding";
+import generateUserId from "@/utilis/helper/generateUserId";
+import MakeGet from "@/utilis/requestrespose/get";
 import Image from "next/image";
-import { idbGet, idbPut, idbDelete, idbGetKeysByPrefix } from "../lib/idb";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { toast } from "react-toastify";
 import {
   defaultBackHighlights,
   PACKAGE_CONFIG,
   TEMPLATE_MAP,
 } from "../constants";
+import { idbDelete, idbGet, idbGetKeysByPrefix, idbPut } from "../lib/idb";
 
 const SLOT_TTL_MS = 72 * 60 * 60 * 1000;
 const isExpired = (savedAt) => !savedAt || Date.now() - savedAt > SLOT_TTL_MS;
@@ -622,14 +622,8 @@ export function useTradingCardState() {
       return;
     }
 
-    const freshPackageTitle =
-      localStorage.getItem("persistent_packageTitle") ?? packageTitle ?? "";
     const freshCarddes =
       localStorage.getItem("persistent_carddes") ?? carddes ?? "";
-    if (!freshPackageTitle.trim()) {
-      toast.warn("Please enter a Pack Title for your box.");
-      return;
-    }
 
     if (!freshCarddes.trim()) {
       toast.warn("Please enter a name in the Created For field.");
@@ -690,7 +684,7 @@ export function useTradingCardState() {
 
       const product = {
         id: generateUserId(),
-        packTitle: freshPackageTitle,
+        packTitle: packageTitle || "",
         createdFor: freshCarddes,
         productId: fetchingData?.id,
         productSlug: fetchingData?.slug,
@@ -719,10 +713,13 @@ export function useTradingCardState() {
           bfor: "trading",
         },
       ]);
-      addToCart(product);
-      const { saveCartImagesToIDB } = await import("@/store/useCartStore");
-      await saveCartImagesToIDB([product]);
-      router.push("/my-cart/checkout");
+
+      const { default: useTradingFinalPreview } =
+        await import("@/store/useTradingFinalPreview");
+      useTradingFinalPreview.getState().clearCart();
+      useTradingFinalPreview.getState().addToCart(product);
+
+      router.push("/final/trading");
     } catch (err) {
       console.error(err);
       toast.error("Failed to prepare cart. Please try again.");
@@ -826,6 +823,12 @@ export function useTradingCardState() {
         attrIconTwo,
         attrIconThree,
         isblack,
+        backDate,
+        backDescription,
+        backHighlightsTitle,
+        backHighlights,
+        backLegacyTagline,
+        backLegacyText,
       };
 
       let updatedSlots;
@@ -956,6 +959,20 @@ export function useTradingCardState() {
     setAttrIconTwo(s.attrIconTwo ?? "/attribute-images/attribute_3.png");
     setAttrIconThree(s.attrIconThree ?? "/attribute-images/attribute_4.png");
     setisblack(Boolean(s.isblack));
+    setAttributeName(s.attributeName ?? "");
+    setBackDate(s.backDate ?? "");
+    setBackDescription(s.backDescription ?? "");
+    setBackHighlightsTitle(s.backHighlightsTitle ?? "Highlights");
+    setBackHighlights(
+      Array.isArray(s.backHighlights) && s.backHighlights.length >= 2
+        ? s.backHighlights
+        : defaultBackHighlights,
+    );
+    setBackLegacyTagline(s.backLegacyTagline ?? "A moment");
+    setBackLegacyText(
+      s.backLegacyText ??
+        "This card celebrates a special person and a special time. May it remind you of all the great memories we've shared.",
+    );
     setcardfinder(s.cardfinder ?? 0);
     setActiveImage(null);
     setActiveText(null);

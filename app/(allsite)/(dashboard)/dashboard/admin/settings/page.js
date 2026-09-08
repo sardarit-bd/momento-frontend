@@ -5,15 +5,15 @@ import getCookie from "@/utilis/helper/cookie/gettooken";
 import MakeGet from "@/utilis/requestrespose/get";
 import MakePut from "@/utilis/requestrespose/put";
 import { useCallback, useEffect, useState } from "react";
-import { toast } from "react-toastify";
 import {
+  FiCreditCard,
   FiEdit2,
   FiEye,
   FiEyeOff,
-  FiCreditCard,
   FiLock,
   FiX,
 } from "react-icons/fi";
+import { toast } from "react-toastify";
 
 export default function SiteSettings() {
   const id = getId();
@@ -29,24 +29,21 @@ export default function SiteSettings() {
   const [showWebhook, setShowWebhook] = useState(false);
   const [focused, setFocused] = useState("");
 
-  const fetching = useCallback(
-    async (token) => {
-      try {
-        const response = await MakeGet(`api/secrets`, token);
+  const fetching = useCallback(async (token) => {
+    try {
+      const response = await MakeGet(`api/secrets`, token);
 
-        setkey(response?.data?.[0]?.stripe_publishable_key);
-        setsecret(response?.data?.[0]?.stripe_secret_key);
-        setwebhooksecret(response?.data?.[0]?.stripe_webhook_key);
-        setcredientialsID(response?.data?.[0]?.id);
+      setkey(response?.data?.[0]?.stripe_publishable_key);
+      setsecret(response?.data?.[0]?.stripe_secret_key);
+      setwebhooksecret(response?.data?.[0]?.stripe_webhook_key);
+      setcredientialsID(response?.data?.[0]?.id);
 
-        setfetchloading(false);
-      } catch (error) {
-        console.error("Error fetching profile:", error);
-        setfetchloading(false);
-      }
-    },
-    [token],
-  );
+      setfetchloading(false);
+    } catch (error) {
+      console.error("Error fetching profile:", error);
+      setfetchloading(false);
+    }
+  }, []);
 
   useEffect(() => {
     fetching(token);

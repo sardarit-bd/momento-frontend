@@ -250,7 +250,7 @@ const FinalCardsPage = () => {
               </h3>
               <p className="text-sky-100 text-sm mt-2">
                 This title will appear on your packaging and help you remember
-                what's inside.
+                what&apos;s inside.
               </p>
             </div>
 

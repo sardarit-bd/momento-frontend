@@ -174,7 +174,7 @@ const FinalCardsPage = () => {
             className="relative mx-auto w-full max-w-42.5 sm:max-w-47.5 `md:max-w-50 lg:max-w-55 aspect-5/7 overflow-hidden rounded-3xl border border-gray-100 bg-white/60 shadow-md"
           >
             {card.image && card.image.startsWith("data:") ? (
-              <img
+              <Image
                 src={card.image}
                 alt={`Card ${card.rank || idx}`}
                 className="absolute inset-0 w-full h-full object-contain"

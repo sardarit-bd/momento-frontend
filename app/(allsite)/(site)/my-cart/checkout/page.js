@@ -332,7 +332,7 @@ export default function CheckoutPage() {
     };
 
     restore();
-  }, [cart.length]);
+  }, [cart]);
 
   useEffect(() => {
     const needsUpdate = cart.some(
@@ -1379,7 +1379,7 @@ function SafeImage({ src, alt, className }) {
   const isBase64 = typeof src === "string" && src.startsWith("data:");
 
   if (isBase64) {
-    return <img src={src} alt={alt} className={className} />;
+    return <Image src={src} alt={alt} className={className} />;
   }
 
   return <Image src={src} alt={alt} className={className} />;
@@ -1456,7 +1456,7 @@ function HoverZoomImage({ src, alt, zoom = 2.5, className = "" }) {
     >
       {/* Use standard <img> for base64, Next.js <Image> for URLs */}
       {isBase64 ? (
-        <img
+        <Image
           src={src}
           alt={alt}
           draggable={false}

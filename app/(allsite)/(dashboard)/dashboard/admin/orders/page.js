@@ -4,10 +4,10 @@ import PDFViewers from "@/app/componnent/PDFViewers.jsx";
 import getCookie from "@/utilis/helper/cookie/gettooken";
 import formatDateTime from "@/utilis/helper/formatDateTime.js";
 import MakeGet from "@/utilis/requestrespose/get";
+import Image from "next/image.js";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ToastContainer } from "react-toastify";
 import RecentOrdersSkeleton from "../../../../../componnent/skelaton/RecentOrdersSkeleton.jsx";
-import Image from "next/image.js";
 const statusStyles = {
   completed: "bg-green-100 text-green-700",
   Paid: "bg-green-100 text-green-700",
@@ -56,7 +56,7 @@ const AdminOrders = () => {
         setIsPageLoading(false);
       }
     },
-    [token],
+    [token, allorders?.length],
   );
 
   useEffect(() => {

@@ -364,7 +364,8 @@ export default function TradingCardPreview({
 
             {workingcard === "front" && uploads.length === 0 && (
               <div
-                className="absolute inset-0 flex items-center justify-center pointer-events-none"
+                onClick={() => document.getElementById("uploadImage")?.click()}
+                className="absolute inset-0 flex items-center justify-center cursor-pointer"
                 style={{ zIndex: 3 }}
               >
                 <span className="rounded-full bg-black/45 backdrop-blur-sm px-4 py-2 text-white text-xs font-semibold tracking-wide">

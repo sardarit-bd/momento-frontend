@@ -787,7 +787,7 @@ function PanelContent({
                     maxLength={namelimite}
                     onChange={(e) => setname(e.target.value)}
                     type="text"
-                    placeholder="Attribute One"
+                    placeholder="Attribute 1"
                     className="h-12 w-full rounded-xl border border-slate-200 bg-white px-3 text-slate-700 outline-none transition-all duration-200 focus:border-sky-300 focus:ring-2 focus:ring-sky-100"
                   />
                   {activeIconPicker === "one" && (

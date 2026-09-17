@@ -56,9 +56,9 @@ export function useTradingCardState() {
       texts.length > 0 ||
       cardti !== "Title" ||
       carddes !== "Created For" ||
-      name !== "Attribute One" ||
-      name2 !== "Attribute Two" ||
-      name3 !== "Attribute Three"
+      name !== "Attribute 1" ||
+      name2 !== "Attribute 2" ||
+      name3 !== "Attribute 3"
     );
   };
 
@@ -162,9 +162,9 @@ export function useTradingCardState() {
     return "";
   });
 
-  const [name, setname] = useState("Attribute One");
-  const [name2, setname2] = useState("Attribute Two");
-  const [name3, setname3] = useState("Attribute Three");
+  const [name, setname] = useState("Attribute 1");
+  const [name2, setname2] = useState("Attribute 2");
+  const [name3, setname3] = useState("Attribute 3");
   const [attributeName, setAttributeName] = useState("");
   const [labelone, setlabelone] = useState(69);
   const [labeltwo, setlabeltwo] = useState(55);
@@ -237,9 +237,9 @@ export function useTradingCardState() {
             setworkingcard(saved?.workingcard || "front");
             setisblack(Boolean(saved?.isblack));
             setcardti(saved?.content?.cardti ?? "Title");
-            setname(saved?.content?.name ?? "Attribute One");
-            setname2(saved?.content?.name2 ?? "Attribute Two");
-            setname3(saved?.content?.name3 ?? "Attribute Three");
+            setname(saved?.content?.name ?? "Attribute 1");
+            setname2(saved?.content?.name2 ?? "Attribute 2");
+            setname3(saved?.content?.name3 ?? "Attribute 3");
             setlabelone(saved?.content?.labelone ?? 69);
             setlabeltwo(saved?.content?.labeltwo ?? 55);
             setlabelthree(saved?.content?.labelthree ?? 78);
@@ -317,9 +317,9 @@ export function useTradingCardState() {
               setUploads(Array.isArray(s.uploads) ? s.uploads : []);
               setTexts(Array.isArray(s.texts) ? s.texts : []);
               setcardti(s.cardti ?? "Title");
-              setname(s.name ?? "Attribute One");
-              setname2(s.name2 ?? "Attribute Two");
-              setname3(s.name3 ?? "Attribute Three");
+              setname(s.name ?? "Attribute 1");
+              setname2(s.name2 ?? "Attribute 2");
+              setname3(s.name3 ?? "Attribute 3");
               setlabelone(s.labelone ?? 69);
               setlabeltwo(s.labeltwo ?? 55);
               setlabelthree(s.labelthree ?? 78);
@@ -378,9 +378,9 @@ export function useTradingCardState() {
   const hanldeInputUpdater = useCallback(() => {
     if (workingcard == "front") {
       setcardti("Title");
-      setname("Attribute One");
-      setname2("Attribute Two");
-      setname3("Attribute Three");
+      setname("Attribute 1");
+      setname2("Attribute 2");
+      setname3("Attribute 3");
       setAttrIconOne("/attribute-images/attribute_2.png");
       setAttrIconTwo("/attribute-images/attribute_3.png");
       setAttrIconThree("/attribute-images/attribute_4.png");
@@ -740,9 +740,9 @@ export function useTradingCardState() {
       setActiveImage(null);
       setActiveText(null);
       setcardti("Title");
-      setname("Attribute One");
-      setname2("Attribute Two");
-      setname3("Attribute Three");
+      setname("Attribute 1");
+      setname2("Attribute 2");
+      setname3("Attribute 3");
       setlabelone(69);
       setlabeltwo(55);
       setlabelthree(78);
@@ -947,9 +947,9 @@ export function useTradingCardState() {
     setPackageTitle(
       localStorage.getItem("persistent_packageTitle") ?? s.packageTitle ?? "",
     );
-    setname(s.name ?? "Attribute One");
-    setname2(s.name2 ?? "Attribute Two");
-    setname3(s.name3 ?? "Attribute Three");
+    setname(s.name ?? "Attribute 1");
+    setname2(s.name2 ?? "Attribute 2");
+    setname3(s.name3 ?? "Attribute 3");
     setlabelone(s.labelone ?? 69);
     setlabeltwo(s.labeltwo ?? 55);
     setlabelthree(s.labelthree ?? 78);

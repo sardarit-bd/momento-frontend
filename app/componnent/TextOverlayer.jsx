@@ -115,12 +115,12 @@ const AttributeMetric = ({
       <span
         className={textClass}
         style={{
-          fontFamily: "Libertad",
-          fontWeight: 600,
+          fontFamily: "",
+          fontWeight: 900,
           fontSize: "13px",
           display: "block",
-          overflow: "hidden", // Changed from "visible"
-          textOverflow: "ellipsis", // Added
+          overflow: "hidden", 
+          textOverflow: "ellipsis",
           whiteSpace: "nowrap",
           paddingBottom: "0px",
           textShadow: `
@@ -202,7 +202,7 @@ const AttributeMetricHorizontal = ({
         }}
       />
       <span
-        className={`${textClass} ${metallic ? metallicGradientClass : ""}`}
+        className={`${textClass} ${metallic ? metallicGradientClass : ""} font-Akira!  uppercase!`}
         style={{
           whiteSpace: "nowrap",
           overflow: "hidden",
@@ -251,8 +251,9 @@ const AttributeMetricHorizontal = ({
 const metallicGradientClass = `
     text-transparent
     bg-clip-text
-    bg-[linear-gradient(180deg,_#3a3a3a_0%,_#787878_20%,_#ffffff_60%,_#787878_90%,_#3a3a3a_100%)]
+    bg-[linear-gradient(180deg,_#3a3a3a_0%,_#787878_5%,_#ffffff_60%,_#787878_90%,_#3a3a3a_100%)]
     bg-[length:100%_100%]
+    
 `;
 
 const AttributeMetricHorizontal2 = ({
@@ -387,7 +388,7 @@ export const FrontOne = ({
           icon={iconOne}
           text={name}
           value={labelone}
-          textClass="text-[10px] lg:text-[13px] text-[#f7f7f7]  tracking-wider font-medium text-left"
+          textClass="text-[10px] lg:text-[13px] text-[#f7f7f7] Akira! tracking-wider font-extrabold text-left"
           trackClass="bg-black"
           fillClass="bg-[#f56f41]"
           trackColor="#000000"
@@ -616,8 +617,8 @@ export const FrontThree = ({
       </span>
       <div className="absolute left-[52%] -translate-x-1/2 bottom-[28.5%] z-50">
         <span
-          className="block text-black text-[14px] font-bold uppercase tracking-widest px-4 py-1 rounded-full whitespace-nowrap"
-          style={{ fontFamily: "DinBold" }}
+          className="block text-black text-[14px] uppercase tracking-wider px-4 font-extrabold py-1 rounded-full whitespace-nowrap"
+          style={{ fontFamily: "BrunsonBold" }}
         >
           {attributeName || "Attributes"}
         </span>
@@ -628,7 +629,7 @@ export const FrontThree = ({
           text={name}
           value={labelone}
           metallic
-          textClass="text-[16px] tracking-wider GustanBlackFont"
+          textClass="text-[16px] tracking-tighter Akira! font-[900] uppercase"
           trackColor="#000000"
           fillColor="#f56f41"
         />
@@ -654,7 +655,7 @@ export const FrontThree = ({
 
       <div className="absolute left-1/2 -translate-x-1/2 top-[90%] z-50 text-center">
         <div className="TradingCardBadgeOrange">
-          <span className="block TradingCardBadgeOrangeText font-bold uppercase text-[1rem] tracking-wider leading-tight BrunsonFont">
+          <span className="block TradingCardBadgeOrangeText  uppercase text-[1rem] tracking-wider leading-tight GustanBlackFont">
             {dateLine2 ? (
               <>
                 {dateLine1}

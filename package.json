@@ -3,9 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "npx next dev --turbopack",
-    "build": "npx next build --turbopack",
-    "start": "npx next start",
+    "dev": "node init && npx next dev --turbopack",
+    "build": "node init && npx next build --turbopack",
+    "start": "node init && npx next start",
     "lint": "eslint"
   },
   "dependencies": {

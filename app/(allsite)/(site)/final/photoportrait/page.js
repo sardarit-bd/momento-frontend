@@ -5,28 +5,30 @@ import useCartStore from "@/store/useCartStore";
 import usePhotoFinalPreview from "@/store/usePhotoFinalPreview";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react"; 
 import { BiLeftArrowAlt } from "react-icons/bi";
 import { IoCartOutline } from "react-icons/io5";
 import { MdOutlineShoppingBag } from "react-icons/md";
+
 const FinalCardsPage = () => {
   const router = useRouter();
   const photocart = usePhotoFinalPreview((state) => state.photocart);
   const updateCart = usePhotoFinalPreview((state) => state.updateCart);
   const addToPhotoCart = usePhotoFinalPreview((state) => state.addToCart);
-
   const { addToCart, cart } = useCartStore();
-
   const [loading, setLoading] = useState(false);
   const [checkoutLoading, setCheckoutLoading] = useState(false);
+  const [isMounted, setIsMounted] = useState(false); 
   const boxPreviewRef = useRef(null);
   const boxPreviewCaptureRef = useRef(null);
-
   const [isZooming, setIsZooming] = useState(false);
   const [zoomOrigin, setZoomOrigin] = useState({ x: 50, y: 50 });
   const ZOOM_SCALE = 2.4;
-
   const zoomStageRef = useRef(null);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   const handleZoomMove = (e) => {
     const stage = zoomStageRef.current;
@@ -52,9 +54,7 @@ const FinalCardsPage = () => {
   const ensurePhotoInCart = () => {
     const photoItem = photocart?.[0];
     if (!photoItem) return false;
-    const alreadyInPhotoCart = photocart.some(
-      (item) => item?.id === photoItem?.id,
-    );
+    const alreadyInPhotoCart = photocart.some((item) => item?.id === photoItem?.id);
     if (!alreadyInPhotoCart) addToPhotoCart(photoItem);
     const alreadyInCart = cart.some((item) => item?.id === photoItem?.id);
     if (!alreadyInCart) addToCart(photoItem);
@@ -91,19 +91,14 @@ const FinalCardsPage = () => {
     if (!ensurePhotoInCart()) return;
     setCheckoutLoading(true);
     const boxImage = await captureBoxImage();
-    const captured =
-      boxPreviewCaptureRef.current?.captureResolvedRects?.() ?? [];
+    const captured = boxPreviewCaptureRef.current?.captureResolvedRects?.() ?? [];
     let resolvedBoxImages = boxImages;
     if (captured.length) {
       const byId = Object.fromEntries(captured.map((c) => [String(c.id), c]));
       resolvedBoxImages = boxImages.map((img) =>
         byId[String(img.id)]
-          ? {
-              ...img,
-              frame: byId[String(img.id)].frame,
-              image: byId[String(img.id)].image,
-            }
-          : img,
+          ? { ...img, frame: byId[String(img.id)].frame, image: byId[String(img.id)].image }
+          : img
       );
     }
 
@@ -124,19 +119,14 @@ const FinalCardsPage = () => {
     if (!ensurePhotoInCart()) return;
     setLoading(true);
     const boxImage = await captureBoxImage();
-    const captured =
-      boxPreviewCaptureRef.current?.captureResolvedRects?.() ?? [];
+    const captured = boxPreviewCaptureRef.current?.captureResolvedRects?.() ?? [];
     let resolvedBoxImages = boxImages;
     if (captured.length) {
       const byId = Object.fromEntries(captured.map((c) => [String(c.id), c]));
       resolvedBoxImages = boxImages.map((img) =>
         byId[String(img.id)]
-          ? {
-              ...img,
-              frame: byId[String(img.id)].frame,
-              image: byId[String(img.id)].image,
-            }
-          : img,
+          ? { ...img, frame: byId[String(img.id)].frame, image: byId[String(img.id)].image }
+          : img
       );
     }
 
@@ -162,9 +152,7 @@ const FinalCardsPage = () => {
           >
             <BiLeftArrowAlt className="text-2xl" />
           </button>
-          <h1 className="text-xl text-gray-600 hidden md:block">
-            Your Customized Cards
-          </h1>
+          <h1 className="text-xl text-gray-600 hidden md:block">Your Customized Cards</h1>
         </div>
         <div className="flex items-center gap-2">
           <button
@@ -180,35 +168,29 @@ const FinalCardsPage = () => {
             className="border border-gray-200 bg-emerald-500 hover:bg-emerald-600 text-white p-2 rounded-md shadow-md cursor-pointer transition duration-100 flex items-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed"
             disabled={loading || checkoutLoading || !photocart?.[0]}
           >
-            {checkoutLoading ? (
-              <SpinLoader />
-            ) : (
-              <MdOutlineShoppingBag className="text-xl" />
-            )}
+            {checkoutLoading ? <SpinLoader /> : <MdOutlineShoppingBag className="text-xl" />}
             Checkout
           </button>
         </div>
       </div>
 
       <div className="grid grid-cols-2 justify-items-center gap-3 py-6 my-6 sm:grid-cols-3 md:grid-cols-5 md:gap-4">
-        {finalProductCards.map((card, idx) => (
+        {isMounted && finalProductCards.map((card, idx) => (
           <div
-            key={idx}
+            key={card.id || idx} 
             className="relative mx-auto w-full max-w-42.5 sm:max-w-47.5 md:max-w-50 lg:max-w-55 aspect-11/15 overflow-hidden rounded-3xl border border-gray-100 bg-white/60 shadow-md"
           >
-            {card.image && card.image.startsWith("data:") ? (
+            {card.image ? (
               <Image
                 src={card.image}
                 alt={`Card ${card.rank || idx}`}
-                className="absolute inset-0 w-full h-full object-contain"
-              />
-            ) : (
-              <Image
-                src={card.image}
-                alt={`Card ${card.rank || idx}`}
-                fill
+                fill 
                 className="object-contain"
               />
+            ) : (
+              <div className="absolute inset-0 flex items-center justify-center bg-gray-100 text-gray-400 text-sm">
+                No Image
+              </div>
             )}
           </div>
         ))}
@@ -230,9 +212,7 @@ const FinalCardsPage = () => {
               style={{
                 transform: isZooming ? `scale(${ZOOM_SCALE})` : "scale(1)",
                 transformOrigin: `${zoomOrigin.x}% ${zoomOrigin.y}%`,
-                transition: isZooming
-                  ? "transform 0.1s ease-out"
-                  : "transform 0.3s ease-out",
+                transition: isZooming ? "transform 0.1s ease-out" : "transform 0.3s ease-out",
               }}
             >
               <PhotoPortraitBoxPreview

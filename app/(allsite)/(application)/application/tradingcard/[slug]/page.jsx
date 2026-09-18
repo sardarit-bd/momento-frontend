@@ -7,12 +7,47 @@ import TradingCardControls from "./_tradingcard/components/TradingCardControls";
 import TradingCardApplicationSkelaton from "@/app/componnent/TradingCardApplicationSkelaton";
 import TradingCardSidebar from "@/app/componnent/TradingCardSidebar";
 import TradingBoxPreview from "@/app/componnent/TradingBoxPreview/TradingBoxPreview";
-import { ToastContainer } from "react-toastify";
+import { ToastContainer, toast } from "react-toastify";
 import TradingCardCaptureNode from "@/app/componnent/TradingCardCaptureNode";
 import { idbClear } from "./_tradingcard/lib/idb";
 export default function ProductCustomizer() {
   const state = useTradingCardState();
   const [mobileDrawer, setMobileDrawer] = useState(null);
+    const [showPackagingModal, setShowPackagingModal] = useState(false);
+  const [recipientNameDraft, setRecipientNameDraft] = useState("");
+  const [createdForDraft, setCreatedForDraft] = useState("");
+
+  const isCheckoutStep =
+    state.editingSlotId === null &&
+    state.savedSlots.length >= state.packageConfig.designs &&
+    state.workingcard === "back";
+
+  const handlePrimaryAction = () => {
+    if (isCheckoutStep) {
+      setRecipientNameDraft(state.packageTitle || "");
+      setCreatedForDraft(state.carddes || "");
+      setShowPackagingModal(true);
+      return;
+    }
+    state.handleNext();
+  };
+
+  const handleConfirmPackagingAndCheckout = async () => {
+    if (!recipientNameDraft.trim()) {
+      toast.warn("Please enter a recipient name.");
+      return;
+    }
+    if (!createdForDraft.trim()) {
+      toast.warn("Please enter who this is created for.");
+      return;
+    }
+    localStorage.setItem("persistent_packageTitle", recipientNameDraft.trim());
+    localStorage.setItem("persistent_carddes", createdForDraft.trim());
+    state.setPackageTitle(recipientNameDraft.trim());
+    state.setcarddes(createdForDraft.trim());
+    setShowPackagingModal(false);
+    await state.goToFinalView();
+  };
   React.useEffect(() => {
     const h = document.querySelector("nav")?.offsetHeight;
     idbClear();
@@ -153,7 +188,7 @@ export default function ProductCustomizer() {
               getSliderTrackStyle={state.getSliderTrackStyle}
               renderIconPreview={state.renderIconPreview}
               savedSlots={state.savedSlots}
-              handleNext={state.handleNext}
+              handleNext={handlePrimaryAction}
               spinloading={state.spinloading}
               doneloading={state.doneloading}
               packageConfig={state.packageConfig}
@@ -284,7 +319,7 @@ export default function ProductCustomizer() {
           <div style={{ padding: "6px 16px 8px", flexShrink: 0 }}>
             <button
               onClick={() => {
-                state.handleNext();
+                handlePrimaryAction();
                 setMobileDrawer(null);
               }}
               disabled={
@@ -529,7 +564,69 @@ export default function ProductCustomizer() {
         backLegacyText={state.backLegacyText}
         isblack={state.isblack}
       />
+
+
+            {showPackagingModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+          <div className="w-full max-w-md rounded-3xl bg-white shadow-2xl overflow-hidden">
+            <div className="bg-linear-to-r from-sky-500 to-sky-600 p-6">
+              <h3 className="text-2xl font-bold text-white">
+                Edit Packaging Information
+              </h3>
+              <p className="text-sky-100 text-sm mt-2">
+                This information will appear on your packaging.
+              </p>
+            </div>
+
+            <div className="p-6 flex flex-col gap-5">
+              <div>
+                <label className="block text-sm font-semibold text-slate-700 mb-1">
+                  Packaging title 
+                </label>
+                <input
+                  autoFocus
+                  value={recipientNameDraft}
+                  onChange={(e) => setRecipientNameDraft(e.target.value)}
+                  maxLength={30}
+                  placeholder="e.g., Birthday Memories, Family Reunion..."
+                  className="w-full h-14 rounded-xl border-2 border-slate-200 bg-slate-50 px-5 text-slate-800 placeholder-slate-400 outline-none focus:border-sky-400 focus:bg-white focus:ring-4 focus:ring-sky-100 transition-all text-base font-medium"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-slate-700 mb-1">
+                  Created For
+                </label>
+                <input
+                  value={createdForDraft}
+                  onChange={(e) => setCreatedForDraft(e.target.value)}
+                  maxLength={state.carddeslimite}
+                  placeholder="e.g., Alex Johnson"
+                  className="w-full h-14 rounded-xl border-2 border-slate-200 bg-slate-50 px-5 text-slate-800 placeholder-slate-400 outline-none focus:border-sky-400 focus:bg-white focus:ring-4 focus:ring-sky-100 transition-all text-base font-medium"
+                />
+              </div>
+
+              <div className="flex justify-end gap-3 mt-2">
+                <button
+                  onClick={() => setShowPackagingModal(false)}
+                  className="px-5 py-3 rounded-xl font-semibold text-slate-600 hover:bg-slate-100 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleConfirmPackagingAndCheckout}
+                  disabled={state.spinloading}
+                  className="px-6 py-3 rounded-xl bg-linear-to-r from-sky-500 to-sky-600 text-white font-semibold shadow-lg shadow-sky-200 hover:shadow-xl hover:shadow-sky-300 hover:scale-105 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {state.spinloading ? "Please wait..." : "Go to Checkout"}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </>
+
   );
 }
 

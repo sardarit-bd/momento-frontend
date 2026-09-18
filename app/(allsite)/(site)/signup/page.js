@@ -11,10 +11,13 @@ import logingandsignupmakepost from "../../../../utilis/requestrespose/logingand
 const SignUP = () => {
   const router = useRouter();
   const { isLoading, setLoading } = useLoadingStore();
+  
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [res, setres] = useState(false);
+
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -30,7 +33,7 @@ const SignUP = () => {
       if (response) {
         setres(response);
         setLoading(false);
-        router.push("/signin");
+        setShowSuccessModal(true);
       } else {
         setLoading(false);
         toast.warn("User Already Exist");
@@ -39,6 +42,11 @@ const SignUP = () => {
     } else {
       toast.warn("Required All Feilds");
     }
+  };
+
+  const handleModalConfirm = () => {
+    setShowSuccessModal(false);
+    router.push("/signin");
   };
 
   return (
@@ -118,7 +126,7 @@ const SignUP = () => {
           <span className="text-sm text-gray-600">
             Already have an account?{" "}
             <Link
-              href="signin"
+              href="/signin"
               className="font-semibold text-sky-500 hover:text-sky-600 hover:underline transition-colors"
             >
               Sign In
@@ -126,6 +134,42 @@ const SignUP = () => {
           </span>
         </div>
       </div>
+      {showSuccessModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+          <div className="bg-white p-8 rounded-2xl shadow-xl border border-gray-100 w-full max-w-sm text-center animate-in fade-in zoom-in duration-200">
+
+            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-8 w-8 text-green-600"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M5 13l4 4L19 7"
+                />
+              </svg>
+            </div>
+            <h3 className="text-2xl font-extrabold text-gray-900 mb-2">
+              Sign Up Complete!
+            </h3>
+            <p className="text-sm text-gray-500 mb-6">
+              Your account has been successfully created. You can now sign in to access your account.
+            </p>
+            <button
+              onClick={handleModalConfirm}
+              className="w-full bg-sky-400 text-white font-semibold py-3 rounded-xl shadow-md hover:bg-sky-500 hover:shadow-lg transition-all duration-300 active:scale-[0.98]"
+            >
+              Go to Sign In
+            </button>
+          </div>
+        </div>
+      )}
+
       <ToastContainer />
     </div>
   );

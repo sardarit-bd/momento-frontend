@@ -103,67 +103,16 @@ const PhotoPortraitBoxPreview = forwardRef(function PhotoPortraitBoxPreview(
 
       {boxImages.length > 0 && (
         <div
-          className="absolute z-10  overflow-hidden"
-          style={{ top: "43%", left: "18%", width: "20%", height: "30%" }}
+          className="absolute z-10 overflow-hidden "
+          style={{ top: "44%", left: "15.5%", width: "25.6%", height: "23.5%" ,
+
+      //  clipPath : "path('M 12 0 L 15 0 Q 300 0 300 12 L 300 188 Q 300 200 288 200 L 12 200 Q 0 200 0 188 L 0 12 Q 0 0 12 0 Z')"
+          }}
         >
           {(() => {
             const getLayout = () => {
               const count = boxImages.length;
               if (count === 1) return [{ i: 0, x: 0, y: 0, z: 3, size: "55%" }];
-              if (count === 2)
-                return [
-                  { i: 1, x: -20, y: -18, z: 1, size: "38%" },
-                  { i: 0, x: 0, y: 0, z: 3, size: "55%" },
-                ];
-              if (count === 3)
-                return [
-                  { i: 1, x: -22, y: -18, z: 1, size: "38%" },
-                  { i: 2, x: 22, y: -18, z: 1, size: "38%" },
-                  { i: 0, x: 0, y: 0, z: 3, size: "55%" },
-                ];
-              if (count === 4)
-                return [
-                  {
-                    i: 0,
-                    x: -22,
-                    y: -15,
-                    z: 1,
-                    size: "95%",
-                    clip: "0% 25% 10% 23%",
-                  },
-                  {
-                    i: 3,
-                    x: 22,
-                    y: -15,
-                    z: 1,
-                    size: "95%",
-                    clip: "0% 23% 10% 25%",
-                  },
-                  {
-                    i: 1,
-                    x: -26,
-                    y: 10,
-                    z: 2,
-                    size: "80%",
-                    clip: "0% 27% 55% 28%",
-                  },
-                  {
-                    i: 2,
-                    x: 26,
-                    y: 10,
-                    z: 2,
-                    size: "80%",
-                    clip: "0% 27% 55% 25%",
-                  },
-                  {
-                    i: 0,
-                    x: 0,
-                    y: 32,
-                    z: 3,
-                    size: "99%",
-                    clip: "0% 25% 49.3% 25%",
-                  },
-                ];
               return [
                 {
                   i: 3,
@@ -234,7 +183,7 @@ const PhotoPortraitBoxPreview = forwardRef(function PhotoPortraitBoxPreview(
                   <img
                     src={img.src}
                     alt={`Box photo ${slot.i + 1}`}
-                    className="absolute w-full object-cover cursor-move"
+                    className="relative w-full object-contain cursor-move border border-red-500"
                     style={{
                       top: "0%",
                       height: "100%",

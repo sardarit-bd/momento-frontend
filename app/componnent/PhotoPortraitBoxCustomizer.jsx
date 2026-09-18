@@ -37,7 +37,7 @@ const PhotoPortraitBoxCustomizer = ({
         const newImage = {
           id: Date.now() + Math.random(),
           src: typeof reader.result === "string" ? reader.result : null,
-          zoom: 1,
+          zoom: 1.9,
           xFraction: 0,
           yFraction: 0,
           x: 0,
@@ -141,7 +141,7 @@ const PhotoPortraitBoxCustomizer = ({
                 </span>
               </div>
 
-              <div className="relative h-50 rounded-lg overflow-hidden bg-gray-50">
+              <div className="relative h-50 rounded-lg  bg-gray-50 overflow-hidden">
                 <img
                   src={img.src}
                   alt={`Box photo ${index + 1}`}

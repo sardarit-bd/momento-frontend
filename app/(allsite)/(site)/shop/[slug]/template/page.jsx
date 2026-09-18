@@ -168,46 +168,48 @@ export default function TemplateSelectionPage() {
                     <FaCheck className="text-white text-[11px]" />
                   </span>
                 )}
+                <div className="flex flex-col justify-between h-full">
+                  <div className="relative w-full aspect-3/4 mb-5 rounded-xl overflow-hidden ">
+                    <Image
+                      src={tpl.image}
+                      alt={tpl.name}
+                      fill
+                      className="object-contain"
+                      sizes="(max-width: 768px) 100vw, 50vw"
+                    /> 
+                  </div>
+                  <div>
+                    <h2
+                      className={`${fraunces.className} text-xl md:text-2xl font-semibold text-[#12141F] mb-1 tracking-tight`}
+                    >
+                      {tpl.name}
+                    </h2>
+                    <p className="text-slate-500 text-xs md:text-sm font-medium mb-5">
+                      {tpl.description}
+                    </p>
+                  </div>
 
-                <div className="relative w-full aspect-3/4 mb-5 rounded-xl overflow-hidden bg-slate-50">
-                  <Image
-                    src={tpl.image}
-                    alt={tpl.name}
-                    fill
-                    className="object-contain"
-                    sizes="(max-width: 768px) 100vw, 50vw"
-                  />
+                  <button
+                    onClick={async (e) => {
+                      e.stopPropagation();
+                      setSelected(tpl);
+                      await handleContinue(tpl);
+                    }}
+                    className={`w-full text-[13px] md:text-sm font-semibold py-3 px-6 rounded-xl transition-all duration-200 active:scale-[0.98] flex items-center justify-center gap-2 ${
+                      isSelected
+                        ? "bg-linear-to-r from-[#3CA9FF] to-[#1C8CE0] text-white"
+                        : "bg-[#12141F] text-white hover:bg-[#1e2536]"
+                    }`}
+                  >
+                    {isSelected ? (
+                      <>
+                        <FaCheck className="text-[11px]" /> Selected
+                      </>
+                    ) : (
+                      "Choose This Style"
+                    )}
+                  </button>
                 </div>
-
-                <h2
-                  className={`${fraunces.className} text-xl md:text-2xl font-semibold text-[#12141F] mb-1 tracking-tight`}
-                >
-                  {tpl.name}
-                </h2>
-                <p className="text-slate-500 text-xs md:text-sm font-medium mb-5">
-                  {tpl.description}
-                </p>
-
-                <button
-                  onClick={async (e) => {
-                    e.stopPropagation();
-                    setSelected(tpl);
-                    await handleContinue(tpl);
-                  }}
-                  className={`w-full text-[13px] md:text-sm font-semibold py-3 px-6 rounded-xl transition-all duration-200 active:scale-[0.98] flex items-center justify-center gap-2 ${
-                    isSelected
-                      ? "bg-linear-to-r from-[#3CA9FF] to-[#1C8CE0] text-white"
-                      : "bg-[#12141F] text-white hover:bg-[#1e2536]"
-                  }`}
-                >
-                  {isSelected ? (
-                    <>
-                      <FaCheck className="text-[11px]" /> Selected
-                    </>
-                  ) : (
-                    "Choose This Style"
-                  )}
-                </button>
               </div>
             );
           })}

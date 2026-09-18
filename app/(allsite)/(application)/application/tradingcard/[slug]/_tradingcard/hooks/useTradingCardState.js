@@ -148,19 +148,9 @@ export function useTradingCardState() {
   const [spinloading, setspinloading] = useState(false);
   const [doneloading, setdoneloading] = useState(false);
   const [cardti, setcardti] = useState("Title");
-  const [carddes, setcarddes] = useState(() => {
-    if (typeof window !== "undefined") {
-      return localStorage.getItem("persistent_carddes") ?? "Created For";
-    }
-    return "Created For";
-  });
+  const [carddes, setcarddes] = useState("Created For");
 
-  const [packageTitle, setPackageTitle] = useState(() => {
-    if (typeof window !== "undefined") {
-      return localStorage.getItem("persistent_packageTitle") ?? "";
-    }
-    return "";
-  });
+  const [packageTitle, setPackageTitle] = useState("");
 
   const [name, setname] = useState("Attribute 1");
   const [name2, setname2] = useState("Attribute 2");
@@ -682,9 +672,15 @@ export function useTradingCardState() {
         slotIds: savedSlots.map((s) => s.id),
       });
 
+      const freshPackageTitle =
+        (typeof window !== "undefined" &&
+          localStorage.getItem("persistent_packageTitle")) ||
+        packageTitle ||
+        "";
+
       const product = {
         id: generateUserId(),
-        packTitle: packageTitle || "",
+        packTitle: freshPackageTitle,
         createdFor: freshCarddes,
         productId: fetchingData?.id,
         productSlug: fetchingData?.slug,

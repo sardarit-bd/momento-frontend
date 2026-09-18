@@ -327,7 +327,7 @@ export default function TradingCardControls({
               : savedSlots.length >= packageConfig.designs
                 ? workingcard === "front"
                   ? "Customize Back Card"
-                  : "Go to Checkout"
+                  : "Edit Packaging Information"
                 : savedSlots.length >= packageConfig.designs - 1
                   ? workingcard === "front"
                     ? `Save & Customize Back (${savedSlots.length + 1}/${packageConfig.designs})`

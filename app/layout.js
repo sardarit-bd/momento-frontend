@@ -132,8 +132,9 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
+    <html lang="en" data-gramm="false">
       <body
+      suppressHydrationWarning
         className={`${geistSans.variable}  ${geistMono.variable} ${bebas.variable} ${Brunson.variable} ${BrunsonBold.variable} ${GustanBlack.variable} ${AileronFont.variable} ${FastSpeedDemo.variable} ${RamaGothic.variable} ${Akira.variable} ${Arialbd.variable} antialiased`}
       >
         {children}

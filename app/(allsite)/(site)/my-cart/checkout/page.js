@@ -917,31 +917,13 @@ export default function CheckoutPage() {
                 style={{ fontFamily: "var(--font-display)" }}
               >
                 {cart.some((item) => item?.productType === "trading")
-                  ? "Your Trading Card"
+                  ? "s"
                   : cart.some((item) => item?.productType === "photo")
                     ? "Your Photo Portrait"
                     : "Your Deck Card"}
               </h2>
             </div>
 
-            {/* <div className="inline-flex items-center gap-1.5 bg-[#C9A227]/10 text-[#1B2420] border border-[#C9A227]/25 text-xs font-medium px-3 py-1.5 rounded-full mb-6">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="14"
-                height="14"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="#C9A227"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
-                <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
-                <line x1="12" y1="22.08" x2="12" y2="12"></line>
-              </svg>
-              Premium Packaging
-            </div> */}
 
             <div className="mb-3 lg:mb-6 space-y-5">
               {hydrating ? (
@@ -1378,11 +1360,74 @@ function SafeImage({ src, alt, className }) {
   if (!src) return null;
   const isBase64 = typeof src === "string" && src.startsWith("data:");
 
+  // Use standard <img> for base64 images to avoid Next.js Image dimension/optimization errors
   if (isBase64) {
-    return <Image src={src} alt={alt} className={className} />;
+    return <img src={src} alt={alt} className={className} />;
   }
 
   return <Image src={src} alt={alt} className={className} />;
+}
+
+function HoverZoomImage({ src, alt, zoom = 2.5, className = "" }) {
+  const containerRef = useRef(null);
+  const [isHovering, setIsHovering] = useState(false);
+  const [bgPos, setBgPos] = useState({ x: 50, y: 50 });
+
+  const handleMouseMove = (e) => {
+    if (!containerRef.current) return; // Safety check
+    const rect = containerRef.current.getBoundingClientRect();
+    const x = ((e.clientX - rect.left) / rect.width) * 100;
+    const y = ((e.clientY - rect.top) / rect.height) * 100;
+    setBgPos({
+      x: Math.min(100, Math.max(0, x)),
+      y: Math.min(100, Math.max(0, y)),
+    });
+  };
+
+  if (!src) return null;
+
+  // Check if the source is a base64 data URL
+  const isBase64 = typeof src === "string" && src.startsWith("data:");
+
+  return (
+    <div
+      ref={containerRef}
+      className={`relative overflow-hidden cursor-zoom-in select-none ${className}`}
+      onMouseEnter={() => setIsHovering(true)}
+      onMouseLeave={() => setIsHovering(false)}
+      onMouseMove={handleMouseMove}
+    >
+      {/* Use standard <img> for base64, Next.js <Image> for URLs */}
+      {isBase64 ? (
+        <img
+          src={src}
+          alt={alt}
+          draggable={false}
+          className="h-auto w-full object-contain block pointer-events-none select-none"
+        />
+      ) : (
+        <Image
+          src={src}
+          alt={alt}
+          draggable={false}
+          className="h-auto w-full object-contain block pointer-events-none select-none"
+          unoptimized // Prevents optimization errors for external string URLs
+        />
+      )}
+
+      {isHovering && (
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            backgroundImage: `url(${src})`,
+            backgroundRepeat: "no-repeat",
+            backgroundSize: `${zoom * 100}%`,
+            backgroundPosition: `${bgPos.x}% ${bgPos.y}%`,
+          }}
+        />
+      )}
+    </div>
+  );
 }
 
 function renderCardThumb(item, previewCard, imageIndex, sizeClass) {
@@ -1426,62 +1471,4 @@ function renderCardThumb(item, previewCard, imageIndex, sizeClass) {
   );
 }
 
-function HoverZoomImage({ src, alt, zoom = 2.5, className = "" }) {
-  const containerRef = useRef(null);
-  const [isHovering, setIsHovering] = useState(false);
-  const [bgPos, setBgPos] = useState({ x: 50, y: 50 });
 
-  const handleMouseMove = (e) => {
-    const rect = containerRef.current.getBoundingClientRect();
-    const x = ((e.clientX - rect.left) / rect.width) * 100;
-    const y = ((e.clientY - rect.top) / rect.height) * 100;
-    setBgPos({
-      x: Math.min(100, Math.max(0, x)),
-      y: Math.min(100, Math.max(0, y)),
-    });
-  };
-
-  if (!src) return null;
-
-  // Check if the source is a base64 data URL
-  const isBase64 = typeof src === "string" && src.startsWith("data:");
-
-  return (
-    <div
-      ref={containerRef}
-      className={`relative overflow-hidden cursor-zoom-in select-none ${className}`}
-      onMouseEnter={() => setIsHovering(true)}
-      onMouseLeave={() => setIsHovering(false)}
-      onMouseMove={handleMouseMove}
-    >
-      {/* Use standard <img> for base64, Next.js <Image> for URLs */}
-      {isBase64 ? (
-        <Image
-          src={src}
-          alt={alt}
-          draggable={false}
-          className="h-auto w-full object-contain block pointer-events-none select-none"
-        />
-      ) : (
-        <Image
-          src={src}
-          alt={alt}
-          draggable={false}
-          className="h-auto w-full object-contain block pointer-events-none select-none"
-        />
-      )}
-
-      {isHovering && (
-        <div
-          className="absolute inset-0 pointer-events-none"
-          style={{
-            backgroundImage: `url(${src})`,
-            backgroundRepeat: "no-repeat",
-            backgroundSize: `${zoom * 100}%`,
-            backgroundPosition: `${bgPos.x}% ${bgPos.y}%`,
-          }}
-        />
-      )}
-    </div>
-  );
-}

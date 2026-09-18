@@ -39,6 +39,7 @@ const getTitleFontSize = (text = "") => {
   if (len <= 20) return "0.9rem";
   return "0.75rem";
 };
+
 function getTitleFontSizeWithText(
   text = "",
   minChars = 6,
@@ -55,6 +56,7 @@ function getTitleFontSizeWithText(
   console.log(maxFontRem - ratio * (maxFontRem - minFontRem));
   return maxFontRem - ratio * (maxFontRem - minFontRem);
 }
+
 const AttributeMetric = ({
   icon,
   text,
@@ -66,99 +68,111 @@ const AttributeMetric = ({
   trackColor = "",
   fillColor = "",
   id,
-}) => (
-  <div
-    id={id}
-    className={wrapperClass}
-    style={{
-      backgroundColor: "transparent",
-      display: "flex",
-      alignItems: "flex-start",
-      gap: "8px",
-    }}
-  >
-    <div
-      style={{
-        backgroundColor: "transparent",
-        width: "34px",
-        height: "34px",
-        flexShrink: 0,
-        flexGrow: 0,
-        paddingTop: "2px",
-        overflow: "visible",
-      }}
-    >
-      {icon ? (
-        <img
-          src={icon}
-          alt="attribute-icon"
-          style={{
-            width: "34px",
-            height: "34px",
-            objectFit: "contain",
-            display: "block",
-          }}
-        />
-      ) : null}
-    </div>
+}) => {
+  // Enforce max 12 character limit for id="metric-row-1"
+  const displayText = String(text || "").slice(0, 12) 
 
+  return (
     <div
+      id={id}
+      className={wrapperClass}
       style={{
         backgroundColor: "transparent",
-        width: "110px",
-        flexShrink: 0,
-        flexGrow: 0,
-        minHeight: "22px",
-        overflow: "visible",
+        display: "flex",
+        alignItems: "flex-start",
+        gap: "8px",
       }}
     >
-      <span
-        className={textClass}
+      <div
         style={{
-          fontFamily: "",
-          fontWeight: 900,
-          fontSize: "13px",
-          display: "block",
-          overflow: "hidden", 
-          textOverflow: "ellipsis",
-          whiteSpace: "nowrap",
-          paddingBottom: "0px",
-          textShadow: `
-                        -1px -1px 0 #000,
-                        1px -1px 0 #000,
-                        -1px  1px 0 #000,
-                        1px  1px 0 #000
-                    `,
-          color: "#f5f0f0",
+          backgroundColor: "transparent",
+          width: "34px",
+          height: "34px",
+          flexShrink: 0,
+          flexGrow: 0,
+          paddingTop: "2px",
+          overflow: "visible",
         }}
       >
-        {text}
-      </span>
+        {icon ? (
+          <img
+            src={icon}
+            alt="attribute-icon"
+            style={{
+              width: "34px",
+              height: "34px",
+              objectFit: "contain",
+              display: "block",
+            }}
+          />
+        ) : null}
+      </div>
 
       <div
-        className={trackClass}
         style={{
-          marginTop: "2px",
-          height: "7px",
-          borderRadius: "9999px",
+          backgroundColor: "transparent",
           width: "110px",
+          flexShrink: 0,
+          flexGrow: 0,
+          minHeight: "22px",
           overflow: "visible",
-          ...(trackColor ? { backgroundColor: trackColor } : {}),
         }}
       >
-        <div
-          className={fillClass}
+        <span
+          className={textClass}
           style={{
-            width: `${value}%`,
-            height: "100%",
-            borderRadius: "9999px",
-            ...(fillColor ? { backgroundColor: fillColor } : {}),
+            fontFamily: "",
+            fontWeight: 900,
+            fontSize: "13px",
+            display: "block",
+            overflow: "hidden", 
+            textOverflow: "ellipsis",
+            whiteSpace: "nowrap",
+            paddingBottom: "0px",
+            textShadow: `
+              -1px -1px 0 #000,
+              1px -1px 0 #000,
+              -1px  1px 0 #000,
+              1px  1px 0 #000
+            `,
+            color: "#f5f0f0",
           }}
-        />
+        >
+          {displayText}
+        </span>
+
+        <div
+          className={trackClass}
+          style={{
+            marginTop: "2px",
+            height: "7px",
+            borderRadius: "9999px",
+            width: "110px",
+            overflow: "visible",
+            ...(trackColor ? { backgroundColor: trackColor } : {}),
+          }}
+        >
+          <div
+            className={fillClass}
+            style={{
+              width: `${value}%`,
+              height: "100%",
+              borderRadius: "9999px",
+              ...(fillColor ? { backgroundColor: fillColor } : {}),
+            }}
+          />
+        </div>
       </div>
     </div>
-  </div>
-);
+  );
+};
+
+const metallicGradientClass = `
+  text-transparent
+  bg-clip-text
+  bg-[linear-gradient(180deg,_#3a3a3a_0%,_#787878_5%,_#ffffff_60%,_#787878_90%,_#3a3a3a_100%)]
+  bg-[length:100%_100%]
+`;
 
 const AttributeMetricHorizontal = ({
   icon,
@@ -170,91 +184,88 @@ const AttributeMetricHorizontal = ({
   fillColor = "#5ba2d8",
   metallic = false,
   id,
-}) => (
-  <div
-    id={id}
-    className={wrapperClass}
-    style={{
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "space-between",
-      gap: "8px",
-      backgroundColor: "transparent",
-      width: "100%",
-    }}
-  >
+}) => {
+  // Enforce max 12 character limit for id="metric-row-1"
+  const displayText =  String(text || "").slice(0, 12) 
+
+  return (
     <div
+      id={id}
+      className={wrapperClass}
       style={{
         display: "flex",
         alignItems: "center",
-        gap: "4px",
-        flex: "0 0 55%",
-      }}
-    >
-      <img
-        src={icon}
-        alt="attribute-icon"
-        style={{
-          width: "24px",
-          height: "24px",
-          objectFit: "contain",
-          flexShrink: 0,
-        }}
-      />
-      <span
-        className={`${textClass} ${metallic ? metallicGradientClass : ""} font-Akira!  uppercase!`}
-        style={{
-          whiteSpace: "nowrap",
-          overflow: "hidden",
-          textOverflow: "ellipsis",
-          ...(metallic
-            ? {
-                WebkitTextStroke: "0.5px black",
-                paintOrder: "stroke fill",
-              }
-            : {
-                textShadow: `
-                  -1px -1px 0 #000,
-                  1px -1px 0 #000,
-                  -1px  1px 0 #000,
-                  1px  1px 0 #000
-                `,
-              }),
-        }}
-      >
-        {text}
-      </span>
-    </div>
-
-    <div
-      style={{
-        flex: "1 1 0",
-        minWidth: 0,
-        height: "8px",
-        borderRadius: "999px",
-        backgroundColor: trackColor,
-        overflow: "hidden",
+        justifyContent: "space-between",
+        gap: "8px",
+        backgroundColor: "transparent",
+        width: "100%",
       }}
     >
       <div
         style={{
-          width: `${value}%`,
-          height: "100%",
-          backgroundColor: fillColor,
-          borderRadius: "999px",
+          display: "flex",
+          alignItems: "center",
+          gap: "4px",
+          flex: "0 0 60%",
         }}
-      />
-    </div>
-  </div>
-);
+      >
+        <img
+          src={icon}
+          alt="attribute-icon"
+          style={{
+            width: "24px",
+            height: "24px",
+            objectFit: "contain",
+            flexShrink: 0,
+          }}
+        />
+        <span
+          className={`${textClass} ${metallic ? metallicGradientClass : ""} font-Akira! uppercase! bg-red-500!`}
+          style={{
+            whiteSpace: "nowrap",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            ...(metallic
+              ? {
+                  WebkitTextStroke: "0.5px black",
+                  paintOrder: "stroke fill",
+                }
+              : {
+                  textShadow: `
+                    -1px -1px 0 #000,
+                    1px -1px 0 #000,
+                    -1px  1px 0 #000,
+                    1px  1px 0 #000
+                  `,
+                }),
+          }}
+        >
+          {displayText}
+        </span>
+      </div>
 
-const metallicGradientClass = `
-    text-transparent
-    bg-clip-text
-    bg-[linear-gradient(180deg,_#3a3a3a_0%,_#787878_5%,_#ffffff_60%,_#787878_90%,_#3a3a3a_100%)]
-    bg-[length:100%_100%]
-    
-`;
+      <div
+        style={{
+          flex: "1 1 0",
+          minWidth: 0,
+          height: "8px",
+          borderRadius: "999px",
+          backgroundColor: trackColor,
+          overflow: "hidden",
+        }}
+      >
+        <div
+          style={{
+            width: `${value}%`,
+            height: "100%",
+            backgroundColor: fillColor,
+            borderRadius: "999px",
+          }}
+        />
+      </div>
+    </div>
+  );
+};
 
 const AttributeMetricHorizontal2 = ({
   icon,
@@ -266,82 +277,87 @@ const AttributeMetricHorizontal2 = ({
   fillColor = "#5ba2d8",
   metallic = false,
   id,
-}) => (
-  <div
-    id={id}
-    className={wrapperClass}
-    style={{
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "space-between",
-      gap: "6px",
-      backgroundColor: "transparent",
-      width: "100%",
-    }}
-  >
+}) => {
+  // Enforce max 12 character limit for id="metric-row-1"
+  const displayText = id === "metric-row-1" ? String(text || "").slice(0, 12) : text;
+
+  return (
     <div
+      id={id}
+      className={wrapperClass}
       style={{
         display: "flex",
         alignItems: "center",
-        gap: "4px",
-        flex: "0 0 62%",
-      }}
-    >
-      <img
-        src={icon}
-        alt="attribute-icon"
-        style={{
-          width: "20px",
-          height: "20px",
-          objectFit: "contain",
-          flexShrink: 0,
-        }}
-      />
-      <span
-        className={`${textClass} ${metallic ? metallicGradientClass : ""}`}
-        style={{
-          whiteSpace: "nowrap",
-          overflow: "hidden",
-          textOverflow: "ellipsis",
-          display: "inline-block",
-          lineHeight: 1,
-          ...(metallic
-            ? { WebkitTextStroke: "0.5px black", paintOrder: "stroke fill" }
-            : {
-                textShadow: `
-                                -1px -1px 0 #000,
-                                1px -1px 0 #000,
-                                -1px  1px 0 #000,
-                                1px  1px 0 #000
-                            `,
-              }),
-        }}
-      >
-        {text}
-      </span>
-    </div>
-
-    <div
-      style={{
-        flex: "1 1 0",
-        minWidth: 0,
-        height: "10px",
-        borderRadius: "999px",
-        backgroundColor: trackColor,
-        overflow: "hidden",
+        justifyContent: "space-between",
+        gap: "6px",
+        backgroundColor: "transparent",
+        width: "100%",
       }}
     >
       <div
         style={{
-          width: `${value}%`,
-          height: "100%",
-          backgroundColor: fillColor,
-          borderRadius: "999px",
+          display: "flex",
+          alignItems: "center",
+          gap: "4px",
+          flex: "0 0 62%",
         }}
-      />
+      >
+        <img
+          src={icon}
+          alt="attribute-icon"
+          style={{
+            width: "20px",
+            height: "20px",
+            objectFit: "contain",
+            flexShrink: 0,
+          }}
+        />
+        <span
+          className={`${textClass} ${metallic ? metallicGradientClass : ""}`}
+          style={{
+            whiteSpace: "nowrap",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            display: "inline-block",
+            lineHeight: 1,
+            ...(metallic
+              ? { WebkitTextStroke: "0.5px black", paintOrder: "stroke fill" }
+              : {
+                  textShadow: `
+                    -1px -1px 0 #000,
+                    1px -1px 0 #000,
+                    -1px  1px 0 #000,
+                    1px  1px 0 #000
+                  `,
+                }),
+          }}
+        >
+          {displayText}
+        </span>
+      </div>
+
+      <div
+        style={{
+          flex: "1 1 0",
+          minWidth: 0,
+          height: "10px",
+          borderRadius: "999px",
+          backgroundColor: trackColor,
+          overflow: "hidden",
+        }}
+      >
+        <div
+          style={{
+            width: `${value}%`,
+            height: "100%",
+            backgroundColor: fillColor,
+            borderRadius: "999px",
+          }}
+        />
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
 export const FrontOne = ({
   cardti,
@@ -388,14 +404,14 @@ export const FrontOne = ({
           icon={iconOne}
           text={name}
           value={labelone}
-          textClass="text-[10px] lg:text-[13px] text-[#f7f7f7] Akira! tracking-wider font-extrabold text-left"
+          textClass="text-[10px] lg:text-[13px] text-[#f7f7f7] GustanBlackFont tracking-wider font-medium text-left "
           trackClass="bg-black"
           fillClass="bg-[#f56f41]"
           trackColor="#000000"
           fillColor="#f56f41"
         />
         <AttributeMetric
-          id="metric-row-2"
+          id="metric-row-1"
           icon={iconTwo}
           text={name2}
           value={labeltwo}
@@ -407,7 +423,7 @@ export const FrontOne = ({
           fillColor="#f56f41"
         />
         <AttributeMetric
-          id="metric-row-3"
+          id="metric-row-1"
           icon={iconThree}
           text={name3}
           value={labelthree}
@@ -427,18 +443,18 @@ export const FrontOne = ({
         <span
           id="card-title"
           className="
-   block
-    w-full
-    text-right
-    font-medium
-    leading-[0.8]
-    tracking-wide
-    text-transparent
-    bg-clip-text
-    bg-[linear-gradient(180deg,#3a3a3a_-10%,#787878_20%,#ffffff_80%)]
-    BrunsonFont
-    bg-size-[100%_100%]
-  "
+            block
+            w-full
+            text-right
+            font-medium
+            leading-[0.8]
+            tracking-wide
+            text-transparent
+            bg-clip-text
+            bg-[linear-gradient(180deg,#3a3a3a_-10%,#787878_20%,#ffffff_80%)]
+            BrunsonFont
+            bg-size-[100%_100%]
+          "
           style={{
             WebkitTextStroke: "0.7px black",
             paintOrder: "stroke fill",
@@ -508,62 +524,28 @@ export const FrontTwo = ({
           text={name}
           value={labelone}
           metallic={true}
-          textClass="text-[11px] lg:text-[14px] AkiraFont tracking-wider"
+          textClass="text-[11px] lg:text-[12px] AkiraFont tracking-wider"
         />
 
         <AttributeMetricHorizontal
-          id="metric-row-1"
+          id="metric-row-2"
           icon={iconTwo}
           text={name2}
           value={labeltwo}
           metallic={true}
-          textClass="text-[11px] lg:text-[14px] AkiraFont tracking-wider"
+          textClass="text-[11px] lg:text-[12px] AkiraFont tracking-wider"
         />
 
         <AttributeMetricHorizontal
-          id="metric-row-1"
+          id="metric-row-3"
           icon={iconThree}
           text={name3}
           value={labelthree}
           metallic={true}
-          textClass="text-[11px] lg:text-[14px] AkiraFont tracking-wider"
+          textClass="text-[11px] lg:text-[12px] AkiraFont tracking-wider"
         />
       </div>
 
-      {/* <div
-        className="absolute right-[9%] bottom-[16%] z-50 w-40 text-right overflow-hidden"
-        style={{ backgroundColor: "transparent", background: "transparent" }}
-      >
-        <span
-          id="card-title"
-          className="absolute left-0 w-full bottom-[28%] text-center font-medium leading-tight text-transparent bg-clip-text bg-[linear-gradient(180deg,#3a3a3a_0%,#787878_30%,#ffffff_50%,#787878_70%,#3a3a3a_100%)] bg-size-[100%_100%] AkiraFont"
-          style={{
-            WebkitTextStroke: "1px black",
-            paintOrder: "stroke fill",
-            whiteSpace: "nowrap",
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-            fontSize:
-              getTitleSizeStep(cardti) === "large"
-                ? "2.2rem"
-                : getTitleSizeStep(cardti) === "medium"
-                  ? "1.6rem"
-                  : "1.2rem",
-          }}
-        >
-          {cardti}
-        </span>
-        <span
-          id="card-date"
-          className="block CorsicaCanvas text-[11px] lg:text-[1.3rem] tracking-wide leading-tight mt-0 BrunsonFont text-transparent bg-clip-text bg-[linear-gradient(180deg,#3a3a3a_-10%,#787878_20%,#ffffff_80%)] truncate"
-          style={{
-            WebkitTextStroke: "0.3px black",
-            paintOrder: "stroke fill",
-          }}
-        >
-          {acarddate}
-        </span>
-      </div> */}
       <span className="absolute bottom-2 left-1/2 -translate-x-1/2 z-50 text-[8px] lg:text-[8px] text-[#1f1f1f] BrunsonCanvas tracking-wider text-center whitespace-nowrap">
         &copy; {currentYear} MOMENTO TRADING CARDS
       </span>
@@ -604,7 +586,7 @@ export const FrontThree = ({
           maxWidth: "340px",
           whiteSpace: "nowrap",
           overflow: "hidden",
-          textOverflow: "ellipsis", // ➕ ADDED
+          textOverflow: "ellipsis",
           fontSize:
             getTitleSizeStep(cardti, 6, 10) === "large"
               ? "1.8rem"
@@ -625,15 +607,17 @@ export const FrontThree = ({
       </div>
       <div className="absolute left-[10%] right-[10%] bottom-[15%]  z-50 flex flex-col gap-1">
         <AttributeMetricHorizontal2
+          id="metric-row-1"
           icon={iconOne}
           text={name}
           value={labelone}
           metallic
-          textClass="text-[16px] tracking-tighter Akira! font-[900] uppercase"
+          textClass="text-[16px] tracking-wider GustanBlackFont"
           trackColor="#000000"
           fillColor="#f56f41"
         />
         <AttributeMetricHorizontal2
+          id="metric-row-2"
           icon={iconTwo}
           text={name2}
           value={labeltwo}
@@ -643,6 +627,7 @@ export const FrontThree = ({
           fillColor="#f56f41"
         />
         <AttributeMetricHorizontal2
+          id="metric-row-3"
           icon={iconThree}
           text={name3}
           value={labelthree}

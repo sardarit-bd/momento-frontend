@@ -10,7 +10,7 @@ import { BiLeftArrowAlt } from "react-icons/bi";
 import { FaBoxOpen, FaEdit } from "react-icons/fa";
 import { IoCartOutline } from "react-icons/io5";
 import { toast } from "react-toastify";
-
+import { useTradingCardState } from "../../../(application)/application/tradingcard/[slug]/_tradingcard/hooks/useTradingCardState";
 const PACKAGE_LABELS = {
   single: { name: "Single", subtitle: "1 design · 18 copies", icon: "🎴" },
   trio: { name: "Trio", subtitle: "3 designs · 6 each", icon: "🎴🎴" },
@@ -31,7 +31,6 @@ const FinalCardsPage = () => {
   const product = tradingcart?.[0] || null;
   const packageInfo =
     PACKAGE_LABELS[product?.selectedPackage] || PACKAGE_LABELS.single;
-
   const [packageTitle, setPackageTitleLocal] = useState("");
   const [showTitleModal, setShowTitleModal] = useState(false);
   const [titleDraft, setTitleDraft] = useState("");
@@ -148,7 +147,7 @@ const FinalCardsPage = () => {
               </div>
             </div>
 
-            <div className="rounded-2xl bg-linear-to-r from-slate-50 to-slate-100 border border-slate-200 p-5">
+            {/* <div className="rounded-2xl bg-linear-to-r from-slate-50 to-slate-100 border border-slate-200 p-5">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">
@@ -162,7 +161,7 @@ const FinalCardsPage = () => {
                 </div>
                 <button
                   onClick={() => {
-                    setTitleDraft(packageTitle);
+                    state.setcarddes(packageTitle);
                     setShowTitleModal(true);
                   }}
                   className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white border border-slate-200 text-sky-600 font-semibold text-sm  hover:shadow-md transition-all duration-200"
@@ -171,7 +170,7 @@ const FinalCardsPage = () => {
                   Edit
                 </button>
               </div>
-            </div>
+            </div> */}
           </div>
         </div>
 
@@ -241,7 +240,7 @@ const FinalCardsPage = () => {
         )}
       </main>
 
-      {showTitleModal && (
+      {/* {showTitleModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
           <div className="w-full max-w-md rounded-3xl bg-white shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
             <div className="bg-linear-to-r from-sky-500 to-sky-600 p-6">
@@ -254,15 +253,30 @@ const FinalCardsPage = () => {
               </p>
             </div>
 
-            <div className="p-6">
-              <input
-                autoFocus
-                value={titleDraft}
-                onChange={(e) => setTitleDraft(e.target.value)}
-                maxLength={30}
-                placeholder="e.g., Birthday Memories, Family Reunion..."
-                className="w-full h-14 rounded-xl border-2 border-slate-200 bg-slate-50 px-5 text-slate-800 placeholder-slate-400 outline-none focus:border-sky-400 focus:bg-white focus:ring-4 focus:ring-sky-100 transition-all text-base font-medium"
-              />
+            <div className="p-6 flex flex-col gap-5">
+              <div>
+                <label>Recipient Name</label>
+                <input
+                  autoFocus
+                  value={titleDraft}
+                  onChange={(e) => setTitleDraft(e.target.value)}
+                  maxLength={30}
+                  placeholder="e.g., Birthday Memories, Family Reunion..."
+                  className="w-full h-14 rounded-xl border-2 border-slate-200 bg-slate-50 px-5 text-slate-800 placeholder-slate-400 outline-none focus:border-sky-400 focus:bg-white focus:ring-4 focus:ring-sky-100 transition-all text-base font-medium"
+                />
+              </div>
+
+              <div>
+                <label>sadfas</label>
+                <input
+                  autoFocus
+                  value={titleDraft}
+                  onChange={(e) => setTitleDraft(e.target.value)}
+                  maxLength={30}
+                  placeholder="e.g., Birthday Memories, Family Reunion..."
+                  className="w-full h-14 rounded-xl border-2 border-slate-200 bg-slate-50 px-5 text-slate-800 placeholder-slate-400 outline-none focus:border-sky-400 focus:bg-white focus:ring-4 focus:ring-sky-100 transition-all text-base font-medium"
+                />
+              </div>
               <div className="flex justify-end gap-3 mt-6">
                 {packageTitle.trim() && (
                   <button
@@ -282,7 +296,7 @@ const FinalCardsPage = () => {
             </div>
           </div>
         </div>
-      )}
+      )} */}
     </div>
   );
 };

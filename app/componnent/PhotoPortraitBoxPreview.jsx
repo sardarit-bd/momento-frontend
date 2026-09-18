@@ -183,7 +183,7 @@ const PhotoPortraitBoxPreview = forwardRef(function PhotoPortraitBoxPreview(
                   <img
                     src={img.src}
                     alt={`Box photo ${slot.i + 1}`}
-                    className="relative w-full object-contain cursor-move border border-red-500"
+                    className="relative w-full object-contain cursor-move "
                     style={{
                       top: "0%",
                       height: "100%",

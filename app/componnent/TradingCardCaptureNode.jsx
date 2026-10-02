@@ -1,10 +1,10 @@
-import React from "react";
 import {
-  FrontOneCapture,
-  FrontTwoCapture,
-  FrontThreeCapture,
   BackOneCapture,
+  FrontOneCapture,
+  FrontThreeCapture,
+  FrontTwoCapture,
 } from "@/app/componnent/TextOverlayerCapture";
+import React from "react";
 
 const TradingCardCaptureNode = React.forwardRef(
   (
@@ -33,6 +33,9 @@ const TradingCardCaptureNode = React.forwardRef(
       backLegacyTagline,
       backLegacyText,
       isblack,
+      cardNumber,
+      topLeftIcon,
+      topRightIcon,
     },
     ref,
   ) => {
@@ -61,35 +64,29 @@ const TradingCardCaptureNode = React.forwardRef(
               width: "100%",
               height: "100%",
               zIndex: 1,
+              backgroundImage: `url("${img.url}")`,
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+              backgroundRepeat: "no-repeat",
+              transform: `scale(${img.scale ?? 1})`,
+              transformOrigin: "center center",
             }}
-          >
-            <img
-              src={img.url}
-              alt=""
-              style={{
-                width: "100%",
-                height: "100%",
-                objectFit: "cover",
-                display: "block",
-                transform: `scale(${img.scale ?? 1})`,
-                transformOrigin: "center center",
-              }}
-            />
-          </div>
+          />
         ))}
 
         {baseImage && (
-          <img
-            src={baseImage}
-            alt=""
+          <div
             style={{
               position: "absolute",
-              inset: 0,
+              top: 0,
+              left: 0,
               width: "100%",
               height: "100%",
-              objectFit: "cover",
               zIndex: 2,
-              display: "block",
+              backgroundImage: `url("${baseImage}")`,
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+              backgroundRepeat: "no-repeat",
             }}
           />
         )}
@@ -119,6 +116,9 @@ const TradingCardCaptureNode = React.forwardRef(
                 iconTwo={attrIconTwo}
                 iconThree={attrIconThree}
                 attributeName={attributeName}
+                cardNumber={cardNumber}
+                topLeftIcon={topLeftIcon}
+                topRightIcon={topRightIcon}
               />
             ) : cardfinder === 1 ? (
               <FrontTwoCapture
@@ -133,6 +133,9 @@ const TradingCardCaptureNode = React.forwardRef(
                 iconOne={attrIconOne}
                 iconTwo={attrIconTwo}
                 iconThree={attrIconThree}
+                cardNumber={cardNumber}
+                topLeftIcon={topLeftIcon}
+                topRightIcon={topRightIcon}
               />
             ) : (
               <FrontOneCapture
@@ -147,6 +150,9 @@ const TradingCardCaptureNode = React.forwardRef(
                 iconOne={attrIconOne}
                 iconTwo={attrIconTwo}
                 iconThree={attrIconThree}
+                cardNumber={cardNumber}
+                topLeftIcon={topLeftIcon}
+                topRightIcon={topRightIcon}
               />
             )
           ) : (
@@ -158,6 +164,9 @@ const TradingCardCaptureNode = React.forwardRef(
               legacyTagline={backLegacyTagline}
               legacyText={backLegacyText}
               isblack={isblack}
+              cardNumber={cardNumber}
+              topLeftIcon={topLeftIcon}
+              topRightIcon={topRightIcon}
             />
           )}
         </div>

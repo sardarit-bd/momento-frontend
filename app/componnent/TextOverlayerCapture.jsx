@@ -1,12 +1,34 @@
-import { useEffect, useRef } from "react";
-
+import {
+  formatCardNumber,
+  getHeaderLayout,
+} from "@/app/componnent/cardHeaderLayout";
+import { useEffect, useRef, useState } from "react";
 const getTitleSizeStep = (text = "", largeMax = 8, mediumMax = 14) => {
   const len = text.length;
   if (len <= largeMax) return "large";
   if (len <= mediumMax) return "medium";
   return "small";
 };
+const useIsLg = () => {
+  const [isLg, setIsLg] = useState(true);
+  useEffect(() => {
+    const mq = window.matchMedia("(min-width: 1024px)");
+    const update = () => setIsLg(mq.matches);
+    update();
+    mq.addEventListener("change", update);
+    return () => mq.removeEventListener("change", update);
+  }, []);
+  return isLg;
+};
 
+const fitText = (ctx, str, maxW) => {
+  if (ctx.measureText(str).width <= maxW) return str;
+  let s = str;
+  while (s.length > 1 && ctx.measureText(`${s}…`).width > maxW) {
+    s = s.slice(0, -1);
+  }
+  return `${s}…`;
+};
 const handleExport = async () => {
   const element = document.getElementById("card-root");
   if (!element) return;
@@ -125,15 +147,15 @@ const GradientTitle = ({ cardti }) => {
 
     const draw = () => {
       const ctx = canvas.getContext("2d");
-      canvas.width = W * 2;
-      canvas.height = H * 2;
-      ctx.scale(2, 2);
+      canvas.width = W * 3;
+      canvas.height = H * 3;
+      ctx.scale(3, 3);
       ctx.clearRect(0, 0, W, H);
-      ctx.font = `400 ${titleFontPx}px CorsicaCanvas`;
+      ctx.font = `400 ${titleFontPx}px BrunsonCanvas`;
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
       ctx.strokeStyle = "black";
-      ctx.lineWidth = 2.5;
+      ctx.lineWidth = 0.7;
       ctx.lineJoin = "round";
       ctx.strokeText(cardti, W / 2, H / 2);
       const grad = ctx.createLinearGradient(0, 0, 0, H);
@@ -146,9 +168,7 @@ const GradientTitle = ({ cardti }) => {
       ctx.fillText(cardti, W / 2, H / 2);
     };
 
-    document.fonts.load(`400 ${titleFontPx}px CorsicaCanvas`).then(() => {
-      draw();
-    });
+    document.fonts.load(`400 ${titleFontPx}px BrunsonCanvas`).then(draw);
   }, [cardti, titleFontPx]);
 
   return (
@@ -242,52 +262,47 @@ const getTitleFontSizePx = (text = "") => {
 
 const GradientTitleThree = ({ cardti }) => {
   const canvasRef = useRef(null);
+  const step = getTitleSizeStep(cardti, 6, 10);
+  const fontPx = step === "large" ? 28.8 : step === "medium" ? 22.4 : 16.8;
+  const W = 331.5;
+  const H = fontPx * 1.5;
 
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-
-    const W = 340;
-    const H = 50;
-
     const draw = () => {
       const ctx = canvas.getContext("2d");
-      canvas.width = W * 2;
-      canvas.height = H * 2;
-      ctx.scale(2, 2);
+      canvas.width = W * 3;
+      canvas.height = Math.round(H * 3);
+      ctx.scale(3, 3);
       ctx.clearRect(0, 0, W, H);
-
-      const fontSize =
-        getTitleSizeStep(cardti, 6, 10) === "large"
-          ? 28
-          : getTitleSizeStep(cardti, 6, 10) === "medium"
-            ? 22
-            : 16;
-      ctx.font = `700 ${fontSize}px DinBold`;
+      ctx.font = `400 ${fontPx}px BrunsonCanvas`;
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
-      ctx.strokeStyle = "black";
-      ctx.lineWidth = 4;
-      ctx.lineJoin = "round";
-      ctx.strokeText(cardti.toUpperCase(), W / 2, H / 2);
+      if ("letterSpacing" in ctx) ctx.letterSpacing = `${fontPx * 0.025}px`;
+      const label = fitText(ctx, String(cardti || "").toUpperCase(), W);
+      ctx.fillStyle = "#000000";
+      [
+        [-2, -1],
+        [1, -1],
+        [-2, 1],
+        [2, 1],
+      ].forEach(([dx, dy]) => ctx.fillText(label, W / 2 + dx, H / 2 + dy));
       ctx.fillStyle = "#00BCFF";
-      ctx.fillText(cardti.toUpperCase(), W / 2, H / 2);
+      ctx.fillText(label, W / 2, H / 2);
     };
-
-    document.fonts
-      .load(`700 ${getTitleFontSizePx(cardti)}px DinBold`)
-      .then(draw);
-  }, [cardti]);
+    document.fonts.load(`400 ${fontPx}px BrunsonCanvas`).then(draw);
+  }, [cardti, fontPx, H]);
 
   return (
     <canvas
       ref={canvasRef}
       style={{
         position: "absolute",
-        top: "32px",
-        left: "25px",
-        width: "340px",
-        height: "50px",
+        left: "-37.05px",
+        top: "39.9px",
+        width: `${W}px`,
+        height: `${H}px`,
         zIndex: 50,
       }}
     />
@@ -350,62 +365,50 @@ const AttributeLabelMetallicCapture = ({
   );
 };
 
-const GradientBadgeThree = ({ acarddate, offsetY = 0 }) => {
+const GradientBadgeThree = ({ acarddate }) => {
   const canvasRef = useRef(null);
 
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-
     const W = 220;
     const H = 60;
-
-    const dateLine1 = acarddate.length > 6 ? acarddate.slice(0, 6) : acarddate;
-    const dateLine2 = acarddate.length > 6 ? acarddate.slice(6) : null;
-    const lines = dateLine2 ? [dateLine1, dateLine2] : [dateLine1];
+    const full = String(acarddate || "");
+    const l1 = full.length > 6 ? full.slice(0, 6) : full;
+    const l2 = full.length > 6 ? full.slice(6) : null;
+    const lines = (l2 ? [l1, l2] : [l1]).map((l) => l.toUpperCase());
+    const lineH = 20;
+    const blockTop = 10;
 
     const draw = () => {
       const ctx = canvas.getContext("2d");
-      canvas.width = W * 2;
-      canvas.height = H * 2;
-      ctx.scale(2, 2);
+      canvas.width = W * 3;
+      canvas.height = H * 3;
+      ctx.scale(3, 3);
       ctx.clearRect(0, 0, W, H);
-      ctx.font = `700 18px DinBold`;
+      ctx.font = `900 16px GustanBlackCanvas`;
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
-      const lineHeight = 22;
-      const totalHeight = lines.length * lineHeight;
-      const startY = H / 2 - totalHeight / 2 + lineHeight / 2 + offsetY;
-      const skew = Math.tan((-6 * Math.PI) / 180);
-
+      if ("letterSpacing" in ctx) ctx.letterSpacing = "0.8px";
+      const cy = blockTop + (lines.length * lineH) / 2;
+      ctx.save();
+      ctx.translate(W / 2, cy);
+      ctx.transform(1, 0, Math.tan((-6 * Math.PI) / 180), 1, 0, 0);
+      ctx.translate(-W / 2, -cy);
+      ctx.lineWidth = 0.5;
+      ctx.lineJoin = "round";
+      ctx.strokeStyle = "#000000";
+      ctx.fillStyle = "#f5731f";
       lines.forEach((line, i) => {
-        const text = line.toUpperCase();
-        const y = startY + i * lineHeight;
-        ctx.save();
-        ctx.translate(W / 2, y);
-        ctx.transform(1, 0, skew, 1, 0, 0);
-        ctx.translate(-(W / 2), -y);
-
-        ctx.shadowColor = "transparent";
-        ctx.lineWidth = 3;
-        ctx.lineJoin = "round";
-        ctx.strokeStyle = "#ffffff";
-        ctx.strokeText(text, W / 2, y);
-        ctx.shadowColor = "rgba(0,0,0,0.55)";
-        ctx.shadowBlur = 3;
-        ctx.shadowOffsetX = 2;
-        ctx.shadowOffsetY = 3;
-        ctx.fillStyle = "#f5731f";
-        ctx.fillText(text, W / 2, y);
-
-        ctx.restore();
+        const y = blockTop + i * lineH + lineH / 2;
+        ctx.strokeText(line, W / 2, y);
+        ctx.fillText(line, W / 2, y);
       });
+      ctx.restore();
     };
 
-    document.fonts.load(`700 18px DinBold`).then(() => {
-      draw();
-    });
-  }, [acarddate, offsetY]);
+    document.fonts.load(`900 16px GustanBlackCanvas`).then(draw);
+  }, [acarddate]);
 
   return (
     <canvas
@@ -413,7 +416,7 @@ const GradientBadgeThree = ({ acarddate, offsetY = 0 }) => {
       style={{
         position: "absolute",
         left: "85px",
-        top: "505px",
+        top: "503px",
         width: "220px",
         height: "60px",
         zIndex: 50,
@@ -422,14 +425,14 @@ const GradientBadgeThree = ({ acarddate, offsetY = 0 }) => {
   );
 };
 
-const AttrRowCapture = ({ icon, text, value, top, left, fillColor }) => (
+const AttrRowCapture = ({ icon, text, value, top, fillColor = "#f56f41" }) => (
   <div
     style={{
       position: "absolute",
       top: `${top}px`,
-      left: `${left}px`,
-      width: "176px",
-      height: "44px",
+      left: "40px",
+      width: "152px",
+      height: "34px",
     }}
   >
     {icon ? (
@@ -438,34 +441,19 @@ const AttrRowCapture = ({ icon, text, value, top, left, fillColor }) => (
         alt=""
         style={{
           position: "absolute",
-          top: 0,
-          left: 0,
+          top: "2px",
+          left: "0px",
           width: "34px",
           height: "34px",
           objectFit: "contain",
         }}
       />
     ) : null}
-    <span
-      style={{
-        position: "absolute",
-        bottom: "28px",
-        left: "42px",
-        fontFamily: "Libertad",
-        fontWeight: 600,
-        fontSize: "13px",
-        color: "#f5f0f0",
-        textShadow: `-1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000`,
-        letterSpacing: "0.05em",
-        whiteSpace: "nowrap",
-      }}
-    >
-      {text}
-    </span>
+    <FrontOneLabelCapture text={text} top={0} left={42} />
     <div
       style={{
         position: "absolute",
-        top: "24px",
+        top: "21.5px",
         left: "42px",
         width: "110px",
         height: "7px",
@@ -477,7 +465,7 @@ const AttrRowCapture = ({ icon, text, value, top, left, fillColor }) => (
         style={{
           width: `${value}%`,
           height: "100%",
-          borderRadius: "9999px",
+          borderRadius: "999px",
           backgroundColor: fillColor,
         }}
       />
@@ -485,31 +473,80 @@ const AttrRowCapture = ({ icon, text, value, top, left, fillColor }) => (
   </div>
 );
 
+const AkiraMetallicLabelCapture = ({ text, top, left, width, height }) => {
+  const canvasRef = useRef(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const draw = () => {
+      const fontPx = window.matchMedia("(min-width: 1024px)").matches ? 12 : 11;
+      const ctx = canvas.getContext("2d");
+      canvas.width = width * 3;
+      canvas.height = height * 3;
+      ctx.scale(3, 3);
+      ctx.clearRect(0, 0, width, height);
+      ctx.font = `400 ${fontPx}px AkiraCanvas`;
+      ctx.textAlign = "left";
+      ctx.textBaseline = "middle";
+      if ("letterSpacing" in ctx) ctx.letterSpacing = `${fontPx * 0.05}px`;
+      const label = String(text || "")
+        .slice(0, 12)
+        .toUpperCase();
+      const y = height / 2;
+      ctx.strokeStyle = "black";
+      ctx.lineWidth = 0.5;
+      ctx.lineJoin = "round";
+      ctx.strokeText(label, 0, y);
+      const grad = ctx.createLinearGradient(
+        0,
+        y - fontPx / 2,
+        0,
+        y + fontPx / 2,
+      );
+      grad.addColorStop(0.0, "#3a3a3a");
+      grad.addColorStop(0.05, "#787878");
+      grad.addColorStop(0.6, "#ffffff");
+      grad.addColorStop(0.9, "#787878");
+      grad.addColorStop(1.0, "#3a3a3a");
+      ctx.fillStyle = grad;
+      ctx.fillText(label, 0, y);
+    };
+
+    document.fonts.load(`400 12px AkiraCanvas`).then(draw);
+  }, [text, width, height]);
+
+  return (
+    <canvas
+      ref={canvasRef}
+      style={{
+        position: "absolute",
+        top: `${top}px`,
+        left: `${left}px`,
+        width: `${width}px`,
+        height: `${height}px`,
+        zIndex: 50,
+      }}
+    />
+  );
+};
+
 const AttrRowCapture2 = ({
   icon,
   text,
   value,
   top,
-  left,
+  left = 50.7,
   fillColor = "#5ba2d8",
   trackColor = "#000000",
 }) => {
-  const rowHeight = 32;
-  const iconSize = 24;
-  const gap = 8;
-  const barWidth = 90;
-  const barHeight = 8;
-  const totalWidth = 290;
-
-  const barLeft = totalWidth - barWidth;
-  const textLeft = iconSize + gap;
-  const textWidth = barLeft - gap - textLeft;
-
-  const exportOffset = 2;
-
-  const iconTop = (rowHeight - iconSize) / 2 - exportOffset;
-  const barTop = (rowHeight - barHeight) / 2 - exportOffset;
-  const textTop = 0;
+  const rowW = 288.6;
+  const rowH = 24;
+  const leftBlockW = rowW * 0.6;
+  const barLeft = leftBlockW + 8;
+  const barW = rowW - barLeft;
+  const barH = 8;
 
   return (
     <div
@@ -517,8 +554,8 @@ const AttrRowCapture2 = ({
         position: "absolute",
         top: `${top}px`,
         left: `${left}px`,
-        width: `${totalWidth}px`,
-        height: `${rowHeight}px`,
+        width: `${rowW}px`,
+        height: `${rowH}px`,
       }}
     >
       {icon && (
@@ -527,47 +564,28 @@ const AttrRowCapture2 = ({
           alt=""
           style={{
             position: "absolute",
-            top: `${iconTop}px`,
+            top: "0px",
             left: "0px",
-            width: `${iconSize}px`,
-            height: `${iconSize}px`,
+            width: "24px",
+            height: "24px",
             objectFit: "contain",
           }}
         />
       )}
-
-      <span
-        style={{
-          position: "absolute",
-          top: `${textTop}px`,
-          left: `${textLeft}px`,
-          width: `${textWidth}px`,
-          fontFamily: "GustanBlackCanvas",
-          fontWeight: 900,
-          fontSize: "14px",
-          color: "#f7f7f7",
-          letterSpacing: "0.05em",
-          whiteSpace: "nowrap",
-          lineHeight: 1,
-          padding: 0,
-          margin: 0,
-          textShadow: `
-                        -1px -1px 0 #000,
-                        1px -1px 0 #000,
-                        -1px  1px 0 #000,
-                        1px  1px 0 #000
-                    `,
-        }}
-      >
-        {text}
-      </span>
+      <AkiraMetallicLabelCapture
+        text={text}
+        top={0}
+        left={28}
+        width={leftBlockW - 28}
+        height={rowH}
+      />
       <div
         style={{
           position: "absolute",
-          top: `${barTop}px`,
+          top: `${(rowH - barH) / 2}px`,
           left: `${barLeft}px`,
-          width: `${barWidth}px`,
-          height: `${barHeight}px`,
+          width: `${barW}px`,
+          height: `${barH}px`,
           borderRadius: "999px",
           backgroundColor: trackColor,
           overflow: "hidden",
@@ -591,25 +609,18 @@ const AttrRowCapture3 = ({
   text,
   value,
   top,
-  left,
+  left = 39,
+  slice = false,
   fillColor = "#f56f41",
   trackColor = "#000000",
 }) => {
-  const rowHeight = 26;
-  const iconSize = 20;
-  const gap = 6;
-  const barWidth = 100;
-  const barHeight = 8;
-  const totalWidth = 260;
-
-  const textLeft = iconSize + gap;
-  const textWidth = totalWidth - barWidth - textLeft - gap;
-  const barLeft = totalWidth - barWidth;
-
-  const exportOffset = 2;
-
-  const iconTop = (rowHeight - iconSize) / 2 - exportOffset;
-  const barTop = (rowHeight - barHeight) / 2 - exportOffset;
+  const rowW = 312;
+  const rowH = 20;
+  const leftBlockW = rowW * 0.62;
+  const barLeft = leftBlockW + 6;
+  const barW = rowW - barLeft;
+  const barH = 10;
+  const shown = slice ? String(text || "").slice(0, 12) : String(text || "");
 
   return (
     <div
@@ -617,8 +628,8 @@ const AttrRowCapture3 = ({
         position: "absolute",
         top: `${top}px`,
         left: `${left}px`,
-        width: `${totalWidth}px`,
-        height: `${rowHeight}px`,
+        width: `${rowW}px`,
+        height: `${rowH}px`,
       }}
     >
       {icon && (
@@ -627,30 +638,29 @@ const AttrRowCapture3 = ({
           alt=""
           style={{
             position: "absolute",
-            top: `${iconTop}px`,
+            top: "0px",
             left: "0px",
-            width: `${iconSize}px`,
-            height: `${iconSize}px`,
+            width: "20px",
+            height: "20px",
             objectFit: "contain",
           }}
         />
       )}
-
-      <AttributeLabelMetallicCapture
-        text={text}
+      <GustanMetallicLabelCapture
+        text={shown}
         top={0}
-        left={textLeft}
-        width={textWidth}
-        height={rowHeight}
+        left={24}
+        width={leftBlockW - 24}
+        height={rowH}
+        fontPx={16}
       />
-
       <div
         style={{
           position: "absolute",
-          top: `${barTop}px`,
+          top: `${(rowH - barH) / 2}px`,
           left: `${barLeft}px`,
-          width: `${barWidth}px`,
-          height: `${barHeight}px`,
+          width: `${barW}px`,
+          height: `${barH}px`,
           borderRadius: "999px",
           backgroundColor: trackColor,
           overflow: "hidden",
@@ -668,7 +678,352 @@ const AttrRowCapture3 = ({
     </div>
   );
 };
+const FrontOneLabelCapture = ({ text, top, left }) => {
+  const canvasRef = useRef(null);
+  const W = 110;
+  const H = 20;
 
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const draw = () => {
+      const ctx = canvas.getContext("2d");
+      canvas.width = W * 3;
+      canvas.height = H * 3;
+      ctx.scale(3, 3);
+      ctx.clearRect(0, 0, W, H);
+      ctx.font = `900 13px GustanBlackCanvas`;
+      ctx.textAlign = "left";
+      ctx.textBaseline = "middle";
+      if ("letterSpacing" in ctx) ctx.letterSpacing = "0.65px";
+      const label = fitText(ctx, String(text || "").slice(0, 12), W);
+      const y = 9.75;
+      ctx.fillStyle = "#000000";
+      [
+        [-1, -1],
+        [1, -1],
+        [-1, 1],
+        [1, 1],
+      ].forEach(([dx, dy]) => ctx.fillText(label, dx, y + dy));
+      ctx.fillStyle = "#f5f0f0";
+      ctx.fillText(label, 0, y);
+    };
+    document.fonts.load(`900 13px GustanBlackCanvas`).then(draw);
+  }, [text]);
+
+  return (
+    <canvas
+      ref={canvasRef}
+      style={{
+        position: "absolute",
+        top: `${top}px`,
+        left: `${left}px`,
+        width: `${W}px`,
+        height: `${H}px`,
+        zIndex: 50,
+      }}
+    />
+  );
+};
+
+const FrontOneTitleCapture = ({ cardti, acarddate, isLg }) => {
+  const canvasRef = useRef(null);
+  const step = getTitleSizeStep(cardti);
+  const titleFs = step === "large" ? 35.2 : step === "medium" ? 25.6 : 19.2;
+  const dateFs = isLg ? 20.8 : 11;
+  const titleH = titleFs * 0.8;
+  const dateH = dateFs * 1.25;
+  const W = 160;
+  const H = titleH + dateH;
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const draw = () => {
+      const ctx = canvas.getContext("2d");
+      canvas.width = W * 3;
+      canvas.height = Math.round(H * 3);
+      ctx.scale(3, 3);
+      ctx.clearRect(0, 0, W, H);
+      ctx.textAlign = "right";
+      ctx.textBaseline = "middle";
+      ctx.lineJoin = "round";
+      ctx.strokeStyle = "black";
+      const grad = (y0, h) => {
+        const g = ctx.createLinearGradient(0, y0, 0, y0 + h);
+        g.addColorStop(0, "#4f4f4f");
+        g.addColorStop(0.2, "#787878");
+        g.addColorStop(0.8, "#ffffff");
+        g.addColorStop(1, "#ffffff");
+        return g;
+      };
+
+      ctx.font = `400 ${titleFs}px BrunsonCanvas`;
+      if ("letterSpacing" in ctx) ctx.letterSpacing = `${titleFs * 0.025}px`;
+      ctx.lineWidth = 0.7;
+      ctx.strokeText(String(cardti || ""), W, titleH / 2);
+      ctx.fillStyle = grad(0, titleH);
+      ctx.fillText(String(cardti || ""), W, titleH / 2);
+
+      ctx.font = `400 ${dateFs}px BrunsonCanvas`;
+      if ("letterSpacing" in ctx) ctx.letterSpacing = `${dateFs * 0.025}px`;
+      ctx.lineWidth = 0.3;
+      ctx.strokeText(String(acarddate || ""), W, titleH + dateH / 2);
+      ctx.fillStyle = grad(titleH, dateH);
+      ctx.fillText(String(acarddate || ""), W, titleH + dateH / 2);
+    };
+    document.fonts.load(`400 20px BrunsonCanvas`).then(draw);
+  }, [cardti, acarddate, titleFs, dateFs, titleH, dateH, H]);
+
+  return (
+    <canvas
+      ref={canvasRef}
+      style={{
+        position: "absolute",
+        right: "35.1px",
+        top: `${478.8 - H}px`,
+        width: `${W}px`,
+        height: `${H}px`,
+        zIndex: 50,
+      }}
+    />
+  );
+};
+
+const GustanMetallicLabelCapture = ({
+  text,
+  top,
+  left,
+  width,
+  height,
+  fontPx = 16,
+}) => {
+  const canvasRef = useRef(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const draw = () => {
+      const ctx = canvas.getContext("2d");
+      canvas.width = width * 3;
+      canvas.height = height * 3;
+      ctx.scale(3, 3);
+      ctx.clearRect(0, 0, width, height);
+      ctx.font = `900 ${fontPx}px GustanBlackCanvas`;
+      ctx.textAlign = "left";
+      ctx.textBaseline = "middle";
+      if ("letterSpacing" in ctx) ctx.letterSpacing = `${fontPx * 0.05}px`;
+      const label = fitText(ctx, String(text || ""), width);
+      const y = height / 2;
+      ctx.strokeStyle = "black";
+      ctx.lineWidth = 0.5;
+      ctx.lineJoin = "round";
+      ctx.strokeText(label, 0, y);
+      const g = ctx.createLinearGradient(0, y - fontPx / 2, 0, y + fontPx / 2);
+      g.addColorStop(0.0, "#3a3a3a");
+      g.addColorStop(0.05, "#787878");
+      g.addColorStop(0.6, "#ffffff");
+      g.addColorStop(0.9, "#787878");
+      g.addColorStop(1.0, "#3a3a3a");
+      ctx.fillStyle = g;
+      ctx.fillText(label, 0, y);
+    };
+    document.fonts.load(`900 ${fontPx}px GustanBlackCanvas`).then(draw);
+  }, [text, width, height, fontPx]);
+
+  return (
+    <canvas
+      ref={canvasRef}
+      style={{
+        position: "absolute",
+        top: `${top}px`,
+        left: `${left}px`,
+        width: `${width}px`,
+        height: `${height}px`,
+        zIndex: 50,
+      }}
+    />
+  );
+};
+
+const AttributeNameThreeCapture = ({ text }) => {
+  const canvasRef = useRef(null);
+  const W = 300;
+  const H = 21;
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const draw = () => {
+      const ctx = canvas.getContext("2d");
+      canvas.width = W * 3;
+      canvas.height = H * 3;
+      ctx.scale(3, 3);
+      ctx.clearRect(0, 0, W, H);
+      ctx.font = `800 14px BrunsonBold`;
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      if ("letterSpacing" in ctx) ctx.letterSpacing = "0.7px";
+      ctx.fillStyle = "#000000";
+      ctx.fillText(String(text || "").toUpperCase(), W / 2, H / 2);
+    };
+    document.fonts.load(`800 14px BrunsonBold`).then(draw, draw);
+  }, [text]);
+
+  return (
+    <canvas
+      ref={canvasRef}
+      style={{
+        position: "absolute",
+        left: "52.8px",
+        top: "382.55px",
+        width: `${W}px`,
+        height: `${H}px`,
+        zIndex: 50,
+      }}
+    />
+  );
+};
+
+const InkCenteredTextCapture = ({
+  text,
+  cx,
+  cy,
+  font,
+  color = "#000000",
+  letterSpacing = 0,
+  w = 260,
+  h = 24,
+}) => {
+  const canvasRef = useRef(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const draw = () => {
+      const ctx = canvas.getContext("2d");
+      canvas.width = w * 3;
+      canvas.height = h * 3;
+      ctx.scale(3, 3);
+      ctx.clearRect(0, 0, w, h);
+      ctx.font = font;
+      ctx.textAlign = "center";
+      ctx.textBaseline = "alphabetic";
+      if ("letterSpacing" in ctx) ctx.letterSpacing = `${letterSpacing}px`;
+      const label = String(text ?? "");
+      const m = ctx.measureText(label);
+      const asc = m.actualBoundingBoxAscent ?? 0;
+      const desc = m.actualBoundingBoxDescent ?? 0;
+      ctx.fillStyle = color;
+      ctx.fillText(label, w / 2, h / 2 + (asc - desc) / 2);
+    };
+    document.fonts.load(font).then(draw, draw);
+  }, [text, font, color, letterSpacing, w, h]);
+
+  return (
+    <canvas
+      ref={canvasRef}
+      style={{
+        position: "absolute",
+        left: `${cx - w / 2}px`,
+        top: `${cy - h / 2}px`,
+        width: `${w}px`,
+        height: `${h}px`,
+        zIndex: 60,
+      }}
+    />
+  );
+};
+const CardHeaderCapture = ({
+  template = 0,
+  cardNumber,
+  topLeftIcon,
+  topRightIcon,
+}) => {
+  const L = getHeaderLayout(template);
+  const numberText = formatCardNumber(cardNumber);
+  const radius =
+    typeof L.iconRadius === "number" ? `${L.iconRadius}px` : L.iconRadius;
+  const frame = {
+    position: "absolute",
+    width: `${L.iconSize}px`,
+    height: `${L.iconSize}px`,
+    boxSizing: "border-box",
+    borderRadius: radius,
+    overflow: "hidden",
+    backgroundColor: L.iconBg,
+    zIndex: 50,
+    ...(L.drawFrame
+      ? {
+          border: `${L.frameWidth}px solid ${L.frameColor}`,
+          boxShadow: "0 0 0 1px rgba(0,0,0,0.6)",
+        }
+      : {}),
+  };
+  const imgStyle = {
+    width: "100%",
+    height: "100%",
+    objectFit: "cover",
+    display: "block",
+  };
+  return (
+    <>
+      {template === 0 && numberText && (
+        <InkCenteredTextCapture
+          text={numberText}
+          cx={L.numberPillCx}
+          cy={L.numberPillCy}
+          w={L.numberPillWidth}
+          h={24}
+          font={`900 ${L.numberPillFontSize}px GustanBlackCanvas`}
+          color={L.numberPillColor}
+          letterSpacing={0.5}
+        />
+      )}
+      <div
+        style={{
+          ...frame,
+          top: `${L.leftIconTop ?? L.iconTop}px`,
+          left: `${L.leftIconSide ?? L.iconSideOffset}px`,
+        }}
+      >
+        {topLeftIcon ? <img src={topLeftIcon} alt="" style={imgStyle} /> : null}
+      </div>
+      <div
+        style={{
+          ...frame,
+          top: `${L.rightIconTop ?? L.iconTop}px`,
+          right: `${L.rightIconSide ?? L.iconSideOffset}px`,
+        }}
+      >
+        {topRightIcon ? (
+          <img src={topRightIcon} alt="" style={imgStyle} />
+        ) : null}
+      </div>
+      {template !== 0 && numberText && (
+        <span
+          style={{
+            position: "absolute",
+            top: `${L.numberTop + (L.numberCaptureOffsetY || 0)}px`,
+            left: "0px",
+            width: "390px",
+            textAlign: "center",
+            fontFamily: "BrunsonCanvas",
+            fontSize: `${L.numberFontSize}px`,
+            lineHeight: 1,
+            color: "#ffffff",
+            whiteSpace: "nowrap",
+            zIndex: 50,
+            textShadow:
+              "-1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000",
+          }}
+        >
+          {numberText}
+        </span>
+      )}
+    </>
+  );
+};
 export const FrontOneCapture = ({
   cardti,
   name,
@@ -681,74 +1036,53 @@ export const FrontOneCapture = ({
   iconOne,
   iconTwo,
   iconThree,
+  cardNumber,
+  topLeftIcon,
+  topRightIcon,
 }) => {
   const currentYear = new Date().getFullYear();
+  const isLg = useIsLg();
+  const pitch = isLg ? 42 : 40;
+  const lastRowTop = 476;
+
   return (
     <div style={{ position: "relative", width: "390px", height: "570px" }}>
       <AttrRowCapture
         icon={iconOne}
         text={name}
         value={labelone}
-        top={384}
-        left={40}
-        fillColor="#f56f41"
+        top={lastRowTop - pitch * 2}
       />
       <AttrRowCapture
         icon={iconTwo}
         text={name2}
         value={labeltwo}
-        top={426}
-        left={40}
-        fillColor="#f56f41"
+        top={lastRowTop - pitch}
       />
       <AttrRowCapture
         icon={iconThree}
         text={name3}
         value={labelthree}
-        top={468}
-        left={40}
-        fillColor="#f56f41"
+        top={lastRowTop}
       />
+      <CardHeaderCapture
+        template={0}
+        cardNumber={cardNumber}
+        topLeftIcon={topLeftIcon}
+        topRightIcon={topRightIcon}
+      />
+      <FrontOneTitleCapture cardti={cardti} acarddate={acarddate} isLg={isLg} />
 
-      <GradientTitleOne cardti={cardti} />
-
-      <span
-        style={{
-          position: "absolute",
-          top: "450px",
-          right: "45px",
-          width: "350px",
-          fontFamily: "CorsicaCanvas",
-          fontWeight: 600,
-          fontSize: "12px",
-          letterSpacing: "-0.02em",
-          lineHeight: 1.1,
-          color: "#f3f3f3",
-          textAlign: "right",
-          WebkitTextStroke: "2px black",
-          paintOrder: "stroke fill",
-          color: "#b8acac",
-        }}
-      >
-        {acarddate}
-      </span>
-
-      <span
-        style={{
-          position: "absolute",
-          top: "518px",
-          left: "0px",
-          width: "390px",
-          fontFamily: "BrunsonCanvas",
-          fontWeight: 100,
-          fontSize: "10px",
-          color: "#1f1f1f",
-          letterSpacing: "0.05em",
-          textAlign: "center",
-        }}
-      >
-        © {currentYear} MOMENTO TRADING CARDS
-      </span>
+      <InkCenteredTextCapture
+        text={`© ${currentYear} MOMENTO TRADING CARDS`}
+        cx={195}
+        cy={531.3}
+        w={260}
+        h={20}
+        font={`400 8px Arial, Helvetica, sans-serif`}
+        color="#1f1f1f"
+        letterSpacing={0.4}
+      />
     </div>
   );
 };
@@ -758,108 +1092,57 @@ export const FrontTwoCapture = ({
   name,
   name2,
   name3,
-  acarddate,
   labelone,
   labeltwo,
   labelthree,
   iconOne,
   iconTwo,
   iconThree,
+  cardNumber,
+  topLeftIcon,
+  topRightIcon,
 }) => {
   const currentYear = new Date().getFullYear();
-  const dateParts = acarddate.match(/^(.*?)\s+(OF\s+.*)$/i);
 
   return (
     <div style={{ position: "relative", width: "390px", height: "570px" }}>
+      <CardHeaderCapture
+        template={1}
+        cardNumber={cardNumber}
+        topLeftIcon={topLeftIcon}
+        topRightIcon={topRightIcon}
+      />
       <GradientTitle cardti={cardti} />
 
       <AttrRowCapture2
         icon={iconOne}
         text={name}
         value={labelone}
-        top={420}
-        left={50}
-        fillColor="#5ba2d8"
+        top={423.9}
       />
       <AttrRowCapture2
         icon={iconTwo}
         text={name2}
         value={labeltwo}
-        top={445}
-        left={50}
-        fillColor="#5ba2d8"
+        top={447.9}
       />
       <AttrRowCapture2
         icon={iconThree}
         text={name3}
         value={labelthree}
-        top={470}
-        left={50}
-        fillColor="#5ba2d8"
+        top={471.9}
       />
 
-      <div
-        style={{
-          position: "absolute",
-          top: "507px",
-          left: "0px",
-          width: "390px",
-          textAlign: "center",
-        }}
-      >
-        <svg width="390" height="40">
-          <defs>
-            <linearGradient id="dateGradient" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#c86363" />
-              <stop offset="25%" stopColor="#ff6b6b" />
-              <stop offset="55%" stopColor="#dc2626" />
-              <stop offset="100%" stopColor="#f02e2e" />
-            </linearGradient>
-          </defs>
-
-          <text
-            x="195"
-            y="20"
-            textAnchor="middle"
-            fontSize="16"
-            fontWeight="800"
-            fill="url(#dateGradient)"
-          >
-            <tspan x="195" dy="0">
-              {dateParts ? dateParts[1] : ""}
-            </tspan>
-
-            <tspan x="195" dy="18">
-              {dateParts ? dateParts[2] : acarddate}
-            </tspan>
-          </text>
-        </svg>
-      </div>
-
-      <span
-        style={{
-          position: "absolute",
-          bottom: "8px",
-          left: "50%",
-          transform: "translateX(-50%)",
-
-          fontFamily: "BrunsonFont",
-          fontWeight: 300,
-          fontSize: "8px",
-
-          color: "#1f1f1f",
-
-          letterSpacing: "0.1em",
-          textAlign: "center",
-          whiteSpace: "nowrap",
-
-          lineHeight: 1,
-
-          zIndex: 50,
-        }}
-      >
-        © {currentYear} MOMENTO TRADING CARDS
-      </span>
+      <InkCenteredTextCapture
+        text={`© ${currentYear} MOMENTO TRADING CARDS`}
+        cx={195}
+        cy={556.3}
+        w={260}
+        h={20}
+        font={`400 8px Arial, Helvetica, sans-serif`}
+        color="#1f1f1f"
+        letterSpacing={0.4}
+      />
     </div>
   );
 };
@@ -877,6 +1160,9 @@ export const FrontThreeCapture = ({
   iconTwo,
   iconThree,
   attributeName,
+  cardNumber,
+  topLeftIcon,
+  topRightIcon,
 }) => {
   const currentYear = new Date().getFullYear();
 
@@ -889,6 +1175,12 @@ export const FrontThreeCapture = ({
           left: "-30px",
         }}
       >
+        <CardHeaderCapture
+          template={2}
+          cardNumber={cardNumber}
+          topLeftIcon={topLeftIcon}
+          topRightIcon={topRightIcon}
+        />
         <GradientTitleThree cardti={cardti} offsetX={-6} />
       </div>
 
@@ -933,23 +1225,16 @@ export const FrontThreeCapture = ({
 
       <GradientBadgeThree acarddate={acarddate} />
 
-      <span
-        style={{
-          position: "absolute",
-          bottom: "6px",
-          left: "50%",
-          transform: "translateX(-50%)",
-          fontFamily: "DinBold",
-          fontWeight: 700,
-          fontSize: "8px",
-          color: "#1f1f1f",
-          letterSpacing: "0.05em",
-          textAlign: "center",
-          whiteSpace: "nowrap",
-        }}
-      >
-        © {currentYear} MOMENTO TRADING CARDS
-      </span>
+      <InkCenteredTextCapture
+        text={`© ${currentYear} MOMENTO TRADING CARDS`}
+        cx={195}
+        cy={558}
+        w={260}
+        h={20}
+        font={`600 8px DinBold`}
+        color="#1f1f1f"
+        letterSpacing={0.2}
+      />
     </div>
   );
 };

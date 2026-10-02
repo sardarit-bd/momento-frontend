@@ -1,4 +1,5 @@
 import CharactersCountComponent from "@/app/componnent/CharactersCountComponent";
+import { ICON_MAX_FILE_BYTES } from "@/utilis/helper/ImageIconProcess";
 import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 import {
@@ -9,7 +10,11 @@ import {
   BsSuitSpadeFill,
 } from "react-icons/bs";
 import { CiCirclePlus } from "react-icons/ci";
-import { TEMPLATE_MAP, attributeIconOptions } from "../constants";
+import {
+  TEMPLATE_MAP,
+  attributeIconOptions,
+  cardCornerIconOptions,
+} from "../constants";
 export default function TradingCardControls({
   isMobileDrawer = false,
   sidebarTab,
@@ -81,6 +86,14 @@ export default function TradingCardControls({
   setActiveIconPicker,
   getSliderTrackStyle,
   renderIconPreview,
+  cardNumber,
+  setCardNumber,
+  topLeftIcon,
+  setTopLeftIcon,
+  topRightIcon,
+  setTopRightIcon,
+  handleTopLeftIconUpload,
+  handleTopRightIconUpload,
   savedSlots,
   handleNext,
   spinloading,
@@ -169,6 +182,14 @@ export default function TradingCardControls({
             setActiveIconPicker={setActiveIconPicker}
             getSliderTrackStyle={getSliderTrackStyle}
             renderIconPreview={renderIconPreview}
+            cardNumber={cardNumber}
+            setCardNumber={setCardNumber}
+            topLeftIcon={topLeftIcon}
+            setTopLeftIcon={setTopLeftIcon}
+            topRightIcon={topRightIcon}
+            setTopRightIcon={setTopRightIcon}
+            handleTopLeftIconUpload={handleTopLeftIconUpload}
+            handleTopRightIconUpload={handleTopRightIconUpload}
           />
         </div>
       </div>
@@ -302,6 +323,14 @@ export default function TradingCardControls({
             setActiveIconPicker={setActiveIconPicker}
             getSliderTrackStyle={getSliderTrackStyle}
             renderIconPreview={renderIconPreview}
+            cardNumber={cardNumber}
+            setCardNumber={setCardNumber}
+            topLeftIcon={topLeftIcon}
+            setTopLeftIcon={setTopLeftIcon}
+            topRightIcon={topRightIcon}
+            setTopRightIcon={setTopRightIcon}
+            handleTopLeftIconUpload={handleTopLeftIconUpload}
+            handleTopRightIconUpload={handleTopRightIconUpload}
           />
         </div>
       </div>
@@ -407,9 +436,32 @@ function PanelContent({
   selectedTemplate,
   getSliderTrackStyle,
   renderIconPreview,
+  cardNumber,
+  setCardNumber,
+  topLeftIcon,
+  setTopLeftIcon,
+  topRightIcon,
+  setTopRightIcon,
+  handleTopLeftIconUpload,
+  handleTopRightIconUpload,
 }) {
+  console.log("PanelContent setCardNumber:", typeof setCardNumber);
   return (
     <>
+      <input
+        id="topLeftIconInput"
+        type="file"
+        accept="image/png,image/jpeg,image/webp"
+        className="hidden"
+        onChange={handleTopLeftIconUpload}
+      />
+      <input
+        id="topRightIconInput"
+        type="file"
+        accept="image/png,image/jpeg,image/webp"
+        className="hidden"
+        onChange={handleTopRightIconUpload}
+      />
       {sidebarTab === "front" && (
         <div className="rounded-2xl border border-slate-200 bg-linear-to-b from-slate-50 to-white p-2.5 shadow-sm">
           <div className="mb-2 flex items-center justify-between gap-2">
@@ -720,7 +772,6 @@ function PanelContent({
                 className="h-14 w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-slate-700 outline-none transition-all duration-200 focus:border-sky-300 focus:ring-2 focus:ring-sky-100"
               />
             </div>
-
           </div>
           <div className="border border-gray-200 p-4 md:p-5 mb-4 rounded-xl bg-white shadow-sm ring-1 ring-gray-100">
             <label className="block text-xl text-gray-700 mb-3 mt-4 font-semibold">
@@ -747,7 +798,41 @@ function PanelContent({
               </div>
             </div>
           </div>
-
+          <div>
+            <label className="mb-2 flex items-center justify-between text-sm font-medium text-slate-700">
+              <span>Card Number</span>
+              <CharactersCountComponent
+                text={String(cardNumber ?? "").replace(/\D/g, "")}
+                limit={3}
+              />
+            </label>
+            <input
+              value={String(cardNumber ?? "").replace(/\D/g, "")}
+              maxLength={3}
+              inputMode="numeric"
+              pattern="[0-9]*"
+              onChange={(e) => setCardNumber(e.target.value.replace(/\D/g, ""))}
+              type="text"
+              placeholder="01"
+              className="border border-slate-200 px-3 py-2 rounded-lg text-slate-700 outline-none w-full transition-all duration-200 focus:border-sky-300 focus:ring-2 focus:ring-sky-100"
+            />
+          </div>
+          <CornerIconSelect
+            label="Top-Left Icon"
+            pickerKey="topLeft"
+            value={topLeftIcon}
+            onChange={setTopLeftIcon}
+            activeIconPicker={activeIconPicker}
+            setActiveIconPicker={setActiveIconPicker}
+          />
+          <CornerIconSelect
+            label="Top-Right Icon"
+            pickerKey="topRight"
+            value={topRightIcon}
+            onChange={setTopRightIcon}
+            activeIconPicker={activeIconPicker}
+            setActiveIconPicker={setActiveIconPicker}
+          />
           {selectedTemplate === "3" && (
             <div className="border border-gray-200 p-4 md:p-5 mb-4 rounded-xl bg-white shadow-sm ring-1 ring-gray-100">
               <label className="block text-xl text-gray-700 mb-3 mt-4 font-semibold">
@@ -966,5 +1051,110 @@ function PanelContent({
         </div>
       )}
     </>
+  );
+}
+function IconUploadField({ label, inputId, value, onChange, onRemove }) {
+  return (
+    <div>
+      <label className="mb-2 block text-sm font-medium text-slate-700">
+        {label}
+      </label>
+      <div className="flex items-center gap-3">
+        <label
+          htmlFor={inputId}
+          className="flex h-14 w-14 shrink-0 cursor-pointer items-center justify-center overflow-hidden rounded-lg border-2 border-slate-300 bg-slate-50 transition-all duration-200 hover:border-sky-400"
+        >
+          {value ? (
+            <img
+              src={value}
+              alt={label}
+              className="h-full w-full object-cover"
+            />
+          ) : (
+            <CiCirclePlus className="text-3xl text-sky-400" />
+          )}
+        </label>
+        <div className="flex-1 text-xs text-slate-500">
+          PNG, JPG or WEBP. Max {Math.round(ICON_MAX_FILE_BYTES / 1024)} KB.
+        </div>
+        {value && (
+          <button
+            type="button"
+            onClick={onRemove}
+            className="rounded-lg border border-slate-300 px-2 py-1 text-xs text-slate-600 hover:bg-slate-100"
+          >
+            Remove
+          </button>
+        )}
+        {/* <input
+          id={inputId}
+          type="file"
+          accept="image/png,image/jpeg,image/webp"
+          className="hidden"
+          onChange={onChange}
+        /> */}
+      </div>
+    </div>
+  );
+}
+function CornerIconSelect({
+  label,
+  pickerKey,
+  value,
+  onChange,
+  activeIconPicker,
+  setActiveIconPicker,
+}) {
+  const isOpen = activeIconPicker === pickerKey;
+  const selected = cardCornerIconOptions.find((o) => o.value === value);
+  const pick = (next) => {
+    onChange(next);
+    setActiveIconPicker(null);
+  };
+
+  return (
+    <div className="relative">
+      <label className="mb-2 block text-sm font-medium text-slate-700">
+        {label}
+      </label>
+      <button
+        type="button"
+        onClick={() =>
+          setActiveIconPicker((prev) => (prev === pickerKey ? null : pickerKey))
+        }
+        className="flex h-11 w-full items-center gap-3 rounded-lg border border-slate-200 bg-white px-3 text-left text-slate-700 transition-all duration-200 hover:border-sky-300"
+      >
+        {value ? (
+          <img
+            src={value}
+            alt={selected?.label || label}
+            className="h-7 w-7 object-contain"
+          />
+        ) : (
+          <span className="h-7 w-7 rounded-full border border-dashed border-slate-300" />
+        )}
+        <span className="flex-1 truncate text-sm">
+          {selected ? selected.label : "Select icon"}
+        </span>
+        <span className="text-xs text-slate-400">▾</span>
+      </button>
+      {isOpen && (
+        <div className="absolute left-0 right-0 z-30 mt-1 max-h-64 overflow-y-auto rounded-xl border border-slate-200 bg-white p-1 shadow-xl">
+          {cardCornerIconOptions.map((opt) => (
+            <button
+              key={opt.value}
+              type="button"
+              onClick={() => pick(opt.value)}
+              className={`flex w-full items-center gap-3 rounded-lg px-2 py-1.5 text-left text-sm text-slate-700 hover:bg-slate-100 ${
+                opt.value === value ? "bg-sky-50" : ""
+              }`}
+            >
+              <img src={opt.value} alt="" className="h-7 w-7 object-contain" />
+              {opt.label}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
   );
 }

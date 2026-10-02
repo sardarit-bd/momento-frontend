@@ -68,6 +68,11 @@
   src: url("/font/Hermona.otf");
   font-weight: 400;
 }
+@font-face {
+  font-family: "AkiraCanvas";
+  src: url("/font/Akira-Super-Bold.otf");
+  font-weight: 400;
+}
 
 .HermonaFont {
   font-family: "Hermona" !important;

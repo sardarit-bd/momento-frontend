@@ -132,7 +132,7 @@ const Three = () => {
           alt={`img-${idx}`}
           width={80}
           height={80}
-          className="rounded-md border h-[60px] w-[60px] sm:w-[80px] sm:h-[80px] object-cover"
+          className="rounded-md border h-15 w-15 sm:w-20 sm:h-20 object-cover"
         />
       ))}
     </div>
@@ -147,8 +147,7 @@ const Three = () => {
 
   return (
     <div className="px-4 pb-10">
-      {/* ── Header ── */}
-      <div className="flex flex-col gap-2 sticky top-0 md:top-[70px] z-30 bg-white border-b border-gray-100 shadow-sm px-0 py-3 mb-6">
+      <div className="flex flex-col gap-2 sticky top-0 md:top-17.5z-30 bg-white border-b border-gray-100 shadow-sm px-0 py-3 mb-6">
         <span className="text-lg font-bold text-gray-800">Product Preview</span>
         <div className="flex items-center gap-2">
           <button
@@ -168,9 +167,7 @@ const Three = () => {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        {/* ── Details ── */}
         <div className="col-span-1 md:col-span-3 space-y-4">
-          {/* Thumbnail on mobile */}
           <div className="block md:hidden">
             <Section title="Thumbnail">
               {productThumbnail ? (
@@ -179,7 +176,7 @@ const Three = () => {
                   alt="Thumbnail"
                   width={1000}
                   height={1000}
-                  className="w-full rounded-lg object-cover max-h-[220px]"
+                  className="w-full rounded-lg object-cover max-h-55"
                 />
               ) : (
                 <p className="text-gray-400 text-sm">No Thumbnail</p>
@@ -208,7 +205,7 @@ const Three = () => {
                 key={label}
                 className="flex flex-col sm:flex-row sm:gap-2 py-1 border-b border-gray-50 last:border-0"
               >
-                <span className="font-semibold text-gray-700 text-sm min-w-[130px]">
+                <span className="font-semibold text-gray-700 text-sm min-w-32.5">
                   {label}:
                 </span>
                 <span className="text-gray-600 text-sm">{value ?? "—"}</span>
@@ -278,9 +275,8 @@ const Three = () => {
           )}
         </div>
 
-        {/* ── Thumbnail desktop ── */}
         <div className="hidden md:block col-span-1">
-          <div className="sticky top-[140px]">
+          <div className="sticky top-35">
             <Section title="Thumbnail">
               {productThumbnail ? (
                 <Image

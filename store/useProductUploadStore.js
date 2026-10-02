@@ -28,8 +28,6 @@ const useProductUploadStore = create((set) => ({
   setproductSingleImage: (product) => set({ productSingleImage: product }),
   productImages: [],
   setproductImages: (product) => set({ productImages: product }),
-
-  //customizable product layear
   layerBaseCard: [],
   setlayerBaseCard: (product) => set({ layerBaseCard: product }),
   layerSkinTone: [],

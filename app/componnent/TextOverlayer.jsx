@@ -1,3 +1,7 @@
+import {
+  formatCardNumber,
+  getHeaderLayout,
+} from "@/app/componnent/cardHeaderLayout";
 const getTitleSizeStep = (text = "", largeMax = 8, mediumMax = 14) => {
   const len = text.length;
   if (len <= largeMax) return "large";
@@ -30,7 +34,109 @@ const AttributeLabel = ({ icon, text, className = "" }) => (
     <span style={{ lineHeight: 1, display: "block" }}>{text}</span>
   </div>
 );
+export const CardHeader = ({
+  template = 0,
+  cardNumber,
+  topLeftIcon,
+  topRightIcon,
+}) => {
+  const L = getHeaderLayout(template);
+  const numberText = formatCardNumber(cardNumber);
+  const radius =
+    typeof L.iconRadius === "number" ? `${L.iconRadius}px` : L.iconRadius;
 
+  let frameStyle = {
+    position: "absolute",
+    width: `${L.iconSize}px`,
+    height: `${L.iconSize}px`,
+    boxSizing: "border-box",
+    borderRadius: radius,
+    overflow: "hidden",
+    backgroundColor: L.iconBg,
+    zIndex: 50,
+  };
+
+  if (L.drawFrame) {
+    frameStyle.border = `${L.frameWidth}px solid ${L.frameColor}`;
+    frameStyle.boxShadow = "0 0 0 1px rgba(0,0,0,0.6)";
+  }
+
+  const imgStyle = {
+    width: "100%",
+    height: "100%",
+    objectFit: "cover",
+    display: "block",
+    pointerEvents: "none",
+  };
+
+  return (
+    <>
+      {template === 0 && numberText && (
+        <div
+          className="GustanBlackFont"
+          style={{
+            position: "absolute",
+            top: `${L.numberPillTop}px`,
+            left: `${L.numberPillLeft}px`,
+            width: `${L.numberPillWidth}px`,
+            height: `${L.numberPillHeight}px`,
+            lineHeight: `${L.numberPillHeight}px`,
+            textAlign: "center",
+            fontSize: `${L.numberPillFontSize}px`,
+            fontWeight: 900,
+            color: L.numberPillColor,
+            letterSpacing: "0.5px",
+            whiteSpace: "nowrap",
+            zIndex: 60,
+          }}
+        >
+          {numberText}
+        </div>
+      )}
+      <div
+        style={{
+          ...frameStyle,
+          top: `${L.leftIconTop ?? L.iconTop}px`,
+          left: `${L.leftIconSide ?? L.iconSideOffset}px`,
+        }}
+      >
+        {topLeftIcon ? <img src={topLeftIcon} alt="" style={imgStyle} /> : null}
+      </div>
+      <div
+        style={{
+          ...frameStyle,
+          top: `${L.rightIconTop ?? L.iconTop}px`,
+          right: `${L.rightIconSide ?? L.iconSideOffset}px`,
+        }}
+      >
+        {topRightIcon ? (
+          <img src={topRightIcon} alt="" style={imgStyle} />
+        ) : null}
+      </div>
+      {template !== 0 && numberText && (
+        <span
+          className="BrunsonFont"
+          style={{
+            position: "absolute",
+            top: `${L.numberTop}px`,
+            left: 0,
+            width: "100%",
+            textAlign: "center",
+            fontSize: `${L.numberFontSize}px`,
+            lineHeight: 1,
+            color: "#ffffff",
+            whiteSpace: "nowrap",
+            zIndex: 50,
+            textShadow:
+              "-1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000",
+          }}
+        >
+          {numberText}
+        </span>
+      )}
+    </>
+  );
+};
 const getTitleFontSize = (text = "") => {
   const len = text.length;
   if (len <= 8) return "1.75rem";
@@ -70,7 +176,7 @@ const AttributeMetric = ({
   id,
 }) => {
   // Enforce max 12 character limit for id="metric-row-1"
-  const displayText = String(text || "").slice(0, 12) 
+  const displayText = String(text || "").slice(0, 12);
 
   return (
     <div
@@ -125,7 +231,7 @@ const AttributeMetric = ({
             fontWeight: 900,
             fontSize: "13px",
             display: "block",
-            overflow: "hidden", 
+            overflow: "hidden",
             textOverflow: "ellipsis",
             whiteSpace: "nowrap",
             paddingBottom: "0px",
@@ -186,7 +292,7 @@ const AttributeMetricHorizontal = ({
   id,
 }) => {
   // Enforce max 12 character limit for id="metric-row-1"
-  const displayText =  String(text || "").slice(0, 12) 
+  const displayText = String(text || "").slice(0, 12);
 
   return (
     <div
@@ -279,7 +385,8 @@ const AttributeMetricHorizontal2 = ({
   id,
 }) => {
   // Enforce max 12 character limit for id="metric-row-1"
-  const displayText = id === "metric-row-1" ? String(text || "").slice(0, 12) : text;
+  const displayText =
+    id === "metric-row-1" ? String(text || "").slice(0, 12) : text;
 
   return (
     <div
@@ -371,6 +478,9 @@ export const FrontOne = ({
   iconOne,
   iconTwo,
   iconThree,
+  cardNumber,
+  topLeftIcon,
+  topRightIcon,
 }) => {
   const currentYear = new Date().getFullYear();
   function getTitleFontSize(text = "") {
@@ -481,7 +591,12 @@ export const FrontOne = ({
           {acarddate}
         </span>
       </div>
-
+      <CardHeader
+        template={0}
+        cardNumber={cardNumber}
+        topLeftIcon={topLeftIcon}
+        topRightIcon={topRightIcon}
+      />
       <span className="absolute bottom-8.25 left-1/2 -translate-x-1/2 z-50 text-[8px] lg:text-[8px] text-[#1f1f1f] CorsicaCanvas tracking-wider text-center whitespace-nowrap">
         &copy; {currentYear} MOMENTO TRADING CARDS
       </span>
@@ -501,6 +616,9 @@ export const FrontTwo = ({
   iconOne,
   iconTwo,
   iconThree,
+  cardNumber,
+  topLeftIcon,
+  topRightIcon,
 }) => {
   const dateParts = acarddate.match(/^(.*?)\s+(OF\s+.*)$/i);
   const currentYear = new Date().getFullYear();
@@ -509,6 +627,38 @@ export const FrontTwo = ({
       className="w-full h-full relative"
       style={{ backgroundColor: "transparent" }}
     >
+      <span
+        id="card-title"
+        className="BrunsonFont"
+        style={{
+          position: "absolute",
+          left: 0,
+          top: "360px",
+          width: "100%",
+          height: "50px",
+          lineHeight: "50px",
+          textAlign: "center",
+          whiteSpace: "nowrap",
+          overflow: "hidden",
+          zIndex: 50,
+          color: "transparent",
+          WebkitBackgroundClip: "text",
+          backgroundClip: "text",
+          backgroundImage:
+            "linear-gradient(180deg,#3a3a3a 0%,#787878 30%,#ffffff 50%,#787878 70%,#3a3a3a 100%)",
+          WebkitTextStroke: "0.7px black",
+          paintOrder: "stroke fill",
+          fontSize:
+            getTitleSizeStep(cardti) === "large"
+              ? "35px"
+              : getTitleSizeStep(cardti) === "medium"
+                ? "26px"
+                : "19px",
+        }}
+      >
+        {cardti}
+      </span>
+
       <div
         className="absolute bottom-[13%] z-50"
         style={{
@@ -545,7 +695,12 @@ export const FrontTwo = ({
           textClass="text-[11px] lg:text-[12px] AkiraFont tracking-wider"
         />
       </div>
-
+      <CardHeader
+        template={1}
+        cardNumber={cardNumber}
+        topLeftIcon={topLeftIcon}
+        topRightIcon={topRightIcon}
+      />
       <span className="absolute bottom-2 left-1/2 -translate-x-1/2 z-50 text-[8px] lg:text-[8px] text-[#1f1f1f] BrunsonCanvas tracking-wider text-center whitespace-nowrap">
         &copy; {currentYear} MOMENTO TRADING CARDS
       </span>
@@ -566,6 +721,9 @@ export const FrontThree = ({
   iconTwo,
   iconThree,
   attributeName,
+  cardNumber,
+  topLeftIcon,
+  topRightIcon,
 }) => {
   const currentYear = new Date().getFullYear();
   const dateLine1 = acarddate.length > 6 ? acarddate.slice(0, 6) : acarddate;
@@ -653,7 +811,12 @@ export const FrontThree = ({
           </span>
         </div>
       </div>
-
+      <CardHeader
+        template={2}
+        cardNumber={cardNumber}
+        topLeftIcon={topLeftIcon}
+        topRightIcon={topRightIcon}
+      />
       <span
         className="absolute bottom-1.5 left-1/2 -translate-x-1/2 z-50 text-[0.5rem] text-[#1f1f1f] font-semibold tracking-wide text-center whitespace-nowrap BrunsonFont"
         style={{ fontFamily: "DinBold" }}

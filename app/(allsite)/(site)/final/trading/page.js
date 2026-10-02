@@ -7,10 +7,9 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { BiLeftArrowAlt } from "react-icons/bi";
-import { FaBoxOpen, FaEdit } from "react-icons/fa";
+import { FaBoxOpen } from "react-icons/fa";
 import { IoCartOutline } from "react-icons/io5";
 import { toast } from "react-toastify";
-import { useTradingCardState } from "../../../(application)/application/tradingcard/[slug]/_tradingcard/hooks/useTradingCardState";
 const PACKAGE_LABELS = {
   single: { name: "Single", subtitle: "1 design · 18 copies", icon: "🎴" },
   trio: { name: "Trio", subtitle: "3 designs · 6 each", icon: "🎴🎴" },
@@ -94,7 +93,7 @@ const FinalCardsPage = () => {
   return (
     <div className="min-h-screen bg-linear-to-br from-slate-50 via-white to-sky-50">
       <header className="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-slate-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16 md:h-20">
             <button
               onClick={() => router.back()}
@@ -131,9 +130,6 @@ const FinalCardsPage = () => {
         <div className="mb-8 rounded-3xl bg-white border border-slate-200 shadow-sm overflow-hidden">
           <div className="p-6 md:p-8">
             <div className="flex items-start gap-3 mb-6">
-              {/* <div className="w-12 h-12 rounded-2xl bg-linear-to-br from-sky-500 to-sky-600 flex items-center justify-center text-2xl shadow-lg shadow-sky-200">
-                {packageInfo.icon}
-              </div> */}
               <div className="flex-1">
                 <p className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">
                   Package
@@ -146,38 +142,12 @@ const FinalCardsPage = () => {
                 </p>
               </div>
             </div>
-
-            {/* <div className="rounded-2xl bg-linear-to-r from-slate-50 to-slate-100 border border-slate-200 p-5">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">
-                    Package Title
-                  </p>
-                  <p className="text-lg font-semibold text-slate-800">
-                    {packageTitle || (
-                      <span className="text-slate-400 italic">Not set</span>
-                    )}
-                  </p>
-                </div>
-                <button
-                  onClick={() => {
-                    state.setcarddes(packageTitle);
-                    setShowTitleModal(true);
-                  }}
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white border border-slate-200 text-sky-600 font-semibold text-sm  hover:shadow-md transition-all duration-200"
-                >
-                  <FaEdit className="text-sm" />
-                  Edit
-                </button>
-              </div>
-            </div> */}
           </div>
         </div>
 
         {frontCards.length > 0 && (
           <div className="mb-10">
             <h3 className="text-lg font-bold text-slate-800 mb-5 flex items-center gap-2">
-              {/* <FaImage className="text-sky-500" /> */}
               Your Customized Cards
             </h3>
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
@@ -185,7 +155,7 @@ const FinalCardsPage = () => {
                 card.image ? (
                   <div
                     key={card.card_pair_key || idx}
-                    className="group relative aspect-3/4 rounded-2xl overflow-hidden border-2 border-slate-200 bg-white shadow-md hover:shadow-xl hover:border-sky-300 transition-all duration-300 hover:-translate-y-1"
+                    className="group relative aspect-13/19 rounded-2xl overflow-hidden border-2 border-slate-200 bg-white shadow-md hover:shadow-xl hover:border-sky-300 transition-all duration-300 hover:-translate-y-1"
                   >
                     <Image
                       src={card.image}
@@ -205,7 +175,6 @@ const FinalCardsPage = () => {
           <div className="rounded-3xl bg-white border border-slate-200 shadow-sm overflow-hidden">
             <div className="p-6 md:p-8 border-b border-slate-100">
               <h3 className="text-lg font-bold text-slate-800 flex items-center gap-2">
-                {/* <FaBoxOpen className="text-sky-500" /> */}
                 Packaging Preview
               </h3>
               <p className="text-sm text-slate-500 mt-1">
@@ -214,7 +183,7 @@ const FinalCardsPage = () => {
             </div>
             <div className="p-6 md:p-8 bg-linear-to-br from-slate-50 to-white">
               <div className="flex items-center justify-center">
-                <div className="relative w-full max-w-2xl rounded-2xl overflow-hidden border-2 border-slate-200 shadow-lg">
+                <div className="relative w-full max-w-3xl rounded-2xl overflow-hidden border-2 border-slate-200 shadow-lg">
                   <Image
                     src={tradingBoxImage}
                     alt="Trading card box packaging"
@@ -239,64 +208,6 @@ const FinalCardsPage = () => {
           </div>
         )}
       </main>
-
-      {/* {showTitleModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-          <div className="w-full max-w-md rounded-3xl bg-white shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
-            <div className="bg-linear-to-r from-sky-500 to-sky-600 p-6">
-              <h3 className="text-2xl font-bold text-white">
-                Name Your Package
-              </h3>
-              <p className="text-sky-100 text-sm mt-2">
-                This title will appear on your packaging and help you remember
-                what&apos;s inside.
-              </p>
-            </div>
-
-            <div className="p-6 flex flex-col gap-5">
-              <div>
-                <label>Recipient Name</label>
-                <input
-                  autoFocus
-                  value={titleDraft}
-                  onChange={(e) => setTitleDraft(e.target.value)}
-                  maxLength={30}
-                  placeholder="e.g., Birthday Memories, Family Reunion..."
-                  className="w-full h-14 rounded-xl border-2 border-slate-200 bg-slate-50 px-5 text-slate-800 placeholder-slate-400 outline-none focus:border-sky-400 focus:bg-white focus:ring-4 focus:ring-sky-100 transition-all text-base font-medium"
-                />
-              </div>
-
-              <div>
-                <label>sadfas</label>
-                <input
-                  autoFocus
-                  value={titleDraft}
-                  onChange={(e) => setTitleDraft(e.target.value)}
-                  maxLength={30}
-                  placeholder="e.g., Birthday Memories, Family Reunion..."
-                  className="w-full h-14 rounded-xl border-2 border-slate-200 bg-slate-50 px-5 text-slate-800 placeholder-slate-400 outline-none focus:border-sky-400 focus:bg-white focus:ring-4 focus:ring-sky-100 transition-all text-base font-medium"
-                />
-              </div>
-              <div className="flex justify-end gap-3 mt-6">
-                {packageTitle.trim() && (
-                  <button
-                    onClick={() => setShowTitleModal(false)}
-                    className="px-5 py-3 rounded-xl font-semibold text-slate-600 hover:bg-slate-100 transition-colors"
-                  >
-                    Cancel
-                  </button>
-                )}
-                <button
-                  onClick={saveTitle}
-                  className="px-6 py-3 rounded-xl bg-linear-to-r from-sky-500 to-sky-600 text-white font-semibold shadow-lg shadow-sky-200 hover:shadow-xl hover:shadow-sky-300 hover:scale-105 transition-all duration-200"
-                >
-                  Save Title
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )} */}
     </div>
   );
 };

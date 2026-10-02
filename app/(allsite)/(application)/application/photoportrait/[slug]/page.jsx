@@ -183,9 +183,7 @@ const ProductCustomizer = () => {
         toast.error("There was a server side Problem");
         return;
       }
-
       setProduct(res?.data);
-
       const savedCards =
         localStorage.getItem(customCardsStorageKey) ||
         localStorage.getItem("photoCustomCards");
@@ -289,7 +287,6 @@ const ProductCustomizer = () => {
 
       const customSets = res?.data?.customizations?.custom_sets || [];
       const baseCards = res?.data?.customizations?.base_cards || [];
-
       const baseForFirstStep =
         customSets.find(
           (item) => getCanonicalCardType(item?.card_type) === CARD_FLOW[0],
@@ -297,16 +294,13 @@ const ProductCustomizer = () => {
         baseCards.find(
           (item) => getCanonicalCardType(item?.card_type) === CARD_FLOW[0],
         )?.image;
-
       const fallbackBase = customSets[0]?.image || baseCards[0]?.image;
-
       const initialLayers = {};
       layers.forEach((layer) => {
         if (layer === "beards") return;
         const items = res?.data?.customizations?.[layer];
         if (items?.length > 0) initialLayers[layer] = items[0]?.image;
       });
-
       const firstBaseCard = baseCards.find(
         (item) => getCanonicalCardType(item?.card_type) === CARD_FLOW[0],
       );
@@ -419,7 +413,6 @@ const ProductCustomizer = () => {
   const selectBaseImage = (url, type, slotName = null) => {
     const indexAtClick = activeCardIndex;
     const currentCard = cards[indexAtClick];
-
     if (currentCard?.editedCard === type) {
       setCards((prev) =>
         prev.map((card, i) =>
@@ -504,15 +497,12 @@ const ProductCustomizer = () => {
   const removeCard = (index) => {
     if (cards.length <= 1) return;
     if (cards[index]?.editedCard === CARD_FLOW[0]) return;
-
     const updatedCards = cards.filter((_, i) => i !== index);
     setCards(updatedCards);
-
     let nextActiveIndex = activeCardIndex;
     if (index < activeCardIndex) nextActiveIndex = activeCardIndex - 1;
     if (index === activeCardIndex)
       nextActiveIndex = Math.min(activeCardIndex, updatedCards.length - 1);
-
     setActiveCardIndex(nextActiveIndex);
     const nextEdited = updatedCards[nextActiveIndex]?.editedCard;
     if (nextEdited) seteditedCard(nextEdited);
@@ -523,7 +513,6 @@ const ProductCustomizer = () => {
     canvas.width = 750;
     canvas.height = 1050;
     const ctx = canvas.getContext("2d");
-
     const loadImage = (src) =>
       new Promise((resolve, reject) => {
         const img = new Image();
@@ -541,7 +530,6 @@ const ProductCustomizer = () => {
     if (card.userPhoto) {
       const img = await loadImage(card.userPhoto);
       const isJoker = card.editedCard === "Joker_Card";
-
       if (isJoker) {
         const { x: boxX, y: boxY, w: boxW, h: boxH } = JOKER_SLOT_RECT;
         const zoom = card.userPhotoZoom || 1;
@@ -591,7 +579,6 @@ const ProductCustomizer = () => {
         });
         ctx.closePath();
         ctx.clip();
-
         const zoom = card.userPhotoZoom || 1;
         const offset = card.userPhotoOffset || { x: 0, y: 0 };
         const ratio = Math.max(boxW / img.width, boxH / img.height);
@@ -754,9 +741,7 @@ const ProductCustomizer = () => {
       name: card.slotName ?? null,
       character_image: characterOnlyImages[i] ?? null,
     }));
-
     clearCart();
-
     let resolvedBoxImages = passedBoxImages || [];
     try {
       const captured = boxPreviewRef.current?.captureResolvedRects?.() ?? [];

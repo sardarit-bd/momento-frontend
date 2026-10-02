@@ -1,5 +1,6 @@
 import useCartStore from "@/store/useCartStore";
 import useboxcartstore from "@/store/useboxcartstore";
+import processIconFile from "@/utilis/helper/ImageIconProcess";
 import ImageResize from "@/utilis/helper/ImageResize";
 import captureNodeClean from "@/utilis/helper/captureNodeClean";
 import captureNodeScreenshotForTranding from "@/utilis/helper/captureNodeScreenshotForTranding";
@@ -9,7 +10,9 @@ import Image from "next/image";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
+
 import {
+  DEFAULT_CORNER_ICON,
   defaultBackHighlights,
   PACKAGE_CONFIG,
   TEMPLATE_MAP,
@@ -191,7 +194,9 @@ export function useTradingCardState() {
   const [name3limite, setname3limite] = useState(15);
   const [acarddatelimite, setacarddatelimite] = useState(15);
   const [isblack, setisblack] = useState(false);
-
+  const [cardNumber, setCardNumber] = useState("#01");
+  const [topLeftIcon, setTopLeftIcon] = useState(DEFAULT_CORNER_ICON);
+  const [topRightIcon, setTopRightIcon] = useState(DEFAULT_CORNER_ICON);
   const getBaseTrading = useCallback(
     async (slug) => {
       const persistedCarddes =
@@ -226,6 +231,9 @@ export function useTradingCardState() {
             setTexts(Array.isArray(saved?.texts) ? saved.texts : []);
             setworkingcard(saved?.workingcard || "front");
             setisblack(Boolean(saved?.isblack));
+            setCardNumber(saved?.content?.cardNumber ?? "#01");
+            setTopLeftIcon(s.topLeftIcon ?? DEFAULT_CORNER_ICON);
+            setTopRightIcon(s.topRightIcon ?? DEFAULT_CORNER_ICON);
             setcardti(saved?.content?.cardti ?? "Title");
             setname(saved?.content?.name ?? "Attribute 1");
             setname2(saved?.content?.name2 ?? "Attribute 2");
@@ -325,6 +333,9 @@ export function useTradingCardState() {
                 s.attrIconThree ?? "/attribute-images/attribute_4.png",
               );
               setisblack(Boolean(s.isblack));
+              setCardNumber(s.cardNumber ?? "#01");
+              setTopLeftIcon(s.topLeftIcon ?? null);
+              setTopRightIcon(s.topRightIcon ?? null);
               setcardfinder(
                 apiFronts?.findIndex((img) => img.image === s.baseFront) ?? 0,
               );
@@ -456,6 +467,9 @@ export function useTradingCardState() {
         cardti,
         carddes,
         packageTitle,
+        cardNumber,
+        topLeftIcon,
+        topRightIcon,
         name,
         name2,
         name3,
@@ -509,6 +523,9 @@ export function useTradingCardState() {
     backLegacyTagline,
     backLegacyText,
     selectedPackage,
+    cardNumber,
+    topLeftIcon,
+    topRightIcon,
   ]);
 
   useEffect(() => {
@@ -519,7 +536,14 @@ export function useTradingCardState() {
 
   async function handleUpload(e) {
     const f = e.target.files?.[0];
-    const file = await ImageResize(f);
+    if (!f) return;
+    let file;
+    try {
+      file = await ImageResize(f);
+    } catch (err) {
+      console.warn("Photo upload rejected:", err?.message);
+      return;
+    }
     if (!file) return;
     const url = await new Promise((resolve, reject) => {
       const reader = new FileReader();
@@ -748,6 +772,9 @@ export function useTradingCardState() {
       setAttrIconTwo("/attribute-images/attribute_3.png");
       setAttrIconThree("/attribute-images/attribute_4.png");
       setisblack(false);
+      setCardNumber("#01");
+      setTopLeftIcon(DEFAULT_CORNER_ICON);
+      setTopRightIcon(DEFAULT_CORNER_ICON);
       setcardfinder(templateConfig?.cardfinder ?? 0);
     },
     [frontImages, templateConfig],
@@ -800,6 +827,9 @@ export function useTradingCardState() {
 
       const snapshot = {
         baseFront,
+        cardNumber,
+        topLeftIcon,
+        topRightIcon,
         uploads,
         texts,
         cardfinder,
@@ -889,6 +919,9 @@ export function useTradingCardState() {
         content: {
           cardti,
           carddes,
+          cardNumber,
+          topLeftIcon,
+          topRightIcon,
           name,
           name2,
           name3,
@@ -956,6 +989,9 @@ export function useTradingCardState() {
     setAttrIconThree(s.attrIconThree ?? "/attribute-images/attribute_4.png");
     setisblack(Boolean(s.isblack));
     setAttributeName(s.attributeName ?? "");
+    setCardNumber(s.cardNumber ?? "#01");
+    setTopLeftIcon(s.topLeftIcon ?? null);
+    setTopRightIcon(s.topRightIcon ?? null);
     setBackDate(s.backDate ?? "");
     setBackDescription(s.backDescription ?? "");
     setBackHighlightsTitle(s.backHighlightsTitle ?? "Highlights");
@@ -999,7 +1035,19 @@ export function useTradingCardState() {
       setSidebarTab("back");
     }
   };
-
+  async function handleIconUpload(e, setter) {
+    const f = e.target.files?.[0];
+    e.target.value = "";
+    if (!f) return;
+    try {
+      const url = await processIconFile(f);
+      setter(url);
+    } catch (err) {
+      toast.error(err?.message || "Could not use this image.");
+    }
+  }
+  const handleTopLeftIconUpload = (e) => handleIconUpload(e, setTopLeftIcon);
+  const handleTopRightIconUpload = (e) => handleIconUpload(e, setTopRightIcon);
   const renderIconPreview = (iconValue, altText) => {
     if (
       typeof iconValue === "string" &&
@@ -1187,6 +1235,14 @@ export function useTradingCardState() {
     handleEditSlot,
     handleDeleteSlot,
     handleUpload,
+    cardNumber,
+    setCardNumber,
+    topLeftIcon,
+    setTopLeftIcon,
+    topRightIcon,
+    setTopRightIcon,
+    handleTopLeftIconUpload,
+    handleTopRightIconUpload,
     updateUploadPosition,
     updateUploadSize,
     updateUploadScale,

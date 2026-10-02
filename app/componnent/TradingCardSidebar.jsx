@@ -1,10 +1,7 @@
-import { BsCheckCircleFill } from "react-icons/bs";
-import { CiCirclePlus } from "react-icons/ci";
-import { RxCross2 } from "react-icons/rx";
-import { FiShoppingCart } from "react-icons/fi";
-import SpinLoader from "./SpingLoader";
-import { useRef, useEffect } from "react";
 import TradingCardPreview from "@/app/(allsite)/(application)/application/tradingcard/[slug]/_tradingcard/components/TradingCardPreview";
+import { useEffect, useRef } from "react";
+import { BsCheckCircleFill } from "react-icons/bs";
+import { RxCross2 } from "react-icons/rx";
 
 const TradingCardSidebar = ({
   savedSlots,
@@ -100,6 +97,9 @@ const TradingCardSidebar = ({
                     backLegacyTagline={state.backLegacyTagline}
                     backLegacyText={state.backLegacyText}
                     isblack={state.isblack}
+                    cardNumber={state.cardNumber}
+                    topLeftIcon={state.topLeftIcon}
+                    topRightIcon={state.topRightIcon}
                     isMini={true}
                   />
                 </div>
@@ -239,6 +239,9 @@ const TradingCardSidebar = ({
                       backLegacyTagline=""
                       backLegacyText=""
                       isblack={slot.snapshot.isblack ?? false}
+                      cardNumber={slot.snapshot.cardNumber ?? "#01"}
+                      topLeftIcon={slot.snapshot.topLeftIcon ?? null}
+                      topRightIcon={slot.snapshot.topRightIcon ?? null}
                       isMini={true}
                     />
                   </div>

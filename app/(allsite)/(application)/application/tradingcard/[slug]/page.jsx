@@ -1,27 +1,26 @@
 "use client";
 
-import React, { useState } from "react";
-import { useTradingCardState } from "./_tradingcard/hooks/useTradingCardState";
-import TradingCardPreview from "./_tradingcard/components/TradingCardPreview";
-import TradingCardControls from "./_tradingcard/components/TradingCardControls";
-import TradingCardApplicationSkelaton from "@/app/componnent/TradingCardApplicationSkelaton";
-import TradingCardSidebar from "@/app/componnent/TradingCardSidebar";
 import TradingBoxPreview from "@/app/componnent/TradingBoxPreview/TradingBoxPreview";
-import { ToastContainer, toast } from "react-toastify";
+import TradingCardApplicationSkelaton from "@/app/componnent/TradingCardApplicationSkelaton";
 import TradingCardCaptureNode from "@/app/componnent/TradingCardCaptureNode";
+import TradingCardSidebar from "@/app/componnent/TradingCardSidebar";
+import React, { useState } from "react";
+import { ToastContainer, toast } from "react-toastify";
+import TradingCardControls from "./_tradingcard/components/TradingCardControls";
+import TradingCardPreview from "./_tradingcard/components/TradingCardPreview";
+import { useTradingCardState } from "./_tradingcard/hooks/useTradingCardState";
 import { idbClear } from "./_tradingcard/lib/idb";
+
 export default function ProductCustomizer() {
   const state = useTradingCardState();
   const [mobileDrawer, setMobileDrawer] = useState(null);
-    const [showPackagingModal, setShowPackagingModal] = useState(false);
+  const [showPackagingModal, setShowPackagingModal] = useState(false);
   const [recipientNameDraft, setRecipientNameDraft] = useState("");
   const [createdForDraft, setCreatedForDraft] = useState("");
-
   const isCheckoutStep =
     state.editingSlotId === null &&
     state.savedSlots.length >= state.packageConfig.designs &&
     state.workingcard === "back";
-
   const handlePrimaryAction = () => {
     if (isCheckoutStep) {
       setRecipientNameDraft(state.packageTitle || "");
@@ -116,6 +115,9 @@ export default function ProductCustomizer() {
               backLegacyTagline={state.backLegacyTagline}
               backLegacyText={state.backLegacyText}
               isblack={state.isblack}
+              cardNumber={state.cardNumber}
+              topLeftIcon={state.topLeftIcon}
+              topRightIcon={state.topRightIcon}
             />
             <TradingCardControls
               sidebarTab={state.sidebarTab}
@@ -187,6 +189,14 @@ export default function ProductCustomizer() {
               setActiveIconPicker={state.setActiveIconPicker}
               getSliderTrackStyle={state.getSliderTrackStyle}
               renderIconPreview={state.renderIconPreview}
+              cardNumber={state.cardNumber}
+              setCardNumber={state.setCardNumber}
+              topLeftIcon={state.topLeftIcon}
+              setTopLeftIcon={state.setTopLeftIcon}
+              topRightIcon={state.topRightIcon}
+              setTopRightIcon={state.setTopRightIcon}
+              handleTopLeftIconUpload={state.handleTopLeftIconUpload}
+              handleTopRightIconUpload={state.handleTopRightIconUpload}
               savedSlots={state.savedSlots}
               handleNext={handlePrimaryAction}
               spinloading={state.spinloading}
@@ -270,6 +280,9 @@ export default function ProductCustomizer() {
               backLegacyTagline={state.backLegacyTagline}
               backLegacyText={state.backLegacyText}
               isblack={state.isblack}
+              cardNumber={state.cardNumber}
+              topLeftIcon={state.topLeftIcon}
+              topRightIcon={state.topRightIcon}
             />
           </MobileCardScaler>
 
@@ -507,6 +520,14 @@ export default function ProductCustomizer() {
                 setActiveIconPicker={state.setActiveIconPicker}
                 getSliderTrackStyle={state.getSliderTrackStyle}
                 renderIconPreview={state.renderIconPreview}
+                cardNumber={state.cardNumber}
+                setCardNumber={state.setCardNumber}
+                topLeftIcon={state.topLeftIcon}
+                setTopLeftIcon={state.setTopLeftIcon}
+                topRightIcon={state.topRightIcon}
+                setTopRightIcon={state.setTopRightIcon}
+                handleTopLeftIconUpload={state.handleTopLeftIconUpload}
+                handleTopRightIconUpload={state.handleTopRightIconUpload}
                 savedSlots={state.savedSlots}
                 handleNext={() => {
                   state.handleNext();
@@ -524,7 +545,6 @@ export default function ProductCustomizer() {
         )}
       </div>
       <ToastContainer position="top-center" />
-
       <div
         className="absolute opacity-0 pointer-events-none"
         style={{ zIndex: -1 }}
@@ -563,10 +583,12 @@ export default function ProductCustomizer() {
         backLegacyTagline={state.backLegacyTagline}
         backLegacyText={state.backLegacyText}
         isblack={state.isblack}
+        cardNumber={state.cardNumber}
+        topLeftIcon={state.topLeftIcon}
+        topRightIcon={state.topRightIcon}
       />
 
-
-            {showPackagingModal && (
+      {showPackagingModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
           <div className="w-full max-w-md rounded-3xl bg-white shadow-2xl overflow-hidden">
             <div className="bg-linear-to-r from-sky-500 to-sky-600 p-6">
@@ -581,7 +603,7 @@ export default function ProductCustomizer() {
             <div className="p-6 flex flex-col gap-5">
               <div>
                 <label className="block text-sm font-semibold text-slate-700 mb-1">
-                  Packaging title 
+                  Packaging title
                 </label>
                 <input
                   autoFocus
@@ -626,7 +648,6 @@ export default function ProductCustomizer() {
         </div>
       )}
     </>
-
   );
 }
 
@@ -891,6 +912,9 @@ function MobileSavedSlotCard({
           backLegacyText: state.backLegacyText,
           isblack: state.isblack,
           attributeName: state.attributeName,
+          cardNumber: state.cardNumber,
+          topLeftIcon: state.topLeftIcon,
+          topRightIcon: state.topRightIcon,
         }
       : snapshot
         ? {
@@ -919,6 +943,9 @@ function MobileSavedSlotCard({
             backLegacyText: "",
             isblack: snapshot.isblack ?? false,
             attributeName: snapshot.attributeName ?? "",
+            cardNumber: snapshot.cardNumber ?? "#01",
+            topLeftIcon: snapshot.topLeftIcon ?? null,
+            topRightIcon: snapshot.topRightIcon ?? null,
           }
         : null;
 

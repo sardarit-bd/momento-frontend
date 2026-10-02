@@ -1,8 +1,8 @@
 "use client";
 import ApplicationSkeleton from "@/app/componnent/ApplicationSkeleton";
 import useboxcartstore from "@/store/useboxcartstore";
-import useDeckFinalPreview from "@/store/useDeckFinalPreview";
 import useCartStore from "@/store/useCartStore";
+import useDeckFinalPreview from "@/store/useDeckFinalPreview";
 import usefinalCardsStore from "@/store/usefinalCardsStore";
 import generateUserId from "@/utilis/helper/generateUserId";
 import MakeGet from "@/utilis/requestrespose/get";
@@ -19,8 +19,8 @@ import { IoMdCheckmark } from "react-icons/io";
 import { toast, ToastContainer } from "react-toastify";
 import CardPreview from "../../../../../componnent/CardPreview";
 import CardSidebar from "../../../../../componnent/CardSidebar";
-import SideController from "../../../../../componnent/SideController";
 import MobileCustomizerSheet from "../../../../../componnent/MobileCustomizerSheet";
+import SideController from "../../../../../componnent/SideController";
 
 const layers = [
   "dresses",
@@ -60,10 +60,6 @@ const CARD_TYPE_LABELS = {
   Jeck_Card: "Jack",
   Joker_Card: "Joker",
 };
-
-// Wayfinding copy, keyed the same way as CARD_TYPE_LABELS so the two stay in sync.
-// Kept as a plain object (not derived from the API) for now since it's presentational
-// copy for a single deck product — see note below if a second deck type ships later.
 const STEP_COPY = {
   king_Card: {
     heading: "Create Your King",
@@ -102,7 +98,6 @@ const DECK_RANK_MAP = {
   Joker_Card: "joker",
 };
 
-// Renders the "Create Your King" style heading above the card canvas.
 const StepHeading = ({ activeType, activeIndex, totalSteps }) => {
   const copy = STEP_COPY[activeType] ?? {
     heading: "Customize Your Card",
@@ -111,7 +106,7 @@ const StepHeading = ({ activeType, activeIndex, totalSteps }) => {
 
   return (
     <div
-      className="relative z-10 w-full max-w-[980px] mx-auto text-center px-4 mb-4"
+      className="relative z-10 w-full max-w-245 mx-auto text-center px-4 mb-4"
       aria-live="polite"
     >
       <h1 className="text-2xl md:text-3xl font-bold text-black mt-1">
@@ -965,7 +960,6 @@ const ProductCustomizer = () => {
                 <div className="hidden xl:block" />
               </div>
             </header>
-
             <main className="grid w-full grid-cols-1 items-start xl:grid-cols-[260px_minmax(0,1fr)_350px] xl:h-[calc(100dvh-148px)]">
               <aside className="hidden border-r border-gray-200 bg-white xl:sticky xl:top-37 xl:block xl:h-[calc(100dvh-148px)] xl:overflow-hidden">
                 <CardSidebar
@@ -979,15 +973,12 @@ const ProductCustomizer = () => {
                   lockedCardType={CARD_FLOW[0]}
                 />
               </aside>
-
               <section className="relative flex flex-col self-start items-center justify-center overflow-hidden px-3 pt-4 pb-2 md:px-6 md:pt-6 md:pb-4 xl:pt-6 xl:pb-4">
                 <StepHeading
                   activeType={activeType}
                   activeIndex={activeStepIndex}
                   totalSteps={visibleSteps.length}
                 />
-
-                {/* Mobile: push card above bottom sheet peek */}
                 <div
                   className="xl:hidden"
                   style={{
@@ -1007,7 +998,6 @@ const ProductCustomizer = () => {
                     </div>
                   </div>
                 </div>
-                {/* Desktop: original layout */}
                 <div className="hidden xl:block w-full">
                   <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_35%_30%,rgba(255,255,255,0.92),rgba(242,244,248,0.7)_60%,rgba(242,244,248,1))]" />
                   <div className="relative z-10 flex w-full max-w-245 flex-col items-center mx-auto">

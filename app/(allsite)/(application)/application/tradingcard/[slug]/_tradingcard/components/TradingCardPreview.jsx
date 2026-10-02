@@ -43,6 +43,9 @@ export default function TradingCardPreview({
   backLegacyTagline,
   backLegacyText,
   isblack,
+  cardNumber,
+  topLeftIcon,
+  topRightIcon,
   isMini = false,
   isMobileCanvas = false,
 }) {
@@ -140,6 +143,9 @@ export default function TradingCardPreview({
                   iconOne={attrIconOne}
                   iconTwo={attrIconTwo}
                   iconThree={attrIconThree}
+                  cardNumber={cardNumber}
+                  topLeftIcon={topLeftIcon}
+                  topRightIcon={topRightIcon}
                 />
               )}
               {cardfinder == 1 && (
@@ -155,6 +161,9 @@ export default function TradingCardPreview({
                   iconOne={attrIconOne}
                   iconTwo={attrIconTwo}
                   iconThree={attrIconThree}
+                  cardNumber={cardNumber}
+                  topLeftIcon={topLeftIcon}
+                  topRightIcon={topRightIcon}
                 />
               )}
               {cardfinder == 2 && (
@@ -170,6 +179,9 @@ export default function TradingCardPreview({
                   iconOne={attrIconOne}
                   iconTwo={attrIconTwo}
                   iconThree={attrIconThree}
+                  cardNumber={cardNumber}
+                  topLeftIcon={topLeftIcon}
+                  topRightIcon={topRightIcon}
                   attributeName={attributeName}
                 />
               )}
@@ -186,6 +198,9 @@ export default function TradingCardPreview({
                   iconOne={attrIconOne}
                   iconTwo={attrIconTwo}
                   iconThree={attrIconThree}
+                  cardNumber={cardNumber}
+                  topLeftIcon={topLeftIcon}
+                  topRightIcon={topRightIcon}
                 />
               )}
             </>
@@ -394,6 +409,9 @@ export default function TradingCardPreview({
                       iconOne={attrIconOne}
                       iconTwo={attrIconTwo}
                       iconThree={attrIconThree}
+                      cardNumber={cardNumber}
+                      topLeftIcon={topLeftIcon}
+                      topRightIcon={topRightIcon}
                     />
                   )}
                   {cardfinder == 1 && (
@@ -409,6 +427,9 @@ export default function TradingCardPreview({
                       iconOne={attrIconOne}
                       iconTwo={attrIconTwo}
                       iconThree={attrIconThree}
+                      cardNumber={cardNumber}
+                      topLeftIcon={topLeftIcon}
+                      topRightIcon={topRightIcon}
                     />
                   )}
                   {cardfinder == 2 && (
@@ -424,6 +445,9 @@ export default function TradingCardPreview({
                       iconOne={attrIconOne}
                       iconTwo={attrIconTwo}
                       iconThree={attrIconThree}
+                      cardNumber={cardNumber}
+                      topLeftIcon={topLeftIcon}
+                      topRightIcon={topRightIcon}
                       attributeName={attributeName}
                     />
                   )}
@@ -440,6 +464,9 @@ export default function TradingCardPreview({
                       iconOne={attrIconOne}
                       iconTwo={attrIconTwo}
                       iconThree={attrIconThree}
+                      cardNumber={cardNumber}
+                      topLeftIcon={topLeftIcon}
+                      topRightIcon={topRightIcon}
                     />
                   )}
                 </>

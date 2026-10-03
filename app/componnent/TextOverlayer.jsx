@@ -71,7 +71,7 @@ export const CardHeader = ({
 
   return (
     <>
-      {template === 0 && numberText && (
+      {L.numberInPill && numberText && (
         <div
           className="GustanBlackFont"
           style={{
@@ -102,18 +102,7 @@ export const CardHeader = ({
       >
         {topLeftIcon ? <img src={topLeftIcon} alt="" style={imgStyle} /> : null}
       </div>
-      <div
-        style={{
-          ...frameStyle,
-          top: `${L.rightIconTop ?? L.iconTop}px`,
-          right: `${L.rightIconSide ?? L.iconSideOffset}px`,
-        }}
-      >
-        {topRightIcon ? (
-          <img src={topRightIcon} alt="" style={imgStyle} />
-        ) : null}
-      </div>
-      {template !== 0 && numberText && (
+      {!L.numberInPill && numberText && (
         <span
           className="BrunsonFont"
           style={{

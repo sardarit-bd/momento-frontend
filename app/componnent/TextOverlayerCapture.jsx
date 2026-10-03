@@ -968,7 +968,7 @@ const CardHeaderCapture = ({
   };
   return (
     <>
-      {template === 0 && numberText && (
+      {L.numberInPill && numberText && (
         <InkCenteredTextCapture
           text={numberText}
           cx={L.numberPillCx}
@@ -989,18 +989,7 @@ const CardHeaderCapture = ({
       >
         {topLeftIcon ? <img src={topLeftIcon} alt="" style={imgStyle} /> : null}
       </div>
-      <div
-        style={{
-          ...frame,
-          top: `${L.rightIconTop ?? L.iconTop}px`,
-          right: `${L.rightIconSide ?? L.iconSideOffset}px`,
-        }}
-      >
-        {topRightIcon ? (
-          <img src={topRightIcon} alt="" style={imgStyle} />
-        ) : null}
-      </div>
-      {template !== 0 && numberText && (
+      {!L.numberInPill && numberText && (
         <span
           style={{
             position: "absolute",
@@ -1168,6 +1157,12 @@ export const FrontThreeCapture = ({
 
   return (
     <div style={{ position: "relative", width: "390px", height: "570px" }}>
+      <CardHeaderCapture
+        template={2}
+        cardNumber={cardNumber}
+        topLeftIcon={topLeftIcon}
+        topRightIcon={topRightIcon}
+      />
       <div
         style={{
           position: "absolute",
@@ -1175,12 +1170,6 @@ export const FrontThreeCapture = ({
           left: "-30px",
         }}
       >
-        <CardHeaderCapture
-          template={2}
-          cardNumber={cardNumber}
-          topLeftIcon={topLeftIcon}
-          topRightIcon={topRightIcon}
-        />
         <GradientTitleThree cardti={cardti} offsetX={-6} />
       </div>
 

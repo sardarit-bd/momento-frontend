@@ -11,6 +11,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { BsStars } from "react-icons/bs";
 import { FaArrowLeft } from "react-icons/fa6";
 import { FiCheck, FiShoppingCart } from "react-icons/fi";
@@ -387,63 +388,83 @@ const SingleProduct = () => {
 
       <ToastContainer />
 
-      {modelopen && galleryImages?.length > 0 && (
-        <div className="fixed inset-0 z-100 flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm">
-          <button
-            type="button"
+      {modelopen &&
+        galleryImages?.length > 0 &&
+        createPortal(
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-label="Product gallery"
             onClick={() => setmodelopen(false)}
-            className="absolute right-5 top-5 z-20 flex h-11 w-11 items-center justify-center rounded-full bg-white text-gray-800 shadow-lg transition-all duration-200 hover:rotate-90 hover:bg-sky-500 hover:text-white"
+            className="fixed inset-0 z-9999 flex items-center justify-center bg-black/80 p-3 backdrop-blur-sm sm:p-4"
           >
-            <RxCross2 className="text-xl" />
-          </button>
+            <button
+              type="button"
+              aria-label="Close gallery"
+              onClick={(e) => {
+                e.stopPropagation();
+                setmodelopen(false);
+              }}
+              className="absolute right-3 top-3 z-20 flex h-10 w-10 items-center justify-center rounded-full bg-white text-gray-800 shadow-lg transition-all duration-200 hover:rotate-90 hover:bg-sky-500 hover:text-white sm:right-5 sm:top-5 sm:h-11 sm:w-11"
+            >
+              <RxCross2 className="text-xl" />
+            </button>
 
-          <div className="absolute left-1/2 top-5 -translate-x-1/2 rounded-full bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-lg">
-            {currentIndex} / {galleryImages.length}
-          </div>
+            <div className="absolute left-1/2 top-3 -translate-x-1/2 rounded-full bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-lg sm:top-5">
+              {currentIndex} / {galleryImages.length}
+            </div>
 
-          <button
-            type="button"
-            onClick={() => {
-              if (currentIndex > 1) {
-                setCurrentIndex(currentIndex - 1);
-              }
-            }}
-            disabled={currentIndex <= 1}
-            className="absolute left-4 top-1/2 z-20 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full bg-white text-gray-800 shadow-lg transition-all hover:bg-sky-500 hover:text-white disabled:cursor-not-allowed disabled:opacity-40"
-          >
-            <RiArrowLeftFill className="text-xl" />
-          </button>
+            <button
+              type="button"
+              aria-label="Previous image"
+              onClick={(e) => {
+                e.stopPropagation();
+                if (currentIndex > 1) {
+                  setCurrentIndex(currentIndex - 1);
+                }
+              }}
+              disabled={currentIndex <= 1}
+              className="absolute left-2 top-1/2 z-20 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white text-gray-800 shadow-lg transition-all hover:bg-sky-500 hover:text-white disabled:cursor-not-allowed disabled:opacity-40 sm:left-4 sm:h-11 sm:w-11"
+            >
+              <RiArrowLeftFill className="text-xl" />
+            </button>
 
-          <div className="flex h-[85vh] w-full max-w-5xl items-center justify-center">
-            {galleryImages.map(
-              (img, idx) =>
-                currentIndex - 1 === idx && (
-                  <Image
-                    key={idx}
-                    src={img?.url}
-                    alt={`Gallery ${idx + 1}`}
-                    width={1000}
-                    height={1000}
-                    className="max-h-full max-w-full rounded-2xl object-contain shadow-2xl"
-                  />
-                ),
-            )}
-          </div>
+            <div
+              onClick={(e) => e.stopPropagation()}
+              className="flex h-[80dvh] w-full max-w-5xl items-center justify-center sm:h-[85dvh]"
+            >
+              {galleryImages.map(
+                (img, idx) =>
+                  currentIndex - 1 === idx && (
+                    <Image
+                      key={idx}
+                      src={img?.url}
+                      alt={`Gallery ${idx + 1}`}
+                      width={1000}
+                      height={1000}
+                      className="max-h-full max-w-full rounded-2xl object-contain "
+                    />
+                  ),
+              )}
+            </div>
 
-          <button
-            type="button"
-            onClick={() => {
-              if (currentIndex < galleryImages.length) {
-                setCurrentIndex(currentIndex + 1);
-              }
-            }}
-            disabled={currentIndex >= galleryImages.length}
-            className="absolute right-4 top-1/2 z-20 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full bg-white text-gray-800 shadow-lg transition-all hover:bg-sky-500 hover:text-white disabled:cursor-not-allowed disabled:opacity-40"
-          >
-            <RiArrowRightFill className="text-xl" />
-          </button>
-        </div>
-      )}
+            <button
+              type="button"
+              aria-label="Next image"
+              onClick={(e) => {
+                e.stopPropagation();
+                if (currentIndex < galleryImages.length) {
+                  setCurrentIndex(currentIndex + 1);
+                }
+              }}
+              disabled={currentIndex >= galleryImages.length}
+              className="absolute right-2 top-1/2 z-20 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white text-gray-800  transition-all hover:bg-sky-500 hover:text-white disabled:cursor-not-allowed disabled:opacity-40 sm:right-4 sm:h-11 sm:w-11"
+            >
+              <RiArrowRightFill className="text-xl" />
+            </button>
+          </div>,
+          document.body,
+        )}
 
       {SubcriptionModal && (
         <div className="fixed inset-0 z-110 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm">

@@ -10,13 +10,13 @@ export default function CustomOne() {
           <div className="space-y-10 py-8 text-center lg:text-left">
             <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 leading-tight">
               Your
-              <span className="text-[#3CA9FF]"> Deck</span>, Your{" "}
+              <span className="text-[#3CA9FF]"> Deck</span>, Your
               <span className="text-[#3CA9FF]">Design</span>,
               <br />
               Your <span className="text-[#3CA9FF]">Memories</span>.
             </h1>
             <p className="text-lg text-gray-600 max-w-3xl mx-auto lg:mx-0">
-              Customization should be effortless—and at{" "}
+              Customization should be effortless—and at
               <span className="font-semibold">Momento Cards</span>, it is.
               Whether you’re crafting a personalized deck for play, a unique
               trading card, or a game-changing design, we make it simple to

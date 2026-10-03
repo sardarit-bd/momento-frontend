@@ -104,10 +104,7 @@ const PhotoPortraitBoxPreview = forwardRef(function PhotoPortraitBoxPreview(
       {boxImages.length > 0 && (
         <div
           className="absolute z-10 overflow-hidden "
-          style={{ top: "44%", left: "15.5%", width: "25.6%", height: "23.5%" ,
-
-      //  clipPath : "path('M 12 0 L 15 0 Q 300 0 300 12 L 300 188 Q 300 200 288 200 L 12 200 Q 0 200 0 188 L 0 12 Q 0 0 12 0 Z')"
-          }}
+          style={{ top: "44%", left: "15.5%", width: "25.6%", height: "23.5%" }}
         >
           {(() => {
             const getLayout = () => {

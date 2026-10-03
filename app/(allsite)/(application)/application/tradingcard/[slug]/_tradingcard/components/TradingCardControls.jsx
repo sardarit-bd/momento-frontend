@@ -825,14 +825,7 @@ function PanelContent({
             activeIconPicker={activeIconPicker}
             setActiveIconPicker={setActiveIconPicker}
           />
-          <CornerIconSelect
-            label="Top-Right Icon"
-            pickerKey="topRight"
-            value={topRightIcon}
-            onChange={setTopRightIcon}
-            activeIconPicker={activeIconPicker}
-            setActiveIconPicker={setActiveIconPicker}
-          />
+
           {selectedTemplate === "3" && (
             <div className="border border-gray-200 p-4 md:p-5 mb-4 rounded-xl bg-white shadow-sm ring-1 ring-gray-100">
               <label className="block text-xl text-gray-700 mb-3 mt-4 font-semibold">

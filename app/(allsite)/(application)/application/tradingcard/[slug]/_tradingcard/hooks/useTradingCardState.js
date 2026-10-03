@@ -187,8 +187,8 @@ export function useTradingCardState() {
 
   const [cardfinder, setcardfinder] = useState(0);
   const [cardtiltelimite, setcardtiltelimite] = useState(8);
-  const [carddeslimite, setcarddeslimite] = useState(15);
-  const [packageTitlelimite, setpackageTitlelimite] = useState(15);
+  const [carddeslimite, setcarddeslimite] = useState(12);
+  const [packageTitlelimite, setpackageTitlelimite] = useState(12);
   const [namelimite, setnamelimite] = useState(15);
   const [name2limite, setname2limite] = useState(15);
   const [name3limite, setname3limite] = useState(15);
@@ -407,7 +407,7 @@ export function useTradingCardState() {
         "Lorem Ipsum 10, This Momento card Customization One of the best Placeform",
       );
       setcardtiltelimite(15);
-      setcarddeslimite(15);
+      setcarddeslimite(12);
       setnamelimite(15);
       setname2limite(95);
       setname3limite(15);
@@ -636,8 +636,11 @@ export function useTradingCardState() {
       return;
     }
 
-    const freshCarddes =
-      localStorage.getItem("persistent_carddes") ?? carddes ?? "";
+    const freshCarddes = (
+      localStorage.getItem("persistent_carddes") ??
+      carddes ??
+      ""
+    ).slice(0, carddeslimite);
 
     if (!freshCarddes.trim()) {
       toast.warn("Please enter a name in the Created For field.");
@@ -696,11 +699,12 @@ export function useTradingCardState() {
         slotIds: savedSlots.map((s) => s.id),
       });
 
-      const freshPackageTitle =
+      const freshPackageTitle = (
         (typeof window !== "undefined" &&
           localStorage.getItem("persistent_packageTitle")) ||
         packageTitle ||
-        "";
+        ""
+      ).slice(0, packageTitlelimite);
 
       const product = {
         id: generateUserId(),

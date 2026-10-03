@@ -6,11 +6,9 @@ import styles from "../../styles/Progressbar.module.css";
 
 export default function Prograssber() {
   const { rander, setrander } = useProductUploadStore();
-
   function handleClik(stage) {
     setrander(stage);
   }
-
   return (
     <div className={styles.prograssberWrp}>
       <div

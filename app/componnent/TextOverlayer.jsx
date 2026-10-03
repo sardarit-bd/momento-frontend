@@ -684,6 +684,27 @@ export const FrontTwo = ({
           textClass="text-[11px] lg:text-[12px] AkiraFont tracking-wider"
         />
       </div>
+      {acarddate && (
+        <div
+          className="absolute left-1/2 -translate-x-1/2 z-50 text-center"
+          style={{ top: "510px" }}
+        >
+          <span
+            className="block TradingCardBadgeOrangeText uppercase tracking-wider GustanBlackFont"
+            style={{ fontSize: "15px", lineHeight: "17px" }}
+          >
+            {dateParts ? (
+              <>
+                {dateParts[1]}
+                <br />
+                {dateParts[2]}
+              </>
+            ) : (
+              acarddate
+            )}
+          </span>
+        </div>
+      )}
       <CardHeader
         template={1}
         cardNumber={cardNumber}

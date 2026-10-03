@@ -15,9 +15,7 @@ const PhotoUploader = ({
   const inputRef = useRef(null);
   const [dragging, setDragging] = useState(false);
   const [busy, setBusy] = useState(false);
-
   const photo = activeCard?.userPhoto || null;
-
   const handleFile = (file) => {
     if (!file) return;
 
@@ -25,12 +23,10 @@ const PhotoUploader = ({
       toast.error("Please upload a PNG, JPG, or WEBP image.");
       return;
     }
-
     if (file.size > MAX_SIZE) {
       toast.error("Image is too large. Max size is 10 MB.");
       return;
     }
-
     setBusy(true);
     const reader = new FileReader();
     reader.onload = () => {
@@ -48,22 +44,18 @@ const PhotoUploader = ({
     };
     reader.readAsDataURL(file);
   };
-
   const onInputChange = (e) => {
     const file = e.target.files?.[0];
     handleFile(file);
     e.target.value = "";
   };
-
   const onDrop = (e) => {
     e.preventDefault();
     setDragging(false);
     const file = e.dataTransfer.files?.[0];
     handleFile(file);
   };
-
   const openPicker = () => inputRef.current?.click();
-
   return (
     <div className="rounded-2xl border border-gray-200 bg-white p-3 mb-3">
       <div className="flex items-center justify-between gap-3 pb-1">

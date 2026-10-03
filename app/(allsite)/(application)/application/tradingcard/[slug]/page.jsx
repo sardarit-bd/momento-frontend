@@ -23,8 +23,10 @@ export default function ProductCustomizer() {
     state.workingcard === "back";
   const handlePrimaryAction = () => {
     if (isCheckoutStep) {
-      setRecipientNameDraft(state.packageTitle || "");
-      setCreatedForDraft(state.carddes || "");
+      setRecipientNameDraft(
+        (state.packageTitle || "").slice(0, state.packageTitlelimite),
+      );
+      setCreatedForDraft((state.carddes || "").slice(0, state.carddeslimite));
       setShowPackagingModal(true);
       return;
     }
@@ -32,21 +34,29 @@ export default function ProductCustomizer() {
   };
 
   const handleConfirmPackagingAndCheckout = async () => {
-    if (!recipientNameDraft.trim()) {
+    const packTitleFinal = recipientNameDraft
+      .trim()
+      .slice(0, state.packageTitlelimite);
+    const createdForFinal = createdForDraft
+      .trim()
+      .slice(0, state.carddeslimite);
+
+    if (!packTitleFinal) {
       toast.warn("Please enter a recipient name.");
       return;
     }
-    if (!createdForDraft.trim()) {
+    if (!createdForFinal) {
       toast.warn("Please enter who this is created for.");
       return;
     }
-    localStorage.setItem("persistent_packageTitle", recipientNameDraft.trim());
-    localStorage.setItem("persistent_carddes", createdForDraft.trim());
-    state.setPackageTitle(recipientNameDraft.trim());
-    state.setcarddes(createdForDraft.trim());
+    localStorage.setItem("persistent_packageTitle", packTitleFinal);
+    localStorage.setItem("persistent_carddes", createdForFinal);
+    state.setPackageTitle(packTitleFinal);
+    state.setcarddes(createdForFinal);
     setShowPackagingModal(false);
     await state.goToFinalView();
   };
+
   React.useEffect(() => {
     const h = document.querySelector("nav")?.offsetHeight;
     idbClear();
@@ -609,7 +619,7 @@ export default function ProductCustomizer() {
                   autoFocus
                   value={recipientNameDraft}
                   onChange={(e) => setRecipientNameDraft(e.target.value)}
-                  maxLength={30}
+                  maxLength={state.packageTitlelimite}
                   placeholder="e.g., Birthday Memories, Family Reunion..."
                   className="w-full h-14 rounded-xl border-2 border-slate-200 bg-slate-50 px-5 text-slate-800 placeholder-slate-400 outline-none focus:border-sky-400 focus:bg-white focus:ring-4 focus:ring-sky-100 transition-all text-base font-medium"
                 />

@@ -755,7 +755,13 @@ const ProductCustomizer = () => {
 
   return (
     <>
-      <div className="bg-[#f2f4f8]">
+      <div
+        className={`bg-[#f2f4f8] ${
+          showJokerUpsell
+            ? ""
+            : "xl:flex xl:h-[calc(100dvh-75px)] xl:flex-col xl:overflow-clip"
+        }`}
+      >
         {showJokerUpsell ? (
           <main
             className="relative mx-auto flex min-h-screen w-full items-center justify-center overflow-hidden px-4 py-5 sm:px-6 sm:py-8"
@@ -907,7 +913,7 @@ const ProductCustomizer = () => {
           </main>
         ) : (
           <>
-            <header className="sticky top-17 z-50 w-full border-b border-gray-200 bg-white/95 backdrop-blur md:top-19">
+            <header className="sticky top-17 z-50 w-full border-b border-gray-200 bg-white/95 backdrop-blur md:top-19 xl:static xl:shrink-0">
               <div className="grid w-full grid-cols-1 xl:grid-cols-[260px_minmax(0,1fr)_350px]">
                 <div className="hidden xl:block" />
                 <div className="w-full px-3 py-2 md:px-6 md:py-2.5">
@@ -960,8 +966,8 @@ const ProductCustomizer = () => {
                 <div className="hidden xl:block" />
               </div>
             </header>
-            <main className="grid w-full grid-cols-1 items-start xl:grid-cols-[260px_minmax(0,1fr)_350px] xl:h-[calc(100dvh-148px)]">
-              <aside className="hidden border-r border-gray-200 bg-white xl:sticky xl:top-37 xl:block xl:h-[calc(100dvh-148px)] xl:overflow-hidden">
+            <main className="grid w-full grid-cols-1 items-start xl:min-h-0 xl:flex-1 xl:grid-cols-[260px_minmax(0,1fr)_350px] xl:grid-rows-[minmax(0,1fr)] xl:items-stretch">
+              <aside className="hidden border-r border-gray-200 bg-white xl:block xl:min-h-0 xl:overflow-hidden">
                 <CardSidebar
                   cards={cards}
                   activeIndex={activeCardIndex}
@@ -973,7 +979,7 @@ const ProductCustomizer = () => {
                   lockedCardType={CARD_FLOW[0]}
                 />
               </aside>
-              <section className="relative flex flex-col self-start items-center justify-center overflow-hidden px-3 pt-4 pb-2 md:px-6 md:pt-6 md:pb-4 xl:pt-6 xl:pb-4">
+              <section className="relative flex flex-col self-start items-center justify-center overflow-hidden px-3 pt-4 pb-2 md:px-6 md:pt-6 md:pb-4 xl:min-h-0 xl:self-stretch xl:justify-start xl:overflow-y-auto xl:pt-6 xl:pb-4">
                 <StepHeading
                   activeType={activeType}
                   activeIndex={activeStepIndex}
@@ -1001,7 +1007,7 @@ const ProductCustomizer = () => {
                 <div className="hidden xl:block w-full">
                   <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_35%_30%,rgba(255,255,255,0.92),rgba(242,244,248,0.7)_60%,rgba(242,244,248,1))]" />
                   <div className="relative z-10 flex w-full max-w-245 flex-col items-center mx-auto">
-                    <div className="relative flex min-h-162.5 w-full items-center justify-center">
+                    <div className="relative flex min-h-[min(650px,calc(100dvh-270px))] w-full items-center justify-center">
                       <CardPreview
                         activeCard={activeCard}
                         previewCardNodeRef={previewCardNodeRef}
@@ -1011,7 +1017,7 @@ const ProductCustomizer = () => {
                 </div>
               </section>
 
-              <aside className="hidden border-l border-gray-200 bg-white xl:sticky xl:top-37 xl:flex xl:flex-col xl:h-[calc(100dvh-148px)] xl:overflow-hidden">
+              <aside className="hidden border-l border-gray-200 bg-white xl:flex xl:min-h-0 xl:flex-col xl:overflow-hidden">
                 <div className="min-h-0 flex-1 overflow-y-auto px-5">
                   <SideController
                     product={product}

@@ -1076,11 +1076,81 @@ export const FrontOneCapture = ({
   );
 };
 
+const splitDateLines = (text) => {
+  const full = String(text || "").trim();
+  const m = full.match(/^(.*?)\s+(OF\s+.*)$/i);
+  return (m ? [m[1], m[2]] : [full]).map((l) => l.toUpperCase());
+};
+
+const DateBadgeTwoCapture = ({
+  acarddate,
+  top = 510,
+  fontPx = 15,
+  lineH = 17,
+}) => {
+  const canvasRef = useRef(null);
+  const W = 220;
+  const full = String(acarddate || "").trim();
+  const H = splitDateLines(full).length * lineH;
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas || !full) return;
+    const lines = splitDateLines(full);
+    const h = lines.length * lineH;
+
+    const draw = () => {
+      const ctx = canvas.getContext("2d");
+      canvas.width = W * 3;
+      canvas.height = h * 3;
+      ctx.scale(3, 3);
+      ctx.clearRect(0, 0, W, h);
+      ctx.font = `900 ${fontPx}px GustanBlackCanvas`;
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      if ("letterSpacing" in ctx) ctx.letterSpacing = `${fontPx * 0.05}px`;
+      ctx.save();
+      ctx.translate(W / 2, h / 2);
+      ctx.transform(1, 0, Math.tan((-6 * Math.PI) / 180), 1, 0, 0);
+      ctx.translate(-W / 2, -h / 2);
+      ctx.lineWidth = 0.5;
+      ctx.lineJoin = "round";
+      ctx.strokeStyle = "#000000";
+      ctx.fillStyle = "#f5731f";
+      lines.forEach((line, i) => {
+        const y = i * lineH + lineH / 2;
+        ctx.strokeText(line, W / 2, y);
+        ctx.fillText(line, W / 2, y);
+      });
+      ctx.restore();
+    };
+
+    document.fonts.load(`900 ${fontPx}px GustanBlackCanvas`).then(draw);
+  }, [full, fontPx, lineH]);
+
+  if (!full) return null;
+
+  return (
+    <canvas
+      ref={canvasRef}
+      style={{
+        position: "absolute",
+        left: `${(390 - W) / 2}px`,
+        top: `${top}px`,
+        width: `${W}px`,
+        height: `${H}px`,
+        zIndex: 50,
+      }}
+    />
+  );
+};
+
 export const FrontTwoCapture = ({
   cardti,
   name,
   name2,
   name3,
+  acarddate,
   labelone,
   labeltwo,
   labelthree,
@@ -1121,6 +1191,8 @@ export const FrontTwoCapture = ({
         value={labelthree}
         top={471.9}
       />
+
+      <DateBadgeTwoCapture acarddate={acarddate} />
 
       <InkCenteredTextCapture
         text={`© ${currentYear} MOMENTO TRADING CARDS`}
@@ -1167,7 +1239,7 @@ export const FrontThreeCapture = ({
         style={{
           position: "absolute",
           top: "6px",
-          left: "-30px",
+          left: "0px",
         }}
       >
         <GradientTitleThree cardti={cardti} offsetX={-6} />
@@ -1195,21 +1267,21 @@ export const FrontThreeCapture = ({
         text={name}
         value={labelone}
         top={417}
-        left={65}
+        left={39}
       />
       <AttrRowCapture3
         icon={iconTwo}
         text={name2}
         value={labeltwo}
         top={441}
-        left={65}
+        left={39}
       />
       <AttrRowCapture3
         icon={iconThree}
         text={name3}
         value={labelthree}
         top={465}
-        left={65}
+        left={39}
       />
 
       <GradientBadgeThree acarddate={acarddate} />

@@ -3,8 +3,14 @@ import { useState } from "react";
 import { IoIosArrowDown } from "react-icons/io";
 
 const layers = [
-  "dresses", "skin_tones", "hairs", "crowns",
-  "beards", "eyes", "mouths", "noses"
+  "dresses",
+  "skin_tones",
+  "hairs",
+  "crowns",
+  "beards",
+  "eyes",
+  "mouths",
+  "noses",
 ];
 
 const layerTitles = {
@@ -15,7 +21,7 @@ const layerTitles = {
   noses: "Nose",
   dresses: "Outfits",
   crowns: "Hats / Crowns",
-  beards: "Beard"
+  beards: "Beard",
 };
 
 const LayerSelector = ({ product, activeCard, selectLayer }) => {
@@ -27,19 +33,29 @@ const LayerSelector = ({ product, activeCard, selectLayer }) => {
         const sectionTitle = layerTitles[layer] || layer.replace("_", " ");
         const selectedImage = activeCard?.selectedLayers?.[layer];
         const layerItems = product?.customizations?.[layer] || [];
-        const selectedIndex = layerItems?.findIndex((item) => item?.image === selectedImage);
+        const selectedIndex = layerItems?.findIndex(
+          (item) => item?.image === selectedImage,
+        );
         const isEditable = Boolean(activeCard) && layerItems.length > 0;
 
         return (
-          <div key={layer} className="rounded-2xl border border-gray-200 bg-white p-3">
+          <div
+            key={layer}
+            className="rounded-2xl border border-gray-200 bg-white p-3"
+          >
             <button
               type="button"
-              onClick={() => isEditable && setOpenLayer((prev) => (prev === layer ? "" : layer))}
+              onClick={() =>
+                isEditable &&
+                setOpenLayer((prev) => (prev === layer ? "" : layer))
+              }
               disabled={!isEditable}
               className={`flex w-full items-center justify-between gap-3 text-left ${isEditable ? "cursor-pointer" : "cursor-not-allowed opacity-60"}`}
             >
               <div className="flex items-center gap-3">
-                <h3 className="text-xl font-semibold capitalize text-gray-800">{sectionTitle}</h3>
+                <h3 className="text-xl font-semibold capitalize text-gray-800">
+                  {sectionTitle}
+                </h3>
                 {selectedIndex >= 0 && (
                   <span className="rounded-full bg-gray-100 px-2 py-1 text-xs font-medium text-gray-500">
                     Option {selectedIndex + 1}
@@ -51,7 +67,9 @@ const LayerSelector = ({ product, activeCard, selectLayer }) => {
                   </span>
                 )}
               </div>
-              <IoIosArrowDown className={`text-gray-500 transition-transform ${openLayer === layer ? "rotate-180" : ""}`} />
+              <IoIosArrowDown
+                className={`text-gray-500 transition-transform ${openLayer === layer ? "rotate-180" : ""}`}
+              />
             </button>
 
             {!isEditable && (
@@ -72,7 +90,7 @@ const LayerSelector = ({ product, activeCard, selectLayer }) => {
                       key={idx}
                       src={image?.image}
                       alt={`${layer} ${idx + 1}`}
-                      className={`h-[80px] w-[60px] cursor-pointer rounded-lg object-cover p-1 ${isSelected ? "border-2 border-sky-500 bg-sky-200" : "border-2 border-gray-300"}`}
+                      className={`h-20 w-15 cursor-pointer rounded-lg object-cover p-1 ${isSelected ? "border-2 border-sky-500 bg-sky-200" : "border-2 border-gray-300"}`}
                       onClick={() => selectLayer(layer, image?.image)}
                     />
                   );
@@ -85,6 +103,5 @@ const LayerSelector = ({ product, activeCard, selectLayer }) => {
     </div>
   );
 };
-
 
 export default LayerSelector;

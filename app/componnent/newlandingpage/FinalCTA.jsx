@@ -1,7 +1,7 @@
 "use client";
 
-import Link from "next/link";
 import { ArrowRight, Sparkles } from "lucide-react";
+import Link from "next/link";
 
 export default function FinalCTA() {
   return (
@@ -9,7 +9,7 @@ export default function FinalCTA() {
       <div className="absolute inset-0 bg-linear-to-br from-sky-400 via-sky-500 to-indigo-600 opacity-90" />
       <div className="absolute top-0 left-1/4 w-120 h-120 bg-white/20 rounded-full blur-[120px] mix-blend-overlay pointer-events-none" />
       <div className="absolute bottom-0 right-1/4 w-120 h-120 bg-indigo-300/30 rounded-full blur-[120px] mix-blend-overlay pointer-events-none" />
-      <div className="max-w-4xl mx-auto relative z-10 text-center">
+      <div className="container mx-auto relative z-10 text-center">
         <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white mb-8 shadow-sm">
           <Sparkles className="w-4 h-4 text-sky-200" />
           <span className="text-sm font-bold tracking-wide uppercase text-sky-50">

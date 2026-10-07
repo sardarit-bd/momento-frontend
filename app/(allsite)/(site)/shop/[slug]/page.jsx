@@ -202,7 +202,7 @@ const SingleProduct = () => {
         </div>
       </div>
 
-      <section className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8 ">
+      <section className="mx-auto container  px-4 py-8 sm:px-6 sm:py-12 lg:px-8 ">
         <div className="grid items-start gap-10 lg:grid-cols-[1.08fr_0.92fr] lg:gap-16">
           <div className="min-w-0">
             <div

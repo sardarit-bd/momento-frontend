@@ -1063,7 +1063,7 @@ export default function MomentoLanding() {
         className="texture-bg"
         style={{ padding: "7rem 1.5rem", backgroundColor: "#F5EFE0" }}
       >
-        <div style={{ maxWidth: "72rem", margin: "0 auto" }}>
+        <div className="container mx-auto">
           <div
             className="scroll-reveal"
             style={{ textAlign: "center", marginBottom: "4rem" }}

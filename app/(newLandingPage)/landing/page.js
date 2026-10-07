@@ -17,7 +17,7 @@ export default function Page() {
       <Hero />
       <Customzaizer />
       <section className="py-20 md:py-24 px-4 bg-white">
-        <div className="max-w-6xl mx-auto">
+        <div className="container mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold text-gray-700 mb-4 text-balance">
               What Is Momento?
@@ -60,7 +60,7 @@ export default function Page() {
       </section>
       <Products />
       <div className="bg-sky-50">
-        <div className="w-full max-w-6xl mx-auto">
+        <div className="w-full container mx-auto">
           <Howwork />
         </div>
       </div>

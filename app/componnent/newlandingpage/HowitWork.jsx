@@ -42,11 +42,9 @@ export default function HowItWorks() {
         <div className="grid md:grid-cols-5 gap-4 md:gap-2 mb-12">
           {steps.map((step, idx) => (
             <div key={idx} className="relative group">
-              {/* Connection line */}
               {idx < steps.length - 1 && (
                 <div className="hidden md:block absolute top-12 left-1/2 w-[calc(100%)] h-0.5 bg-linear-to-r from-primary to-transparent -z-10" />
               )}
-
               <div className="relative bg-white rounded-xl p-6 h-full border-2 border-sky-400 group-hover:border-primary/60 transition-colors">
                 <div className="flex flex-col h-full">
                   <div className="flex items-center gap-3 mb-4">
@@ -54,7 +52,6 @@ export default function HowItWorks() {
                       {step.number}
                     </div>
                   </div>
-
                   <h3 className="text-lg font-bold  mb-2">{step.title}</h3>
                   <p className="text-sm text-gray-400 grow">
                     {step.description}

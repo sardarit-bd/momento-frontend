@@ -6,7 +6,6 @@ import { useEffect, useRef, useState } from "react";
 import hero1 from "../../../public/hero6.png";
 import hero2 from "../../../public/hero7.png";
 import hero3 from "../../../public/hero8.png";
-
 const cards = [hero3, hero2, hero1];
 const tickerItems = [
   "Free Delivery",
@@ -22,7 +21,6 @@ const Hero = () => {
   const dragging = useRef(false);
   const lastX = useRef(0);
   const { settype } = useFilterStore();
-
   useEffect(() => {
     setTimeout(() => setMounted(true), 100);
   }, []);
@@ -63,9 +61,7 @@ const Hero = () => {
       window.removeEventListener("mouseup", handleMouseUp);
     };
   }, []);
-
   const [activeCard, setActiveCard] = useState(0);
-
   useEffect(() => {
     const interval = setInterval(() => {
       setActiveCard((prev) => (prev + 1) % 3);
@@ -79,7 +75,7 @@ const Hero = () => {
         <div className="absolute inset-0">
           <div className={`w-full h-full opacity-10 heroBgPataImage`} />
         </div>
-        <div className="relative max-w-6xl mx-auto px-4 flex flex-col-reverse lg:flex-col-reverse items-center justify-center gap-10">
+        <div className="relative container mx-auto px-4 flex flex-col-reverse lg:flex-col-reverse items-center justify-center gap-10">
           <div className="w-full lg:w-2/2 flex flex-col items-center lg:items-center space-y-6 md:space-y-4 lg:space-y-6 text-center lg:text-left">
             <div className="text-sky-400 bg-white border border-sky-400/30 px-3 py-1 rounded-full flex items-center gap-2">
               <span className="animate-bounce">✨</span>

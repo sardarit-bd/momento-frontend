@@ -1,14 +1,8 @@
 "use client";
 
-import {
-  ChevronLeft,
-  ChevronRight,
-  Star,
-  Quote,
-  ArrowRight,
-} from "lucide-react";
+import { ChevronLeft, ChevronRight, Quote, Star } from "lucide-react";
 import Link from "next/link";
-import { useRef, useState, useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const testimonials = [
   {
@@ -82,8 +76,6 @@ export default function SocialProof() {
               See why game night will never be the same.
             </p>
           </div>
-
-          {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-3">
             <button
               onClick={() => scroll("left")}
@@ -103,19 +95,16 @@ export default function SocialProof() {
             </button>
           </div>
         </div>
-
-        {/* Swipeable Slider Container */}
         <div
           ref={scrollContainerRef}
           onScroll={checkScroll}
-          className="flex overflow-x-auto snap-x snap-mandatory gap-6 pb-12 px-4 md:px-8 -mx-4 md:-mx-8 scroll-smooth [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
+          className="flex overflow-x-auto snap-x snap-mandatory gap-6 pb-12 px-4 md:px-8 -mx-4 md:-mx-8 scroll-smooth [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] scrollbar-none"
         >
           {testimonials.map((testimonial, idx) => (
             <div
               key={idx}
               className="relative flex-none w-full sm:w-[calc(50%-1.5rem)] lg:w-[calc(33.333%-1.5rem)] snap-center sm:snap-start group bg-white rounded-3xl p-8 shadow-sm hover:shadow-xl border border-slate-200 hover:border-sky-200 transition-all duration-300 flex flex-col justify-between"
             >
-              {/* Background Watermark */}
               <Quote className="absolute top-6 right-6 w-16 h-16 text-slate-50 opacity-50 rotate-12 transition-transform duration-300 group-hover:rotate-0" />
 
               <div className="relative z-10">

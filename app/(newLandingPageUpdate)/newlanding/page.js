@@ -1,18 +1,34 @@
 "use client";
 import Image from "next/image";
 import Link from "next/link";
+import { useEffect, useRef, useState } from "react";
+import { FaRocket } from "react-icons/fa";
+import {
+  FiArrowRight,
+  FiCheck,
+  FiEdit3,
+  FiKey,
+  FiList,
+  FiShoppingCart,
+  FiStar,
+  FiTarget,
+} from "react-icons/fi";
 import portraitDeckPreview from "../../../public/mockup1.png";
 import deckCardImage from "../../../public/mockup4.png";
 import TradingCardImage from "../../../public/mockup5.png";
 import tradingCardsPreview from "../../../public/mockup6.png";
 import TradingCardImage6 from "../../../public/mockup7.png";
 
-import { useEffect, useRef, useState } from "react";
+const iconBtn = {
+  display: "inline-flex",
+  alignItems: "center",
+  justifyContent: "center",
+  gap: 8,
+};
 
 export default function MomentoLanding() {
   const heroRef = useRef(null);
   const [showStickyBar, setShowStickyBar] = useState(false);
-
   useEffect(() => {
     const fontLink = document.createElement("link");
     fontLink.href =
@@ -120,7 +136,6 @@ export default function MomentoLanding() {
     );
     const revealEls = document.querySelectorAll(".scroll-reveal");
     revealEls.forEach((el) => observer.observe(el));
-
     return () => {
       observer.disconnect();
       document.getElementById("momento-styles")?.remove();
@@ -202,6 +217,7 @@ export default function MomentoLanding() {
             href="/shop"
             className="btn-primary"
             style={{
+              ...iconBtn,
               padding: "0.6rem 1.5rem",
               borderRadius: 9999,
               fontSize: "0.8rem",
@@ -210,7 +226,7 @@ export default function MomentoLanding() {
               textTransform: "uppercase",
             }}
           >
-            Shop Now →
+            Shop Now <FiArrowRight />
           </Link>
         </div>
       </div>
@@ -263,7 +279,7 @@ export default function MomentoLanding() {
                                 text-[#A68630]
                             "
             >
-              <span>✦</span> Premium Personalized Cards
+              <FiStar /> Premium Personalized Cards
             </div>
             <h1
               className="
@@ -279,7 +295,7 @@ export default function MomentoLanding() {
                                 max-w-175
                             "
             >
-              Turn Your{" "}
+              Turn Your
               <span
                 style={{
                   background: "linear-gradient(to right, #C9A84C, #A68630)",
@@ -322,21 +338,20 @@ export default function MomentoLanding() {
                             "
             >
               <span className="flex items-center gap-1.5">
-                <span className="text-gray-800 text-base">✓</span> No Design
-                Skills Needed
+                <FiCheck className="text-gray-800 text-base" /> No Design Skills
+                Needed
               </span>
               <span className="flex items-center gap-1.5">
-                <span className="text-gray-800 text-base">✓</span> Ready in
-                Minutes
+                <FiCheck className="text-gray-800 text-base" /> Ready in Minutes
               </span>
               <span className="flex items-center gap-1.5">
-                <span className="text-gray-800 text-base">✓</span> Premium Print
+                <FiCheck className="text-gray-800 text-base" /> Premium Print
                 Quality
               </span>
             </div>
             <div className="mt-8 mb-10 flex flex-wrap items-center justify-center gap-4">
               <Link
-                href="/shop"
+                href="/shop/momento-photo-deck-6604"
                 className="
                                     inline-block
                                     bg-[#42A5F5]
@@ -356,11 +371,11 @@ export default function MomentoLanding() {
                                     hover:-translate-y-0.5
                                 "
               >
-                Create Your Deck
+                Create Your Photo Deck
               </Link>
 
               <Link
-                href="/shop"
+                href="/shop/momento-trading-cards-9175/package"
                 className="
                                     inline-block
                                     bg-transparent
@@ -381,7 +396,7 @@ export default function MomentoLanding() {
                                     hover:-translate-y-0.5
                                 "
               >
-                Create a Momento
+                Create Your Trading Card
               </Link>
             </div>
             <div
@@ -445,24 +460,29 @@ export default function MomentoLanding() {
             }}
           >
             {[
-              "✦ Fully Personalized",
-              "✦ Game Nights",
-              "✦ Premium Print",
-              "✦ Couples & Families",
-              "✦ Birthdays",
-              "✦ Graduations",
-              "✦ Holidays",
-              "✦ Gifting",
-              "✦ Fully Personalized",
-              "✦ Game Nights",
-              "✦ Premium Print",
-              "✦ Couples & Families",
-              "✦ Birthdays",
-              "✦ Graduations",
-              "✦ Holidays",
-              "✦ Gifting",
+              "Fully Personalized",
+              "Game Nights",
+              "Premium Print",
+              "Couples & Families",
+              "Birthdays",
+              "Graduations",
+              "Holidays",
+              "Gifting",
+              "Fully Personalized",
+              "Game Nights",
+              "Premium Print",
+              "Couples & Families",
+              "Birthdays",
+              "Graduations",
+              "Holidays",
+              "Gifting",
             ].map((t, i) => (
-              <span key={i}>{t}</span>
+              <span
+                key={i}
+                style={{ display: "inline-flex", alignItems: "center", gap: 6 }}
+              >
+                <FiStar /> {t}
+              </span>
             ))}
           </div>
         </div>
@@ -471,7 +491,7 @@ export default function MomentoLanding() {
         className="texture-bg"
         style={{ padding: "7rem 1.5rem", backgroundColor: "#F5EFE0" }}
       >
-        <div style={{ maxWidth: "72rem", margin: "0 auto" }}>
+        <div className="container mx-auto">
           <div
             className="scroll-reveal"
             style={{ textAlign: "center", marginBottom: "4rem" }}
@@ -500,6 +520,7 @@ export default function MomentoLanding() {
             </p>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            {/* 1. Photo Deck */}
             <div
               className="scroll-reveal card-ui hover-lift"
               style={{
@@ -518,7 +539,7 @@ export default function MomentoLanding() {
               >
                 <Image
                   src={portraitDeckPreview}
-                  alt="Spread of Momento Portrait Deck playing cards"
+                  alt="Spread of Momento Photo Deck playing cards"
                   fill
                   style={{ objectFit: "cover" }}
                 />
@@ -561,7 +582,7 @@ export default function MomentoLanding() {
                       marginBottom: 8,
                     }}
                   >
-                    Portrait Deck
+                    Photo Deck
                   </div>
                   <h3
                     style={{
@@ -572,7 +593,7 @@ export default function MomentoLanding() {
                       color: "#1A1209",
                     }}
                   >
-                    Momento Portrait Deck
+                    Momento Photo Deck
                   </h3>
                   <p
                     style={{
@@ -611,21 +632,26 @@ export default function MomentoLanding() {
                       ),
                     )}
                   </div>
-                  <button
-                    className="btn-primary"
-                    style={{
-                      padding: "0.75rem 1.75rem",
-                      borderRadius: 9999,
-                      fontSize: "0.875rem",
-                      border: "none",
-                      width: "100%",
-                    }}
-                  >
-                    Start Your Deck →
-                  </button>
+                  <Link href="/shop/momento-photo-deck-6604">
+                    <button
+                      className="btn-primary"
+                      style={{
+                        ...iconBtn,
+                        padding: "0.75rem 1.75rem",
+                        borderRadius: 9999,
+                        fontSize: "0.875rem",
+                        border: "none",
+                        width: "100%",
+                      }}
+                    >
+                      Start Your Deck <FiArrowRight />
+                    </button>
+                  </Link>
                 </div>
               </div>
             </div>
+
+            {/* 2. Trading Cards */}
             <div
               className="scroll-reveal card-ui hover-lift"
               style={{
@@ -644,7 +670,7 @@ export default function MomentoLanding() {
               >
                 <Image
                   src={portraitDeckPreview}
-                  alt="Spread of Momento Portrait Deck playing cards"
+                  alt="Spread of Momento Trading Cards"
                   fill
                   style={{ objectFit: "cover" }}
                 />
@@ -687,7 +713,7 @@ export default function MomentoLanding() {
                       marginBottom: 8,
                     }}
                   >
-                    Photo Portrait Deck
+                    Trading Cards
                   </div>
                   <h3
                     style={{
@@ -698,7 +724,7 @@ export default function MomentoLanding() {
                       color: "#1A1209",
                     }}
                   >
-                    Momento Photo Deck
+                    Momento Trading Cards
                   </h3>
                   <p
                     style={{
@@ -737,21 +763,26 @@ export default function MomentoLanding() {
                       ),
                     )}
                   </div>
-                  <button
-                    className="btn-primary"
-                    style={{
-                      padding: "0.75rem 1.75rem",
-                      borderRadius: 9999,
-                      fontSize: "0.875rem",
-                      border: "none",
-                      width: "100%",
-                    }}
-                  >
-                    Start Your Deck →
-                  </button>
+                  <Link href="/shop/momento-trading-cards-9175/package">
+                    <button
+                      className="btn-primary"
+                      style={{
+                        ...iconBtn,
+                        padding: "0.75rem 1.75rem",
+                        borderRadius: 9999,
+                        fontSize: "0.875rem",
+                        border: "none",
+                        width: "100%",
+                      }}
+                    >
+                      Start Your Deck <FiArrowRight />
+                    </button>
+                  </Link>
                 </div>
               </div>
             </div>
+
+            {/* 3. Portrait Deck */}
             <div
               className="scroll-reveal ink-section hover-lift"
               style={{
@@ -771,7 +802,7 @@ export default function MomentoLanding() {
               >
                 <Image
                   src={tradingCardsPreview}
-                  alt="Stack of personalized Momento Trading Cards"
+                  alt="Stack of personalized Momento Portrait Deck cards"
                   fill
                   style={{ objectFit: "cover" }}
                 />
@@ -814,7 +845,7 @@ export default function MomentoLanding() {
                       marginBottom: 8,
                     }}
                   >
-                    Momento Cards
+                    Portrait Deck
                   </div>
                   <h3
                     style={{
@@ -825,7 +856,7 @@ export default function MomentoLanding() {
                       color: "#F5EFE0",
                     }}
                   >
-                    Momento Trading Cards
+                    Momento Portrait Deck
                   </h3>
                   <p
                     style={{
@@ -863,17 +894,20 @@ export default function MomentoLanding() {
                       </span>
                     ))}
                   </div>
-                  <button
-                    className="btn-outline"
-                    style={{
-                      padding: "0.75rem 1.75rem",
-                      borderRadius: 9999,
-                      fontSize: "0.875rem",
-                      width: "100%",
-                    }}
-                  >
-                    Create a Momento →
-                  </button>
+                  <Link href="/shop/momento-portrait-deck-8844">
+                    <button
+                      className="btn-outline"
+                      style={{
+                        ...iconBtn,
+                        padding: "0.75rem 1.75rem",
+                        borderRadius: 9999,
+                        fontSize: "0.875rem",
+                        width: "100%",
+                      }}
+                    >
+                      Create a Momento <FiArrowRight />
+                    </button>
+                  </Link>
                 </div>
               </div>
             </div>
@@ -885,7 +919,7 @@ export default function MomentoLanding() {
         className="ink-section"
         style={{ padding: "7rem 1.5rem" }}
       >
-        <div style={{ maxWidth: "72rem", margin: "0 auto" }}>
+        <div className="container mx-auto">
           <div
             className="scroll-reveal"
             style={{ textAlign: "center", marginBottom: "4rem" }}
@@ -928,15 +962,7 @@ export default function MomentoLanding() {
               {
                 n: "01",
                 icon: (
-                  <svg
-                    style={{ width: 20, height: 20, color: "#1A1209" }}
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    strokeWidth="2.5"
-                  >
-                    <path d="M4 6h16M4 12h8m-8 6h16" />
-                  </svg>
+                  <FiList style={{ width: 20, height: 20, color: "#1A1209" }} />
                 ),
                 title: "Choose Your Product",
                 desc: "Pick between a Momento Portrait Deck or Momento Trading Cards.",
@@ -944,15 +970,9 @@ export default function MomentoLanding() {
               {
                 n: "02",
                 icon: (
-                  <svg
+                  <FiEdit3
                     style={{ width: 20, height: 20, color: "#1A1209" }}
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    strokeWidth="2.5"
-                  >
-                    <path d="M15.232 5.232l3.536 3.536M9 13l6-6m2 2l-9 9H5v-3l9-9z" />
-                  </svg>
+                  />
                 ),
                 title: "Personalize Your Cards",
                 desc: "Upload photos and customize your cards in minutes.",
@@ -960,17 +980,9 @@ export default function MomentoLanding() {
               {
                 n: "03",
                 icon: (
-                  <svg
+                  <FiShoppingCart
                     style={{ width: 20, height: 20, color: "#1A1209" }}
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    strokeWidth="2.5"
-                  >
-                    <circle cx="9" cy="21" r="1" />
-                    <circle cx="20" cy="21" r="1" />
-                    <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
-                  </svg>
+                  />
                 ),
                 title: "Preview & Order",
                 desc: "Preview your design, place your order, and we’ll deliver it straight to your door.",
@@ -1044,17 +1056,20 @@ export default function MomentoLanding() {
             ))}
           </div>
           <div className="scroll-reveal" style={{ textAlign: "center" }}>
-            <button
-              className="btn-primary"
-              style={{
-                padding: "1rem 2.5rem",
-                borderRadius: 9999,
-                fontSize: "1rem",
-                border: "none",
-              }}
-            >
-              Start Creating Now →
-            </button>
+            <Link href="/shop">
+              <button
+                className="btn-primary"
+                style={{
+                  ...iconBtn,
+                  padding: "1rem 2.5rem",
+                  borderRadius: 9999,
+                  fontSize: "1rem",
+                  border: "none",
+                }}
+              >
+                Start Creating Now <FiArrowRight />
+              </button>
+            </Link>
           </div>
         </div>
       </section>
@@ -1083,8 +1098,269 @@ export default function MomentoLanding() {
             </h2>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
+            {/* 1. Photo Deck */}
             <div
-              className="scroll-reveal price-card"
+              className="scroll-reveal price-card flex flex-col justify-between"
+              style={{
+                borderRadius: "1.5rem",
+                padding: "2.5rem",
+                display: "flex",
+                flexDirection: "column",
+              }}
+            >
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "flex-start",
+                  justifyContent: "space-between",
+                  marginBottom: "2rem",
+                }}
+              >
+                <div>
+                  <div
+                    style={{
+                      fontSize: "0.7rem",
+                      fontWeight: 600,
+                      letterSpacing: "0.12em",
+                      textTransform: "uppercase",
+                      color: "rgba(201,168,76,0.6)",
+                      marginBottom: 8,
+                    }}
+                  >
+                    Photo Deck
+                  </div>
+                  <h3
+                    style={{
+                      fontFamily: "'Playfair Display',serif",
+                      fontSize: "1.75rem",
+                      fontWeight: 900,
+                      color: "#F5EFE0",
+                    }}
+                  >
+                    Momento Photo Deck
+                  </h3>
+                </div>
+                <div style={{ textAlign: "right" }}>
+                  <div
+                    style={{
+                      fontFamily: "'Playfair Display',serif",
+                      fontSize: "2.25rem",
+                      fontWeight: 900,
+                      color: "#C9A84C",
+                    }}
+                  >
+                    $59
+                  </div>
+                  <div
+                    style={{
+                      fontSize: "0.7rem",
+                      color: "rgba(245,239,224,0.3)",
+                      marginTop: 4,
+                    }}
+                  >
+                    Full deck
+                  </div>
+                </div>
+              </div>
+
+              <div
+                style={{
+                  position: "relative",
+                  height: 260,
+                  marginBottom: "2rem",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <Image src={deckCardImage} alt="momento-deck-card" fill />
+              </div>
+
+              <p
+                style={{
+                  color: "rgba(245,239,224,0.6)",
+                  lineHeight: 1.7,
+                  marginBottom: "1.5rem",
+                }}
+              >
+                Upload your favorite photos and turn them into a premium deck of
+                personalized playing cards.
+              </p>
+
+              <div
+                style={{
+                  display: "flex",
+                  flexWrap: "wrap",
+                  gap: "0.5rem",
+                  marginBottom: "2rem",
+                }}
+              >
+                {["Game Nights", "Couples", "Family", "Friends"].map((tag) => (
+                  <span
+                    key={tag}
+                    style={{
+                      padding: "4px 12px",
+                      borderRadius: 9999,
+                      fontSize: "0.75rem",
+                      fontWeight: 500,
+                      color: "rgba(201,168,76,0.6)",
+                      background: "rgba(201,168,76,0.08)",
+                      border: "1px solid rgba(201,168,76,0.15)",
+                    }}
+                  >
+                    {tag}
+                  </span>
+                ))}
+              </div>
+
+              <Link href="/shop/momento-photo-deck-6604">
+                <button
+                  className="btn-primary w-full"
+                  style={{
+                    ...iconBtn,
+                    padding: "1rem 2rem",
+                    borderRadius: 9999,
+                    fontSize: "0.875rem",
+                    border: "none",
+                    marginTop: "auto",
+                  }}
+                >
+                  Create Your Photo Deck <FiArrowRight />
+                </button>
+              </Link>
+            </div>
+
+            {/* 2. Trading Cards */}
+            <div
+              className="scroll-reveal price-card lex flex-col justify-between"
+              style={{
+                borderRadius: "1.5rem",
+                padding: "2.5rem",
+                display: "flex",
+                flexDirection: "column",
+              }}
+            >
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "flex-start",
+                  justifyContent: "space-between",
+                  marginBottom: "2rem",
+                }}
+              >
+                <div>
+                  <div
+                    style={{
+                      fontSize: "0.7rem",
+                      fontWeight: 600,
+                      letterSpacing: "0.12em",
+                      textTransform: "uppercase",
+                      color: "rgba(201,168,76,0.6)",
+                      marginBottom: 8,
+                    }}
+                  >
+                    Trading Cards
+                  </div>
+                  <h3
+                    style={{
+                      fontFamily: "'Playfair Display',serif",
+                      fontSize: "1.75rem",
+                      fontWeight: 900,
+                      color: "#F5EFE0",
+                    }}
+                  >
+                    Momento Trading Cards
+                  </h3>
+                </div>
+                <div style={{ textAlign: "right" }}>
+                  <div
+                    style={{
+                      fontFamily: "'Playfair Display',serif",
+                      fontSize: "2.25rem",
+                      fontWeight: 900,
+                      color: "#C9A84C",
+                    }}
+                  >
+                    $54
+                  </div>
+                  <div
+                    style={{
+                      fontSize: "0.7rem",
+                      color: "rgba(245,239,224,0.3)",
+                      marginTop: 4,
+                    }}
+                  >
+                    Full deck
+                  </div>
+                </div>
+              </div>
+              <div
+                style={{
+                  position: "relative",
+                  height: 260,
+                  marginBottom: "2rem",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <Image src={deckCardImage} alt="momento-deck-card" fill />
+              </div>
+              <p
+                style={{
+                  color: "rgba(245,239,224,0.6)",
+                  lineHeight: 1.7,
+                  marginBottom: "1.5rem",
+                }}
+              >
+                Create personalized trading cards celebrating people, memories,
+                achievements, milestones, and the moments that matter most.
+              </p>
+              <div
+                style={{
+                  display: "flex",
+                  flexWrap: "wrap",
+                  gap: "0.5rem",
+                  marginBottom: "2rem",
+                }}
+              >
+                {["Game Nights", "Couples", "Family", "Friends"].map((tag) => (
+                  <span
+                    key={tag}
+                    style={{
+                      padding: "4px 12px",
+                      borderRadius: 9999,
+                      fontSize: "0.75rem",
+                      fontWeight: 500,
+                      color: "rgba(201,168,76,0.6)",
+                      background: "rgba(201,168,76,0.08)",
+                      border: "1px solid rgba(201,168,76,0.15)",
+                    }}
+                  >
+                    {tag}
+                  </span>
+                ))}
+              </div>
+              <Link href="/shop/momento-trading-cards-9175/package">
+                <button
+                  className="btn-primary w-full"
+                  style={{
+                    ...iconBtn,
+                    padding: "1rem 2rem",
+                    borderRadius: 9999,
+                    fontSize: "0.875rem",
+                    border: "none",
+                    marginTop: "auto",
+                  }}
+                >
+                  Create Your Deck <FiArrowRight />
+                </button>
+              </Link>
+            </div>
+
+            {/* 3. Portrait Deck */}
+            <div
+              className="scroll-reveal price-card flex flex-col justify-between"
               style={{
                 borderRadius: "1.5rem",
                 padding: "2.5rem",
@@ -1133,261 +1409,7 @@ export default function MomentoLanding() {
                       color: "#C9A84C",
                     }}
                   >
-                    $59
-                  </div>
-                  <div
-                    style={{
-                      fontSize: "0.7rem",
-                      color: "rgba(245,239,224,0.3)",
-                      marginTop: 4,
-                    }}
-                  >
-                    Full deck
-                  </div>
-                </div>
-              </div>
-              <div
-                style={{
-                  position: "relative",
-                  height: 260,
-                  marginBottom: "2rem",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                <Image src={deckCardImage} alt="momento-deck-card" fill />
-              </div>
-              <p
-                style={{
-                  color: "rgba(245,239,224,0.6)",
-                  lineHeight: 1.7,
-                  marginBottom: "1.5rem",
-                }}
-              >
-                Turn your friends, family, or partner into a fully playable
-                personalized deck where every card feels personal.
-              </p>
-              <div
-                style={{
-                  display: "flex",
-                  flexWrap: "wrap",
-                  gap: "0.5rem",
-                  marginBottom: "2rem",
-                }}
-              >
-                {["Game Nights", "Couples", "Family", "Friends"].map((tag) => (
-                  <span
-                    key={tag}
-                    style={{
-                      padding: "4px 12px",
-                      borderRadius: 9999,
-                      fontSize: "0.75rem",
-                      fontWeight: 500,
-                      color: "rgba(201,168,76,0.6)",
-                      background: "rgba(201,168,76,0.08)",
-                      border: "1px solid rgba(201,168,76,0.15)",
-                    }}
-                  >
-                    {tag}
-                  </span>
-                ))}
-              </div>
-              <button
-                className="btn-primary"
-                style={{
-                  padding: "1rem 2rem",
-                  borderRadius: 9999,
-                  fontSize: "0.875rem",
-                  border: "none",
-                  marginTop: "auto",
-                }}
-              >
-                Create Your Deck →
-              </button>
-            </div>
-            <div
-              className="scroll-reveal price-card"
-              style={{
-                borderRadius: "1.5rem",
-                padding: "2.5rem",
-                display: "flex",
-                flexDirection: "column",
-              }}
-            >
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "flex-start",
-                  justifyContent: "space-between",
-                  marginBottom: "2rem",
-                }}
-              >
-                <div>
-                  <div
-                    style={{
-                      fontSize: "0.7rem",
-                      fontWeight: 600,
-                      letterSpacing: "0.12em",
-                      textTransform: "uppercase",
-                      color: "rgba(201,168,76,0.6)",
-                      marginBottom: 8,
-                    }}
-                  >
-                    Photo Portrait Deck
-                  </div>
-                  <h3
-                    style={{
-                      fontFamily: "'Playfair Display',serif",
-                      fontSize: "1.75rem",
-                      fontWeight: 900,
-                      color: "#F5EFE0",
-                    }}
-                  >
-                    Momento Photo Portrait Deck
-                  </h3>
-                </div>
-                <div style={{ textAlign: "right" }}>
-                  <div
-                    style={{
-                      fontFamily: "'Playfair Display',serif",
-                      fontSize: "2.25rem",
-                      fontWeight: 900,
-                      color: "#C9A84C",
-                    }}
-                  >
-                    $59
-                  </div>
-                  <div
-                    style={{
-                      fontSize: "0.7rem",
-                      color: "rgba(245,239,224,0.3)",
-                      marginTop: 4,
-                    }}
-                  >
-                    Full deck
-                  </div>
-                </div>
-              </div>
-              <div
-                style={{
-                  position: "relative",
-                  height: 260,
-                  marginBottom: "2rem",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                <Image src={deckCardImage} alt="momento-deck-card" fill />
-              </div>
-              <p
-                style={{
-                  color: "rgba(245,239,224,0.6)",
-                  lineHeight: 1.7,
-                  marginBottom: "1.5rem",
-                }}
-              >
-                Bring your favorite people, memories, and milestones to life in
-                a fully playable personalized deck.
-              </p>
-              <div
-                style={{
-                  display: "flex",
-                  flexWrap: "wrap",
-                  gap: "0.5rem",
-                  marginBottom: "2rem",
-                }}
-              >
-                {["Game Nights", "Couples", "Family", "Friends"].map((tag) => (
-                  <span
-                    key={tag}
-                    style={{
-                      padding: "4px 12px",
-                      borderRadius: 9999,
-                      fontSize: "0.75rem",
-                      fontWeight: 500,
-                      color: "rgba(201,168,76,0.6)",
-                      background: "rgba(201,168,76,0.08)",
-                      border: "1px solid rgba(201,168,76,0.15)",
-                    }}
-                  >
-                    {tag}
-                  </span>
-                ))}
-              </div>
-              <button
-                className="btn-primary"
-                style={{
-                  padding: "1rem 2rem",
-                  borderRadius: 9999,
-                  fontSize: "0.875rem",
-                  border: "none",
-                  marginTop: "auto",
-                }}
-              >
-                Create Your Deck →
-              </button>
-            </div>
-            <div
-              className="scroll-reveal price-card"
-              style={{
-                borderRadius: "1.5rem",
-                padding: "2.5rem",
-                display: "flex",
-                flexDirection: "column",
-              }}
-            >
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "flex-start",
-                  justifyContent: "space-between",
-                  marginBottom: "2rem",
-                }}
-              >
-                <div>
-                  <div
-                    style={{
-                      fontSize: "0.7rem",
-                      fontWeight: 600,
-                      letterSpacing: "0.12em",
-                      textTransform: "uppercase",
-                      color: "rgba(201,168,76,0.6)",
-                      marginBottom: 8,
-                    }}
-                  >
-                    Trading Cards
-                  </div>
-                  <h3
-                    style={{
-                      fontFamily: "'Playfair Display',serif",
-                      fontSize: "1.75rem",
-                      fontWeight: 900,
-                      color: "#F5EFE0",
-                    }}
-                  >
-                    Momento Trading Cards
-                  </h3>
-                </div>
-                <div style={{ textAlign: "right" }}>
-                  <div
-                    style={{
-                      fontSize: "0.7rem",
-                      color: "rgba(245,239,224,0.3)",
-                    }}
-                  >
-                    Starting at
-                  </div>
-                  <div
-                    style={{
-                      fontFamily: "'Playfair Display',serif",
-                      fontSize: "2.25rem",
-                      fontWeight: 900,
-                      color: "#C9A84C",
-                    }}
-                  >
-                    $29
+                    $69
                   </div>
                   <div
                     style={{
@@ -1419,7 +1441,8 @@ export default function MomentoLanding() {
                   marginBottom: "1.5rem",
                 }}
               >
-                Six personalized moments • Only $13 per moment
+                Create a premium deck featuring fully customizable characters
+                inspired by your favorite people.
               </p>
               <div
                 style={{
@@ -1446,25 +1469,28 @@ export default function MomentoLanding() {
                   </span>
                 ))}
               </div>
-              <button
-                className="btn-primary"
-                style={{
-                  padding: "1rem 2rem",
-                  borderRadius: 9999,
-                  fontSize: "0.875rem",
-                  border: "none",
-                  marginTop: "auto",
-                }}
-              >
-                Create Your Momento →
-              </button>
+              <Link href="/shop/momento-portrait-deck-8844">
+                <button
+                  className="btn-primary w-full"
+                  style={{
+                    ...iconBtn,
+                    padding: "1rem 2rem",
+                    borderRadius: 9999,
+                    fontSize: "0.875rem",
+                    border: "none",
+                    marginTop: "auto",
+                  }}
+                >
+                  Create Your Portrait Deck <FiArrowRight />
+                </button>
+              </Link>
             </div>
           </div>
         </div>
       </section>
 
       <section className="ink-section" style={{ padding: "7rem 1.5rem" }}>
-        <div style={{ maxWidth: "72rem", margin: "0 auto" }}>
+        <div className="container mx-auto">
           <div
             className="scroll-reveal"
             style={{ textAlign: "center", marginBottom: "4rem" }}
@@ -1577,12 +1603,16 @@ export default function MomentoLanding() {
           </div>
 
           <div className="scroll-reveal flex flex-wrap gap-3 justify-center">
-            <button className="btn-outline text-sm sm:text-base px-6 sm:px-10 py-3 sm:py-4 rounded-full whitespace-nowrap bg-[#CFB055] text-black hover:text-[#CFB055]">
-              Create your Deck →
-            </button>
-            <button className="btn-outline text-sm sm:text-base px-6 sm:px-10 py-3 sm:py-4 rounded-full whitespace-nowrap">
-              Create a Momento →
-            </button>
+            <Link href="/shop/momento-photo-deck-6604">
+              <button className="btn-outline text-sm sm:text-base px-6 sm:px-10 py-3 sm:py-4 rounded-full whitespace-nowrap bg-[#CFB055] text-black hover:text-[#CFB055] inline-flex items-center justify-center gap-2">
+                Create your Deck <FiArrowRight />
+              </button>
+            </Link>
+            <Link href="/shop/momento-trading-cards-9175/package">
+              <button className="btn-outline text-sm sm:text-base px-6 sm:px-10 py-3 sm:py-4 rounded-full whitespace-nowrap inline-flex items-center justify-center gap-2">
+                Create a Momento <FiArrowRight />
+              </button>
+            </Link>
           </div>
         </div>
       </section>
@@ -1590,7 +1620,7 @@ export default function MomentoLanding() {
         className="texture-bg"
         style={{ padding: "7rem 1.5rem", backgroundColor: "#F5EFE0" }}
       >
-        <div style={{ maxWidth: "72rem", margin: "0 auto" }}>
+        <div className="container mx-auto">
           <div
             className="scroll-reveal"
             style={{ textAlign: "center", marginBottom: "5rem" }}
@@ -1644,15 +1674,9 @@ export default function MomentoLanding() {
                       background: "linear-gradient(135deg,#C9A84C,#a07830)",
                     }}
                   >
-                    <svg
+                    <FiCheck
                       style={{ width: 16, height: 16, color: "#1A1209" }}
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                      strokeWidth="2.5"
-                    >
-                      <polyline points="20 6 9 17 4 12" />
-                    </svg>
+                    />
                   </div>
                   <span style={{ fontWeight: 500, color: "#1A1209" }}>{t}</span>
                 </div>
@@ -1738,9 +1762,9 @@ export default function MomentoLanding() {
                         border: "1px solid rgba(201,168,76,0.1)",
                       }}
                     >
-                      <span style={{ fontSize: "1.25rem", color: "#F5EFE0" }}>
-                        ✦
-                      </span>
+                      <FiStar
+                        style={{ fontSize: "1.25rem", color: "#F5EFE0" }}
+                      />
                       <div>
                         <div
                           style={{
@@ -1787,7 +1811,7 @@ export default function MomentoLanding() {
       </section>
 
       <section className="ink-section" style={{ padding: "4rem 1.5rem" }}>
-        <div style={{ maxWidth: "56rem", margin: "0 auto" }}>
+        <div className="container mx-auto">
           <div
             className="scroll-reveal"
             style={{
@@ -1799,24 +1823,24 @@ export default function MomentoLanding() {
           >
             {[
               {
-                emoji: "🎯",
+                icon: FiTarget,
                 title: "Made on demand",
                 desc: "Each order is created just for you — no stock, no shortcuts.",
                 border: false,
               },
               {
-                emoji: "🔑",
+                icon: FiKey,
                 title: "Limited creator codes",
                 desc: "Early access offers available for a limited time.",
                 border: true,
               },
               {
-                emoji: "🚀",
+                icon: FaRocket,
                 title: "Order now",
                 desc: "Get your cards as fast as possible — order today.",
                 border: false,
               },
-            ].map(({ emoji, title, desc, border }) => (
+            ].map(({ icon: Icon, title, desc, border }) => (
               <div
                 key={title}
                 style={{
@@ -1829,8 +1853,16 @@ export default function MomentoLanding() {
                     : {}),
                 }}
               >
-                <div style={{ fontSize: "2rem", marginBottom: "0.75rem" }}>
-                  {emoji}
+                <div
+                  style={{
+                    fontSize: "2rem",
+                    marginBottom: "0.75rem",
+                    display: "flex",
+                    justifyContent: "center",
+                    color: "#C9A84C",
+                  }}
+                >
+                  <Icon />
                 </div>
                 <div
                   style={{
@@ -1866,13 +1898,14 @@ export default function MomentoLanding() {
       >
         <div style={{ position: "absolute", inset: 0, pointerEvents: "none" }}>
           <div
+            className="container mx-auto"
             style={{
               position: "absolute",
               top: 0,
               left: "50%",
               transform: "translateX(-50%)",
               width: "100%",
-              maxWidth: "48rem",
+
               height: "100%",
               background:
                 "radial-gradient(ellipse at center top,rgba(201,168,76,0.1) 0%,transparent 60%)",
@@ -1927,28 +1960,34 @@ export default function MomentoLanding() {
               marginBottom: "3rem",
             }}
           >
-            <button
-              className="btn-primary"
-              style={{
-                padding: "1.25rem 3rem",
-                borderRadius: 9999,
-                fontSize: "1.125rem",
-                border: "none",
-                boxShadow: "0 20px 60px rgba(201,168,76,0.3)",
-              }}
-            >
-              Explore Cards
-            </button>
-            <button
-              className="btn-outline"
-              style={{
-                padding: "1.25rem 3rem",
-                borderRadius: 9999,
-                fontSize: "1.125rem",
-              }}
-            >
-              Start Creating
-            </button>
+            <Link href="/shop">
+              <button
+                className="btn-primary"
+                style={{
+                  ...iconBtn,
+                  padding: "1.25rem 3rem",
+                  borderRadius: 9999,
+                  fontSize: "1.125rem",
+                  border: "none",
+                  boxShadow: "0 20px 60px rgba(201,168,76,0.3)",
+                }}
+              >
+                Explore Cards
+              </button>
+            </Link>
+            <Link href="/shop/momento-photo-deck-6604">
+              <button
+                className="btn-outline"
+                style={{
+                  ...iconBtn,
+                  padding: "1.25rem 3rem",
+                  borderRadius: 9999,
+                  fontSize: "1.125rem",
+                }}
+              >
+                Start Creating
+              </button>
+            </Link>
           </div>
           <div
             style={{
@@ -1961,7 +2000,11 @@ export default function MomentoLanding() {
               flexWrap: "wrap",
             }}
           >
-            <span>✦ No design skills needed</span>
+            <span
+              style={{ display: "inline-flex", alignItems: "center", gap: 6 }}
+            >
+              <FiStar /> No design skills needed
+            </span>
             <span>·</span>
             <span>Starting at $29</span>
             <span>·</span>

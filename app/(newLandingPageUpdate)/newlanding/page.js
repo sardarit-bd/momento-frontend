@@ -13,11 +13,12 @@ import {
   FiStar,
   FiTarget,
 } from "react-icons/fi";
-import portraitDeckPreview from "../../../public/mockup1.png";
-import deckCardImage from "../../../public/mockup4.png";
-import TradingCardImage from "../../../public/mockup5.png";
-import tradingCardsPreview from "../../../public/mockup6.png";
-import TradingCardImage6 from "../../../public/mockup7.png";
+import portraitDeckImage from "../../../public/mockup4.png";
+import {
+  default as TradingCardImage6,
+  default as tradingCardsImage,
+} from "../../../public/mockup7.png";
+import photoDeckImage from "../../../public/mockup9.webp";
 
 const iconBtn = {
   display: "inline-flex",
@@ -538,7 +539,7 @@ export default function MomentoLanding() {
                 }}
               >
                 <Image
-                  src={portraitDeckPreview}
+                  src={photoDeckImage}
                   alt="Spread of Momento Photo Deck playing cards"
                   fill
                   style={{ objectFit: "cover" }}
@@ -669,7 +670,7 @@ export default function MomentoLanding() {
                 }}
               >
                 <Image
-                  src={portraitDeckPreview}
+                  src={tradingCardsImage}
                   alt="Spread of Momento Trading Cards"
                   fill
                   style={{ objectFit: "cover" }}
@@ -801,7 +802,7 @@ export default function MomentoLanding() {
                 }}
               >
                 <Image
-                  src={tradingCardsPreview}
+                  src={portraitDeckImage}
                   alt="Stack of personalized Momento Portrait Deck cards"
                   fill
                   style={{ objectFit: "cover" }}
@@ -1173,7 +1174,7 @@ export default function MomentoLanding() {
                   justifyContent: "center",
                 }}
               >
-                <Image src={deckCardImage} alt="momento-deck-card" fill />
+                <Image src={photoDeckImage} alt="Momento Photo Deck" fill />
               </div>
 
               <p
@@ -1304,7 +1305,11 @@ export default function MomentoLanding() {
                   justifyContent: "center",
                 }}
               >
-                <Image src={deckCardImage} alt="momento-deck-card" fill />
+                <Image
+                  src={tradingCardsImage}
+                  alt="Momento Trading Cards"
+                  fill
+                />
               </div>
               <p
                 style={{
@@ -1432,7 +1437,11 @@ export default function MomentoLanding() {
                   justifyContent: "center",
                 }}
               >
-                <Image src={TradingCardImage} alt="momento-deck-card" fill />
+                <Image
+                  src={portraitDeckImage}
+                  alt="Momento Portrait Deck"
+                  fill
+                />
               </div>
               <p
                 style={{

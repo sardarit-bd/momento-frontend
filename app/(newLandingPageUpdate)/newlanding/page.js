@@ -1174,7 +1174,7 @@ export default function MomentoLanding() {
                   justifyContent: "center",
                 }}
               >
-                <Image src={photoDeckImage} alt="Momento Photo Deck" fill />
+                <Image src={photoDeckImage} alt="Momento Photo Deck" />
               </div>
 
               <p
@@ -1305,11 +1305,7 @@ export default function MomentoLanding() {
                   justifyContent: "center",
                 }}
               >
-                <Image
-                  src={tradingCardsImage}
-                  alt="Momento Trading Cards"
-                  fill
-                />
+                <Image src={tradingCardsImage} alt="Momento Trading Cards" />
               </div>
               <p
                 style={{
@@ -1437,11 +1433,7 @@ export default function MomentoLanding() {
                   justifyContent: "center",
                 }}
               >
-                <Image
-                  src={portraitDeckImage}
-                  alt="Momento Portrait Deck"
-                  fill
-                />
+                <Image src={portraitDeckImage} alt="Momento Portrait Deck" />
               </div>
               <p
                 style={{

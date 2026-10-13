@@ -34,6 +34,8 @@ const TradingCardCaptureNode = React.forwardRef(
       backLegacyText,
       isblack,
       cardNumber,
+      backCardNumber,
+      backProductName,
       topLeftIcon,
       topRightIcon,
     },
@@ -164,7 +166,8 @@ const TradingCardCaptureNode = React.forwardRef(
               legacyTagline={backLegacyTagline}
               legacyText={backLegacyText}
               isblack={isblack}
-              cardNumber={cardNumber}
+              cardNumber={backCardNumber}
+              productName={backProductName}
               topLeftIcon={topLeftIcon}
               topRightIcon={topRightIcon}
             />

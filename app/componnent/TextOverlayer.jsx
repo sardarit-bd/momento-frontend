@@ -917,19 +917,46 @@ export const BackOne = ({
   legacyTagline,
   legacyText,
   isblack,
+  cardNumber,
+  productName,
 }) => {
   const safeHighlights = Array.isArray(highlights)
     ? highlights.slice(0, 6)
     : [];
+  const backNumberText = formatCardNumber(cardNumber);
 
   return (
     <div
       className="w-full h-full relative"
       style={{ backgroundColor: "transparent" }}
     >
-      <span className="TradingCardDateGrayGradient text-xl font-extrabold absolute top-10 left-8 text-center w-44 z-50 tracking-tighter">
-        {(dateLabel || "Memory Card").toUpperCase()}
+      {console.log("productName: ", productName)}
+      <span className="TradingCardDateGrayGradient text-xl font-extrabold absolute top-11 left-8 text-center w-44 z-50  whitespace-nowrap">
+        {(productName || dateLabel || "Memory Card").toUpperCase()}
       </span>
+
+      {backNumberText && (
+        <div
+          className="GustanBlackFont"
+          style={{
+            position: "absolute",
+            top: "54px",
+            left: "243px",
+            width: "114px",
+            height: "20px",
+            lineHeight: "20px",
+            textAlign: "center",
+            fontSize: "15px",
+            fontWeight: 900,
+            color: "#0f2438",
+            letterSpacing: "0.5px",
+            whiteSpace: "nowrap",
+            zIndex: 60,
+          }}
+        >
+          {backNumberText}
+        </div>
+      )}
 
       <span
         className={`${isblack ? "text-black" : "text-white"} text-xs AileronFont tracking-wider font-thin leading-[1.1] absolute top-22 left-15 text-center wrap-break-word w-67.5 z-50`}
@@ -945,7 +972,7 @@ export const BackOne = ({
       </span>
 
       <span
-        className={`${isblack ? "text-black" : "text-white"} text-md font-extrabold absolute top-44 left-37 text-left w-46.25 z-50 tracking-tighter`}
+        className={`${isblack ? "text-black" : "text-white"} text-md font-extrabold absolute top-44 left-0 text-center w-full whitespace-nowrap z-50 tracking-tighter`}
       >
         {(highlightsTitle || "Highlights").toUpperCase()}
       </span>
@@ -993,7 +1020,7 @@ export const BackOne = ({
       )}
 
       <span
-        className={`${isblack ? "text-black" : "text-white"} text-md font-extrabold absolute top-98.5 left-15 text-right w-44 z-50 tracking-tighter`}
+        className={`${isblack ? "text-black" : "text-white"} text-md font-extrabold absolute top-98.5 left-0 text-center w-full whitespace-nowrap z-50 tracking-tighter`}
       >
         {(legacyTagline || "Legacy Tagline").toUpperCase()}
       </span>

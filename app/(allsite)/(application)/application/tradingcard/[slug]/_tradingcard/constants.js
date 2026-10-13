@@ -64,6 +64,12 @@ export const TEMPLATE_MAP = {
   2: { image: "/trading-cards/trading-front2-transparent.png", cardfinder: 1 },
   3: { image: "/trading-cards/trading-front3-transparent.png", cardfinder: 2 },
 };
+
+export const TEMPLATE_NAME_MAP = {
+  1: "The Icon",
+  2: "The Moment",
+  3: "The Milestone",
+};
 const CORNER_ICON_NAMES = [
   "Achievement",
   "Airplane",
@@ -98,3 +104,10 @@ export const cardCornerIconOptions = CORNER_ICON_NAMES.map((label) => ({
   value: encodeURI(`/card-type-icons/${label}.png`),
 }));
 export const DEFAULT_CORNER_ICON = cardCornerIconOptions[0].value;
+export const BACK_LIMITS = {
+  description: 250,
+  highlightsTitle: 12,
+  highlightText: 32,
+  legacyTagline: 14,
+  legacyText: 180,
+};

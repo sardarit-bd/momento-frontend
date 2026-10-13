@@ -16,6 +16,7 @@ import {
   defaultBackHighlights,
   PACKAGE_CONFIG,
   TEMPLATE_MAP,
+  TEMPLATE_NAME_MAP,
 } from "../constants";
 import { idbDelete, idbGet, idbGetKeysByPrefix, idbPut } from "../lib/idb";
 
@@ -195,6 +196,7 @@ export function useTradingCardState() {
   const [acarddatelimite, setacarddatelimite] = useState(15);
   const [isblack, setisblack] = useState(false);
   const [cardNumber, setCardNumber] = useState("#01");
+  const [backCardNumber, setBackCardNumber] = useState("#01");
   const [topLeftIcon, setTopLeftIcon] = useState(DEFAULT_CORNER_ICON);
   const [topRightIcon, setTopRightIcon] = useState(DEFAULT_CORNER_ICON);
   const getBaseTrading = useCallback(
@@ -232,6 +234,7 @@ export function useTradingCardState() {
             setworkingcard(saved?.workingcard || "front");
             setisblack(Boolean(saved?.isblack));
             setCardNumber(saved?.content?.cardNumber ?? "#01");
+            setBackCardNumber(saved?.content?.backCardNumber ?? "#01");
             setTopLeftIcon(s.topLeftIcon ?? DEFAULT_CORNER_ICON);
             setTopRightIcon(s.topRightIcon ?? DEFAULT_CORNER_ICON);
             setcardti(saved?.content?.cardti ?? "Title");
@@ -468,6 +471,7 @@ export function useTradingCardState() {
         carddes,
         packageTitle,
         cardNumber,
+        backCardNumber,
         topLeftIcon,
         topRightIcon,
         name,
@@ -524,6 +528,7 @@ export function useTradingCardState() {
     backLegacyText,
     selectedPackage,
     cardNumber,
+    backCardNumber,
     topLeftIcon,
     topRightIcon,
   ]);
@@ -832,6 +837,7 @@ export function useTradingCardState() {
       const snapshot = {
         baseFront,
         cardNumber,
+        backCardNumber,
         topLeftIcon,
         topRightIcon,
         uploads,
@@ -924,6 +930,7 @@ export function useTradingCardState() {
           cardti,
           carddes,
           cardNumber,
+          backCardNumber,
           topLeftIcon,
           topRightIcon,
           name,
@@ -994,6 +1001,7 @@ export function useTradingCardState() {
     setisblack(Boolean(s.isblack));
     setAttributeName(s.attributeName ?? "");
     setCardNumber(s.cardNumber ?? "#01");
+    setBackCardNumber(s.backCardNumber ?? "#01");
     setTopLeftIcon(s.topLeftIcon ?? null);
     setTopRightIcon(s.topRightIcon ?? null);
     setBackDate(s.backDate ?? "");
@@ -1241,6 +1249,9 @@ export function useTradingCardState() {
     handleUpload,
     cardNumber,
     setCardNumber,
+    backCardNumber,
+    setBackCardNumber,
+    backProductName: TEMPLATE_NAME_MAP[selectedTemplate] ?? "",
     topLeftIcon,
     setTopLeftIcon,
     topRightIcon,

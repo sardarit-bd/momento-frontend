@@ -44,6 +44,8 @@ export default function TradingCardPreview({
   backLegacyText,
   isblack,
   cardNumber,
+  backCardNumber,
+  backProductName,
   topLeftIcon,
   topRightIcon,
   isMini = false,
@@ -213,6 +215,8 @@ export default function TradingCardPreview({
               legacyTagline={backLegacyTagline}
               legacyText={backLegacyText}
               isblack={isblack}
+              cardNumber={backCardNumber}
+              productName={backProductName}
             />
           )}
         </div>
@@ -479,6 +483,8 @@ export default function TradingCardPreview({
                   legacyTagline={backLegacyTagline}
                   legacyText={backLegacyText}
                   isblack={isblack}
+                  cardNumber={backCardNumber}
+                  productName={backProductName}
                 />
               )}
             </div>

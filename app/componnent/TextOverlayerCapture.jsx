@@ -1308,15 +1308,31 @@ export const BackOneCapture = ({
   legacyTagline,
   legacyText,
   isblack,
+  cardNumber,
+  productName,
 }) => {
   const safeHighlights = Array.isArray(highlights)
     ? highlights.slice(0, 6)
     : [];
   const textColor = isblack ? "#000000" : "#ffffff";
+  const backNumberText = formatCardNumber(cardNumber);
 
   return (
     <div style={{ position: "relative", width: "390px", height: "570px" }}>
-      <GradientDateLabel dateLabel={dateLabel} />
+      <GradientDateLabel dateLabel={productName || dateLabel} />
+
+      {backNumberText && (
+        <InkCenteredTextCapture
+          text={backNumberText}
+          cx={300}
+          cy={67}
+          w={114}
+          h={24}
+          font={`900 13px GustanBlackCanvas`}
+          color="#0f2438"
+          letterSpacing={0.5}
+        />
+      )}
 
       <span
         style={{
@@ -1340,14 +1356,15 @@ export const BackOneCapture = ({
         style={{
           position: "absolute",
           top: "166px",
-          left: "148px",
-          width: "185px",
+          left: "0px",
+          width: "390px",
           fontFamily: "AileronCanvas",
           fontWeight: 800,
           fontSize: "16px",
           color: textColor,
           letterSpacing: "-0.02em",
-          textAlign: "left",
+          textAlign: "center",
+          whiteSpace: "nowrap",
         }}
       >
         {(highlightsTitle || "Highlights").toUpperCase()}

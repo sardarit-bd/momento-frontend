@@ -126,6 +126,8 @@ export default function ProductCustomizer() {
               backLegacyText={state.backLegacyText}
               isblack={state.isblack}
               cardNumber={state.cardNumber}
+              backCardNumber={state.backCardNumber}
+              backProductName={state.backProductName}
               topLeftIcon={state.topLeftIcon}
               topRightIcon={state.topRightIcon}
             />
@@ -201,6 +203,8 @@ export default function ProductCustomizer() {
               renderIconPreview={state.renderIconPreview}
               cardNumber={state.cardNumber}
               setCardNumber={state.setCardNumber}
+              backCardNumber={state.backCardNumber}
+              setBackCardNumber={state.setBackCardNumber}
               topLeftIcon={state.topLeftIcon}
               setTopLeftIcon={state.setTopLeftIcon}
               topRightIcon={state.topRightIcon}
@@ -291,6 +295,8 @@ export default function ProductCustomizer() {
               backLegacyText={state.backLegacyText}
               isblack={state.isblack}
               cardNumber={state.cardNumber}
+              backCardNumber={state.backCardNumber}
+              backProductName={state.backProductName}
               topLeftIcon={state.topLeftIcon}
               topRightIcon={state.topRightIcon}
             />
@@ -532,6 +538,8 @@ export default function ProductCustomizer() {
                 renderIconPreview={state.renderIconPreview}
                 cardNumber={state.cardNumber}
                 setCardNumber={state.setCardNumber}
+                backCardNumber={state.backCardNumber}
+                setBackCardNumber={state.setBackCardNumber}
                 topLeftIcon={state.topLeftIcon}
                 setTopLeftIcon={state.setTopLeftIcon}
                 topRightIcon={state.topRightIcon}
@@ -594,6 +602,8 @@ export default function ProductCustomizer() {
         backLegacyText={state.backLegacyText}
         isblack={state.isblack}
         cardNumber={state.cardNumber}
+        backCardNumber={state.backCardNumber}
+        backProductName={state.backProductName}
         topLeftIcon={state.topLeftIcon}
         topRightIcon={state.topRightIcon}
       />

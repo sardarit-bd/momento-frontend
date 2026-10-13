@@ -11,6 +11,7 @@ import {
 } from "react-icons/bs";
 import { CiCirclePlus } from "react-icons/ci";
 import {
+  BACK_LIMITS,
   TEMPLATE_MAP,
   attributeIconOptions,
   cardCornerIconOptions,
@@ -88,6 +89,8 @@ export default function TradingCardControls({
   renderIconPreview,
   cardNumber,
   setCardNumber,
+  backCardNumber,
+  setBackCardNumber,
   topLeftIcon,
   setTopLeftIcon,
   topRightIcon,
@@ -184,6 +187,8 @@ export default function TradingCardControls({
             renderIconPreview={renderIconPreview}
             cardNumber={cardNumber}
             setCardNumber={setCardNumber}
+            backCardNumber={backCardNumber}
+            setBackCardNumber={setBackCardNumber}
             topLeftIcon={topLeftIcon}
             setTopLeftIcon={setTopLeftIcon}
             topRightIcon={topRightIcon}
@@ -325,6 +330,8 @@ export default function TradingCardControls({
             renderIconPreview={renderIconPreview}
             cardNumber={cardNumber}
             setCardNumber={setCardNumber}
+            backCardNumber={backCardNumber}
+            setBackCardNumber={setBackCardNumber}
             topLeftIcon={topLeftIcon}
             setTopLeftIcon={setTopLeftIcon}
             topRightIcon={topRightIcon}
@@ -438,6 +445,8 @@ function PanelContent({
   renderIconPreview,
   cardNumber,
   setCardNumber,
+  backCardNumber,
+  setBackCardNumber,
   topLeftIcon,
   setTopLeftIcon,
   topRightIcon,
@@ -632,11 +641,38 @@ function PanelContent({
       {sidebarTab === "back" && (
         <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm space-y-5">
           <div>
-            <label className="block text-gray-800 font-semibold mb-2">
-              Description
+            <label className="mb-2 flex items-center justify-between text-gray-800 font-semibold">
+              <span>Back Card Number</span>
+              <CharactersCountComponent
+                text={String(backCardNumber ?? "").replace(/\D/g, "")}
+                limit={3}
+              />
+            </label>
+            <input
+              value={String(backCardNumber ?? "").replace(/\D/g, "")}
+              maxLength={3}
+              inputMode="numeric"
+              pattern="[0-9]*"
+              onChange={(e) =>
+                setBackCardNumber(e.target.value.replace(/\D/g, ""))
+              }
+              type="text"
+              placeholder="01"
+              className="h-11 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 text-gray-700 outline-none transition-all duration-200 focus:ring-2 focus:ring-gray-300 focus:border-gray-300"
+            />
+          </div>
+
+          <div>
+            <label className="mb-2 flex items-center justify-between text-gray-800 font-semibold">
+              <span>Description</span>
+              <CharactersCountComponent
+                text={backDescription}
+                limit={BACK_LIMITS.description}
+              />
             </label>
             <textarea
               value={backDescription}
+              maxLength={BACK_LIMITS.description}
               onChange={(e) => setBackDescription(e.target.value)}
               placeholder="Add a brief description..."
               className="w-full h-24 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-gray-700 outline-none transition-all duration-200 focus:ring-2 focus:ring-gray-300 focus:border-gray-300"
@@ -644,11 +680,16 @@ function PanelContent({
           </div>
 
           <div>
-            <label className="block text-gray-800 font-semibold mb-2">
-              Highlights Title
+            <label className="mb-2 flex items-center justify-between text-gray-800 font-semibold">
+              <span>Highlights Title</span>
+              <CharactersCountComponent
+                text={backHighlightsTitle}
+                limit={BACK_LIMITS.highlightsTitle}
+              />
             </label>
             <input
               value={backHighlightsTitle}
+              maxLength={BACK_LIMITS.highlightsTitle}
               onChange={(e) => setBackHighlightsTitle(e.target.value)}
               className="h-11 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 text-gray-700 outline-none transition-all duration-200 focus:ring-2 focus:ring-gray-300 focus:border-gray-300 mb-4"
             />
@@ -683,6 +724,7 @@ function PanelContent({
                   </button>
                   <input
                     value={item.text}
+                    maxLength={BACK_LIMITS.highlightText}
                     onChange={(e) =>
                       updateBackHighlightText(item.id, e.target.value)
                     }
@@ -722,22 +764,32 @@ function PanelContent({
           <div className="h-px w-full bg-slate-200" />
 
           <div>
-            <label className="block text-gray-800 font-semibold mb-2">
-              Legacy Tagline
+            <label className="mb-2 flex items-center justify-between text-gray-800 font-semibold">
+              <span>Legacy Tagline</span>
+              <CharactersCountComponent
+                text={backLegacyTagline}
+                limit={BACK_LIMITS.legacyTagline}
+              />
             </label>
             <input
               value={backLegacyTagline}
+              maxLength={BACK_LIMITS.legacyTagline}
               onChange={(e) => setBackLegacyTagline(e.target.value)}
               className="h-11 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 text-gray-700 outline-none transition-all duration-200 focus:ring-2 focus:ring-gray-300 focus:border-gray-300"
             />
           </div>
 
           <div>
-            <label className="block text-gray-800 font-semibold mb-2">
-              Legacy Text
+            <label className="mb-2 flex items-center justify-between text-gray-800 font-semibold">
+              <span>Legacy Text</span>
+              <CharactersCountComponent
+                text={backLegacyText}
+                limit={BACK_LIMITS.legacyText}
+              />
             </label>
             <textarea
               value={backLegacyText}
+              maxLength={BACK_LIMITS.legacyText}
               onChange={(e) => setBackLegacyText(e.target.value)}
               className="w-full h-24 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-gray-700 outline-none transition-all duration-200 focus:ring-2 focus:ring-gray-300 focus:border-gray-300"
             />

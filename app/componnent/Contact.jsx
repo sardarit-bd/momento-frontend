@@ -12,13 +12,15 @@ import {
   MessageSquare,
   Package,
   Pencil,
+  Phone,
   Send,
   ShieldCheck,
   Tag,
   User,
 } from "lucide-react";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { toast, ToastContainer } from "react-toastify";
+import * as Yup from "yup";
 import SpinLoader from "./SpingLoader";
 
 const INQUIRY_CATEGORIES = [
@@ -45,10 +47,72 @@ const NAVY = "#0B1B33";
 const BLUE = "#4F8CFF";
 const BLUE_LIGHT = "#5B9DFF";
 
+const formatDateInput = (raw) => {
+  const digits = String(raw || "")
+    .replace(/\D/g, "")
+    .slice(0, 8);
+  if (digits.length <= 2) return digits;
+  if (digits.length <= 4) return `${digits.slice(0, 2)}/${digits.slice(2)}`;
+  return `${digits.slice(0, 2)}/${digits.slice(2, 4)}/${digits.slice(4)}`;
+};
+
+const isValidDate = (value) => {
+  const m = /^(\d{2})\/(\d{2})\/(\d{4})$/.exec(value || "");
+  if (!m) return false;
+  const month = Number(m[1]);
+  const day = Number(m[2]);
+  const year = Number(m[3]);
+  const d = new Date(year, month - 1, day);
+  return (
+    d.getFullYear() === year &&
+    d.getMonth() === month - 1 &&
+    d.getDate() === day
+  );
+};
+
+const contactSchema = Yup.object({
+  name: Yup.string().trim().required("Please enter your name"),
+  email: Yup.string()
+    .trim()
+    .email("Please enter a valid email address")
+    .required("Please enter your email"),
+  phone: Yup.string()
+    .trim()
+    .test("valid-phone", "Please enter a valid phone number", (value) => {
+      if (!value) return true;
+      const digits = value.replace(/\D/g, "");
+      return (
+        /^\+?[0-9\s\-()]+$/.test(value) &&
+        digits.length >= 7 &&
+        digits.length <= 15
+      );
+    }),
+  inquiryType: Yup.string().required("Please choose an inquiry type"),
+  eventDate: Yup.string()
+    .trim()
+    .test(
+      "valid-date",
+      "Please enter a valid date (MM/DD/YYYY)",
+      (value) => !value || isValidDate(value),
+    ),
+  message: Yup.string().trim().required("Please enter your message"),
+});
+
+const FieldError = ({ message }) =>
+  message ? <p className="mt-1.5 text-xs text-red-500">{message}</p> : null;
+
+const inputCore =
+  "w-full pl-11 pr-4 py-3 rounded-xl bg-white border focus:outline-none transition-all duration-200 text-slate-800 placeholder-slate-400 text-sm";
+const inputOk =
+  "border-slate-200 focus:border-[#4F8CFF] focus:ring-2 focus:ring-[#4F8CFF]/15";
+const inputErr =
+  "border-red-400 focus:border-red-400 focus:ring-2 focus:ring-red-100";
+
 export default function ContactForm() {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
+    phone: "",
     inquiryType: "",
     category: "",
     company: "",
@@ -56,23 +120,61 @@ export default function ContactForm() {
     quantity: "",
     message: "",
   });
+  const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
+  const datePickerRef = useRef(null);
+
+  const clearError = (name) => {
+    setErrors((prev) => {
+      if (!prev[name]) return prev;
+      const next = { ...prev };
+      delete next[name];
+      return next;
+    });
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    const nextValue = name === "eventDate" ? formatDateInput(value) : value;
+    setFormData((prev) => ({ ...prev, [name]: nextValue }));
+    clearError(name);
   };
 
   const handleCategorySelect = (id) => {
     setFormData((prev) => ({ ...prev, category: id }));
   };
 
+  const openDatePicker = () => {
+    const el = datePickerRef.current;
+    if (!el) return;
+    try {
+      if (typeof el.showPicker === "function") el.showPicker();
+      else el.click();
+    } catch {
+      el.click();
+    }
+  };
+
+  const handleDatePick = (e) => {
+    const value = e.target.value;
+    if (!value) return;
+    const [y, m, d] = value.split("-");
+    setFormData((prev) => ({ ...prev, eventDate: `${m}/${d}/${y}` }));
+    clearError("eventDate");
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const { name, email, message } = formData;
 
-    if (!name || !email || !message) {
-      toast.warn("Please fill up all required fields");
+    try {
+      await contactSchema.validate(formData, { abortEarly: false });
+      setErrors({});
+    } catch (validationError) {
+      const next = {};
+      (validationError.inner || []).forEach((err) => {
+        if (err.path && !next[err.path]) next[err.path] = err.message;
+      });
+      setErrors(next);
       return;
     }
 
@@ -84,6 +186,7 @@ export default function ContactForm() {
         setFormData({
           name: "",
           email: "",
+          phone: "",
           inquiryType: "",
           category: "",
           company: "",
@@ -91,6 +194,7 @@ export default function ContactForm() {
           quantity: "",
           message: "",
         });
+        setErrors({});
         toast.success(response?.message || "Inquiry sent successfully!");
       } else {
         toast.error("Something went wrong. Please try again later.");
@@ -102,8 +206,8 @@ export default function ContactForm() {
     }
   };
 
-  const inputBase =
-    "w-full pl-11 pr-4 py-3 rounded-xl bg-white border border-slate-200 focus:border-[#4F8CFF] focus:ring-2 focus:ring-[#4F8CFF]/15 focus:outline-none transition-all duration-200 text-slate-800 placeholder-slate-400 text-sm";
+  const fieldClass = (field) =>
+    `${inputCore} ${errors[field] ? inputErr : inputOk}`;
   const labelBase =
     "block text-slate-700 text-xs font-semibold uppercase tracking-wider mb-2";
 
@@ -228,7 +332,7 @@ export default function ContactForm() {
         </div>
 
         <div className="p-6 sm:p-10">
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit} noValidate className="space-y-6">
             <div className="grid sm:grid-cols-2 gap-5">
               <div>
                 <label className={labelBase}>
@@ -241,10 +345,10 @@ export default function ContactForm() {
                     value={formData.name}
                     onChange={handleChange}
                     placeholder="Your full name"
-                    required
-                    className={inputBase}
+                    className={fieldClass("name")}
                   />
                 </div>
+                <FieldError message={errors.name} />
               </div>
               <div>
                 <label className={labelBase}>
@@ -258,11 +362,34 @@ export default function ContactForm() {
                     value={formData.email}
                     onChange={handleChange}
                     placeholder="you@example.com"
-                    required
-                    className={inputBase}
+                    className={fieldClass("email")}
                   />
                 </div>
+                <FieldError message={errors.email} />
               </div>
+            </div>
+
+            <div>
+              <label className={labelBase}>
+                Phone number{" "}
+                <span className="normal-case font-normal text-slate-400">
+                  (optional)
+                </span>
+              </label>
+              <div className="relative">
+                <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                <input
+                  name="phone"
+                  type="tel"
+                  inputMode="tel"
+                  maxLength={20}
+                  value={formData.phone}
+                  onChange={handleChange}
+                  placeholder="+1 234 567 8900"
+                  className={fieldClass("phone")}
+                />
+              </div>
+              <FieldError message={errors.phone} />
             </div>
 
             <div>
@@ -275,7 +402,7 @@ export default function ContactForm() {
                   name="inquiryType"
                   value={formData.inquiryType}
                   onChange={handleChange}
-                  className={`${inputBase} appearance-none pr-10 cursor-pointer ${
+                  className={`${fieldClass("inquiryType")} appearance-none pr-10 cursor-pointer ${
                     formData.inquiryType === "" ? "text-slate-400" : ""
                   }`}
                 >
@@ -290,37 +417,7 @@ export default function ContactForm() {
                 </select>
                 <ChevronDown className="absolute right-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
               </div>
-            </div>
-
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-              {INQUIRY_CATEGORIES.map((c) => {
-                const Icon = c.icon;
-                const active = formData.category === c.id;
-                return (
-                  <button
-                    type="button"
-                    key={c.id}
-                    onClick={() => handleCategorySelect(c.id)}
-                    className="flex flex-col items-start gap-2 rounded-xl p-3 text-left transition-all duration-150"
-                    style={{
-                      border: active
-                        ? `1.5px solid ${BLUE}`
-                        : "1px solid #E2E8F0",
-                      background: active
-                        ? "rgba(79, 140, 255, 0.06)"
-                        : "#FFFFFF",
-                    }}
-                  >
-                    <Icon
-                      className="w-4 h-4"
-                      style={{ color: active ? BLUE : "#64748B" }}
-                    />
-                    <span className="text-xs font-medium leading-snug text-slate-700">
-                      {c.label}
-                    </span>
-                  </button>
-                );
-              })}
+              <FieldError message={errors.inquiryType} />
             </div>
 
             <div>
@@ -337,7 +434,7 @@ export default function ContactForm() {
                   value={formData.company}
                   onChange={handleChange}
                   placeholder="Your company or organization"
-                  className={inputBase}
+                  className={fieldClass("company")}
                 />
               </div>
             </div>
@@ -351,16 +448,34 @@ export default function ContactForm() {
                   </span>
                 </label>
                 <div className="relative">
-                  <Calendar className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                  <button
+                    type="button"
+                    onClick={openDatePicker}
+                    aria-label="Open calendar"
+                    className="absolute left-3 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-[#4F8CFF] transition-colors cursor-pointer z-10"
+                  >
+                    <Calendar className="w-4 h-4" />
+                  </button>
+                  <input
+                    ref={datePickerRef}
+                    type="date"
+                    tabIndex={-1}
+                    aria-hidden="true"
+                    onChange={handleDatePick}
+                    className="absolute left-3.5 top-1/2 w-4 h-4 opacity-0 pointer-events-none"
+                  />
                   <input
                     name="eventDate"
                     type="text"
+                    inputMode="numeric"
+                    maxLength={10}
                     value={formData.eventDate}
                     onChange={handleChange}
                     placeholder="MM/DD/YYYY"
-                    className={inputBase}
+                    className={fieldClass("eventDate")}
                   />
                 </div>
+                <FieldError message={errors.eventDate} />
               </div>
               <div>
                 <label className={labelBase}>
@@ -376,7 +491,7 @@ export default function ContactForm() {
                     value={formData.quantity}
                     onChange={handleChange}
                     placeholder="e.g., 25–50, 50–100, 100+"
-                    className={inputBase}
+                    className={fieldClass("quantity")}
                   />
                 </div>
               </div>
@@ -393,11 +508,11 @@ export default function ContactForm() {
                   rows={4}
                   value={formData.message}
                   onChange={handleChange}
-                  required
                   placeholder="Tell us what you're creating, who it's for, approximate quantity, timing, and anything else we should know."
-                  className={`${inputBase} resize-none min-h-27.5 pt-3.5`}
+                  className={`${fieldClass("message")} resize-none min-h-27.5 pt-3.5`}
                 />
               </div>
+              <FieldError message={errors.message} />
             </div>
 
             <button

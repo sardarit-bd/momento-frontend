@@ -3,9 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "npx next dev --turbopack",
-    "build": "npx next build --turbopack",
-    "start": "npx next start",
+    "dev": "node api.js && npx next dev --turbopack",
+    "build": "node api.js && npx next build --turbopack",
+    "start": "node api.js && npx next start",
     "lint": "eslint"
   },
   "dependencies": {
@@ -32,6 +32,7 @@
     "react-slick": "^0.31.0",
     "react-toastify": "^11.0.5",
     "slick-carousel": "^1.8.1",
+    "yup": "^1.7.1",
     "zustand": "^5.0.8"
   },
   "devDependencies": {
